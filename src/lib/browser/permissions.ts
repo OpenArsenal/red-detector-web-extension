@@ -1,2 +1,5 @@
-// TODO: Permissions helper placeholder.
-// Future responsibility: request and inspect optional host permissions for deeper detection.
+import { browser } from 'wxt/browser';
+
+export async function hasHostPermission(url: string): Promise<boolean> {
+	return browser.permissions.contains({ origins: [new URL(url).origin + '/*'] });
+}

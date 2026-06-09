@@ -5,15 +5,13 @@ export default defineConfig({
   modules: ["@wxt-dev/module-solid"],
   manifest: {
     name: "RED Detector Web Extension",
-    description: "Detect technologies used by the current website.",
+    description: "Collect a bounded extraction payload from the current website.",
     version: "0.1.0",
-    manifest_version: 3,
     action: {
       default_title: "Detect technologies",
       default_popup: "popup.html",
     },
-    permissions: ["activeTab", "tabs", "storage", "scripting"],
+    permissions: ["activeTab", "tabs", "storage", "scripting", "cookies"],
     host_permissions: [],
-    optional_host_permissions: ["http://*/*", "https://*/*"],
   },
 });

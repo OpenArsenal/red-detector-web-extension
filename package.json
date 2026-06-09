@@ -7,11 +7,13 @@
     "dev": "wxt",
     "build": "wxt build",
     "zip": "wxt zip",
-    "test": "vitest"
+    "test": "vitest",
+    "compile": "tsc --noEmit",
+    "postinstall": "wxt prepare"
   },
   "dependencies": {
     "solid-js": "latest",
-    "conctx": "latest"
+    "comctx": "latest"
   },
   "devDependencies": {
     "@wxt-dev/module-solid": "latest",

@@ -1,1 +1,3 @@
-// TODO: Shared URL helpers placeholder.
+export function getOrigin(url: string): string {
+	return new URL(url).origin;
+}
