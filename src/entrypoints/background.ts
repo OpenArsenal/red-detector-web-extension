@@ -11,6 +11,11 @@ import type {
 import { validatePageSignals } from '../lib/detection/validate';
 import type { BackgroundApi, ContentApi } from '../lib/messaging';
 import {
+	CONTENT_SCRIPT_TIMEOUT_MS,
+	contentScriptFailure,
+	withTimeout,
+} from '../lib/messaging/rpc';
+import {
 	BACKGROUND_RPC_NAMESPACE,
 	CONTENT_RPC_NAMESPACE,
 	createBackgroundServerAdapter,
@@ -37,11 +42,15 @@ async function collectFromTab(
 	const contentApi = injectContentApi(createContentClientAdapter(tabId, 0));
 
 	try {
-		const response = await contentApi.collectPageSignals({
-			includeHtml: true,
-			selectorProbeList: buildSelectorProbeList(technologies),
-			jsGlobalProbeList: buildJsGlobalProbeList(technologies),
-		});
+		const response = await withTimeout(
+			contentApi.collectPageSignals({
+				includeHtml: true,
+				selectorProbeList: buildSelectorProbeList(technologies),
+				jsGlobalProbeList: buildJsGlobalProbeList(technologies),
+			}),
+			CONTENT_SCRIPT_TIMEOUT_MS,
+			'Content script did not respond before the messaging timeout.',
+		);
 
 		if (!response.ok) {
 			return response;
@@ -61,10 +70,7 @@ async function collectFromTab(
 
 		return response;
 	} catch (error) {
-		const stack = error instanceof Error ? error.stack : undefined;
-		const message =
-			error instanceof Error ? error.message : 'Content script did not respond';
-		return errorResponse('CONTENT_SCRIPT_UNAVAILABLE', message, stack);
+		return contentScriptFailure(error);
 	}
 }
 

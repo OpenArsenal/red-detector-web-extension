@@ -16,14 +16,20 @@ import { errorResponse, ok } from "../lib/shared/result";
 function collectSignals(
   input: Parameters<ContentApi["collectPageSignals"]>[0],
 ) {
-  const signals = collectPageSignals(input);
-  const validationError = validatePageSignals(signals);
+  try {
+    const signals = collectPageSignals(input);
+    const validationError = validatePageSignals(signals);
 
-  if (validationError) {
-    return errorResponse("PAYLOAD_TOO_LARGE", validationError);
+    if (validationError) {
+      return errorResponse("PAYLOAD_TOO_LARGE", validationError);
+    }
+
+    return ok(signals);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to collect page signals";
+    const stack = error instanceof Error ? error.stack : undefined;
+    return errorResponse("DETECTION_FAILED", message, stack);
   }
-
-  return ok(signals);
 }
 
 function createContentApi(): ContentApi {
