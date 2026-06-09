@@ -1,2 +1,3 @@
-// TODO: Technology registry placeholder.
-// Future responsibility: bundled technology definitions and detection rules.
+import { mvpTechnologies } from "../lib/detection/rules";
+
+export const technologies = mvpTechnologies;
