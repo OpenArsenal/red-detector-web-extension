@@ -1,7 +1,13 @@
 # RED Detector Web Extension
-A Chrome-first Manifest V3 technology detector extension built with WXT, TypeScript, Solid, and `conctx`.
+A Chrome-first Manifest V3 extraction demo built with WXT, TypeScript, Solid, and `comctx`.
 
-`conctx` is the intended typed messaging layer between the popup, background service worker, and content script. Message types, channels, and handlers should be added later in `src/lib/messaging/` and wired from the entrypoints when implementation begins.
+- the popup triggers extraction for the active tab
+- the background service worker calls the content script over typed RPC
+- the content script collects a bounded page payload
+- the background enriches that payload with cookies and `robots.txt`, then stores it locally
+- the popup shows aggregate extraction status and the latest run outcome
+
+This is intentionally an extraction-first milestone. The bundled technology registry and actual technology fingerprint matching are still future work built on top of the extracted payloads.
 
 ## Tooling
 
@@ -31,14 +37,23 @@ Aube will install dependencies before running scripts when the manifest or lockf
 ## Project areas
 
 - `mise.toml` — pinned Node and aube versions plus project tasks.
-- `src/entrypoints/` — WXT popup, background service worker, and content script entrypoints.
-- `src/entrypoints/popup/` — future Solid popup UI shell.
-- `src/lib/messaging/` — planned typed conctx message contracts, channels, and handlers.
-- `src/lib/detection/` — future pure TypeScript detection engine, rules, types, normalizers, and version helpers.
-- `src/lib/storage/` — future cache and preferences storage layer.
-- `src/lib/browser/` — future browser API helper wrappers.
-- `src/lib/shared/` — future shared utilities for errors, results, and URLs.
-- `src/data/` — future category and technology registry definitions.
-- `src/components/` — future popup UI components.
-- `src/tests/` — placeholder fixtures and future Vitest test areas.
+- `src/entrypoints/` — WXT popup, background service worker, and content script entrypoints for the extraction flow.
+- `src/entrypoints/popup/` — Solid popup UI for manual extraction and status display.
+- `src/lib/messaging/` — typed `comctx` message contracts and adapters for popup, background, and content contexts.
+- `src/lib/detection/` — pure extraction-domain helpers for payload collection, normalization, limits, and validation.
+- `src/lib/storage/` — local retained-record storage and aggregate status helpers.
+- `src/lib/browser/` — active-tab, cookies, and `robots.txt` helpers owned by privileged contexts.
+- `src/lib/shared/` — shared runtime result, error, and URL helpers.
+- `src/data/` — still reserved for future category and technology registry definitions.
+- `src/components/` — still reserved for richer popup presentation beyond the current extraction console.
+- `src/tests/` — focused Vitest coverage for the current extraction helpers and messaging contracts.
 - `public/icons/` — placeholder extension icon files.
+
+## Current behavior
+
+1. Load the extension in WXT dev or build output.
+2. Open a normal `http` or `https` page.
+3. Open the popup and run extraction.
+4. Inspect the popup status plus the background console logs to review the stored payload.
+
+Unsupported pages such as `chrome://` will return a stable error instead of attempting extraction.
