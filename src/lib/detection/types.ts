@@ -1,65 +1,99 @@
-export type SourceStatus =
-	| 'supported'
-	| 'supported_with_caveats'
-	| 'browser_specific'
-	| 'out_of_scope';
+export type DetectionKind = 'dom' | 'html' | 'scriptSrc' | 'cookie' | 'header' | 'jsGlobal' | 'meta' | 'url';
 
-export type OwnerContext = 'content' | 'background' | 'popup' | 'none';
+export type CategoryId =
+	| 'cms'
+	| 'ecommerce'
+	| 'analytics'
+	| 'javascript-framework'
+	| 'tag-manager'
+	| 'web-server'
+	| 'cdn'
+	| 'payment'
+	| 'marketing'
+	| 'unknown';
 
-export type ExtractionSource =
-	| 'url'
-	| 'title'
-	| 'meta'
-	| 'script_src'
-	| 'text'
-	| 'html'
-	| 'inline_scripts'
-	| 'cookies'
-	| 'robots';
-
-export type ExtractionMode = 'safe' | 'aggressive';
-
-export type SourceCapability = {
-	status: SourceStatus;
-	owner: OwnerContext;
+export type Category = {
+	id: CategoryId;
+	label: string;
+	priority: number;
 };
 
-export type RobotsPayload = {
-	status: 'ok' | 'error';
-	disallow: string[];
-	fetchedAt: number;
-	sourceUrl: string;
-	errorMessage?: string;
+export type DetectionRule = {
+	kind: DetectionKind;
+	pattern?: RegExp;
+	selector?: string;
+	property?: string;
+	key?: string;
+	valuePattern?: RegExp;
+	confidence?: number;
+	versionTemplate?: string;
+	description?: string;
 };
 
-export type ExtractedPagePayload = {
-	url: string;
-	title: string;
-	meta: Record<string, string[]>;
-	scriptSrc: string[];
-	text?: string;
-	html?: string;
-	inlineScripts?: string[];
-	cookies?: Record<string, string>;
-	robots?: RobotsPayload;
-	collectedSources: ExtractionSource[];
-	capturedAt: number;
-};
-
-export type ExtractionRecord = {
+export type TechnologyDefinition = {
 	id: string;
-	origin: string;
-	tabId?: number;
-	mode: ExtractionMode;
-	payload: ExtractedPagePayload;
-	createdAt: number;
-	expiresAt: number;
-	sizeBytes: number;
+	name: string;
+	website: string;
+	description?: string;
+	icon?: string;
+	categories: CategoryId[];
+	rules: DetectionRule[];
+	implies?: string[];
+	requires?: string[];
+	excludes?: string[];
 };
 
-export type ExtractionStatus = {
-	totalRecords: number;
-	totalBytes: number;
-	byOrigin: Record<string, number>;
-	lastRecordAt?: number;
+export type Evidence = {
+	kind: DetectionKind;
+	ruleDescription?: string;
+	matchedValue?: string;
+	confidence: number;
+	version?: string;
+};
+
+export type ConfidenceScore = {
+	value: number;
+	level: 'low' | 'medium' | 'high' | 'certain';
+};
+
+export type DetectionResult = {
+	technologyId: string;
+	name: string;
+	website: string;
+	description?: string;
+	icon?: string;
+	categories: CategoryId[];
+	confidence: ConfidenceScore;
+	version?: string;
+	evidence: Evidence[];
+};
+
+export type PageSignals = {
+	url: string;
+	hostname: string;
+	html: string;
+	scripts: string[];
+	cookies: Record<string, string>;
+	headers: Record<string, string>;
+	meta: Record<string, string[]>;
+	dom: {
+		selectors: Record<string, boolean>;
+	};
+	jsGlobals: Record<string, unknown>;
+	collectedAt: number;
+};
+
+export type SiteAnalysis = {
+	url: string;
+	hostname: string;
+	analyzedAt: number;
+	source: 'fresh' | 'cache';
+	results: DetectionResult[];
+	errors: string[];
+};
+
+export type AnalysisStatus = {
+	totalAnalyses: number;
+	trackedOrigins: number;
+	lastAnalyzedAt?: number;
 };

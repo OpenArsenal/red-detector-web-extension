@@ -1,11 +1,14 @@
 import { defineProxy } from 'comctx';
 
+import { technologies } from '../data/technologies';
 import { getActiveTab, canInspectTab } from '../lib/browser/active-tab';
-import { collectCookiesForUrl } from '../lib/browser/cookies';
-import { collectRobotsForUrl } from '../lib/browser/robots';
-import { estimateBytes } from '../lib/detection/normalizers';
-import type { ExtractedPagePayload, ExtractionRecord } from '../lib/detection/types';
-import { validateExtractedPayload } from '../lib/detection/validate';
+import { analyzeSite } from '../lib/detection/engine';
+import type {
+	PageSignals,
+	SiteAnalysis,
+	TechnologyDefinition,
+} from '../lib/detection/types';
+import { validatePageSignals } from '../lib/detection/validate';
 import type { BackgroundApi, ContentApi } from '../lib/messaging';
 import {
 	BACKGROUND_RPC_NAMESPACE,
@@ -17,8 +20,7 @@ import { errorResponse } from '../lib/shared/errors';
 import type { ApiResult } from '../lib/shared/result';
 import { ok } from '../lib/shared/result';
 import { getOrigin } from '../lib/shared/url';
-import { STORAGE_LIMITS } from '../lib/storage/contracts';
-import { getStatus, saveRecord } from '../lib/storage';
+import { getCachedAnalysis, getStatus, saveAnalysis } from '../lib/storage';
 
 const [, injectContentApi] = defineProxy(() => ({}) as ContentApi, {
 	namespace: CONTENT_RPC_NAMESPACE,
@@ -26,120 +28,122 @@ const [, injectContentApi] = defineProxy(() => ({}) as ContentApi, {
 	transfer: false,
 });
 
-function buildRecord(
-	payload: ExtractedPagePayload,
-	tabId: number | undefined,
-	mode: 'safe' | 'aggressive',
-): ExtractionRecord {
-	const createdAt = Date.now();
-
-	return {
-		id: `${createdAt}-${Math.random().toString(36).slice(2, 10)}`,
-		origin: getOrigin(payload.url),
-		tabId,
-		mode,
-		payload,
-		createdAt,
-		expiresAt: createdAt + STORAGE_LIMITS.rawRecordTtlMs,
-		sizeBytes: estimateBytes(payload),
-	};
-}
-
-async function collectFromTab(tabId: number, mode: 'safe' | 'aggressive') {
+/**
+ * Ask the content script for bounded PageSignals and reject stale responses from
+ * a different origin. Navigation can happen while the service worker is active.
+ */
+async function collectFromTab(
+	tabId: number,
+	expectedUrl: string,
+): Promise<ApiResult<PageSignals>> {
 	const contentApi = injectContentApi(createContentClientAdapter(tabId, 0));
 
 	try {
-		const response = await contentApi.collectPagePayload({ mode });
+		const response = await contentApi.collectPageSignals({
+			includeHtml: true,
+			selectorProbeList: buildSelectorProbeList(technologies),
+			jsGlobalProbeList: buildJsGlobalProbeList(technologies),
+		});
+
 		if (!response.ok) {
 			return response;
 		}
 
-		const validationError = validateExtractedPayload(response.value);
+		const validationError = validatePageSignals(response.value);
 		if (validationError) {
 			return errorResponse('PAYLOAD_TOO_LARGE', validationError);
 		}
 
-		return response.value;
+		if (getOrigin(response.value.url) !== getOrigin(expectedUrl)) {
+			return errorResponse(
+				'VALIDATION_ERROR',
+				'Collected page signals do not match the active tab origin.',
+			);
+		}
+
+		return response;
 	} catch (error) {
 		const stack = error instanceof Error ? error.stack : undefined;
-		const message = error instanceof Error ? error.message : 'Content script did not respond';
+		const message =
+			error instanceof Error ? error.message : 'Content script did not respond';
 		return errorResponse('CONTENT_UNAVAILABLE', message, stack);
 	}
 }
 
-async function enrichPayload(payload: ExtractedPagePayload): Promise<ExtractedPagePayload> {
-	const nextPayload: ExtractedPagePayload = {
-		...payload,
-		collectedSources: [...payload.collectedSources],
-	};
-
-	const cookies = await collectCookiesForUrl(payload.url);
-	if (Object.keys(cookies).length) {
-		nextPayload.cookies = cookies;
-		if (!nextPayload.collectedSources.includes('cookies')) {
-			nextPayload.collectedSources.push('cookies');
-		}
-	}
-
-	const robots = await collectRobotsForUrl(payload.url);
-	nextPayload.robots = robots;
-	if (!nextPayload.collectedSources.includes('robots')) {
-		nextPayload.collectedSources.push('robots');
-	}
-
-	return nextPayload;
+/** Debug output is intentionally summary-only; never log raw page signals. */
+function logAnalysisSummary(analysis: SiteAnalysis) {
+	console.log('[red-detector] analysis summary', {
+		hostname: analysis.hostname,
+		resultCount: analysis.results.length,
+		technologyIds: analysis.results.map((result) => result.technologyId),
+		analyzedAt: analysis.analyzedAt,
+	});
 }
 
-function logExtractionRecord(record: ExtractionRecord) {
-	console.log('[red-detector] extraction record summary', {
-		id: record.id,
-		origin: record.origin,
-		mode: record.mode,
-		collectedSources: record.payload.collectedSources,
-		sizeBytes: record.sizeBytes,
-	});
-	console.log('[red-detector] extraction payload', record.payload);
+/** Build the exact DOM selector probes needed by the active bundled rules. */
+function buildSelectorProbeList(registry: TechnologyDefinition[]): string[] {
+	return Array.from(
+		new Set(
+			registry.flatMap((technology) =>
+				technology.rules
+					.filter((rule) => rule.kind === 'dom' && rule.selector)
+					.map((rule) => rule.selector!),
+			),
+		),
+	);
+}
+
+/** Build optional isolated-world global probes needed by the active rules. */
+function buildJsGlobalProbeList(registry: TechnologyDefinition[]): string[] {
+	return Array.from(
+		new Set(
+			registry.flatMap((technology) =>
+				technology.rules
+					.filter((rule) => rule.kind === 'jsGlobal' && rule.property)
+					.map((rule) => rule.property!),
+			),
+		),
+	);
 }
 
 function createBackgroundApi(): BackgroundApi {
 	return {
-		async getExtractionStatus() {
+		async getAnalysisStatus() {
 			return ok(await getStatus());
 		},
 
-		async runActiveTabExtraction(input): Promise<ApiResult<ExtractionRecord>> {
+		async analyzeActiveTab(input): Promise<ApiResult<SiteAnalysis>> {
 			try {
 				const tab = await getActiveTab();
-				if (!tab?.id) {
+				if (!tab?.id || !tab.url) {
 					return errorResponse('TAB_NOT_FOUND', 'No active tab found');
 				}
 
 				if (!canInspectTab(tab)) {
 					return errorResponse(
 						'SOURCE_UNSUPPORTED',
-						'Extraction only works on normal http/https pages. Reload a website tab and try again.',
+						'Detection only works on normal http/https pages. Reload a website tab and try again.',
 					);
 				}
 
-				const mode = input.mode ?? 'safe';
-				const payloadOrError = await collectFromTab(tab.id, mode);
-				if ('ok' in payloadOrError) {
-					return payloadOrError;
+				const cached = await getCachedAnalysis(tab.url);
+				if (cached && !input.forceRefresh) {
+					return ok(cached);
 				}
 
-				const enrichedPayload = await enrichPayload(payloadOrError);
-				const validationError = validateExtractedPayload(enrichedPayload);
-				if (validationError) {
-					return errorResponse('PAYLOAD_TOO_LARGE', validationError);
+				const signalsResponse = await collectFromTab(tab.id, tab.url);
+				if (!signalsResponse.ok) {
+					return signalsResponse;
 				}
 
-				const record = buildRecord(enrichedPayload, tab.id, mode);
-				await saveRecord(record);
-				logExtractionRecord(record);
-				return ok(record);
+				const analysis = analyzeSite(signalsResponse.value, technologies);
+				const savedAnalysis = await saveAnalysis(analysis);
+				logAnalysisSummary(savedAnalysis);
+				return ok(savedAnalysis);
 			} catch (error) {
 				const stack = error instanceof Error ? error.stack : undefined;
-				const message = error instanceof Error ? error.message : 'Unexpected runtime error';
+				const message =
+					error instanceof Error ? error.message : 'Unexpected runtime error';
 				return errorResponse('INTERNAL_ERROR', message, stack);
 			}
 		},

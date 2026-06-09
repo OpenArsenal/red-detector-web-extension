@@ -1,41 +1,53 @@
-import { defineProxy } from 'comctx';
+import { defineProxy } from "comctx";
 
-import { collectPageSources } from '../lib/detection/engine';
-import { validateExtractedPayload } from '../lib/detection/validate';
-import type { ContentApi } from '../lib/messaging';
-import { CONTENT_RPC_NAMESPACE, createContentServerAdapter } from '../lib/messaging';
-import { errorResponse } from '../lib/shared/errors';
-import { ok } from '../lib/shared/result';
+import { collectPageSignals } from "../lib/content/collect-page-signals";
+import { validatePageSignals } from "../lib/detection/validate";
+import type { ContentApi } from "../lib/messaging";
+import {
+  CONTENT_RPC_NAMESPACE,
+  createContentServerAdapter,
+} from "../lib/messaging";
+import { errorResponse } from "../lib/shared/errors";
+import { ok } from "../lib/shared/result";
 
-function collectPayload(mode: 'safe' | 'aggressive') {
-	const payload = collectPageSources(mode);
-	const validationError = validateExtractedPayload(payload);
+/**
+ * Content entrypoint boundary: collect and validate before returning to the
+ * background service worker. Detection stays out of the page context.
+ */
+function collectSignals(
+  input: Parameters<ContentApi["collectPageSignals"]>[0],
+) {
+  const signals = collectPageSignals(input);
+  const validationError = validatePageSignals(signals);
 
-	if (validationError) {
-		return errorResponse('PAYLOAD_TOO_LARGE', validationError);
-	}
+  if (validationError) {
+    return errorResponse("PAYLOAD_TOO_LARGE", validationError);
+  }
 
-	return ok(payload);
+  return ok(signals);
 }
 
 function createContentApi(): ContentApi {
-	return {
-		async collectPagePayload(input) {
-			return collectPayload(input.mode);
-		},
-	};
+  return {
+    async collectPageSignals(input) {
+      return collectSignals(input);
+    },
+  };
 }
 
-const [provideContentApi] = defineProxy((createApi: () => ContentApi) => createApi(), {
-	namespace: CONTENT_RPC_NAMESPACE,
-	heartbeatCheck: false,
-	transfer: false,
-});
+const [provideContentApi] = defineProxy(
+  (createApi: () => ContentApi) => createApi(),
+  {
+    namespace: CONTENT_RPC_NAMESPACE,
+    heartbeatCheck: false,
+    transfer: false,
+  },
+);
 
 export default defineContentScript({
-	matches: ['<all_urls>'],
-	runAt: 'document_idle',
-	main() {
-		provideContentApi(createContentServerAdapter(), createContentApi);
-	},
+  matches: ["http://*/*", "https://*/*"],
+  runAt: "document_idle",
+  main() {
+    provideContentApi(createContentServerAdapter(), createContentApi);
+  },
 });

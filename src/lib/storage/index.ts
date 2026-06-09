@@ -1,69 +1,88 @@
-import type { ExtractionRecord, ExtractionStatus } from '../detection/types';
-import { STORAGE_LIMITS, RECORDS_KEY } from './contracts';
+import { browser } from 'wxt/browser';
 
-function applyRetentionPolicy(records: ExtractionRecord[]): ExtractionRecord[] {
-	const sorted = records.sort((a, b) => b.createdAt - a.createdAt);
+import type { AnalysisStatus, SiteAnalysis } from '../detection/types';
+import { getOrigin, tryGetOrigin } from '../shared/url';
+import { ANALYSIS_CACHE_PREFIX, STORAGE_LIMITS } from './contracts';
 
-	const next: ExtractionRecord[] = [];
-	let totalBytes = 0;
-	const now = Date.now();
+/** Cache by origin so localhost ports and http/https variants do not collide. */
+function keyForUrl(url: string): string {
+	return `${ANALYSIS_CACHE_PREFIX}${getOrigin(url)}`;
+}
 
-	for (const record of sorted) {
-		if (record.expiresAt <= now) {
-			continue;
-		}
+function isSiteAnalysis(value: unknown): value is SiteAnalysis {
+	return (
+		typeof value === 'object' &&
+		value !== null &&
+		'url' in value &&
+		'hostname' in value &&
+		'analyzedAt' in value &&
+		'results' in value
+	);
+}
 
-		if (next.length >= STORAGE_LIMITS.maxRecords) {
-			continue;
-		}
+/** Return a fresh-enough normalized analysis, never raw page signals. */
+export async function getCachedAnalysis(url: string): Promise<SiteAnalysis | null> {
+	const key = keyForUrl(url);
+	const raw = await browser.storage.local.get(key);
+	const value = raw[key];
 
-		if (totalBytes + record.sizeBytes > STORAGE_LIMITS.maxBytes) {
-			continue;
-		}
-
-		next.push(record);
-		totalBytes += record.sizeBytes;
+	if (!isSiteAnalysis(value)) {
+		return null;
 	}
 
-	return next;
-}
-
-async function readRecords(): Promise<ExtractionRecord[]> {
-	const raw = await browser.storage.local.get(RECORDS_KEY);
-	return (raw[RECORDS_KEY] as ExtractionRecord[] | undefined) ?? [];
-}
-
-async function writeRecords(records: ExtractionRecord[]): Promise<void> {
-	await browser.storage.local.set({ [RECORDS_KEY]: records });
-}
-
-export async function getRecords(): Promise<ExtractionRecord[]> {
-	return applyRetentionPolicy(await readRecords());
-}
-
-export async function saveRecord(record: ExtractionRecord): Promise<ExtractionRecord> {
-	const records = await readRecords();
-	const next = applyRetentionPolicy([...records, record]);
-	await writeRecords(next);
-	return record;
-}
-
-export async function getStatus(): Promise<ExtractionStatus> {
-	const records = await getRecords();
-	const byOrigin: Record<string, number> = {};
-	let totalBytes = 0;
-	let lastRecordAt = 0;
-
-	for (const record of records) {
-		byOrigin[record.origin] = (byOrigin[record.origin] ?? 0) + 1;
-		totalBytes += record.sizeBytes;
-		lastRecordAt = Math.max(lastRecordAt, record.createdAt);
+	const isExpired = Date.now() - value.analyzedAt > STORAGE_LIMITS.analysisTtlMs;
+	if (isExpired) {
+		await browser.storage.local.remove(key);
+		return null;
 	}
+
+	return { ...value, source: 'cache' };
+}
+
+/** Persist only normalized detector output and trim stale/overflow cache entries. */
+export async function saveAnalysis(analysis: SiteAnalysis): Promise<SiteAnalysis> {
+	const normalized: SiteAnalysis = { ...analysis, source: 'fresh' };
+	await browser.storage.local.set({ [keyForUrl(normalized.url)]: normalized });
+	await trimAnalysisCache();
+	return normalized;
+}
+
+export async function getStatus(): Promise<AnalysisStatus> {
+	const all = await browser.storage.local.get(null);
+	const analyses = Object.entries(all)
+		.filter(([key, value]) => key.startsWith(ANALYSIS_CACHE_PREFIX) && isSiteAnalysis(value))
+		.map(([, value]) => value as SiteAnalysis);
+
+	const lastAnalyzedAt = analyses.reduce(
+		(latest, analysis) => Math.max(latest, analysis.analyzedAt),
+		0,
+	);
+
+	const trackedOrigins = analyses
+		.map((analysis) => tryGetOrigin(analysis.url))
+		.filter((origin): origin is string => origin !== null);
 
 	return {
-		totalRecords: records.length,
-		totalBytes,
-		byOrigin,
-		lastRecordAt: lastRecordAt || undefined,
+		totalAnalyses: analyses.length,
+		trackedOrigins: new Set(trackedOrigins).size,
+		lastAnalyzedAt: lastAnalyzedAt || undefined,
 	};
+}
+
+async function trimAnalysisCache(): Promise<void> {
+	const all = await browser.storage.local.get(null);
+	const analyses = Object.entries(all)
+		.filter(([key, value]) => key.startsWith(ANALYSIS_CACHE_PREFIX) && isSiteAnalysis(value))
+		.map(([key, value]) => ({ key, analysis: value as SiteAnalysis }))
+		.sort((a, b) => b.analysis.analyzedAt - a.analysis.analyzedAt);
+
+	const expiredKeys = analyses
+		.filter(({ analysis }) => Date.now() - analysis.analyzedAt > STORAGE_LIMITS.analysisTtlMs)
+		.map(({ key }) => key);
+	const overflowKeys = analyses.slice(STORAGE_LIMITS.maxAnalyses).map(({ key }) => key);
+	const keysToRemove = Array.from(new Set([...expiredKeys, ...overflowKeys]));
+
+	if (keysToRemove.length) {
+		await browser.storage.local.remove(keysToRemove);
+	}
 }
