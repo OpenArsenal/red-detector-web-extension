@@ -16,9 +16,7 @@ import {
 	createBackgroundServerAdapter,
 	createContentClientAdapter,
 } from '../lib/messaging';
-import { errorResponse } from '../lib/shared/errors';
-import type { ApiResult } from '../lib/shared/result';
-import { ok } from '../lib/shared/result';
+import { errorResponse, ok, type AppResult } from '../lib/shared/result';
 import { getOrigin } from '../lib/shared/url';
 import { getCachedAnalysis, getStatus, saveAnalysis } from '../lib/storage';
 
@@ -35,7 +33,7 @@ const [, injectContentApi] = defineProxy(() => ({}) as ContentApi, {
 async function collectFromTab(
 	tabId: number,
 	expectedUrl: string,
-): Promise<ApiResult<PageSignals>> {
+): Promise<AppResult<PageSignals>> {
 	const contentApi = injectContentApi(createContentClientAdapter(tabId, 0));
 
 	try {
@@ -66,7 +64,7 @@ async function collectFromTab(
 		const stack = error instanceof Error ? error.stack : undefined;
 		const message =
 			error instanceof Error ? error.message : 'Content script did not respond';
-		return errorResponse('CONTENT_UNAVAILABLE', message, stack);
+		return errorResponse('CONTENT_SCRIPT_UNAVAILABLE', message, stack);
 	}
 }
 
@@ -112,16 +110,16 @@ function createBackgroundApi(): BackgroundApi {
 			return ok(await getStatus());
 		},
 
-		async analyzeActiveTab(input): Promise<ApiResult<SiteAnalysis>> {
+		async analyzeActiveTab(input): Promise<AppResult<SiteAnalysis>> {
 			try {
 				const tab = await getActiveTab();
 				if (!tab?.id || !tab.url) {
-					return errorResponse('TAB_NOT_FOUND', 'No active tab found');
+					return errorResponse('NO_ACTIVE_TAB', 'No active tab found');
 				}
 
 				if (!canInspectTab(tab)) {
 					return errorResponse(
-						'SOURCE_UNSUPPORTED',
+						'UNSUPPORTED_URL',
 						'Detection only works on normal http/https pages. Reload a website tab and try again.',
 					);
 				}
@@ -144,7 +142,7 @@ function createBackgroundApi(): BackgroundApi {
 				const stack = error instanceof Error ? error.stack : undefined;
 				const message =
 					error instanceof Error ? error.message : 'Unexpected runtime error';
-				return errorResponse('INTERNAL_ERROR', message, stack);
+				return errorResponse('UNKNOWN', message, stack);
 			}
 		},
 	};

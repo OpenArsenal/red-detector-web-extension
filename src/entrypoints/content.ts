@@ -7,8 +7,7 @@ import {
   CONTENT_RPC_NAMESPACE,
   createContentServerAdapter,
 } from "../lib/messaging";
-import { errorResponse } from "../lib/shared/errors";
-import { ok } from "../lib/shared/result";
+import { errorResponse, ok } from "../lib/shared/result";
 
 /**
  * Content entrypoint boundary: collect and validate before returning to the

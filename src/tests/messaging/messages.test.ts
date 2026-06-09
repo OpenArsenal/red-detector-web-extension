@@ -5,8 +5,7 @@ import {
 	BACKGROUND_RPC_NAMESPACE,
 } from '../../lib/messaging/adapters/background';
 import { CONTENT_RPC_CHANNEL, CONTENT_RPC_NAMESPACE } from '../../lib/messaging/adapters/content';
-import { errorResponse } from '../../lib/shared/errors';
-import { ok } from '../../lib/shared/result';
+import { errorResponse, ok } from '../../lib/shared/result';
 
 describe('messaging contract helpers', () => {
 	it('returns stable success envelopes', () => {
@@ -14,11 +13,13 @@ describe('messaging contract helpers', () => {
 	});
 
 	it('returns stable error envelopes', () => {
-		expect(errorResponse('CONTENT_UNAVAILABLE', 'Missing')).toEqual({
+		expect(errorResponse('CONTENT_SCRIPT_UNAVAILABLE', 'Missing')).toEqual({
 			ok: false,
-			code: 'CONTENT_UNAVAILABLE',
-			message: 'Missing',
-			stack: undefined,
+			error: {
+				code: 'CONTENT_SCRIPT_UNAVAILABLE',
+				message: 'Missing',
+				stack: undefined,
+			},
 		});
 	});
 

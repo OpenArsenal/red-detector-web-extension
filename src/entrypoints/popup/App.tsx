@@ -88,7 +88,7 @@ export default function App() {
 		try {
 			const response = await backgroundApi.analyzeActiveTab({ forceRefresh });
 			if (!response.ok) {
-				setErrorMessage(`${response.code}: ${response.message}`);
+				setErrorMessage(`${response.error.code}: ${response.error.message}`);
 				return;
 			}
 

@@ -1,20 +1,20 @@
 export type ErrorCode =
+	| 'NO_ACTIVE_TAB'
+	| 'UNSUPPORTED_URL'
+	| 'CONTENT_SCRIPT_UNAVAILABLE'
+	| 'PERMISSION_DENIED'
+	| 'DETECTION_FAILED'
 	| 'VALIDATION_ERROR'
-	| 'SOURCE_UNSUPPORTED'
 	| 'PAYLOAD_TOO_LARGE'
-	| 'PERMISSION_REQUIRED'
 	| 'BROWSER_UNSUPPORTED'
-	| 'TAB_NOT_FOUND'
-	| 'CONTENT_UNAVAILABLE'
-	| 'INTERNAL_ERROR';
+	| 'UNKNOWN';
 
 export type AppError = {
-	ok: false;
 	code: ErrorCode;
 	message: string;
 	stack?: string;
 };
 
-export function errorResponse(code: ErrorCode, message: string, stack?: string): AppError {
-	return { ok: false, code, message, stack };
+export function appError(code: ErrorCode, message: string, stack?: string): AppError {
+	return { code, message, stack };
 }

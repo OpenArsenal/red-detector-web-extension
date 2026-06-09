@@ -1,3 +1,5 @@
+import type { AppError } from '../shared/errors';
+
 export type DetectionKind = 'dom' | 'html' | 'scriptSrc' | 'cookie' | 'header' | 'jsGlobal' | 'meta' | 'url';
 
 export type CategoryId =
@@ -89,7 +91,7 @@ export type SiteAnalysis = {
 	analyzedAt: number;
 	source: 'fresh' | 'cache';
 	results: DetectionResult[];
-	errors: string[];
+	errors: AppError[];
 };
 
 export type AnalysisStatus = {
