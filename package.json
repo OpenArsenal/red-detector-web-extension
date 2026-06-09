@@ -1,0 +1,28 @@
+{
+  "name": "red-detector-web-extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "build": "wxt build",
+    "zip": "wxt zip",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "solid-js": "latest",
+    "conctx": "latest"
+  },
+  "devDependencies": {
+    "@wxt-dev/module-solid": "latest",
+    "typescript": "latest",
+    "vitest": "latest",
+    "wxt": "latest"
+  },
+  "aube": {
+    "allowBuilds": {
+      "esbuild": true,
+      "spawn-sync": true
+    }
+  }
+}
