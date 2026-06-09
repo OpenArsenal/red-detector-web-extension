@@ -110,7 +110,7 @@ function buildJsGlobalProbeList(registry: TechnologyDefinition[]): string[] {
 	);
 }
 
-function createBackgroundApi(): BackgroundApi {
+export function createBackgroundApi(): BackgroundApi {
 	return {
 		async getAnalysisStatus() {
 			return ok(await getStatus());

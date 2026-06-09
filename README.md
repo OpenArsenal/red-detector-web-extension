@@ -15,6 +15,23 @@ This MVP analyzes the active `http`/`https` tab locally, collects bounded page s
 
 The extension does not store raw page payloads, raw cookie values, robots.txt responses, page text, or inline script contents.
 
+
+## Messaging architecture
+
+The extension uses `comctx` to expose small typed RPC surfaces between the popup, background service worker, and content script. The background API owns privileged orchestration (`analyzeActiveTab`, cache lookup, and active-tab validation), while the content API owns page-local signal collection only. This keeps popup code from scraping pages directly and keeps detection logic out of the content script.
+
+`comctx` is used instead of raw `browser.runtime.sendMessage`/`browser.tabs.sendMessage` discriminated unions because it lets each extension context consume an explicit TypeScript interface (`BackgroundApi` and `ContentApi`) while the adapters still route over normal MV3 extension messaging. Runtime calls that cross into the content script are wrapped with a timeout so a missing or stale content script returns `CONTENT_SCRIPT_UNAVAILABLE` instead of leaving the popup waiting indefinitely.
+
+## Manual messaging QA checklist
+
+Before accepting messaging changes, run the extension in Chrome and verify:
+
+- A normal `https://` page returns either detected technologies or a stable empty result.
+- `chrome://extensions` returns `UNSUPPORTED_URL` and the popup remains responsive.
+- Browser/internal or PDF-like pages that do not run the content script do not hang the popup.
+- A page with no content-script response returns `CONTENT_SCRIPT_UNAVAILABLE`.
+- Refresh/force-refresh still re-runs analysis instead of serving a stale cache result.
+
 ## Tooling
 
 This scaffold uses `mise` to pin project tools and `aube` as the package manager/script runner.
