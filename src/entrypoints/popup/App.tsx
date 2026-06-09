@@ -1,15 +1,19 @@
 import { defineProxy } from 'comctx';
-import { createSignal, onMount } from 'solid-js';
+import { createSignal, For, Show, onMount } from 'solid-js';
 import { createStore } from 'solid-js/store';
 
-import type { ExtractionRecord, ExtractionStatus } from '../../lib/detection/types';
+import { categories } from '../../data/categories';
+import { CategoryGroup } from '../../components/CategoryGroup';
+import { EmptyState } from '../../components/EmptyState';
+import { ErrorState } from '../../components/ErrorState';
+import type { AnalysisStatus, DetectionResult, SiteAnalysis } from '../../lib/detection/types';
 import type { BackgroundApi } from '../../lib/messaging';
 import {
 	BACKGROUND_RPC_NAMESPACE,
 	createBackgroundClientAdapter,
 } from '../../lib/messaging';
 
-import "./App.css";
+import './App.css';
 
 const [, injectBackgroundApi] = defineProxy(() => ({}) as BackgroundApi, {
 	namespace: BACKGROUND_RPC_NAMESPACE,
@@ -25,73 +29,79 @@ function normalizeError(error: unknown): string {
 	return error instanceof Error ? error.message : 'Unexpected messaging failure';
 }
 
+function groupByCategory(results: DetectionResult[]) {
+	const grouped = results.reduce<Record<string, DetectionResult[]>>((groups, result) => {
+		const category = result.categories[0] ?? 'unknown';
+		return {
+			...groups,
+			[category]: [...(groups[category] ?? []), result],
+		};
+	}, {});
+
+	return Object.entries(grouped)
+		.map(([category, categoryResults]) => {
+			const meta = categories[category] ?? categories.unknown;
+			return {
+				category,
+				label: meta.label,
+				priority: meta.priority,
+				results: categoryResults,
+			};
+		})
+		.sort((a, b) => a.priority - b.priority || a.label.localeCompare(b.label));
+}
+
 export default function App() {
-	const [status, setStatus] = createStore<ExtractionStatus>({
-		totalRecords: 0,
-		totalBytes: 0,
-		byOrigin: {},
+	const [status, setStatus] = createStore<AnalysisStatus>({
+		totalAnalyses: 0,
+		trackedOrigins: 0,
 	});
 	const [busy, setBusy] = createSignal(false);
 	const [message, setMessage] = createSignal('');
-	const [latestRecord, setLatestRecord] = createSignal<ExtractionRecord | null>(null);
+	const [errorMessage, setErrorMessage] = createSignal('');
+	const [analysis, setAnalysis] = createSignal<SiteAnalysis | null>(null);
 
-	function formattedResult() {
-		const record = latestRecord();
-		if (!record) {
-			return '';
-		}
-
-		return JSON.stringify(record.payload, null, 2);
+	function resultCount() {
+		return analysis()?.results.length ?? 0;
 	}
 
-	function sourceCount() {
-		return latestRecord()?.payload.collectedSources.length ?? 0;
-	}
-
-	function trackedOrigins() {
-		return Object.keys(status.byOrigin).length;
-	}
-
-	function statusTone() {
-		if (!message()) {
-			return 'idle';
-		}
-
-		return message().includes(':') ? 'warning' : 'success';
+	function groupedResults() {
+		return groupByCategory(analysis()?.results ?? []);
 	}
 
 	async function refreshStatus() {
 		try {
-			const response = await backgroundApi.getExtractionStatus();
+			const response = await backgroundApi.getAnalysisStatus();
 			if (response.ok) {
 				setStatus(response.value);
 			}
 		} catch (error) {
-			setMessage(normalizeError(error));
+			setErrorMessage(normalizeError(error));
 		}
 	}
 
-	async function runExtraction() {
+	async function runAnalysis(forceRefresh = false) {
 		setBusy(true);
 		setMessage('');
+		setErrorMessage('');
 
 		try {
-			const response = await backgroundApi.runActiveTabExtraction({});
+			const response = await backgroundApi.analyzeActiveTab({ forceRefresh });
 			if (!response.ok) {
-				setMessage(`${response.code}: ${response.message}`);
-				setBusy(false);
+				setErrorMessage(`${response.code}: ${response.message}`);
 				return;
 			}
 
-			setLatestRecord(response.value);
-			console.log('[red-detector] extracted payload', response.value.payload);
-			setMessage(`Captured ${response.value.payload.collectedSources.length} sources`);
+			setAnalysis(response.value);
+			setMessage(
+				`Detected ${response.value.results.length} technologies for ${response.value.hostname}`,
+			);
 			await refreshStatus();
 		} catch (error) {
-			setMessage(normalizeError(error));
+			setErrorMessage(normalizeError(error));
+		} finally {
+			setBusy(false);
 		}
-
-		setBusy(false);
 	}
 
 	onMount(() => {
@@ -102,65 +112,76 @@ export default function App() {
 		<main class="popup-shell">
 			<section class="hero-panel">
 				<div class="hero-copy">
-					<p class="eyebrow">Runtime Snapshot</p>
-					<h1>RED Detector Extractor</h1>
+					<p class="eyebrow">Technology Detection</p>
+					<h1>RED Detector</h1>
 					<p class="lede">
-						Capture a bounded page payload from the active tab and inspect the raw extraction
-						result without leaving the popup.
+						Analyze the active tab locally and cache only normalized technology results.
 					</p>
 				</div>
 
-				<button class="primary-button" disabled={busy()} onClick={runExtraction}>
-					{busy() ? 'Collecting...' : 'Run Extraction On Active Tab'}
-				</button>
+				<div class="button-row">
+					<button class="primary-button" disabled={busy()} onClick={() => void runAnalysis(false)}>
+						{busy() ? 'Analyzing...' : 'Analyze Active Tab'}
+					</button>
+					<button class="secondary-button" disabled={busy()} onClick={() => void runAnalysis(true)}>
+						Refresh
+					</button>
+				</div>
 
 				<div class="stats-grid">
 					<article class="stat-card accent-moss">
-						<span class="stat-label">Records</span>
-						<strong class="stat-value">{status.totalRecords}</strong>
+						<span class="stat-label">Cached Analyses</span>
+						<strong class="stat-value">{status.totalAnalyses}</strong>
 					</article>
 					<article class="stat-card accent-amber">
 						<span class="stat-label">Tracked Origins</span>
-						<strong class="stat-value">{trackedOrigins()}</strong>
+						<strong class="stat-value">{status.trackedOrigins}</strong>
 					</article>
 					<article class="stat-card accent-slate">
-						<span class="stat-label">Payload Sources</span>
-						<strong class="stat-value">{sourceCount()}</strong>
+						<span class="stat-label">Detected Technologies</span>
+						<strong class="stat-value">{resultCount()}</strong>
 					</article>
 				</div>
 
 				<div class="mini-metrics">
-					<p>Total bytes retained: {status.totalBytes}</p>
-					<p>Mode: {latestRecord()?.mode ?? 'safe'}</p>
+					<p>Source: {analysis()?.source ?? 'none'}</p>
+					<p>Host: {analysis()?.hostname ?? 'not analyzed'}</p>
 				</div>
 			</section>
 
-			{message() && <p class={`status-message ${statusTone()}`}>{message()}</p>}
+			<Show when={errorMessage()}>
+				{(value) => <ErrorState message={value()} />}
+			</Show>
+			<Show when={message()}>
+				{(value) => <p class="status-message success">{value()}</p>}
+			</Show>
 
 			<section class="panel result-panel">
 				<div class="panel-heading">
 					<div>
-						<p class="panel-kicker">Live Payload</p>
-						<h2>Latest Extraction Result</h2>
+						<p class="panel-kicker">Normalized Results</p>
+						<h2>Latest Site Analysis</h2>
 					</div>
-					{latestRecord() && <span class="mode-chip">{latestRecord()!.mode}</span>}
+					<Show when={analysis()}>
+						{(value) => <span class="mode-chip">{value().source}</span>}
+					</Show>
 				</div>
 
-				{latestRecord() ? (
-					<>
-						<p class="result-meta">
-							Captured from {latestRecord()!.origin} in {latestRecord()!.mode} mode
-						</p>
-						<div class="source-list" aria-label="Collected sources">
-							{latestRecord()!.payload.collectedSources.map((source) => (
-								<span class="source-chip">{source}</span>
-							))}
-						</div>
-						<pre class="result-json">{formattedResult()}</pre>
-					</>
-				) : (
-					<p class="result-empty">Run extraction to view the formatted payload here.</p>
-				)}
+				<Show
+					when={analysis()}
+					fallback={<EmptyState message="Run analysis to view detected technologies here." />}
+				>
+					{(value) => (
+						<Show
+							when={value().results.length}
+							fallback={<EmptyState message="No technologies detected yet." />}
+						>
+							<For each={groupedResults()}>
+								{(group) => <CategoryGroup label={group.label} results={group.results} />}
+							</For>
+						</Show>
+					)}
+				</Show>
 			</section>
 		</main>
 	);

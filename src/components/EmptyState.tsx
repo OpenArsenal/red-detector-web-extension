@@ -1,2 +1,5 @@
-// TODO: Placeholder Solid component file.
-// Add component implementation when popup UI work begins.
+export function EmptyState(props: { message: string }) {
+	return <p class="result-empty">{props.message}</p>;
+}
+
+export default EmptyState;
