@@ -1,26 +1,23 @@
-import type {
-	ExtractedPagePayload,
-	ExtractionMode,
-	ExtractionRecord,
-	ExtractionStatus,
-} from '../detection/types';
+import type { AnalysisStatus, PageSignals, SiteAnalysis } from '../detection/types';
 import type { ApiResult } from '../shared/result';
 
-export type RunActiveTabExtractionInput = {
-	mode?: ExtractionMode;
+export type AnalyzeActiveTabInput = {
+	forceRefresh?: boolean;
 };
 
-export type CollectPagePayloadInput = {
-	mode: ExtractionMode;
+export type CollectPageSignalsInput = {
+	includeHtml?: boolean;
+	selectorProbeList: string[];
+	jsGlobalProbeList: string[];
 };
 
 export interface BackgroundApi {
-	getExtractionStatus(): Promise<ApiResult<ExtractionStatus>>;
-	runActiveTabExtraction(input: RunActiveTabExtractionInput): Promise<ApiResult<ExtractionRecord>>;
+	getAnalysisStatus(): Promise<ApiResult<AnalysisStatus>>;
+	analyzeActiveTab(input: AnalyzeActiveTabInput): Promise<ApiResult<SiteAnalysis>>;
 }
 
 export interface ContentApi {
-	collectPagePayload(input: CollectPagePayloadInput): Promise<ApiResult<ExtractedPagePayload>>;
+	collectPageSignals(input: CollectPageSignalsInput): Promise<ApiResult<PageSignals>>;
 }
 
 export * from './adapters/background';
