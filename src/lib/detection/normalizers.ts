@@ -12,10 +12,11 @@ export function truncate(value: string, maxChars: number): string {
 	return value.slice(0, maxChars);
 }
 
+/** Normalize page metadata into bounded, deterministic signal values. */
 export function normalizeMetaMap(meta: Record<string, string[]>): Record<string, string[]> {
 	const entries = Object.entries(meta).map(([key, values]) => {
 		const normalizedValues = uniqueStrings(
-			values.map((value) => truncate((value ?? '').trim(), SOURCE_LIMITS.inlineScriptChars)),
+			values.map((value) => truncate((value ?? '').trim(), SOURCE_LIMITS.metaValueChars)),
 		).slice(0, SOURCE_LIMITS.metaValuesPerKey);
 
 		return [key.toLowerCase(), normalizedValues] as const;
@@ -24,6 +25,7 @@ export function normalizeMetaMap(meta: Record<string, string[]>): Record<string,
 	return Object.fromEntries(entries);
 }
 
+/** Estimate serialized message size before sending signals across extension boundaries. */
 export function estimateBytes(value: unknown): number {
 	return new TextEncoder().encode(JSON.stringify(value)).length;
 }
