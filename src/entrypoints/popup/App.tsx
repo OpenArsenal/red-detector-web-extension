@@ -15,6 +15,13 @@ import {
 
 import './App.css';
 
+type ScanPhase = 'idle' | 'quick-scan' | 'settled-scan' | 'complete' | 'partial';
+
+type ScanNotice = {
+	variant: 'success' | 'warning';
+	text: string;
+};
+
 const [, injectBackgroundApi] = defineProxy(() => ({}) as BackgroundApi, {
 	namespace: BACKGROUND_RPC_NAMESPACE,
 	heartbeatCheck: false,
@@ -51,15 +58,28 @@ function groupByCategory(results: DetectionResult[]) {
 		.sort((a, b) => a.priority - b.priority || a.label.localeCompare(b.label));
 }
 
+function getDetectionIds(results: DetectionResult[]) {
+	return new Set(results.map((result) => result.technologyId));
+}
+
+function getAddedDetectionIds(previous: DetectionResult[], next: DetectionResult[]) {
+	const previousIds = getDetectionIds(previous);
+	return next
+		.filter((result) => !previousIds.has(result.technologyId))
+		.map((result) => result.technologyId);
+}
+
 export default function App() {
 	const [status, setStatus] = createStore<AnalysisStatus>({
 		totalAnalyses: 0,
 		trackedOrigins: 0,
 	});
 	const [busy, setBusy] = createSignal(false);
-	const [message, setMessage] = createSignal('');
+	const [scanPhase, setScanPhase] = createSignal<ScanPhase>('idle');
+	const [notice, setNotice] = createSignal<ScanNotice | null>(null);
 	const [errorMessage, setErrorMessage] = createSignal('');
 	const [analysis, setAnalysis] = createSignal<SiteAnalysis | null>(null);
+	const [settledAddedIds, setSettledAddedIds] = createSignal<string[]>([]);
 
 	function resultCount() {
 		return analysis()?.results.length ?? 0;
@@ -67,6 +87,76 @@ export default function App() {
 
 	function groupedResults() {
 		return groupByCategory(analysis()?.results ?? []);
+	}
+
+	function hasLateDetections() {
+		return settledAddedIds().length > 0;
+	}
+
+	function settledScanPending() {
+		return scanPhase() === 'settled-scan' || scanPhase() === 'partial';
+	}
+
+	function scanProgressValue() {
+		switch (scanPhase()) {
+			case 'quick-scan':
+				return 20;
+			case 'settled-scan':
+				return 68;
+			case 'complete':
+				return 100;
+			case 'partial':
+				return 72;
+			default:
+				return 0;
+		}
+	}
+
+	function scanSummary() {
+		switch (scanPhase()) {
+			case 'quick-scan':
+				return {
+					title: 'Quick scan running',
+					description:
+						'Checking the active page as it exists right now so you can see an initial detection set fast.',
+				};
+			case 'settled-scan':
+				return {
+					title: 'Settled scan watching for late signals',
+					description:
+						'Waiting for scripts, links, and meta tags that land after initial render, then the list will update automatically.',
+				};
+			case 'partial':
+				return {
+					title: 'Quick scan finished',
+					description:
+						'You still have the initial results. The follow-up settled scan did not complete, so late-loaded signals may be missing.',
+				};
+			case 'complete':
+				return {
+					title: 'Settled scan complete',
+					description: hasLateDetections()
+						? `The follow-up pass added ${settledAddedIds().length} late detection${settledAddedIds().length === 1 ? '' : 's'} to the final list.`
+						: 'The follow-up pass confirmed the same detection set after the page settled.',
+				};
+			default:
+				return {
+					title: 'Two-step page scan',
+					description:
+						'Run a quick scan first, then wait for a settled follow-up pass that can catch late scripts, links, and meta tags.',
+				};
+		}
+	}
+
+	function loadingLabel() {
+		switch (scanPhase()) {
+			case 'quick-scan':
+				return 'Reading the page and collecting immediate signals';
+			case 'settled-scan':
+				return 'Watching for late scripts, links, and meta tags';
+			default:
+				return 'Scanning the active tab';
+		}
 	}
 
 	async function refreshStatus() {
@@ -82,22 +172,56 @@ export default function App() {
 
 	async function runAnalysis(forceRefresh = false) {
 		setBusy(true);
-		setMessage('');
+		setScanPhase('quick-scan');
+		setNotice(null);
 		setErrorMessage('');
+		setSettledAddedIds([]);
 
 		try {
-			const response = await backgroundApi.analyzeActiveTab({ forceRefresh });
-			if (!response.ok) {
-				setErrorMessage(`${response.error.code}: ${response.error.message}`);
+			const instant = await backgroundApi.analyzeActiveTab({
+				forceRefresh,
+				collectionMode: 'instant',
+			});
+
+			if (!instant.ok) {
+				setScanPhase('idle');
+				setErrorMessage(`${instant.error.code}: ${instant.error.message}`);
 				return;
 			}
 
-			setAnalysis(response.value);
-			setMessage(
-				`Detected ${response.value.results.length} technologies for ${response.value.hostname}`,
-			);
-			await refreshStatus();
+			setAnalysis(instant.value);
+			setNotice({
+				variant: 'success',
+				text: `Quick scan found ${instant.value.results.length} technologies for ${instant.value.hostname}. The settled scan is still watching for late page signals.`,
+			});
+			setScanPhase('settled-scan');
+
+			const settled = await backgroundApi.analyzeActiveTab({
+				forceRefresh: true,
+				collectionMode: 'settled',
+			});
+
+			if (settled.ok) {
+				const addedIds = getAddedDetectionIds(instant.value.results, settled.value.results);
+				setAnalysis(settled.value);
+				setSettledAddedIds(addedIds);
+				setScanPhase('complete');
+				setNotice({
+					variant: 'success',
+					text: addedIds.length
+						? `Settled scan added ${addedIds.length} late detection${addedIds.length === 1 ? '' : 's'} and updated the final list for ${settled.value.hostname}.`
+						: `Settled scan confirmed ${settled.value.results.length} technologies for ${settled.value.hostname}.`,
+				});
+				await refreshStatus();
+			} else {
+				setScanPhase('partial');
+				setNotice({
+					variant: 'warning',
+					text: `Quick scan is available, but the settled scan could not finish: ${settled.error.code}: ${settled.error.message}`,
+				});
+			}
 		} catch (error) {
+			setScanPhase('idle');
 			setErrorMessage(normalizeError(error));
 		} finally {
 			setBusy(false);
@@ -147,13 +271,46 @@ export default function App() {
 					<p>Source: {analysis()?.source ?? 'none'}</p>
 					<p>Host: {analysis()?.hostname ?? 'not analyzed'}</p>
 				</div>
+
+				<section class="scan-progress" aria-live="polite">
+					<div class="scan-progress-header">
+						<div>
+							<p class="panel-kicker">Scan Progress</p>
+							<h2>{scanSummary().title}</h2>
+						</div>
+						<Show when={busy()}>
+							<span class="mode-chip mode-chip-live">Live</span>
+						</Show>
+					</div>
+					<p class="result-meta">{scanSummary().description}</p>
+					<div class={`scan-meter${busy() ? ' scan-meter-live' : ''}`} role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={scanProgressValue()} aria-label="Scan progress">
+						<div class="scan-meter-fill" style={{ width: `${scanProgressValue()}%` }} />
+					</div>
+					<div class="scan-meter-labels">
+						<span class={scanProgressValue() >= 20 ? 'is-complete' : ''}>Quick scan</span>
+						<span class={scanProgressValue() >= 100 ? 'is-complete' : settledScanPending() ? 'is-active' : ''}>Settled scan</span>
+					</div>
+					<Show when={busy()}>
+						<div class="scan-activity" aria-live="polite">
+							<div class="scan-activity-orb" aria-hidden="true">
+								<span />
+								<span />
+								<span />
+							</div>
+							<div class="scan-activity-copy">
+								<strong>{loadingLabel()}</strong>
+								<p>The detection list stays provisional until the settled scan finishes.</p>
+							</div>
+						</div>
+					</Show>
+				</section>
 			</section>
 
 			<Show when={errorMessage()}>
 				{(value) => <ErrorState message={value()} />}
 			</Show>
-			<Show when={message()}>
-				{(value) => <p class="status-message success">{value()}</p>}
+			<Show when={notice()}>
+				{(value) => <p class={`status-message ${value().variant}`}>{value().text}</p>}
 			</Show>
 
 			<section class="panel result-panel">
@@ -166,6 +323,15 @@ export default function App() {
 						{(value) => <span class="mode-chip">{value().source}</span>}
 					</Show>
 				</div>
+				<Show when={scanPhase() === 'settled-scan' || scanPhase() === 'complete' || scanPhase() === 'partial'}>
+					<p class="result-meta">
+						{scanPhase() === 'settled-scan'
+							? 'Showing the quick scan now. The list will refresh if the settled pass finds late-loaded technologies.'
+							: hasLateDetections()
+								? `${settledAddedIds().length} detection${settledAddedIds().length === 1 ? '' : 's'} arrived during the settled pass and are marked below.`
+								: 'The settled pass finished without adding new detections.'}
+					</p>
+				</Show>
 
 				<Show
 					when={analysis()}
@@ -177,7 +343,14 @@ export default function App() {
 							fallback={<EmptyState message="No technologies detected yet." />}
 						>
 							<For each={groupedResults()}>
-								{(group) => <CategoryGroup label={group.label} results={group.results} />}
+								{(group) => (
+									<CategoryGroup
+										label={group.label}
+										results={group.results}
+										newDetectionIds={settledAddedIds()}
+										pendingResults={settledScanPending()}
+									/>
+								)}
 							</For>
 						</Show>
 					)}

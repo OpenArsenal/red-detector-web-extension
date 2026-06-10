@@ -2,10 +2,23 @@ import { For, Show } from 'solid-js';
 
 import type { DetectionResult } from '../lib/detection/types';
 
-export function TechnologyCard(props: { result: DetectionResult }) {
+export function TechnologyCard(props: {
+	result: DetectionResult;
+	isNew?: boolean;
+	isPending?: boolean;
+}) {
 	return (
-		<article class="stat-card accent-slate">
-			<span class="stat-label">{props.result.categories[0] ?? 'unknown'}</span>
+		<article
+			class={`stat-card accent-slate technology-card${props.isNew ? ' is-new' : ''}${props.isPending ? ' is-pending' : ''}`}
+		>
+			<div class="technology-card-header">
+				<span class="stat-label">{props.result.categories[0] ?? 'unknown'}</span>
+				<Show when={props.isPending || props.isNew}>
+					<span class={`detection-badge${props.isPending ? ' detection-badge-pending' : ''}`}>
+						{props.isPending ? 'Not final' : 'New in settled scan'}
+					</span>
+				</Show>
+			</div>
 			<strong class="stat-value">{props.result.name}</strong>
 			<Show when={props.result.description}>
 				{(description) => <p>{description()}</p>}
