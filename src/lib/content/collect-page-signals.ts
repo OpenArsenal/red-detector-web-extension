@@ -25,7 +25,7 @@ export function collectPageSignals(
 	const selectorProbeList = uniqueStrings(input.selectorProbeList);
 	const jsGlobalProbeList = uniqueStrings(input.jsGlobalProbeList);
 
-	return {
+	const signals = {
 		url: location.href,
 		hostname: location.hostname,
 		html: input.includeHtml ? boundedHtml() : '',
@@ -42,6 +42,14 @@ export function collectPageSignals(
 		jsGlobals: collectLikelyGlobals(jsGlobalProbeList),
 		collectedAt: Date.now(),
 	};
+
+	console.log("Collect page signals", {
+		input,
+		runtime,
+		signals,
+	})
+
+	return signals;
 }
 
 function boundedHtml(): string {

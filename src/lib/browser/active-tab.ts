@@ -2,7 +2,11 @@ import { browser } from 'wxt/browser';
 
 /** Background-only helper for the user-selected tab that initiated analysis. */
 export async function getActiveTab() {
-	const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+	const [tab] = await browser.tabs.query({
+		active: true,
+		lastFocusedWindow: true,
+	});
+	
 	return tab;
 }
 

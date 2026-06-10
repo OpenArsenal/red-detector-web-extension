@@ -9,3 +9,18 @@ export function tryGetOrigin(url: string): string | null {
 		return null;
 	}
 }
+
+/** Compare the loaded document URL while ignoring hash-only navigation noise. */
+export function getDocumentUrl(url: string): string {
+	const parsed = new URL(url);
+	parsed.hash = '';
+	return parsed.href;
+}
+
+export function isSameDocumentUrl(left: string, right: string): boolean {
+	try {
+		return getDocumentUrl(left) === getDocumentUrl(right);
+	} catch {
+		return false;
+	}
+}

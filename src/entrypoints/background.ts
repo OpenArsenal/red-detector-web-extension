@@ -22,14 +22,18 @@ import {
 	createContentClientAdapter,
 } from '../lib/messaging';
 import { errorResponse, ok, type AppResult } from '../lib/shared/result';
-import { getOrigin } from '../lib/shared/url';
+import { isSameDocumentUrl } from '../lib/shared/url';
 import { getCachedAnalysis, getStatus, saveAnalysis } from '../lib/storage';
 
-const [, injectContentApi] = defineProxy(() => ({}) as ContentApi, {
-	namespace: CONTENT_RPC_NAMESPACE,
-	heartbeatCheck: false,
-	transfer: false,
-});
+function createContentApiClient(tabId: number, frameId = 0): ContentApi {
+  const [, injectContentApi] = defineProxy(() => ({}) as ContentApi, {
+    namespace: CONTENT_RPC_NAMESPACE,
+    heartbeatCheck: false,
+    transfer: false,
+  });
+
+  return injectContentApi(createContentClientAdapter(tabId, frameId));
+}
 
 /**
  * Ask the content script for bounded PageSignals and reject stale responses from
@@ -39,7 +43,7 @@ async function collectFromTab(
 	tabId: number,
 	expectedUrl: string,
 ): Promise<AppResult<PageSignals>> {
-	const contentApi = injectContentApi(createContentClientAdapter(tabId, 0));
+	const contentApi = createContentApiClient(tabId, 0);
 
 	try {
 		const response = await withTimeout(
@@ -60,11 +64,11 @@ async function collectFromTab(
 		if (validationError) {
 			return errorResponse('PAYLOAD_TOO_LARGE', validationError);
 		}
-
-		if (getOrigin(response.value.url) !== getOrigin(expectedUrl)) {
+		
+		if (!isSameDocumentUrl(response.value.url, expectedUrl)) {
 			return errorResponse(
 				'VALIDATION_ERROR',
-				'Collected page signals do not match the active tab origin.',
+				`Collected page signals do not match the active tab URL. Expected ${expectedUrl}, got ${response.value.url}.`,
 			);
 		}
 
@@ -119,7 +123,11 @@ export function createBackgroundApi(): BackgroundApi {
 		async analyzeActiveTab(input): Promise<AppResult<SiteAnalysis>> {
 			try {
 				const tab = await getActiveTab();
-				if (!tab?.id || !tab.url) {
+				console.log("Active tab for analysis", {
+					tab
+				})
+				
+				if (typeof tab?.id !== 'number' || !tab.url) {
 					return errorResponse('NO_ACTIVE_TAB', 'No active tab found');
 				}
 
