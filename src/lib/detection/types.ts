@@ -20,17 +20,83 @@ export type Category = {
 	priority: number;
 };
 
-export type DetectionRule = {
-	kind: DetectionKind;
-	pattern?: RegExp;
-	selector?: string;
-	property?: string;
-	key?: string;
-	valuePattern?: RegExp;
+type DetectionRuleBase = {
 	confidence?: number;
-	versionTemplate?: string;
 	description?: string;
 };
+
+export type PatternDetectionRule = DetectionRuleBase & {
+	kind: 'html' | 'scriptSrc' | 'url';
+	pattern: RegExp;
+	versionTemplate?: string;
+	selector?: never;
+	property?: never;
+	key?: never;
+	valuePattern?: never;
+};
+
+export type DomDetectionRule = DetectionRuleBase & {
+	kind: 'dom';
+	selector: string;
+	pattern?: never;
+	property?: never;
+	key?: never;
+	valuePattern?: never;
+	versionTemplate?: never;
+};
+
+/**
+ * Cookie detection is name-only by design. The content collector never exposes
+ * raw cookie values, and cookie rules cannot opt into value matching without an
+ * intentional type/model change.
+ */
+export type CookieDetectionRule = DetectionRuleBase & {
+	kind: 'cookie';
+	key: string;
+	pattern?: never;
+	selector?: never;
+	property?: never;
+	valuePattern?: never;
+	versionTemplate?: never;
+};
+
+export type HeaderDetectionRule = DetectionRuleBase & {
+	kind: 'header';
+	key: string;
+	valuePattern?: RegExp;
+	versionTemplate?: string;
+	pattern?: never;
+	selector?: never;
+	property?: never;
+};
+
+export type MetaDetectionRule = DetectionRuleBase & {
+	kind: 'meta';
+	key: string;
+	pattern?: RegExp;
+	valuePattern?: RegExp;
+	versionTemplate?: string;
+	selector?: never;
+	property?: never;
+};
+
+export type JsGlobalDetectionRule = DetectionRuleBase & {
+	kind: 'jsGlobal';
+	property: string;
+	valuePattern?: RegExp;
+	versionTemplate?: string;
+	pattern?: never;
+	selector?: never;
+	key?: never;
+};
+
+export type DetectionRule =
+	| PatternDetectionRule
+	| DomDetectionRule
+	| CookieDetectionRule
+	| HeaderDetectionRule
+	| MetaDetectionRule
+	| JsGlobalDetectionRule;
 
 export type TechnologyDefinition = {
 	id: string;
@@ -70,13 +136,15 @@ export type DetectionResult = {
 	evidence: Evidence[];
 };
 
+export type CookieSignals = Record<string, true>;
+
 export type PageSignals = {
 	url: string;
 	hostname: string;
 	html: string;
 	scripts: string[];
 	stylesheets: string[];
-	cookies: Record<string, string>;
+	cookies: CookieSignals;
 	headers: Record<string, string>;
 	meta: Record<string, string[]>;
 	dom: {

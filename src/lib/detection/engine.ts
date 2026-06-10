@@ -3,6 +3,7 @@ import { Graph } from '@dagrejs/graphlib';
 import type {
 	ConfidenceScore,
 	DetectionResult,
+	DetectionKind,
 	DetectionRule,
 	Evidence,
 	PageSignals,
@@ -99,12 +100,7 @@ function matchRule(rule: DetectionRule, signals: PageSignals): Evidence | null {
 		}
 
 		case 'cookie': {
-			if (!rule.key || signals.cookies[rule.key] === undefined) {
-				return null;
-			}
-
-			const cookieSignal = signals.cookies[rule.key];
-			if (rule.valuePattern && !rule.valuePattern.test(cookieSignal)) {
+			if (!rule.key || signals.cookies[rule.key] !== true) {
 				return null;
 			}
 
@@ -193,8 +189,15 @@ function matchRule(rule: DetectionRule, signals: PageSignals): Evidence | null {
 	}
 }
 
+type PatternMatchRule = {
+	kind: DetectionKind;
+	pattern?: RegExp;
+	versionTemplate?: string;
+	description?: string;
+};
+
 function matchPattern(
-	rule: DetectionRule,
+	rule: PatternMatchRule,
 	value: string,
 	confidence: number,
 ): Evidence | null {

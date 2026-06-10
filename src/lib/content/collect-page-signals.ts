@@ -1,6 +1,6 @@
 import { normalizeMetaMap, truncate, uniqueStrings } from '../detection/normalizers';
 import { SOURCE_LIMITS } from '../detection/rules';
-import type { PageSignals } from '../detection/types';
+import type { CookieSignals, PageSignals } from '../detection/types';
 
 export type CollectPageSignalsInput = {
 	selectorProbeList: string[];
@@ -92,7 +92,7 @@ export function collectStylesheetSources(input: StylesheetSourceInput = document
 	).slice(0, SOURCE_LIMITS.stylesheetHref);
 }
 
-function collectCookieNames(cookieString: string): Record<string, string> {
+export function collectCookieNames(cookieString: string): CookieSignals {
 	return Object.fromEntries(
 		cookieString
 			.split(';')
@@ -101,7 +101,7 @@ function collectCookieNames(cookieString: string): Record<string, string> {
 			.map((part) => {
 				const index = part.indexOf('=');
 				const name = index === -1 ? part : part.slice(0, index);
-				return [safeDecode(name), 'present'];
+				return [safeDecode(name), true];
 			})
 			.slice(0, SOURCE_LIMITS.cookieNames),
 	);

@@ -43,6 +43,10 @@ export function validatePageSignals(signals: PageSignals): string | null {
 		return 'Cookie signal exceeded safe size bounds';
 	}
 
+	if (!Object.values(signals.cookies).every((value) => value === true)) {
+		return 'Cookie signal must contain names only';
+	}
+
 	if (estimateBytes(signals) > MAX_SIGNAL_BYTES) {
 		return 'Signals exceed maximum transport size';
 	}

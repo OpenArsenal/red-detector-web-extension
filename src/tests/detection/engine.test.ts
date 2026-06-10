@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { analyzeSite } from '../../lib/detection/engine';
 import { estimateBytes, normalizeMetaMap, truncate } from '../../lib/detection/normalizers';
+import { collectCookieNames } from '../../lib/content/collect-page-signals';
 import { SOURCE_LIMITS, mvpTechnologies } from '../../lib/detection/rules';
 import type { PageSignals, TechnologyDefinition } from '../../lib/detection/types';
 import { validatePageSignals } from '../../lib/detection/validate';
@@ -77,6 +78,16 @@ describe('detection helpers', () => {
 			),
 		).toBe('Meta signal exceeded safe size bounds');
 	});
+
+	it('rejects cookie signals that contain raw values', () => {
+		expect(
+			validatePageSignals(
+				createSignals({
+					cookies: { session_id: 'super-secret' } as unknown as PageSignals['cookies'],
+				}),
+			),
+		).toBe('Cookie signal must contain names only');
+	});
 });
 
 describe('extractVersion', () => {
@@ -135,6 +146,27 @@ describe('analyzeSite', () => {
 		);
 
 		expect(analysis.results.some((item) => item.technologyId === 'google-analytics')).toBe(true);
+	});
+
+	it('collects and detects cookies by name without exposing values', () => {
+		const cookies = collectCookieNames(
+			'session_id=super-secret; wordpress_test_cookie=encoded%20value',
+		);
+
+		expect(cookies).toEqual({
+			session_id: true,
+			wordpress_test_cookie: true,
+		});
+
+		const analysis = analyzeSite(createSignals({ cookies }), mvpTechnologies);
+		const wordpress = analysis.results.find((item) => item.technologyId === 'wordpress');
+
+		expect(wordpress).toBeDefined();
+		expect(wordpress?.evidence.some((item) => item.matchedValue === 'wordpress_test_cookie')).toBe(
+			true,
+		);
+		expect(JSON.stringify(analysis)).not.toContain('super-secret');
+		expect(JSON.stringify(analysis)).not.toContain('encoded value');
 	});
 
 	it('filters detections below the display threshold', () => {
