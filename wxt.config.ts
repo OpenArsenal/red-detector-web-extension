@@ -13,6 +13,5 @@ export default defineConfig({
     },
     permissions: ["activeTab", "tabs", "storage", "scripting"],
     host_permissions: [],
-    optional_host_permissions: ["http://*/*", "https://*/*"],
   },
 });

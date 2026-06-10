@@ -251,10 +251,16 @@ describe('relationship resolver', () => {
 		const registry = [
 			relationshipTechnology({ id: 'nextjs', marker: 'next', implies: ['react'] }),
 			relationshipTechnology({ id: 'react', implies: ['javascript'] }),
-			relationshipTechnology({ id: 'javascript' }),
+			relationshipTechnology({ id: 'javascript', implies: ['runtime'] }),
+			relationshipTechnology({ id: 'runtime' }),
 		];
 
-		expect(resultIds(registry, 'next')).toEqual(['nextjs', 'react', 'javascript']);
+		expect(resultIds(registry, 'next')).toEqual([
+			'nextjs',
+			'react',
+			'javascript',
+			'runtime',
+		]);
 	});
 
 	it('does not loop forever when implication edges cycle', () => {
@@ -495,6 +501,28 @@ describe('relationship resolver', () => {
 
 		expect(resultIds(registry, 'exclusive platform')).toEqual([
 			'exclusive-platform',
+		]);
+	});
+
+	it('applies exclusions introduced by late implication expansion', () => {
+		const registry = [
+			relationshipTechnology({
+				id: 'platform',
+				marker: 'platform',
+				implies: ['plugin', 'legacy-runtime'],
+			}),
+			relationshipTechnology({ id: 'plugin', implies: ['modern-runtime'] }),
+			relationshipTechnology({
+				id: 'modern-runtime',
+				excludes: ['legacy-runtime'],
+			}),
+			relationshipTechnology({ id: 'legacy-runtime' }),
+		];
+
+		expect(resultIds(registry, 'platform')).toEqual([
+			'platform',
+			'plugin',
+			'modern-runtime',
 		]);
 	});
 });

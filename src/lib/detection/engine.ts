@@ -263,9 +263,7 @@ function applyRelationships(
 		});
 	}
 
-	resolveImplicationsAndRequirements(accepted, graph);
-	applyExclusions(accepted, graph);
-	resolveImplicationsAndRequirements(accepted, graph);
+	resolveRelationshipsToFixedPoint(accepted, graph);
 
 	return Array.from(accepted.values())
 		.map((node) => node.result)
@@ -322,17 +320,18 @@ function relationshipTargets(
 	);
 }
 
-function resolveImplicationsAndRequirements(
+function resolveRelationshipsToFixedPoint(
 	accepted: Map<string, RelationshipNode>,
 	graph: RelationshipGraph,
 ): void {
-	expandImpliedTechnologies(accepted, graph);
-
 	let changed = true;
+
 	while (changed) {
 		changed = false;
+		changed = expandImpliedTechnologies(accepted, graph) || changed;
 		changed = pruneUnsatisfiedRequirements(accepted, graph) || changed;
 		changed = pruneOrphanedImpliedTechnologies(accepted, graph) || changed;
+		changed = applyExclusions(accepted, graph) || changed;
 	}
 }
 
@@ -411,6 +410,10 @@ function expandImpliedTechnologies(
 				continue;
 			}
 
+			if (!hasSatisfiedRequirements(impliedDefinition, accepted, graph)) {
+				continue;
+			}
+
 			const impliedNode: RelationshipNode = {
 				result: createImpliedResult(impliedDefinition, sourceDefinition),
 				inferred: true,
@@ -428,6 +431,18 @@ function expandImpliedTechnologies(
 	}
 
 	return changed;
+}
+
+function hasSatisfiedRequirements(
+	definition: TechnologyDefinition,
+	accepted: Map<string, RelationshipNode>,
+	graph: RelationshipGraph,
+): boolean {
+	return relationshipTargets(
+		graph.requires,
+		definition.id,
+		graph.registryOrderById,
+	).every((requiredId) => accepted.has(requiredId));
 }
 
 function wouldLoseAcceptedExclusionConflict(
@@ -458,11 +473,12 @@ function wouldLoseAcceptedExclusionConflict(
 function applyExclusions(
 	accepted: Map<string, RelationshipNode>,
 	graph: RelationshipGraph,
-): void {
-	let changed = true;
+): boolean {
+	let changed = false;
+	let localChange = true;
 
-	while (changed) {
-		changed = false;
+	while (localChange) {
+		localChange = false;
 
 		for (const [sourceId, sourceNode] of Array.from(accepted.entries())) {
 			for (const excludedId of relationshipTargets(
@@ -483,6 +499,7 @@ function applyExclusions(
 				);
 				accepted.delete(loserId);
 				changed = true;
+				localChange = true;
 
 				if (loserId === sourceId) {
 					break;
@@ -490,6 +507,8 @@ function applyExclusions(
 			}
 		}
 	}
+
+	return changed;
 }
 
 function chooseConflictLoser(
