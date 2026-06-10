@@ -9,7 +9,7 @@ import type {
 	TechnologyDefinition,
 } from '../lib/detection/types';
 import { validatePageSignals } from '../lib/detection/validate';
-import type { BackgroundApi, ContentApi } from '../lib/messaging';
+import type { BackgroundApi, CollectionMode, ContentApi } from '../lib/messaging';
 import {
 	CONTENT_SCRIPT_TIMEOUT_MS,
 	contentScriptFailure,
@@ -42,6 +42,7 @@ function createContentApiClient(tabId: number, frameId = 0): ContentApi {
 async function collectFromTab(
 	tabId: number,
 	expectedUrl: string,
+  collectionMode: CollectionMode = "instant",
 ): Promise<AppResult<PageSignals>> {
 	const contentApi = createContentApiClient(tabId, 0);
 
@@ -51,8 +52,9 @@ async function collectFromTab(
 				includeHtml: true,
 				selectorProbeList: buildSelectorProbeList(technologies),
 				jsGlobalProbeList: buildJsGlobalProbeList(technologies),
+        collectionMode,
 			}),
-			CONTENT_SCRIPT_TIMEOUT_MS,
+      collectionMode === "settled" ? 35_000 : CONTENT_SCRIPT_TIMEOUT_MS,
 			'Content script did not respond before the messaging timeout.',
 		);
 
@@ -143,7 +145,11 @@ export function createBackgroundApi(): BackgroundApi {
 					return ok(cached);
 				}
 
-				const signalsResponse = await collectFromTab(tab.id, tab.url);
+				const signalsResponse = await collectFromTab(
+					tab.id,
+					tab.url,
+					input.collectionMode ?? "instant"
+				);
 				if (!signalsResponse.ok) {
 					return signalsResponse;
 				}

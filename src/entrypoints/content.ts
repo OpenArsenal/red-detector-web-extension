@@ -10,8 +10,8 @@ import {
 } from "../lib/messaging";
 import { errorResponse, ok } from "../lib/shared/result";
 
-const DOM_MUTATION_DEBOUNCE_MS = 10_000;
-const DOM_MUTATION_MAX_WAIT_MS = 30_000;
+const DOM_MUTATION_DEBOUNCE_MS = 1_500;
+const DOM_MUTATION_MAX_WAIT_MS = 8_000;
 
 /**
  * Content entrypoint boundary: collect and validate before returning to the
@@ -22,7 +22,9 @@ async function collectSignals(
   observedSignals: ObservedPageSignals,
 ) {
   try {
-    await observedSignals.waitForSettledChanges();
+    if (input.collectionMode === "settled") {
+      await observedSignals.waitForSettledChanges();
+    }
 
     const signals = collectPageSignals(input, observedSignals.snapshot());
     const validationError = validatePageSignals(signals);

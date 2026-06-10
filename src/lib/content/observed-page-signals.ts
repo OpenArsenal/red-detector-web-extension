@@ -150,7 +150,18 @@ export function createObservedPageSignals(
 	scanCurrentDocument();
 
 	const observer = new MutationObserver((mutations) => {
-		markMutationActivity();
+		const hasRelevantMutations = mutations.some((mutation) => {
+			if (mutation.type === 'childList') {
+				return [...mutation.addedNodes, ...mutation.removedNodes].some(
+					(node) =>
+						node instanceof HTMLScriptElement ||
+						node instanceof HTMLLinkElement ||
+						node instanceof HTMLMetaElement,
+				);
+			}
+		});
+
+		if (hasRelevantMutations) markMutationActivity();
 
 		for (const mutation of mutations) {
 			if (mutation.type === 'childList') {
