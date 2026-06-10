@@ -15,7 +15,7 @@ export function TechnologyCard(props: {
 				<span class="stat-label">{props.result.categories[0] ?? 'unknown'}</span>
 				<Show when={props.isPending || props.isNew}>
 					<span class={`detection-badge${props.isPending ? ' detection-badge-pending' : ''}`}>
-						{props.isPending ? 'Not final' : 'New in settled scan'}
+						{props.isPending ? 'Live' : 'New'}
 					</span>
 				</Show>
 			</div>

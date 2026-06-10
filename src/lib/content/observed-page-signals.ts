@@ -4,15 +4,24 @@ import type { PageSignals } from '../detection/types';
 
 export type ObservedPageSignalsSnapshot = Pick<PageSignals, 'scripts' | 'stylesheets' | 'meta'>;
 
+export type PageSignalPollingState = {
+	isPolling: boolean;
+	throttleMs: number;
+	lastObservedAt?: number;
+	lastScannedAt?: number;
+	pendingMutationCount: number;
+};
+
 export type ObservedPageSignals = {
 	snapshot(): ObservedPageSignalsSnapshot;
-	waitForSettledChanges(): Promise<void>;
+	startPolling(): PageSignalPollingState;
+	stopPolling(): PageSignalPollingState;
+	status(): PageSignalPollingState;
 	disconnect(): void;
 };
 
 export type ObservedPageSignalsOptions = {
-	debounceMs: number;
-	maxWaitMs: number;
+	throttleMs: number;
 };
 
 export function createObservedPageSignals(
@@ -21,59 +30,18 @@ export function createObservedPageSignals(
 	const scripts = new Set<string>();
 	const stylesheets = new Set<string>();
 	const metaEntries = new Map<string, Set<string>>();
-	let settleTimer: ReturnType<typeof globalThis.setTimeout> | undefined;
-	let maxWaitTimer: ReturnType<typeof globalThis.setTimeout> | undefined;
-	let settlePromise: Promise<void> | undefined;
-	let resolveSettle: (() => void) | undefined;
+	const pendingNodes = new Set<Node>();
+	let throttleTimer: ReturnType<typeof globalThis.setTimeout> | undefined;
+	let isPolling = false;
+	let lastObservedAt: number | undefined;
+	let lastScannedAt: number | undefined;
+	let pendingMutationCount = 0;
 
-	function clearSettleTimer(): void {
-		if (settleTimer !== undefined) {
-			clearTimeout(settleTimer);
-			settleTimer = undefined;
+	function clearThrottleTimer(): void {
+		if (throttleTimer !== undefined) {
+			clearTimeout(throttleTimer);
+			throttleTimer = undefined;
 		}
-	}
-
-	function clearMaxWaitTimer(): void {
-		if (maxWaitTimer !== undefined) {
-			clearTimeout(maxWaitTimer);
-			maxWaitTimer = undefined;
-		}
-	}
-
-	function settle(): void {
-		if (!settlePromise) {
-			return;
-		}
-
-		const currentResolve = resolveSettle;
-		settlePromise = undefined;
-		resolveSettle = undefined;
-		clearSettleTimer();
-		clearMaxWaitTimer();
-		currentResolve?.();
-	}
-
-	function ensureSettlePromise(): Promise<void> {
-		if (settlePromise) {
-			return settlePromise;
-		}
-
-		settlePromise = new Promise<void>((nextResolve) => {
-			resolveSettle = nextResolve;
-		});
-
-		maxWaitTimer = setTimeout(() => {
-			settle();
-		}, options.maxWaitMs);
-		return settlePromise;
-	}
-
-	function markMutationActivity(): void {
-		ensureSettlePromise();
-		clearSettleTimer();
-		settleTimer = setTimeout(() => {
-			settle();
-		}, options.debounceMs);
 	}
 
 	function rememberMeta(meta: Record<string, string[]>): void {
@@ -136,6 +104,37 @@ export function createObservedPageSignals(
 			stylesheets: collectStylesheetSources(document),
 			meta: collectMetaTags(document),
 		});
+		lastScannedAt = Date.now();
+	}
+
+	function flushPendingMutations(): void {
+		clearThrottleTimer();
+
+		for (const node of pendingNodes) {
+			scanNode(node);
+		}
+
+		pendingNodes.clear();
+		pendingMutationCount = 0;
+		lastScannedAt = Date.now();
+	}
+
+	function scheduleThrottledFlush(): void {
+		if (throttleTimer !== undefined) {
+			return;
+		}
+
+		throttleTimer = setTimeout(() => {
+			flushPendingMutations();
+		}, options.throttleMs);
+	}
+
+	function queueMutationNode(node: Node): void {
+		if (!nodeMayContainSignal(node)) {
+			return;
+		}
+
+		pendingNodes.add(node);
 	}
 
 	function snapshotMeta(): Record<string, string[]> {
@@ -147,50 +146,72 @@ export function createObservedPageSignals(
 		);
 	}
 
-	scanCurrentDocument();
+	function pollingState(): PageSignalPollingState {
+		return {
+			isPolling,
+			throttleMs: options.throttleMs,
+			lastObservedAt,
+			lastScannedAt,
+			pendingMutationCount,
+		};
+	}
 
 	const observer = new MutationObserver((mutations) => {
-		const hasRelevantMutations = mutations.some((mutation) => {
-			if (mutation.type === 'childList') {
-				return [...mutation.addedNodes, ...mutation.removedNodes].some(
-					(node) =>
-						node instanceof HTMLScriptElement ||
-						node instanceof HTMLLinkElement ||
-						node instanceof HTMLMetaElement,
-				);
-			}
-		});
-
-		if (hasRelevantMutations) markMutationActivity();
+		let hasRelevantMutation = false;
 
 		for (const mutation of mutations) {
 			if (mutation.type === 'childList') {
 				for (const node of mutation.addedNodes) {
-					scanNode(node);
+					const before = pendingNodes.size;
+					queueMutationNode(node);
+					hasRelevantMutation ||= pendingNodes.size > before;
 				}
 
 				for (const node of mutation.removedNodes) {
-					scanNode(node);
+					const before = pendingNodes.size;
+					queueMutationNode(node);
+					hasRelevantMutation ||= pendingNodes.size > before;
 				}
 
 				continue;
 			}
 
-			if (mutation.type === 'attributes') {
-				scanNode(mutation.target);
+			if (mutation.type === 'attributes' && nodeMayContainSignal(mutation.target)) {
+				pendingNodes.add(mutation.target);
+				hasRelevantMutation = true;
 			}
 		}
+
+		if (!hasRelevantMutation) {
+			return;
+		}
+
+		lastObservedAt = Date.now();
+		pendingMutationCount += mutations.length;
+		scheduleThrottledFlush();
 	});
 
-	observer.observe(document, {
-		subtree: true,
-		childList: true,
-		attributes: true,
-		attributeFilter: ['src', 'href', 'rel', 'name', 'property', 'http-equiv', 'content'],
-	});
+	function startPolling(): PageSignalPollingState {
+		if (!isPolling) {
+			observer.observe(document, {
+				subtree: true,
+				childList: true,
+				attributes: true,
+				attributeFilter: ['src', 'href', 'rel', 'name', 'property', 'http-equiv', 'content'],
+			});
+			isPolling = true;
+		}
+
+		scanCurrentDocument();
+		return pollingState();
+	}
+
+	scanCurrentDocument();
+	startPolling();
 
 	return {
 		snapshot() {
+			flushPendingMutations();
 			scanCurrentDocument();
 			return {
 				scripts: [...scripts].slice(0, SOURCE_LIMITS.scriptSrc),
@@ -199,18 +220,39 @@ export function createObservedPageSignals(
 			};
 		},
 
-		async waitForSettledChanges() {
-			if (!settlePromise) {
-				return;
-			}
+		startPolling,
 
-			await settlePromise;
-			scanCurrentDocument();
+		stopPolling() {
+			observer.disconnect();
+			isPolling = false;
+			flushPendingMutations();
+			return pollingState();
+		},
+
+		status() {
+			return pollingState();
 		},
 
 		disconnect() {
 			observer.disconnect();
-			settle();
+			isPolling = false;
+			flushPendingMutations();
 		},
 	};
+}
+
+function nodeMayContainSignal(node: Node): boolean {
+	if (
+		node instanceof HTMLScriptElement ||
+		node instanceof HTMLLinkElement ||
+		node instanceof HTMLMetaElement
+	) {
+		return true;
+	}
+
+	if (node instanceof Element || node instanceof DocumentFragment || node instanceof Document) {
+		return node.querySelector('script,link,meta') !== null;
+	}
+
+	return false;
 }

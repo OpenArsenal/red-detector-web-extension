@@ -10,8 +10,7 @@ import {
 } from "../lib/messaging";
 import { errorResponse, ok } from "../lib/shared/result";
 
-const DOM_MUTATION_DEBOUNCE_MS = 1_500;
-const DOM_MUTATION_MAX_WAIT_MS = 8_000;
+const DOM_MUTATION_THROTTLE_MS = 1_500;
 
 /**
  * Content entrypoint boundary: collect and validate before returning to the
@@ -22,10 +21,6 @@ async function collectSignals(
   observedSignals: ObservedPageSignals,
 ) {
   try {
-    if (input.collectionMode === "settled") {
-      await observedSignals.waitForSettledChanges();
-    }
-
     const signals = collectPageSignals(input, observedSignals.snapshot());
     const validationError = validatePageSignals(signals);
 
@@ -46,6 +41,18 @@ function createContentApi(observedSignals: ObservedPageSignals): ContentApi {
     async collectPageSignals(input) {
       return collectSignals(input, observedSignals);
     },
+
+    async startPageSignalPolling() {
+      return ok(observedSignals.startPolling());
+    },
+
+    async stopPageSignalPolling() {
+      return ok(observedSignals.stopPolling());
+    },
+
+    async getPageSignalPollingState() {
+      return ok(observedSignals.status());
+    },
   };
 }
 
@@ -63,8 +70,7 @@ export default defineContentScript({
   runAt: "document_idle",
   main(ctx) {
     const observedSignals = createObservedPageSignals({
-      debounceMs: DOM_MUTATION_DEBOUNCE_MS,
-      maxWaitMs: DOM_MUTATION_MAX_WAIT_MS,
+      throttleMs: DOM_MUTATION_THROTTLE_MS,
     });
 
     provideContentApi(createContentServerAdapter(), () => createContentApi(observedSignals));

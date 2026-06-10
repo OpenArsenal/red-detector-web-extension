@@ -1,5 +1,5 @@
 import { defineProxy } from 'comctx';
-import { createSignal, For, Show, onMount } from 'solid-js';
+import { createSignal, For, Show, onCleanup, onMount } from 'solid-js';
 import { createStore } from 'solid-js/store';
 
 import { categories } from '../../data/categories';
@@ -15,12 +15,14 @@ import {
 
 import './App.css';
 
-type ScanPhase = 'idle' | 'quick-scan' | 'settled-scan' | 'complete' | 'partial';
+type PollingMode = 'unknown' | 'active' | 'stopped';
 
 type ScanNotice = {
 	variant: 'success' | 'warning';
 	text: string;
 };
+
+const POPUP_POLL_INTERVAL_MS = 1_500;
 
 const [, injectBackgroundApi] = defineProxy(() => ({}) as BackgroundApi, {
 	namespace: BACKGROUND_RPC_NAMESPACE,
@@ -69,17 +71,23 @@ function getAddedDetectionIds(previous: DetectionResult[], next: DetectionResult
 		.map((result) => result.technologyId);
 }
 
+function mergeUniqueIds(previous: string[], next: string[]) {
+	return [...new Set([...previous, ...next])];
+}
+
 export default function App() {
 	const [status, setStatus] = createStore<AnalysisStatus>({
 		totalAnalyses: 0,
 		trackedOrigins: 0,
 	});
 	const [busy, setBusy] = createSignal(false);
-	const [scanPhase, setScanPhase] = createSignal<ScanPhase>('idle');
+	const [pollingMode, setPollingMode] = createSignal<PollingMode>('unknown');
 	const [notice, setNotice] = createSignal<ScanNotice | null>(null);
 	const [errorMessage, setErrorMessage] = createSignal('');
 	const [analysis, setAnalysis] = createSignal<SiteAnalysis | null>(null);
-	const [settledAddedIds, setSettledAddedIds] = createSignal<string[]>([]);
+	const [lateAddedIds, setLateAddedIds] = createSignal<string[]>([]);
+	let pollTimer: ReturnType<typeof globalThis.setInterval> | undefined;
+	let refreshInFlight = false;
 
 	function resultCount() {
 		return analysis()?.results.length ?? 0;
@@ -90,73 +98,25 @@ export default function App() {
 	}
 
 	function hasLateDetections() {
-		return settledAddedIds().length > 0;
+		return lateAddedIds().length > 0;
 	}
 
-	function settledScanPending() {
-		return scanPhase() === 'settled-scan' || scanPhase() === 'partial';
+	function pollingChipLabel() {
+		return pollingMode() === 'active' ? 'Polling' : pollingMode() === 'stopped' ? 'Stopped' : 'Loading';
 	}
 
-	function scanProgressValue() {
-		switch (scanPhase()) {
-			case 'quick-scan':
-				return 20;
-			case 'settled-scan':
-				return 68;
-			case 'complete':
-				return 100;
-			case 'partial':
-				return 72;
-			default:
-				return 0;
+	function clearPopupPolling() {
+		if (pollTimer !== undefined) {
+			clearInterval(pollTimer);
+			pollTimer = undefined;
 		}
 	}
 
-	function scanSummary() {
-		switch (scanPhase()) {
-			case 'quick-scan':
-				return {
-					title: 'Quick scan running',
-					description:
-						'Checking the active page as it exists right now so you can see an initial detection set fast.',
-				};
-			case 'settled-scan':
-				return {
-					title: 'Settled scan watching for late signals',
-					description:
-						'Waiting for scripts, links, and meta tags that land after initial render, then the list will update automatically.',
-				};
-			case 'partial':
-				return {
-					title: 'Quick scan finished',
-					description:
-						'You still have the initial results. The follow-up settled scan did not complete, so late-loaded signals may be missing.',
-				};
-			case 'complete':
-				return {
-					title: 'Settled scan complete',
-					description: hasLateDetections()
-						? `The follow-up pass added ${settledAddedIds().length} late detection${settledAddedIds().length === 1 ? '' : 's'} to the final list.`
-						: 'The follow-up pass confirmed the same detection set after the page settled.',
-				};
-			default:
-				return {
-					title: 'Two-step page scan',
-					description:
-						'Run a quick scan first, then wait for a settled follow-up pass that can catch late scripts, links, and meta tags.',
-				};
-		}
-	}
-
-	function loadingLabel() {
-		switch (scanPhase()) {
-			case 'quick-scan':
-				return 'Reading the page and collecting immediate signals';
-			case 'settled-scan':
-				return 'Watching for late scripts, links, and meta tags';
-			default:
-				return 'Scanning the active tab';
-		}
+	function startPopupPolling() {
+		clearPopupPolling();
+		pollTimer = setInterval(() => {
+			void loadLatestAnalysis({ forceRefresh: true, source: 'auto' });
+		}, POPUP_POLL_INTERVAL_MS);
 	}
 
 	async function refreshStatus() {
@@ -170,66 +130,142 @@ export default function App() {
 		}
 	}
 
-	async function runAnalysis(forceRefresh = false) {
-		setBusy(true);
-		setScanPhase('quick-scan');
-		setNotice(null);
-		setErrorMessage('');
-		setSettledAddedIds([]);
-
+	async function syncPollingState() {
 		try {
-			const instant = await backgroundApi.analyzeActiveTab({
-				forceRefresh,
-				collectionMode: 'instant',
-			});
-
-			if (!instant.ok) {
-				setScanPhase('idle');
-				setErrorMessage(`${instant.error.code}: ${instant.error.message}`);
+			const response = await backgroundApi.getActiveTabPollingState();
+			if (!response.ok) {
+				setPollingMode('unknown');
+				setErrorMessage(`${response.error.code}: ${response.error.message}`);
 				return;
 			}
 
-			setAnalysis(instant.value);
-			setNotice({
-				variant: 'success',
-				text: `Quick scan found ${instant.value.results.length} technologies for ${instant.value.hostname}. The settled scan is still watching for late page signals.`,
-			});
-			setScanPhase('settled-scan');
-
-			const settled = await backgroundApi.analyzeActiveTab({
-				forceRefresh: true,
-				collectionMode: 'settled',
-			});
-
-			if (settled.ok) {
-				const addedIds = getAddedDetectionIds(instant.value.results, settled.value.results);
-				setAnalysis(settled.value);
-				setSettledAddedIds(addedIds);
-				setScanPhase('complete');
-				setNotice({
-					variant: 'success',
-					text: addedIds.length
-						? `Settled scan added ${addedIds.length} late detection${addedIds.length === 1 ? '' : 's'} and updated the final list for ${settled.value.hostname}.`
-						: `Settled scan confirmed ${settled.value.results.length} technologies for ${settled.value.hostname}.`,
-				});
-				await refreshStatus();
+			setPollingMode(response.value.isPolling ? 'active' : 'stopped');
+			if (response.value.isPolling) {
+				startPopupPolling();
 			} else {
-				setScanPhase('partial');
-				setNotice({
-					variant: 'warning',
-					text: `Quick scan is available, but the settled scan could not finish: ${settled.error.code}: ${settled.error.message}`,
-				});
+				clearPopupPolling();
 			}
 		} catch (error) {
-			setScanPhase('idle');
+			setPollingMode('unknown');
+			setErrorMessage(normalizeError(error));
+		}
+	}
+
+	async function loadLatestAnalysis(options: {
+		forceRefresh: boolean;
+		restartPolling?: boolean;
+		resetLateMarkers?: boolean;
+		source: 'initial' | 'manual' | 'auto';
+	}) {
+		if (refreshInFlight) {
+			return;
+		}
+
+		refreshInFlight = true;
+		const isUserVisibleRefresh = options.source !== 'auto';
+		if (isUserVisibleRefresh) {
+			setBusy(true);
+		}
+		if (options.resetLateMarkers) {
+			setLateAddedIds([]);
+		}
+		if (options.source !== 'auto') {
+			setNotice(null);
+			setErrorMessage('');
+		}
+
+		try {
+			const previous = analysis();
+			const response = await backgroundApi.analyzeActiveTab({
+				forceRefresh: options.forceRefresh,
+				restartPolling: options.restartPolling,
+			});
+
+			if (!response.ok) {
+				if (isUserVisibleRefresh) {
+					setErrorMessage(`${response.error.code}: ${response.error.message}`);
+				}
+				return;
+			}
+
+			const addedIds = previous
+				? getAddedDetectionIds(previous.results, response.value.results)
+				: [];
+			setAnalysis(response.value);
+			if (addedIds.length) {
+				setLateAddedIds((current) => mergeUniqueIds(current, addedIds));
+				setNotice({
+					variant: 'success',
+					text: `Polling found ${addedIds.length} new late detection${addedIds.length === 1 ? '' : 's'} on ${response.value.hostname}.`,
+				});
+			} else if (options.source === 'manual') {
+				setNotice({
+					variant: 'success',
+					text: `Refreshed ${response.value.results.length} technologies for ${response.value.hostname}. Polling is active again.`,
+				});
+			}
+
+			if (options.restartPolling) {
+				setPollingMode('active');
+				startPopupPolling();
+			}
+
+			await refreshStatus();
+		} catch (error) {
+			if (isUserVisibleRefresh) {
+				setErrorMessage(normalizeError(error));
+			}
+		} finally {
+			if (isUserVisibleRefresh) {
+				setBusy(false);
+			}
+			refreshInFlight = false;
+		}
+	}
+
+	async function stopPolling() {
+		setBusy(true);
+		setErrorMessage('');
+		setNotice(null);
+		try {
+			const response = await backgroundApi.stopActiveTabPolling();
+			if (!response.ok) {
+				setErrorMessage(`${response.error.code}: ${response.error.message}`);
+				return;
+			}
+
+			clearPopupPolling();
+			setPollingMode('stopped');
+			setNotice({
+				variant: 'warning',
+				text: 'Polling stopped. Existing detections stay visible, but late-loaded page signals will not be captured until refresh restarts polling.',
+			});
+		} catch (error) {
 			setErrorMessage(normalizeError(error));
 		} finally {
 			setBusy(false);
 		}
 	}
 
+	async function refreshAndRestartPolling() {
+		await loadLatestAnalysis({
+			forceRefresh: true,
+			restartPolling: true,
+			resetLateMarkers: true,
+			source: 'manual',
+		});
+	}
+
 	onMount(() => {
-		void refreshStatus();
+		void (async () => {
+			await refreshStatus();
+			await syncPollingState();
+			await loadLatestAnalysis({ forceRefresh: true, source: 'initial' });
+		})();
+	});
+
+	onCleanup(() => {
+		clearPopupPolling();
 	});
 
 	return (
@@ -239,16 +275,16 @@ export default function App() {
 					<p class="eyebrow">Technology Detection</p>
 					<h1>RED Detector</h1>
 					<p class="lede">
-						Analyze the active tab locally and cache only normalized technology results.
+						Analyze the active tab locally, then keep the latest normalized detections up to date as the page lazy-loads.
 					</p>
 				</div>
 
 				<div class="button-row">
-					<button class="primary-button" disabled={busy()} onClick={() => void runAnalysis(false)}>
-						{busy() ? 'Analyzing...' : 'Analyze Active Tab'}
+					<button class="primary-button" disabled={busy()} onClick={() => void refreshAndRestartPolling()}>
+						{busy() ? 'Refreshing...' : 'Refresh'}
 					</button>
-					<button class="secondary-button" disabled={busy()} onClick={() => void runAnalysis(true)}>
-						Refresh
+					<button class="secondary-button" disabled={busy() || pollingMode() !== 'active'} onClick={() => void stopPolling()}>
+						Stop polling
 					</button>
 				</div>
 
@@ -270,40 +306,8 @@ export default function App() {
 				<div class="mini-metrics">
 					<p>Source: {analysis()?.source ?? 'none'}</p>
 					<p>Host: {analysis()?.hostname ?? 'not analyzed'}</p>
+					<p>Polling: {pollingChipLabel().toLowerCase()}</p>
 				</div>
-
-				<section class="scan-progress" aria-live="polite">
-					<div class="scan-progress-header">
-						<div>
-							<p class="panel-kicker">Scan Progress</p>
-							<h2>{scanSummary().title}</h2>
-						</div>
-						<Show when={busy()}>
-							<span class="mode-chip mode-chip-live">Live</span>
-						</Show>
-					</div>
-					<p class="result-meta">{scanSummary().description}</p>
-					<div class={`scan-meter${busy() ? ' scan-meter-live' : ''}`} role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={scanProgressValue()} aria-label="Scan progress">
-						<div class="scan-meter-fill" style={{ width: `${scanProgressValue()}%` }} />
-					</div>
-					<div class="scan-meter-labels">
-						<span class={scanProgressValue() >= 20 ? 'is-complete' : ''}>Quick scan</span>
-						<span class={scanProgressValue() >= 100 ? 'is-complete' : settledScanPending() ? 'is-active' : ''}>Settled scan</span>
-					</div>
-					<Show when={busy()}>
-						<div class="scan-activity" aria-live="polite">
-							<div class="scan-activity-orb" aria-hidden="true">
-								<span />
-								<span />
-								<span />
-							</div>
-							<div class="scan-activity-copy">
-								<strong>{loadingLabel()}</strong>
-								<p>The detection list stays provisional until the settled scan finishes.</p>
-							</div>
-						</div>
-					</Show>
-				</section>
 			</section>
 
 			<Show when={errorMessage()}>
@@ -323,19 +327,17 @@ export default function App() {
 						{(value) => <span class="mode-chip">{value().source}</span>}
 					</Show>
 				</div>
-				<Show when={scanPhase() === 'settled-scan' || scanPhase() === 'complete' || scanPhase() === 'partial'}>
-					<p class="result-meta">
-						{scanPhase() === 'settled-scan'
-							? 'Showing the quick scan now. The list will refresh if the settled pass finds late-loaded technologies.'
-							: hasLateDetections()
-								? `${settledAddedIds().length} detection${settledAddedIds().length === 1 ? '' : 's'} arrived during the settled pass and are marked below.`
-								: 'The settled pass finished without adding new detections.'}
-					</p>
-				</Show>
+				<p class="result-meta">
+					{hasLateDetections()
+						? `${lateAddedIds().length} detection${lateAddedIds().length === 1 ? '' : 's'} arrived after the popup opened and are marked below.`
+						: pollingMode() === 'active'
+							? 'Showing the latest snapshot. Late detections will appear here automatically while polling is active.'
+							: 'Showing the latest snapshot from the page. Refresh to resume polling for future late detections.'}
+				</p>
 
 				<Show
 					when={analysis()}
-					fallback={<EmptyState message="Run analysis to view detected technologies here." />}
+					fallback={<EmptyState message="Opening the popup loads the latest detections automatically." />}
 				>
 					{(value) => (
 						<Show
@@ -347,8 +349,7 @@ export default function App() {
 									<CategoryGroup
 										label={group.label}
 										results={group.results}
-										newDetectionIds={settledAddedIds()}
-										pendingResults={settledScanPending()}
+										newDetectionIds={lateAddedIds()}
 									/>
 								)}
 							</For>

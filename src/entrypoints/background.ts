@@ -3,13 +3,16 @@ import { defineProxy } from 'comctx';
 import { technologies } from '../data/technologies';
 import { getActiveTab, canInspectTab } from '../lib/browser/active-tab';
 import { analyzeSite } from '../lib/detection/engine';
+
+import type { PageSignalPollingState } from '../lib/content/observed-page-signals';
 import type {
 	PageSignals,
 	SiteAnalysis,
 	TechnologyDefinition,
 } from '../lib/detection/types';
 import { validatePageSignals } from '../lib/detection/validate';
-import type { BackgroundApi, CollectionMode, ContentApi } from '../lib/messaging';
+
+import type { BackgroundApi, ContentApi } from '../lib/messaging';
 import {
 	CONTENT_SCRIPT_TIMEOUT_MS,
 	contentScriptFailure,
@@ -25,6 +28,11 @@ import { errorResponse, ok, type AppResult } from '../lib/shared/result';
 import { isSameDocumentUrl } from '../lib/shared/url';
 import { getCachedAnalysis, getStatus, saveAnalysis } from '../lib/storage';
 
+type InspectableTab = {
+  id: number;
+  url: string;
+};
+
 function createContentApiClient(tabId: number, frameId = 0): ContentApi {
   const [, injectContentApi] = defineProxy(() => ({}) as ContentApi, {
     namespace: CONTENT_RPC_NAMESPACE,
@@ -35,6 +43,23 @@ function createContentApiClient(tabId: number, frameId = 0): ContentApi {
   return injectContentApi(createContentClientAdapter(tabId, frameId));
 }
 
+async function getInspectableActiveTab(): Promise<AppResult<InspectableTab>> {
+  const tab = await getActiveTab();
+
+  if (typeof tab?.id !== 'number' || !tab.url) {
+    return errorResponse('NO_ACTIVE_TAB', 'No active tab found');
+  }
+
+  if (!canInspectTab(tab)) {
+    return errorResponse(
+      'UNSUPPORTED_URL',
+      'Detection only works on normal http/https pages. Reload a website tab and try again.',
+    );
+  }
+
+  return ok({ id: tab.id, url: tab.url });
+}
+
 /**
  * Ask the content script for bounded PageSignals and reject stale responses from
  * a different origin. Navigation can happen while the service worker is active.
@@ -42,19 +67,30 @@ function createContentApiClient(tabId: number, frameId = 0): ContentApi {
 async function collectFromTab(
 	tabId: number,
 	expectedUrl: string,
-  collectionMode: CollectionMode = "instant",
+	options: { restartPolling?: boolean } = {},
 ): Promise<AppResult<PageSignals>> {
 	const contentApi = createContentApiClient(tabId, 0);
 
 	try {
+    if (options.restartPolling) {
+      const pollingResponse = await withTimeout(
+        contentApi.startPageSignalPolling(),
+        CONTENT_SCRIPT_TIMEOUT_MS,
+        'Content script did not respond before the messaging timeout.',
+      );
+
+      if (!pollingResponse.ok) {
+        return pollingResponse;
+      }
+    }
+
 		const response = await withTimeout(
 			contentApi.collectPageSignals({
 				includeHtml: true,
 				selectorProbeList: buildSelectorProbeList(technologies),
 				jsGlobalProbeList: buildJsGlobalProbeList(technologies),
-        collectionMode,
 			}),
-      collectionMode === "settled" ? 35_000 : CONTENT_SCRIPT_TIMEOUT_MS,
+			CONTENT_SCRIPT_TIMEOUT_MS,
 			'Content script did not respond before the messaging timeout.',
 		);
 
@@ -66,7 +102,7 @@ async function collectFromTab(
 		if (validationError) {
 			return errorResponse('PAYLOAD_TOO_LARGE', validationError);
 		}
-		
+    
 		if (!isSameDocumentUrl(response.value.url, expectedUrl)) {
 			return errorResponse(
 				'VALIDATION_ERROR',
@@ -75,9 +111,30 @@ async function collectFromTab(
 		}
 
 		return response;
-	} catch (error) {
-		return contentScriptFailure(error);
-	}
+  } catch (error) {
+    return contentScriptFailure(error);
+  }
+}
+
+async function callActiveTabPollingMethod(
+  method: 'startPageSignalPolling' | 'stopPageSignalPolling' | 'getPageSignalPollingState',
+): Promise<AppResult<PageSignalPollingState>> {
+  const tabResponse = await getInspectableActiveTab();
+  if (!tabResponse.ok) {
+    return tabResponse;
+  }
+
+  const contentApi = createContentApiClient(tabResponse.value.id, 0);
+
+  try {
+    return await withTimeout(
+      contentApi[method](),
+      CONTENT_SCRIPT_TIMEOUT_MS,
+      'Content script did not respond before the messaging timeout.',
+    );
+  } catch (error) {
+    return contentScriptFailure(error);
+  }
 }
 
 /** Debug output is intentionally summary-only; never log raw page signals. */
@@ -124,32 +181,20 @@ export function createBackgroundApi(): BackgroundApi {
 
 		async analyzeActiveTab(input): Promise<AppResult<SiteAnalysis>> {
 			try {
-				const tab = await getActiveTab();
-				console.log("Active tab for analysis", {
-					tab
-				})
-				
-				if (typeof tab?.id !== 'number' || !tab.url) {
-					return errorResponse('NO_ACTIVE_TAB', 'No active tab found');
+				const tabResponse = await getInspectableActiveTab();
+				if (!tabResponse.ok) {
+					return tabResponse;
 				}
 
-				if (!canInspectTab(tab)) {
-					return errorResponse(
-						'UNSUPPORTED_URL',
-						'Detection only works on normal http/https pages. Reload a website tab and try again.',
-					);
-				}
-
+				const tab = tabResponse.value;
 				const cached = await getCachedAnalysis(tab.url);
-				if (cached && !input.forceRefresh) {
+				if (cached && !input.forceRefresh && !input.restartPolling) {
 					return ok(cached);
 				}
 
-				const signalsResponse = await collectFromTab(
-					tab.id,
-					tab.url,
-					input.collectionMode ?? "instant"
-				);
+				const signalsResponse = await collectFromTab(tab.id, tab.url, {
+					restartPolling: input.restartPolling,
+				});
 				if (!signalsResponse.ok) {
 					return signalsResponse;
 				}
@@ -165,7 +210,19 @@ export function createBackgroundApi(): BackgroundApi {
 				return errorResponse('UNKNOWN', message, stack);
 			}
 		},
-	};
+
+    async startActiveTabPolling() {
+      return callActiveTabPollingMethod('startPageSignalPolling');
+    },
+
+    async stopActiveTabPolling() {
+      return callActiveTabPollingMethod('stopPageSignalPolling');
+    },
+
+    async getActiveTabPollingState() {
+      return callActiveTabPollingMethod('getPageSignalPollingState');
+    },
+  };
 }
 
 const [provideBackgroundApi] = defineProxy(() => createBackgroundApi(), {
