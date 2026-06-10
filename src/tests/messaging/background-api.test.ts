@@ -31,6 +31,7 @@ function makeSignals(overrides: Partial<PageSignals> = {}): PageSignals {
 		hostname: 'example.com',
 		html: '<html><head></head><body></body></html>',
 		scripts: [],
+		stylesheets: [],
 		cookies: {},
 		headers: {},
 		meta: {},

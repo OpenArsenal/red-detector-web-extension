@@ -3,6 +3,7 @@ import type { TechnologyDefinition } from './types';
 export const SOURCE_LIMITS = {
 	htmlChars: 200_000,
 	scriptSrc: 300,
+	stylesheetHref: 300,
 	metaValueChars: 500,
 	metaValuesPerKey: 5,
 	cookieNames: 200,

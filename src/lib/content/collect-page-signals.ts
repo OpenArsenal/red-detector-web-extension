@@ -12,7 +12,16 @@ export type CollectPageSignalsInput = {
  * Collects only bounded, rule-oriented page signals. The content script may read
  * page DOM and non-HttpOnly cookies, but it never persists raw page payloads.
  */
-export function collectPageSignals(input: CollectPageSignalsInput): PageSignals {
+export type RuntimePageSignals = Partial<Pick<PageSignals, 'scripts' | 'stylesheets' | 'meta'>>;
+
+type ScriptSourceInput = ParentNode | Iterable<HTMLScriptElement>;
+type StylesheetSourceInput = ParentNode | Iterable<HTMLLinkElement>;
+type MetaTagInput = ParentNode | Iterable<HTMLMetaElement>;
+
+export function collectPageSignals(
+	input: CollectPageSignalsInput,
+	runtime: RuntimePageSignals = {},
+): PageSignals {
 	const selectorProbeList = uniqueStrings(input.selectorProbeList);
 	const jsGlobalProbeList = uniqueStrings(input.jsGlobalProbeList);
 
@@ -20,10 +29,11 @@ export function collectPageSignals(input: CollectPageSignalsInput): PageSignals 
 		url: location.href,
 		hostname: location.hostname,
 		html: input.includeHtml ? boundedHtml() : '',
-		scripts: collectScriptSources(),
+		scripts: runtime.scripts ?? collectScriptSources(),
+		stylesheets: runtime.stylesheets ?? collectStylesheetSources(),
 		cookies: collectCookieNames(document.cookie),
 		headers: {},
-		meta: collectMetaTags(),
+		meta: runtime.meta ?? collectMetaTags(),
 		dom: {
 			selectors: Object.fromEntries(
 				selectorProbeList.map((selector) => [selector, safeQuerySelector(selector)]),
@@ -38,8 +48,8 @@ function boundedHtml(): string {
 	return truncate(document.documentElement.outerHTML, SOURCE_LIMITS.htmlChars);
 }
 
-function collectMetaTags(): Record<string, string[]> {
-	const entries = Array.from(document.querySelectorAll('meta'))
+export function collectMetaTags(input: MetaTagInput = document): Record<string, string[]> {
+	const entries = Array.from(iterateMetaTags(input))
 		.map((node) => {
 			const key = node.getAttribute('name') ?? node.getAttribute('property') ?? node.getAttribute('http-equiv');
 			const value = node.getAttribute('content');
@@ -58,12 +68,20 @@ function collectMetaTags(): Record<string, string[]> {
 	return normalizeMetaMap(grouped);
 }
 
-function collectScriptSources(): string[] {
+export function collectScriptSources(input: ScriptSourceInput = document): string[] {
 	return uniqueStrings(
-		Array.from(document.scripts)
-			.map((script) => script.src)
-			.filter(Boolean),
+		Array.from(iterateScripts(input))
+			.map((script) => normalizeResourceUrl(script.getAttribute('src') ?? script.src))
+			.filter((source): source is string => Boolean(source)),
 	).slice(0, SOURCE_LIMITS.scriptSrc);
+}
+
+export function collectStylesheetSources(input: StylesheetSourceInput = document): string[] {
+	return uniqueStrings(
+		Array.from(iterateStylesheetLinks(input))
+			.map((link) => normalizeResourceUrl(link.getAttribute('href') ?? link.href))
+			.filter((href): href is string => Boolean(href)),
+	).slice(0, SOURCE_LIMITS.stylesheetHref);
 }
 
 function collectCookieNames(cookieString: string): Record<string, string> {
@@ -123,6 +141,57 @@ function sanitizeGlobalValue(value: unknown): unknown {
 function safeDecode(value: string): string {
 	try {
 		return decodeURIComponent(value);
+	} catch {
+		return value;
+	}
+}
+
+function* iterateScripts(input: ScriptSourceInput): Iterable<HTMLScriptElement> {
+	if (isParentNode(input)) {
+		yield* input.querySelectorAll('script') as Iterable<HTMLScriptElement>;
+		return;
+	}
+
+	yield* input;
+}
+
+function* iterateStylesheetLinks(input: StylesheetSourceInput): Iterable<HTMLLinkElement> {
+	if (isParentNode(input)) {
+		yield* input.querySelectorAll('link[rel~="stylesheet"]') as Iterable<HTMLLinkElement>;
+		return;
+	}
+
+	for (const link of input) {
+		if (isStylesheetLink(link)) {
+			yield link;
+		}
+	}
+}
+
+function* iterateMetaTags(input: MetaTagInput): Iterable<HTMLMetaElement> {
+	if (isParentNode(input)) {
+		yield* input.querySelectorAll('meta') as Iterable<HTMLMetaElement>;
+		return;
+	}
+
+	yield* input;
+}
+
+function isParentNode(value: unknown): value is ParentNode {
+	return typeof value === 'object' && value !== null && 'querySelectorAll' in value;
+}
+
+function isStylesheetLink(link: HTMLLinkElement): boolean {
+	return link.relList.contains('stylesheet') || /(^|\s)stylesheet(\s|$)/i.test(link.rel);
+}
+
+function normalizeResourceUrl(value: string | null | undefined): string | null {
+	if (!value) {
+		return null;
+	}
+
+	try {
+		return new URL(value, location.href).href;
 	} catch {
 		return value;
 	}

@@ -26,6 +26,10 @@ export function validatePageSignals(signals: PageSignals): string | null {
 		return 'Too many script source entries';
 	}
 
+	if (signals.stylesheets.length > SOURCE_LIMITS.stylesheetHref) {
+		return 'Too many stylesheet link entries';
+	}
+
 	const hasOversizedMeta = Object.values(signals.meta).some(
 		(values) =>
 			values.length > SOURCE_LIMITS.metaValuesPerKey ||

@@ -13,6 +13,7 @@ function createSignals(overrides: Partial<PageSignals> = {}): PageSignals {
 		hostname: 'example.com',
 		html: '',
 		scripts: [],
+		stylesheets: [],
 		cookies: {},
 		headers: {},
 		meta: {},

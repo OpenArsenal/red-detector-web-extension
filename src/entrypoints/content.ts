@@ -1,6 +1,7 @@
 import { defineProxy } from "comctx";
 
 import { collectPageSignals } from "../lib/content/collect-page-signals";
+import { createObservedPageSignals, type ObservedPageSignals } from "../lib/content/observed-page-signals";
 import { validatePageSignals } from "../lib/detection/validate";
 import type { ContentApi } from "../lib/messaging";
 import {
@@ -9,15 +10,21 @@ import {
 } from "../lib/messaging";
 import { errorResponse, ok } from "../lib/shared/result";
 
+const DOM_MUTATION_DEBOUNCE_MS = 10_000;
+const DOM_MUTATION_MAX_WAIT_MS = 30_000;
+
 /**
  * Content entrypoint boundary: collect and validate before returning to the
  * background service worker. Detection stays out of the page context.
  */
-function collectSignals(
+async function collectSignals(
   input: Parameters<ContentApi["collectPageSignals"]>[0],
+  observedSignals: ObservedPageSignals,
 ) {
   try {
-    const signals = collectPageSignals(input);
+    await observedSignals.waitForSettledChanges();
+
+    const signals = collectPageSignals(input, observedSignals.snapshot());
     const validationError = validatePageSignals(signals);
 
     if (validationError) {
@@ -32,10 +39,10 @@ function collectSignals(
   }
 }
 
-function createContentApi(): ContentApi {
+function createContentApi(observedSignals: ObservedPageSignals): ContentApi {
   return {
     async collectPageSignals(input) {
-      return collectSignals(input);
+      return collectSignals(input, observedSignals);
     },
   };
 }
@@ -52,7 +59,16 @@ const [provideContentApi] = defineProxy(
 export default defineContentScript({
   matches: ["http://*/*", "https://*/*"],
   runAt: "document_idle",
-  main() {
-    provideContentApi(createContentServerAdapter(), createContentApi);
+  main(ctx) {
+    const observedSignals = createObservedPageSignals({
+      debounceMs: DOM_MUTATION_DEBOUNCE_MS,
+      maxWaitMs: DOM_MUTATION_MAX_WAIT_MS,
+    });
+
+    provideContentApi(createContentServerAdapter(), () => createContentApi(observedSignals));
+
+    ctx.onInvalidated(() => {
+      observedSignals.disconnect();
+    });
   },
 });

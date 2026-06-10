@@ -1,6 +1,6 @@
 import { errorResponse, type AppFailure } from '../shared/result';
 
-export const CONTENT_SCRIPT_TIMEOUT_MS = 5_000;
+export const CONTENT_SCRIPT_TIMEOUT_MS = 35_000;
 
 export class RpcTimeoutError extends Error {
 	constructor(message: string) {

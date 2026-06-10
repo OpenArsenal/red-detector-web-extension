@@ -75,6 +75,7 @@ export type PageSignals = {
 	hostname: string;
 	html: string;
 	scripts: string[];
+	stylesheets: string[];
 	cookies: Record<string, string>;
 	headers: Record<string, string>;
 	meta: Record<string, string[]>;
