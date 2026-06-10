@@ -1,3 +1,5 @@
+import { Graph } from '@dagrejs/graphlib';
+
 import type {
 	ConfidenceScore,
 	DetectionResult,
@@ -231,22 +233,310 @@ function toConfidenceScore(value: number): ConfidenceScore {
 	return { value, level: 'low' };
 }
 
+type RelationshipGraph = {
+	definitionsById: Map<string, TechnologyDefinition>;
+	registryOrderById: Map<string, number>;
+	implies: Graph;
+	requires: Graph;
+	excludes: Graph;
+};
+
+type RelationshipNode = {
+	result: DetectionResult;
+	inferred: boolean;
+	registryOrder: number;
+};
+
 function applyRelationships(
 	results: DetectionResult[],
 	registry: TechnologyDefinition[],
 ): DetectionResult[] {
-	const byId = new Map(results.map((result) => [result.technologyId, result]));
-	const definitionsById = new Map(registry.map((definition) => [definition.id, definition]));
+	const graph = buildRelationshipGraph(registry);
+	const accepted = new Map<string, RelationshipNode>();
 
 	for (const result of results) {
-		const definition = definitionsById.get(result.technologyId);
+		accepted.set(result.technologyId, {
+			result,
+			inferred: false,
+			registryOrder:
+				graph.registryOrderById.get(result.technologyId) ?? Number.MAX_SAFE_INTEGER,
+		});
+	}
 
-		for (const excludedId of definition?.excludes ?? []) {
-			byId.delete(excludedId);
+	resolveImplicationsAndRequirements(accepted, graph);
+	applyExclusions(accepted, graph);
+	resolveImplicationsAndRequirements(accepted, graph);
+
+	return Array.from(accepted.values())
+		.map((node) => node.result)
+		.sort(compareDetectionResults(graph.registryOrderById));
+}
+
+function buildRelationshipGraph(registry: TechnologyDefinition[]): RelationshipGraph {
+	const definitionsById = new Map<string, TechnologyDefinition>();
+	const registryOrderById = new Map<string, number>();
+	const implies = createDirectedRelationshipGraph(registry);
+	const requires = createDirectedRelationshipGraph(registry);
+	const excludes = createDirectedRelationshipGraph(registry);
+
+	registry.forEach((definition, index) => {
+		definitionsById.set(definition.id, definition);
+		registryOrderById.set(definition.id, index);
+		addRelationshipEdges(implies, definition.id, definition.implies ?? []);
+		addRelationshipEdges(requires, definition.id, definition.requires ?? []);
+		addRelationshipEdges(excludes, definition.id, definition.excludes ?? []);
+	});
+
+	return {
+		definitionsById,
+		registryOrderById,
+		implies,
+		requires,
+		excludes,
+	};
+}
+
+function createDirectedRelationshipGraph(registry: TechnologyDefinition[]): Graph {
+	const graph = new Graph({ directed: true });
+	for (const definition of registry) {
+		graph.setNode(definition.id);
+	}
+	return graph;
+}
+
+function addRelationshipEdges(graph: Graph, sourceId: string, targetIds: string[]): void {
+	for (const targetId of targetIds) {
+		graph.setEdge(sourceId, targetId);
+	}
+}
+
+function relationshipTargets(
+	graph: Graph,
+	sourceId: string,
+	registryOrderById: Map<string, number>,
+): string[] {
+	return (graph.successors(sourceId) ?? []).sort(
+		(a, b) =>
+			(registryOrderById.get(a) ?? Number.MAX_SAFE_INTEGER) -
+			(registryOrderById.get(b) ?? Number.MAX_SAFE_INTEGER) || a.localeCompare(b),
+	);
+}
+
+function resolveImplicationsAndRequirements(
+	accepted: Map<string, RelationshipNode>,
+	graph: RelationshipGraph,
+): void {
+	expandImpliedTechnologies(accepted, graph);
+
+	let changed = true;
+	while (changed) {
+		changed = false;
+		changed = pruneUnsatisfiedRequirements(accepted, graph) || changed;
+		changed = pruneOrphanedImpliedTechnologies(accepted, graph) || changed;
+	}
+}
+
+function pruneUnsatisfiedRequirements(
+	accepted: Map<string, RelationshipNode>,
+	graph: RelationshipGraph,
+): boolean {
+	let changed = false;
+
+	for (const id of Array.from(accepted.keys())) {
+		const requiredIds = relationshipTargets(
+			graph.requires,
+			id,
+			graph.registryOrderById,
+		);
+		const hasAllRequirements = requiredIds.every((requiredId) =>
+			accepted.has(requiredId),
+		);
+
+		if (!hasAllRequirements) {
+			accepted.delete(id);
+			changed = true;
 		}
 	}
 
-	return Array.from(byId.values()).sort(
-		(a, b) => b.confidence.value - a.confidence.value || a.name.localeCompare(b.name),
-	);
+	return changed;
+}
+
+function pruneOrphanedImpliedTechnologies(
+	accepted: Map<string, RelationshipNode>,
+	graph: RelationshipGraph,
+): boolean {
+	let changed = false;
+
+	for (const [id, node] of Array.from(accepted.entries())) {
+		if (!node.inferred) {
+			continue;
+		}
+
+		const hasAcceptedSource = (graph.implies.predecessors(id) ?? []).some(
+			(sourceId) => accepted.has(sourceId),
+		);
+
+		if (!hasAcceptedSource) {
+			accepted.delete(id);
+			changed = true;
+		}
+	}
+
+	return changed;
+}
+
+function expandImpliedTechnologies(
+	accepted: Map<string, RelationshipNode>,
+	graph: RelationshipGraph,
+): boolean {
+	let changed = false;
+
+	for (const sourceId of Array.from(accepted.keys())) {
+		const sourceDefinition = graph.definitionsById.get(sourceId);
+		if (!sourceDefinition) {
+			continue;
+		}
+
+		for (const impliedId of relationshipTargets(
+			graph.implies,
+			sourceId,
+			graph.registryOrderById,
+		)) {
+			if (accepted.has(impliedId)) {
+				continue;
+			}
+
+			const impliedDefinition = graph.definitionsById.get(impliedId);
+			if (!impliedDefinition) {
+				continue;
+			}
+
+			const impliedNode: RelationshipNode = {
+				result: createImpliedResult(impliedDefinition, sourceDefinition),
+				inferred: true,
+				registryOrder:
+					graph.registryOrderById.get(impliedId) ?? Number.MAX_SAFE_INTEGER,
+			};
+
+			if (wouldLoseAcceptedExclusionConflict(impliedId, impliedNode, accepted, graph)) {
+				continue;
+			}
+
+			accepted.set(impliedId, impliedNode);
+			changed = true;
+		}
+	}
+
+	return changed;
+}
+
+function wouldLoseAcceptedExclusionConflict(
+	id: string,
+	node: RelationshipNode,
+	accepted: Map<string, RelationshipNode>,
+	graph: RelationshipGraph,
+): boolean {
+	for (const [acceptedId, acceptedNode] of accepted.entries()) {
+		if (graph.excludes.hasEdge(acceptedId, id)) {
+			const loserId = chooseConflictLoser(acceptedId, acceptedNode, id, node);
+			if (loserId === id) {
+				return true;
+			}
+		}
+
+		if (graph.excludes.hasEdge(id, acceptedId)) {
+			const loserId = chooseConflictLoser(id, node, acceptedId, acceptedNode);
+			if (loserId === id) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+function applyExclusions(
+	accepted: Map<string, RelationshipNode>,
+	graph: RelationshipGraph,
+): void {
+	let changed = true;
+
+	while (changed) {
+		changed = false;
+
+		for (const [sourceId, sourceNode] of Array.from(accepted.entries())) {
+			for (const excludedId of relationshipTargets(
+				graph.excludes,
+				sourceId,
+				graph.registryOrderById,
+			)) {
+				const excludedNode = accepted.get(excludedId);
+				if (!excludedNode) {
+					continue;
+				}
+
+				const loserId = chooseConflictLoser(
+					sourceId,
+					sourceNode,
+					excludedId,
+					excludedNode,
+				);
+				accepted.delete(loserId);
+				changed = true;
+
+				if (loserId === sourceId) {
+					break;
+				}
+			}
+		}
+	}
+}
+
+function chooseConflictLoser(
+	sourceId: string,
+	sourceNode: RelationshipNode,
+	excludedId: string,
+	excludedNode: RelationshipNode,
+): string {
+	if (sourceNode.inferred !== excludedNode.inferred) {
+		return sourceNode.inferred ? sourceId : excludedId;
+	}
+
+	const confidenceDifference =
+		sourceNode.result.confidence.value - excludedNode.result.confidence.value;
+	if (confidenceDifference !== 0) {
+		return confidenceDifference > 0 ? excludedId : sourceId;
+	}
+
+	return sourceNode.registryOrder <= excludedNode.registryOrder ? excludedId : sourceId;
+}
+
+function createImpliedResult(
+	definition: TechnologyDefinition,
+	sourceDefinition: TechnologyDefinition,
+): DetectionResult {
+	return {
+		technologyId: definition.id,
+		name: definition.name,
+		website: definition.website,
+		description: definition.description,
+		icon: definition.icon,
+		categories: definition.categories,
+		confidence: { value: 60, level: 'medium' },
+		evidence: [
+			{
+				kind: 'html',
+				confidence: 60,
+				ruleDescription: `Implied by ${sourceDefinition.name}`,
+			},
+		],
+	};
+}
+
+function compareDetectionResults(registryOrderById: Map<string, number>) {
+	return (a: DetectionResult, b: DetectionResult): number =>
+		b.confidence.value - a.confidence.value ||
+		(registryOrderById.get(a.technologyId) ?? Number.MAX_SAFE_INTEGER) -
+			(registryOrderById.get(b.technologyId) ?? Number.MAX_SAFE_INTEGER) ||
+		a.name.localeCompare(b.name);
 }

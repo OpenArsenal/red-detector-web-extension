@@ -188,3 +188,313 @@ describe('analyzeSite', () => {
 		expect('scripts' in analysis).toBe(false);
 	});
 });
+
+type RelationshipTechnologyInput = {
+	id: string;
+	name?: string;
+	marker?: string;
+	confidence?: number;
+	implies?: string[];
+	requires?: string[];
+	excludes?: string[];
+};
+
+function relationshipTechnology(input: RelationshipTechnologyInput): TechnologyDefinition {
+	return {
+		id: input.id,
+		name: input.name ?? input.id,
+		website: `https://example.com/${input.id}`,
+		categories: ['unknown'],
+		rules:
+			input.marker === undefined
+				? []
+				: [
+						{
+							kind: 'html',
+							pattern: new RegExp(input.marker, 'i'),
+							confidence: input.confidence ?? 100,
+						},
+					],
+		implies: input.implies,
+		requires: input.requires,
+		excludes: input.excludes,
+	};
+}
+
+function resultIds(registry: TechnologyDefinition[], html: string): string[] {
+	return analyzeSite(createSignals({ html }), registry).results.map(
+		(result) => result.technologyId,
+	);
+}
+
+describe('relationship resolver', () => {
+	it('adds implied technologies with relationship evidence', () => {
+		const registry = [
+			relationshipTechnology({ id: 'nextjs', marker: 'next', implies: ['react'] }),
+			relationshipTechnology({ id: 'react' }),
+		];
+
+		const analysis = analyzeSite(createSignals({ html: 'next' }), registry);
+		const react = analysis.results.find((result) => result.technologyId === 'react');
+
+		expect(analysis.results.map((result) => result.technologyId)).toEqual([
+			'nextjs',
+			'react',
+		]);
+		expect(react).toMatchObject({
+			confidence: { value: 60, level: 'medium' },
+			evidence: [{ ruleDescription: 'Implied by nextjs' }],
+		});
+	});
+
+	it('expands chained implications to a fixed point', () => {
+		const registry = [
+			relationshipTechnology({ id: 'nextjs', marker: 'next', implies: ['react'] }),
+			relationshipTechnology({ id: 'react', implies: ['javascript'] }),
+			relationshipTechnology({ id: 'javascript' }),
+		];
+
+		expect(resultIds(registry, 'next')).toEqual(['nextjs', 'react', 'javascript']);
+	});
+
+	it('does not loop forever when implication edges cycle', () => {
+		const registry = [
+			relationshipTechnology({ id: 'alpha', marker: 'alpha', implies: ['beta'] }),
+			relationshipTechnology({ id: 'beta', implies: ['alpha'] }),
+		];
+
+		expect(resultIds(registry, 'alpha')).toEqual(['alpha', 'beta']);
+	});
+
+	it('removes detections whose required technologies are absent', () => {
+		const registry = [
+			relationshipTechnology({
+				id: 'woocommerce',
+				marker: 'woo',
+				requires: ['wordpress'],
+			}),
+			relationshipTechnology({ id: 'wordpress', marker: 'wp' }),
+		];
+
+		expect(resultIds(registry, 'woo')).toEqual([]);
+	});
+
+	it('keeps detections whose required technologies are present', () => {
+		const registry = [
+			relationshipTechnology({
+				id: 'woocommerce',
+				marker: 'woo',
+				requires: ['wordpress'],
+			}),
+			relationshipTechnology({ id: 'wordpress', marker: 'wp' }),
+		];
+
+		expect(resultIds(registry, 'woo wp')).toEqual(['woocommerce', 'wordpress']);
+	});
+
+	it('removes lower-priority excluded technologies', () => {
+		const registry = [
+			relationshipTechnology({
+				id: 'shopify',
+				marker: 'shopify',
+				confidence: 90,
+				excludes: ['wordpress'],
+			}),
+			relationshipTechnology({ id: 'wordpress', marker: 'wordpress', confidence: 70 }),
+		];
+
+		expect(resultIds(registry, 'shopify wordpress')).toEqual(['shopify']);
+	});
+
+	it('keeps higher-confidence detections when they are excluded by weaker detections', () => {
+		const registry = [
+			relationshipTechnology({
+				id: 'shopify',
+				marker: 'shopify',
+				confidence: 70,
+				excludes: ['wordpress'],
+			}),
+			relationshipTechnology({ id: 'wordpress', marker: 'wordpress', confidence: 90 }),
+		];
+
+		expect(resultIds(registry, 'shopify wordpress')).toEqual(['wordpress']);
+	});
+
+	it('keeps direct detections over implied detections during exclusion conflicts', () => {
+		const registry = [
+			relationshipTechnology({ id: 'nextjs', marker: 'next', implies: ['react'] }),
+			relationshipTechnology({ id: 'react' }),
+			relationshipTechnology({
+				id: 'other-framework',
+				marker: 'other',
+				excludes: ['react'],
+			}),
+		];
+
+		expect(resultIds(registry, 'next other')).toEqual(['nextjs', 'other-framework']);
+	});
+
+	it('uses registry order as a stable final tie breaker', () => {
+		const registry = [
+			relationshipTechnology({ id: 'beta', marker: 'beta' }),
+			relationshipTechnology({ id: 'alpha', marker: 'alpha' }),
+		];
+
+		expect(resultIds(registry, 'alpha beta')).toEqual(['beta', 'alpha']);
+	});
+
+	it('uses implied technologies to satisfy requirements after fixed-point expansion', () => {
+		const registry = [
+			relationshipTechnology({ id: 'nextjs', marker: 'next', implies: ['react'] }),
+			relationshipTechnology({ id: 'plugin', marker: 'plugin', requires: ['react'] }),
+			relationshipTechnology({ id: 'react' }),
+		];
+
+		expect(resultIds(registry, 'next plugin')).toEqual([
+			'nextjs',
+			'plugin',
+			'react',
+		]);
+	});
+
+	it('removes implied technologies whose requirements are absent', () => {
+		const registry = [
+			relationshipTechnology({ id: 'platform', marker: 'platform', implies: ['addon'] }),
+			relationshipTechnology({ id: 'addon', requires: ['runtime'] }),
+			relationshipTechnology({ id: 'runtime', marker: 'runtime' }),
+		];
+
+		expect(resultIds(registry, 'platform')).toEqual(['platform']);
+	});
+
+	it('prunes chained requirements to a fixed point', () => {
+		const registry = [
+			relationshipTechnology({ id: 'addon', marker: 'addon', requires: ['platform'] }),
+			relationshipTechnology({
+				id: 'platform',
+				marker: 'platform',
+				requires: ['runtime'],
+			}),
+			relationshipTechnology({ id: 'runtime', marker: 'runtime' }),
+		];
+
+		expect(resultIds(registry, 'addon platform')).toEqual([]);
+	});
+
+	it('keeps requirement cycles when every member is detected', () => {
+		const registry = [
+			relationshipTechnology({ id: 'alpha', marker: 'alpha', requires: ['beta'] }),
+			relationshipTechnology({ id: 'beta', marker: 'beta', requires: ['alpha'] }),
+		];
+
+		expect(resultIds(registry, 'alpha beta')).toEqual(['alpha', 'beta']);
+	});
+
+	it('removes requirement cycles when any member is missing', () => {
+		const registry = [
+			relationshipTechnology({ id: 'alpha', marker: 'alpha', requires: ['beta'] }),
+			relationshipTechnology({ id: 'beta', marker: 'beta', requires: ['alpha'] }),
+		];
+
+		expect(resultIds(registry, 'alpha')).toEqual([]);
+	});
+
+	it('uses registry order to resolve mutual exclusions with equal confidence', () => {
+		const registry = [
+			relationshipTechnology({ id: 'alpha', marker: 'alpha', excludes: ['beta'] }),
+			relationshipTechnology({ id: 'beta', marker: 'beta', excludes: ['alpha'] }),
+		];
+
+		expect(resultIds(registry, 'alpha beta')).toEqual(['alpha']);
+	});
+
+	it('ignores unknown implied targets without creating reported technologies', () => {
+		const registry = [
+			relationshipTechnology({ id: 'alpha', marker: 'alpha', implies: ['missing'] }),
+		];
+
+		expect(resultIds(registry, 'alpha')).toEqual(['alpha']);
+	});
+
+	it('prunes detections that require unknown targets', () => {
+		const registry = [
+			relationshipTechnology({ id: 'alpha', marker: 'alpha', requires: ['missing'] }),
+		];
+
+		expect(resultIds(registry, 'alpha')).toEqual([]);
+	});
+
+	it('ignores unknown excluded targets', () => {
+		const registry = [
+			relationshipTechnology({ id: 'alpha', marker: 'alpha', excludes: ['missing'] }),
+		];
+
+		expect(resultIds(registry, 'alpha')).toEqual(['alpha']);
+	});
+
+	it('does not downgrade direct detections that are also implied', () => {
+		const registry = [
+			relationshipTechnology({ id: 'nextjs', marker: 'next', implies: ['react'] }),
+			relationshipTechnology({ id: 'react', marker: 'react', confidence: 95 }),
+		];
+
+		const analysis = analyzeSite(createSignals({ html: 'next react' }), registry);
+		const react = analysis.results.find((result) => result.technologyId === 'react');
+
+		expect(resultIds(registry, 'next react')).toEqual(['nextjs', 'react']);
+		expect(react?.confidence.value).toBe(95);
+		expect(react?.evidence[0]?.ruleDescription).not.toBe('Implied by nextjs');
+	});
+
+	it('treats self-implies relationships as no-ops', () => {
+		const registry = [
+			relationshipTechnology({ id: 'alpha', marker: 'alpha', implies: ['alpha'] }),
+		];
+
+		expect(resultIds(registry, 'alpha')).toEqual(['alpha']);
+	});
+
+	it('handles self-excludes relationships without looping', () => {
+		const registry = [
+			relationshipTechnology({ id: 'alpha', marker: 'alpha', excludes: ['alpha'] }),
+		];
+
+		expect(resultIds(registry, 'alpha')).toEqual([]);
+	});
+
+	it('re-prunes dependents after exclusions remove their requirements', () => {
+		const registry = [
+			relationshipTechnology({
+				id: 'exclusive-platform',
+				marker: 'exclusive',
+				confidence: 100,
+				excludes: ['platform'],
+			}),
+			relationshipTechnology({ id: 'platform', marker: 'platform', confidence: 80 }),
+			relationshipTechnology({ id: 'addon', marker: 'addon', requires: ['platform'] }),
+		];
+
+		expect(resultIds(registry, 'exclusive platform addon')).toEqual(['exclusive-platform']);
+	});
+
+	it('removes implied technologies orphaned by exclusion of their source', () => {
+		const registry = [
+			relationshipTechnology({
+				id: 'exclusive-platform',
+				marker: 'exclusive',
+				excludes: ['platform'],
+			}),
+			relationshipTechnology({
+				id: 'platform',
+				marker: 'platform',
+				confidence: 80,
+				implies: ['addon'],
+			}),
+			relationshipTechnology({ id: 'addon' }),
+		];
+
+		expect(resultIds(registry, 'exclusive platform')).toEqual([
+			'exclusive-platform',
+		]);
+	});
+});
