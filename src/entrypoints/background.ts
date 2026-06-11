@@ -13,7 +13,7 @@ import type {
 } from '../lib/detection/types';
 import { validatePageSignals } from '../lib/detection/validate';
 
-import type { BackgroundApi, ContentApi } from '../lib/messaging';
+import type { BackgroundApi, ContentApi, HtmlProbe } from '../lib/messaging';
 import {
 	CONTENT_SCRIPT_TIMEOUT_MS,
 	contentScriptFailure,
@@ -164,6 +164,7 @@ async function collectFromTab(
 				includeHtml: true,
 				selectorProbeList: buildSelectorProbeList(technologies),
 				jsGlobalProbeList: buildJsGlobalProbeList(technologies),
+				htmlProbeList: buildHtmlProbeList(technologies),
 			}),
 			CONTENT_SCRIPT_TIMEOUT_MS,
 			'Content script did not respond before the messaging timeout.',
@@ -250,6 +251,27 @@ function buildJsGlobalProbeList(registry: TechnologyDefinition[]): string[] {
 					.map((rule) => rule.property!),
 			),
 		),
+	);
+}
+
+
+/** Build serializable HTML regex probes from the active bundled rules. */
+function buildHtmlProbeList(registry: TechnologyDefinition[]): HtmlProbe[] {
+	return registry.flatMap((technology) =>
+		technology.rules.flatMap((rule, ruleIndex) => {
+			if (rule.kind !== 'html') {
+				return [];
+			}
+
+			return [
+				{
+					technologyId: technology.id,
+					ruleIndex,
+					source: rule.pattern.source,
+					flags: rule.pattern.flags,
+				},
+			];
+		}),
 	);
 }
 

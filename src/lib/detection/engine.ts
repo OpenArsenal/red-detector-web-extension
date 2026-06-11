@@ -42,7 +42,7 @@ function detectTechnology(
 	signals: PageSignals,
 ): DetectionResult | null {
 	const evidence = definition.rules
-		.map((rule) => matchRule(rule, signals))
+		.map((rule, ruleIndex) => matchRule(definition.id, ruleIndex, rule, signals))
 		.filter((item): item is Evidence => Boolean(item));
 
 	if (!evidence.length) {
@@ -72,7 +72,12 @@ function detectTechnology(
  * Match one normalized signal rule. Evidence is intentionally small/redacted so
  * cached analyses do not become raw page-content storage.
  */
-function matchRule(rule: DetectionRule, signals: PageSignals): Evidence | null {
+function matchRule(
+	technologyId: string,
+	ruleIndex: number,
+	rule: DetectionRule,
+	signals: PageSignals,
+): Evidence | null {
 	const confidence = rule.confidence ?? 100;
 
 	switch (rule.kind) {
@@ -86,8 +91,23 @@ function matchRule(rule: DetectionRule, signals: PageSignals): Evidence | null {
 				: null;
 		}
 
-		case 'html':
+		case 'html': {
+			const htmlMatch = signals.htmlMatches?.[htmlProbeKey(technologyId, ruleIndex)];
+			if (htmlMatch) {
+				return {
+					kind: 'html',
+					matchedValue: safeMatchedValue(htmlMatch.matchedValue),
+					confidence,
+					version: extractVersion(
+						rule.versionTemplate,
+						[htmlMatch.matchedValue, ...htmlMatch.captures] as unknown as RegExpMatchArray,
+					),
+					ruleDescription: rule.description,
+				};
+			}
+
 			return matchPattern(rule, signals.html, confidence);
+		}
 
 		case 'scriptSrc': {
 			for (const src of signals.scripts) {
@@ -217,6 +237,11 @@ function matchPattern(
 		version: extractVersion(rule.versionTemplate, match),
 		ruleDescription: rule.description,
 	};
+}
+
+
+function htmlProbeKey(technologyId: string, ruleIndex: number): string {
+	return `${technologyId}:${ruleIndex}`;
 }
 
 function safeMatchedValue(value: string): string {

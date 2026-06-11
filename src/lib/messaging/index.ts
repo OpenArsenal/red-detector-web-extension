@@ -7,10 +7,18 @@ export type AnalyzeActiveTabInput = {
 	restartPolling?: boolean;
 };
 
+export type HtmlProbe = {
+	technologyId: string;
+	ruleIndex: number;
+	source: string;
+	flags: string;
+};
+
 export type CollectPageSignalsInput = {
 	includeHtml?: boolean;
 	selectorProbeList: string[];
 	jsGlobalProbeList: string[];
+	htmlProbeList?: HtmlProbe[];
 };
 
 export interface BackgroundApi {

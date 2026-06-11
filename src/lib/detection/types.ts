@@ -138,10 +138,16 @@ export type DetectionResult = {
 
 export type CookieSignals = Record<string, true>;
 
+export type HtmlMatchSignal = {
+	matchedValue: string;
+	captures: string[];
+};
+
 export type PageSignals = {
 	url: string;
 	hostname: string;
 	html: string;
+	htmlMatches?: Record<string, HtmlMatchSignal>;
 	scripts: string[];
 	stylesheets: string[];
 	cookies: CookieSignals;
