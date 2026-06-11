@@ -1,4 +1,5 @@
 import { defineProxy } from 'comctx';
+import { browser } from 'wxt/browser';
 
 import { technologies } from '../data/technologies';
 import { getActiveTab, canInspectTab } from '../lib/browser/active-tab';
@@ -33,6 +34,11 @@ type InspectableTab = {
   url: string;
 };
 
+const CONTENT_SCRIPT_FILE = 'content-scripts/content.js';
+const CONTENT_SCRIPT_PING_TIMEOUT_MS = 750;
+
+const contentScriptInjectionByTab = new Map<number, Promise<AppResult<void>>>();
+
 function createContentApiClient(tabId: number, frameId = 0): ContentApi {
   const [, injectContentApi] = defineProxy(() => ({}) as ContentApi, {
     namespace: CONTENT_RPC_NAMESPACE,
@@ -60,6 +66,70 @@ async function getInspectableActiveTab(): Promise<AppResult<InspectableTab>> {
   return ok({ id: tab.id, url: tab.url });
 }
 
+async function pingContentScript(tabId: number): Promise<boolean> {
+	const contentApi = createContentApiClient(tabId, 0);
+
+	try {
+		const response = await withTimeout(
+			contentApi.getPageSignalPollingState(),
+			CONTENT_SCRIPT_PING_TIMEOUT_MS,
+			'Content script ping timed out.',
+		);
+
+		return response.ok;
+	} catch {
+		return false;
+	}
+}
+
+async function injectContentScript(tabId: number): Promise<AppResult<void>> {
+	try {
+		await browser.scripting.executeScript({
+			target: { tabId, frameIds: [0] },
+			files: [CONTENT_SCRIPT_FILE],
+		});
+
+		return ok(undefined);
+	} catch (error) {
+		return contentScriptFailure(error);
+	}
+}
+
+async function ensureContentScript(tabId: number): Promise<AppResult<void>> {
+	if (await pingContentScript(tabId)) {
+		return ok(undefined);
+	}
+
+	const existingInjection = contentScriptInjectionByTab.get(tabId);
+	if (existingInjection) {
+		return existingInjection;
+	}
+
+	const injection = (async () => {
+		const injectionResponse = await injectContentScript(tabId);
+		if (!injectionResponse.ok) {
+			return injectionResponse;
+		}
+
+		if (await pingContentScript(tabId)) {
+			return ok(undefined);
+		}
+
+		return errorResponse(
+			'CONTENT_SCRIPT_UNAVAILABLE',
+			'Injected content script did not register before the messaging timeout.',
+		);
+	})();
+
+	contentScriptInjectionByTab.set(tabId, injection);
+
+	try {
+		return await injection;
+	} finally {
+		contentScriptInjectionByTab.delete(tabId);
+	}
+}
+
 /**
  * Ask the content script for bounded PageSignals and reject stale responses from
  * a different origin. Navigation can happen while the service worker is active.
@@ -69,6 +139,11 @@ async function collectFromTab(
 	expectedUrl: string,
 	options: { restartPolling?: boolean } = {},
 ): Promise<AppResult<PageSignals>> {
+	const contentScriptResponse = await ensureContentScript(tabId);
+	if (!contentScriptResponse.ok) {
+		return contentScriptResponse;
+	}
+
 	const contentApi = createContentApiClient(tabId, 0);
 
 	try {
@@ -122,6 +197,11 @@ async function callActiveTabPollingMethod(
   const tabResponse = await getInspectableActiveTab();
   if (!tabResponse.ok) {
     return tabResponse;
+  }
+
+  const contentScriptResponse = await ensureContentScript(tabResponse.value.id);
+  if (!contentScriptResponse.ok) {
+    return contentScriptResponse;
   }
 
   const contentApi = createContentApiClient(tabResponse.value.id, 0);

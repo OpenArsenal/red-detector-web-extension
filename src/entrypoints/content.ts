@@ -11,6 +11,26 @@ import {
 import { errorResponse, ok } from "../lib/shared/result";
 
 const DOM_MUTATION_THROTTLE_MS = 1_500;
+const CONTENT_RUNTIME_KEY = '__redDetectorContentRuntimeV1';
+
+type ContentRuntimeState = {
+  dispose(): void;
+};
+
+function getRuntimeState(): ContentRuntimeState | undefined {
+  return (globalThis as unknown as Record<string, ContentRuntimeState | undefined>)[CONTENT_RUNTIME_KEY];
+}
+
+function setRuntimeState(state: ContentRuntimeState): void {
+  (globalThis as unknown as Record<string, ContentRuntimeState | undefined>)[CONTENT_RUNTIME_KEY] = state;
+}
+
+function clearRuntimeState(state: ContentRuntimeState): void {
+  const runtime = globalThis as unknown as Record<string, ContentRuntimeState | undefined>;
+  if (runtime[CONTENT_RUNTIME_KEY] === state) {
+    delete runtime[CONTENT_RUNTIME_KEY];
+  }
+}
 
 /**
  * Content entrypoint boundary: collect and validate before returning to the
@@ -66,17 +86,30 @@ const [provideContentApi] = defineProxy(
 );
 
 export default defineContentScript({
-  matches: ["http://*/*", "https://*/*"],
+  registration: "runtime",
   runAt: "document_idle",
+  noScriptStartedPostMessage: true,
   main(ctx) {
+    if (getRuntimeState()) {
+      return;
+    }
+
     const observedSignals = createObservedPageSignals({
       throttleMs: DOM_MUTATION_THROTTLE_MS,
     });
 
+    const state: ContentRuntimeState = {
+      dispose() {
+        observedSignals.disconnect();
+        clearRuntimeState(state);
+      },
+    };
+
+    setRuntimeState(state);
     provideContentApi(createContentServerAdapter(), () => createContentApi(observedSignals));
 
     ctx.onInvalidated(() => {
-      observedSignals.disconnect();
+      state.dispose();
     });
   },
 });

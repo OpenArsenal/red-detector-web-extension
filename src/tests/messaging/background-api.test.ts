@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { PageSignals, SiteAnalysis } from '../../lib/detection/types';
 import type { ContentApi } from '../../lib/messaging';
+import type { PageSignalPollingState } from '../../lib/content/observed-page-signals';
 import { CONTENT_SCRIPT_TIMEOUT_MS } from '../../lib/messaging/rpc';
 import { ok, type AppResult } from '../../lib/shared/result';
 
@@ -55,17 +56,33 @@ function makeAnalysis(signals = makeSignals()): SiteAnalysis {
 
 async function loadBackgroundApi(input: {
 	tab?: TestTab | null;
-	contentApi?: ContentApi;
+	contentApi?: Partial<ContentApi>;
 	cachedAnalysis?: SiteAnalysis | null;
 }) {
 	vi.resetModules();
 	vi.stubGlobal('defineBackground', (setup: () => void) => setup);
 
-	const contentApi: ContentApi =
-		input.contentApi ??
-		({
-			collectPageSignals: vi.fn(async () => ok(makeSignals())),
-		} satisfies ContentApi);
+	const pollingState: PageSignalPollingState = {
+		isPolling: false,
+		throttleMs: 1_500,
+		pendingMutationCount: 0,
+	};
+
+	const contentApi = {
+		collectPageSignals: vi.fn(async () => ok(makeSignals())),
+		startPageSignalPolling: vi.fn(async () => ok({ ...pollingState, isPolling: true })),
+		stopPageSignalPolling: vi.fn(async () => ok(pollingState)),
+		getPageSignalPollingState: vi.fn(async () => ok(pollingState)),
+		...input.contentApi,
+	} satisfies ContentApi;
+
+	vi.doMock('wxt/browser', () => ({
+		browser: {
+			scripting: {
+				executeScript: vi.fn(async () => [{ frameId: 0, result: undefined }]),
+			},
+		},
+	}));
 
 	vi.doMock('comctx', () => ({
 		defineProxy: vi.fn((_factory: unknown, options?: { namespace?: string }) => {
@@ -107,6 +124,7 @@ afterEach(() => {
 	vi.useRealTimers();
 	vi.unstubAllGlobals();
 	vi.doUnmock('comctx');
+	vi.doUnmock('wxt/browser');
 	vi.doUnmock('../../lib/browser/active-tab');
 	vi.doUnmock('../../lib/detection/engine');
 	vi.doUnmock('../../lib/messaging');

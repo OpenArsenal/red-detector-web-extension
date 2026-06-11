@@ -24,6 +24,8 @@ export type ObservedPageSignalsOptions = {
 	throttleMs: number;
 };
 
+const MAX_PENDING_MUTATION_NODES = 100;
+
 export function createObservedPageSignals(
 	options: ObservedPageSignalsOptions,
 ): ObservedPageSignals {
@@ -36,6 +38,7 @@ export function createObservedPageSignals(
 	let lastObservedAt: number | undefined;
 	let lastScannedAt: number | undefined;
 	let pendingMutationCount = 0;
+	let pendingFullDocumentScan = false;
 
 	function clearThrottleTimer(): void {
 		if (throttleTimer !== undefined) {
@@ -110,11 +113,16 @@ export function createObservedPageSignals(
 	function flushPendingMutations(): void {
 		clearThrottleTimer();
 
-		for (const node of pendingNodes) {
-			scanNode(node);
+		if (pendingFullDocumentScan) {
+			scanCurrentDocument();
+		} else {
+			for (const node of pendingNodes) {
+				scanNode(node);
+			}
 		}
 
 		pendingNodes.clear();
+		pendingFullDocumentScan = false;
 		pendingMutationCount = 0;
 		lastScannedAt = Date.now();
 	}
@@ -130,7 +138,13 @@ export function createObservedPageSignals(
 	}
 
 	function queueMutationNode(node: Node): void {
-		if (!nodeMayContainSignal(node)) {
+		if (pendingFullDocumentScan || !nodeMayContainSignal(node)) {
+			return;
+		}
+
+		if (pendingNodes.size >= MAX_PENDING_MUTATION_NODES) {
+			pendingNodes.clear();
+			pendingFullDocumentScan = true;
 			return;
 		}
 
@@ -163,21 +177,16 @@ export function createObservedPageSignals(
 			if (mutation.type === 'childList') {
 				for (const node of mutation.addedNodes) {
 					const before = pendingNodes.size;
+					const neededFullScan = pendingFullDocumentScan;
 					queueMutationNode(node);
-					hasRelevantMutation ||= pendingNodes.size > before;
-				}
-
-				for (const node of mutation.removedNodes) {
-					const before = pendingNodes.size;
-					queueMutationNode(node);
-					hasRelevantMutation ||= pendingNodes.size > before;
+					hasRelevantMutation ||= pendingNodes.size > before || pendingFullDocumentScan !== neededFullScan;
 				}
 
 				continue;
 			}
 
-			if (mutation.type === 'attributes' && nodeMayContainSignal(mutation.target)) {
-				pendingNodes.add(mutation.target);
+			if (mutation.type === 'attributes' && isSignalElement(mutation.target)) {
+				queueMutationNode(mutation.target);
 				hasRelevantMutation = true;
 			}
 		}
@@ -202,12 +211,8 @@ export function createObservedPageSignals(
 			isPolling = true;
 		}
 
-		scanCurrentDocument();
 		return pollingState();
 	}
-
-	scanCurrentDocument();
-	startPolling();
 
 	return {
 		snapshot() {
@@ -242,11 +247,7 @@ export function createObservedPageSignals(
 }
 
 function nodeMayContainSignal(node: Node): boolean {
-	if (
-		node instanceof HTMLScriptElement ||
-		node instanceof HTMLLinkElement ||
-		node instanceof HTMLMetaElement
-	) {
+	if (isSignalElement(node)) {
 		return true;
 	}
 
@@ -255,4 +256,12 @@ function nodeMayContainSignal(node: Node): boolean {
 	}
 
 	return false;
+}
+
+function isSignalElement(node: Node): node is HTMLScriptElement | HTMLLinkElement | HTMLMetaElement {
+	return (
+		node instanceof HTMLScriptElement ||
+		node instanceof HTMLLinkElement ||
+		node instanceof HTMLMetaElement
+	);
 }

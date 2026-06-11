@@ -43,12 +43,6 @@ export function collectPageSignals(
 		collectedAt: Date.now(),
 	};
 
-	console.log("Collect page signals", {
-		input,
-		runtime,
-		signals,
-	})
-
 	return signals;
 }
 
