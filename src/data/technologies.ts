@@ -1,3 +1,3 @@
-import { mvpTechnologies } from "../lib/detection/rules";
+import { technologyDefinitions } from "../lib/detection/rules";
 
-export const technologies = mvpTechnologies;
+export const technologies = technologyDefinitions;
