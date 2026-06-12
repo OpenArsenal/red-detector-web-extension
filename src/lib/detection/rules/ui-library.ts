@@ -2885,12 +2885,18 @@ export const uiLibraryTechnologyDefinitions = [
 			{
 				id: "react:scriptSrc:2",
 				kind: "scriptSrc",
-				pattern: new RegExp("/([\\d\\.]+)/react(?:\\.min)?\\.js"),
+				pattern: new RegExp("/([\\d\\.]+)/react(?:\\-dom)?(?:\\.production)?(?:\\.min)?\\.js"),
 				version: { source: "match", group: 1 },
 				description: "Script source URL matches a known technology marker."
 			},
 			{
 				id: "react:scriptSrc:3",
+				kind: "scriptSrc",
+				pattern: new RegExp("react(?:\\-dom)?(?:\\.production)?(?:\\.min)?\\.js"),
+				description: "Script source URL matches a known technology marker."
+			},
+			{
+				id: "react:scriptSrc:4",
 				kind: "scriptSrc",
 				pattern: new RegExp("^react\\b.*\\.js"),
 				description: "Script source URL matches a known technology marker."
