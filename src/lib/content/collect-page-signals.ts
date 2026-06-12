@@ -1,6 +1,13 @@
 import { normalizeMetaMap, truncate, uniqueStrings } from '../detection/normalizers';
 import { SOURCE_LIMITS } from '../detection/rules';
-import type { CookieSignals, HtmlMatchSignal, PageSignals } from '../detection/types';
+import type {
+	CookieSignals,
+	HtmlMatchSignal,
+	LinkSignal,
+	PageSignals,
+	ResourceSignal,
+	StorageSignals,
+} from '../detection/types';
 import type { HtmlProbe } from '../messaging';
 
 export type CollectPageSignalsInput = {
@@ -14,10 +21,13 @@ export type CollectPageSignalsInput = {
  * Collects only bounded, rule-oriented page signals. The content script may read
  * page DOM and non-HttpOnly cookies, but it never persists raw page payloads.
  */
-export type RuntimePageSignals = Partial<Pick<PageSignals, 'scripts' | 'stylesheets' | 'meta'>>;
+export type RuntimePageSignals = Partial<
+	Pick<PageSignals, 'scripts' | 'stylesheets' | 'links' | 'resources' | 'requests' | 'meta'>
+>;
 
 type ScriptSourceInput = ParentNode | Iterable<HTMLScriptElement>;
 type StylesheetSourceInput = ParentNode | Iterable<HTMLLinkElement>;
+type LinkTagInput = ParentNode | Iterable<HTMLLinkElement>;
 type MetaTagInput = ParentNode | Iterable<HTMLMetaElement>;
 
 export function collectPageSignals(
@@ -29,6 +39,7 @@ export function collectPageSignals(
 	const fullHtml = input.includeHtml ? document.documentElement.outerHTML : '';
 	const htmlProbeList = input.htmlProbeList ?? [];
 	const htmlMatches = fullHtml ? collectHtmlProbeMatches(fullHtml, htmlProbeList) : {};
+	const resources = runtime.resources ?? collectResourceTimings();
 
 	const signals = {
 		url: location.href,
@@ -37,6 +48,11 @@ export function collectPageSignals(
 		htmlMatches,
 		scripts: runtime.scripts ?? collectScriptSources(),
 		stylesheets: runtime.stylesheets ?? collectStylesheetSources(),
+		links: runtime.links ?? collectLinkTags(),
+		resources,
+		requests: runtime.requests ?? resources.map(resourceToRequestSignal),
+		scriptContents: [],
+		stylesheetContents: [],
 		cookies: collectCookieNames(document.cookie),
 		headers: {},
 		meta: runtime.meta ?? collectMetaTags(),
@@ -45,7 +61,13 @@ export function collectPageSignals(
 				selectorProbeList.map((selector) => [selector, safeQuerySelector(selector)]),
 			),
 		},
+		storage: collectStorageKeys(),
 		jsGlobals: collectLikelyGlobals(jsGlobalProbeList),
+		pageGlobals: {},
+		robotsTxt: '',
+		dnsRecords: {},
+		certIssuer: '',
+		probeResults: [],
 		collectedAt: Date.now(),
 	};
 
@@ -212,6 +234,53 @@ export function collectStylesheetSources(input: StylesheetSourceInput = document
 	).slice(0, SOURCE_LIMITS.stylesheetHref);
 }
 
+export function collectLinkTags(input: LinkTagInput = document): LinkSignal[] {
+	const links: LinkSignal[] = [];
+	for (const link of iterateLinks(input)) {
+		const href = normalizeResourceUrl(link.getAttribute('href') ?? link.href);
+		if (!href) {
+			continue;
+		}
+
+		links.push({
+			rel: link.rel,
+			href,
+			type: link.type || undefined,
+			as: link.as || undefined,
+			media: link.media || undefined,
+		});
+
+		if (links.length >= SOURCE_LIMITS.linkTags) {
+			break;
+		}
+	}
+
+	return links;
+}
+
+export function collectResourceTimings(): ResourceSignal[] {
+	if (!('performance' in globalThis) || typeof performance.getEntriesByType !== 'function') {
+		return [];
+	}
+
+	return uniqueStrings(
+		performance
+			.getEntriesByType('resource')
+			.map((entry) => entry.name)
+			.filter(Boolean),
+	)
+		.slice(0, SOURCE_LIMITS.resourceUrls)
+		.map((url) => {
+			const entry = performance
+				.getEntriesByType('resource')
+				.find((item) => item.name === url) as PerformanceResourceTiming | undefined;
+			return {
+				url,
+				initiatorType: entry?.initiatorType,
+			};
+		});
+}
+
 export function collectCookieNames(cookieString: string): CookieSignals {
 	return Object.fromEntries(
 		cookieString
@@ -225,6 +294,36 @@ export function collectCookieNames(cookieString: string): CookieSignals {
 			})
 			.slice(0, SOURCE_LIMITS.cookieNames),
 	);
+}
+
+function collectStorageKeys(): StorageSignals {
+	return {
+		localStorage: collectStorageAreaKeys(() => localStorage),
+		sessionStorage: collectStorageAreaKeys(() => sessionStorage),
+	};
+}
+
+function collectStorageAreaKeys(getStorage: () => Storage): Record<string, true> {
+	try {
+		const storage = getStorage();
+		const keys: Array<[string, true]> = [];
+		for (let index = 0; index < storage.length && keys.length < SOURCE_LIMITS.storageKeys; index += 1) {
+			const key = storage.key(index);
+			if (key) {
+				keys.push([key, true]);
+			}
+		}
+		return Object.fromEntries(keys);
+	} catch {
+		return {};
+	}
+}
+
+function resourceToRequestSignal(resource: ResourceSignal) {
+	return {
+		url: resource.url,
+		type: resource.initiatorType,
+	};
 }
 
 function safeQuerySelector(selector: string): boolean {
@@ -294,6 +393,15 @@ function* iterateStylesheetLinks(input: StylesheetSourceInput): Iterable<HTMLLin
 			yield link;
 		}
 	}
+}
+
+function* iterateLinks(input: LinkTagInput): Iterable<HTMLLinkElement> {
+	if (isParentNode(input)) {
+		yield* input.querySelectorAll('link[href]') as Iterable<HTMLLinkElement>;
+		return;
+	}
+
+	yield* input;
 }
 
 function* iterateMetaTags(input: MetaTagInput): Iterable<HTMLMetaElement> {

@@ -30,6 +30,26 @@ export function validatePageSignals(signals: PageSignals): string | null {
 		return 'Too many stylesheet link entries';
 	}
 
+	if (signals.links.length > SOURCE_LIMITS.linkTags) {
+		return 'Too many link tag entries';
+	}
+
+	if (signals.resources.length > SOURCE_LIMITS.resourceUrls) {
+		return 'Too many resource URL entries';
+	}
+
+	if (signals.requests.length > SOURCE_LIMITS.requestUrls) {
+		return 'Too many request URL entries';
+	}
+
+	if (signals.scriptContents.some((value) => value.length > SOURCE_LIMITS.scriptContentChars)) {
+		return 'Script content signal exceeded safe size bounds';
+	}
+
+	if (signals.stylesheetContents.some((value) => value.length > SOURCE_LIMITS.stylesheetContentChars)) {
+		return 'Stylesheet content signal exceeded safe size bounds';
+	}
+
 	const hasOversizedMeta = Object.values(signals.meta).some(
 		(values) =>
 			values.length > SOURCE_LIMITS.metaValuesPerKey ||
@@ -45,6 +65,20 @@ export function validatePageSignals(signals: PageSignals): string | null {
 
 	if (!Object.values(signals.cookies).every((value) => value === true)) {
 		return 'Cookie signal must contain names only';
+	}
+
+	const storageKeyCount =
+		Object.keys(signals.storage.localStorage).length + Object.keys(signals.storage.sessionStorage).length;
+	if (storageKeyCount > SOURCE_LIMITS.storageKeys * 2) {
+		return 'Storage signal exceeded safe size bounds';
+	}
+
+	const storageValuesAreNamesOnly = [
+		...Object.values(signals.storage.localStorage),
+		...Object.values(signals.storage.sessionStorage),
+	].every((value) => value === true);
+	if (!storageValuesAreNamesOnly) {
+		return 'Storage signal must contain keys only';
 	}
 
 	if (estimateBytes(signals) > MAX_SIGNAL_BYTES) {

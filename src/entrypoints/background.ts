@@ -75,11 +75,16 @@ function summarizeSignals(signals: PageSignals) {
 		hostname: signals.hostname,
 		scriptCount: signals.scripts.length,
 		stylesheetCount: signals.stylesheets.length,
+		linkCount: signals.links.length,
+		resourceCount: signals.resources.length,
+		requestCount: signals.requests.length,
 		metaKeyCount: Object.keys(signals.meta).length,
 		domSelectorCount: Object.keys(signals.dom.selectors).length,
 		jsGlobalCount: Object.keys(signals.jsGlobals).length,
 		htmlMatchCount: Object.keys(signals.htmlMatches ?? {}).length,
 		cookieNameCount: Object.keys(signals.cookies).length,
+		localStorageKeyCount: Object.keys(signals.storage.localStorage).length,
+		sessionStorageKeyCount: Object.keys(signals.storage.sessionStorage).length,
 		collectedAt: signals.collectedAt,
 	};
 }

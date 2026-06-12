@@ -1,8 +1,8 @@
-import { collectMetaTags, collectScriptSources, collectStylesheetSources } from './collect-page-signals';
+import { collectLinkTags, collectMetaTags, collectResourceTimings, collectScriptSources, collectStylesheetSources } from './collect-page-signals';
 import { SOURCE_LIMITS } from '../detection/rules';
 import type { PageSignals } from '../detection/types';
 
-export type ObservedPageSignalsSnapshot = Pick<PageSignals, 'scripts' | 'stylesheets' | 'meta'>;
+export type ObservedPageSignalsSnapshot = Pick<PageSignals, 'scripts' | 'stylesheets' | 'links' | 'resources' | 'requests' | 'meta'>;
 
 export type ObservationSessionStatus = 'idle' | 'observing' | 'dirty' | 'stopped';
 
@@ -70,6 +70,9 @@ export function createObservedPageSignals(
 	const scripts = new Set<string>();
 	const stylesheets = new Set<string>();
 	const metaEntries = new Map<string, Set<string>>();
+	const linkEntries = new Map<string, PageSignals['links'][number]>();
+	const resourceEntries = new Map<string, PageSignals['resources'][number]>();
+	const requestEntries = new Map<string, PageSignals['requests'][number]>();
 	const pendingNodes = new Set<Node>();
 	let throttleTimer: ReturnType<typeof globalThis.setTimeout> | undefined;
 	let activeSession: ActiveObservationSession | undefined;
@@ -123,38 +126,58 @@ export function createObservedPageSignals(
 			stylesheets.add(href);
 		}
 
+		for (const link of snapshot.links) {
+			linkEntries.set(`${link.rel}:${link.type ?? ''}:${link.href}`, link);
+		}
+
+		for (const resource of snapshot.resources) {
+			resourceEntries.set(resource.url, resource);
+		}
+
+		for (const request of snapshot.requests) {
+			requestEntries.set(request.url, request);
+		}
+
 		rememberMeta(snapshot.meta);
 	}
 
 	function scanNode(node: Node): void {
 		if (node instanceof HTMLScriptElement) {
-			rememberSnapshot({ scripts: collectScriptSources([node]), stylesheets: [], meta: {} });
+			rememberSnapshot({ scripts: collectScriptSources([node]), stylesheets: [], links: [], resources: [], requests: [], meta: {} });
 			return;
 		}
 
 		if (node instanceof HTMLLinkElement) {
-			rememberSnapshot({ scripts: [], stylesheets: collectStylesheetSources([node]), meta: {} });
+			rememberSnapshot({ scripts: [], stylesheets: collectStylesheetSources([node]), links: collectLinkTags([node]), resources: [], requests: [], meta: {} });
 			return;
 		}
 
 		if (node instanceof HTMLMetaElement) {
-			rememberSnapshot({ scripts: [], stylesheets: [], meta: collectMetaTags([node]) });
+			rememberSnapshot({ scripts: [], stylesheets: [], links: [], resources: [], requests: [], meta: collectMetaTags([node]) });
 			return;
 		}
 
 		if (node instanceof Element || node instanceof DocumentFragment || node instanceof Document) {
+			const resources = collectResourceTimings();
 			rememberSnapshot({
 				scripts: collectScriptSources(node),
 				stylesheets: collectStylesheetSources(node),
+				links: collectLinkTags(node),
+				resources,
+				requests: resources.map((resource) => ({ url: resource.url, type: resource.initiatorType })),
 				meta: collectMetaTags(node),
 			});
 		}
 	}
 
 	function scanCurrentDocument(): void {
+		const resources = collectResourceTimings();
 		rememberSnapshot({
 			scripts: collectScriptSources(document),
 			stylesheets: collectStylesheetSources(document),
+			links: collectLinkTags(document),
+			resources,
+			requests: resources.map((resource) => ({ url: resource.url, type: resource.initiatorType })),
 			meta: collectMetaTags(document),
 		});
 		lastScannedAt = Date.now();
@@ -328,6 +351,9 @@ export function createObservedPageSignals(
 			return {
 				scripts: [...scripts].slice(0, SOURCE_LIMITS.scriptSrc),
 				stylesheets: [...stylesheets].slice(0, SOURCE_LIMITS.stylesheetHref),
+				links: [...linkEntries.values()].slice(0, SOURCE_LIMITS.linkTags),
+				resources: [...resourceEntries.values()].slice(0, SOURCE_LIMITS.resourceUrls),
+				requests: [...requestEntries.values()].slice(0, SOURCE_LIMITS.requestUrls),
 				meta: snapshotMeta(),
 			};
 		},
