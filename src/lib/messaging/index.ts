@@ -1,10 +1,39 @@
-import type { PageSignalPollingState } from '../content/observed-page-signals';
+import type {
+	PageSignalPollingState as ObservationSessionState,
+} from '../content/observed-page-signals';
 import type { AnalysisStatus, PageSignals, SiteAnalysis } from '../detection/types';
 import type { AppResult } from '../shared/result';
 
 export type AnalyzeActiveTabInput = {
-	forceRefresh?: boolean;
-	restartPolling?: boolean;
+	mode: 'cache-first' | 'refresh';
+	observe: 'none' | 'while-popup-open' | 'bounded';
+};
+
+export type AnalyzeActiveTabOutput = {
+	analysis: SiteAnalysis;
+	cache: {
+		status: 'hit' | 'miss' | 'bypassed';
+		key: string;
+		expiresAt?: number;
+	};
+	session?: ObservationSessionState;
+};
+
+export type ObservationStopReason =
+	| 'manual'
+	| 'expired'
+	| 'navigation'
+	| 'invalidated';
+
+export type BeginObservationSessionInput = {
+	sessionId: string;
+	expectedUrl: string;
+	policy: {
+		durationMs: number;
+		throttleMs: number;
+		maxPendingNodes: number;
+		maxMutations: number;
+	};
 };
 
 export type HtmlProbe = {
@@ -23,17 +52,21 @@ export type CollectPageSignalsInput = {
 
 export interface BackgroundApi {
 	getAnalysisStatus(): Promise<AppResult<AnalysisStatus>>;
-	analyzeActiveTab(input: AnalyzeActiveTabInput): Promise<AppResult<SiteAnalysis>>;
-	startActiveTabPolling(): Promise<AppResult<PageSignalPollingState>>;
-	stopActiveTabPolling(): Promise<AppResult<PageSignalPollingState>>;
-	getActiveTabPollingState(): Promise<AppResult<PageSignalPollingState>>;
+	analyzeActiveTab(
+		input: AnalyzeActiveTabInput,
+	): Promise<AppResult<AnalyzeActiveTabOutput>>;
+	refreshActiveObservationSession(): Promise<AppResult<AnalyzeActiveTabOutput>>;
+	stopActiveObservationSession(): Promise<AppResult<ObservationSessionState>>;
+	getActiveObservationSessionState(): Promise<AppResult<ObservationSessionState>>;
 }
 
 export interface ContentApi {
 	collectPageSignals(input: CollectPageSignalsInput): Promise<AppResult<PageSignals>>;
-	startPageSignalPolling(): Promise<AppResult<PageSignalPollingState>>;
-	stopPageSignalPolling(): Promise<AppResult<PageSignalPollingState>>;
-	getPageSignalPollingState(): Promise<AppResult<PageSignalPollingState>>;
+	beginObservationSession(
+		input: BeginObservationSessionInput,
+	): Promise<AppResult<ObservationSessionState>>;
+	stopObservationSession(): Promise<AppResult<ObservationSessionState>>;
+	getObservationSessionState(): Promise<AppResult<ObservationSessionState>>;
 }
 
 export * from './adapters/background';

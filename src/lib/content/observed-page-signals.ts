@@ -4,20 +4,39 @@ import type { PageSignals } from '../detection/types';
 
 export type ObservedPageSignalsSnapshot = Pick<PageSignals, 'scripts' | 'stylesheets' | 'meta'>;
 
-export type PageSignalPollingState = {
-	isPolling: boolean;
+export type ObservationSessionStatus = 'idle' | 'observing' | 'dirty' | 'stopped';
+
+export type ObservationStopReason = 'manual' | 'expired' | 'navigation' | 'invalidated';
+
+export type ObservationSessionState = {
+	sessionId?: string;
+	expectedUrl?: string;
+	status: ObservationSessionStatus;
 	throttleMs: number;
+	startedAt?: number;
+	expiresAt?: number;
 	lastObservedAt?: number;
 	lastScannedAt?: number;
 	pendingMutationCount: number;
+	stopReason?: ObservationStopReason;
+};
+
+export type PageSignalPollingState = ObservationSessionState;
+
+export type BeginObservationSessionInput = {
+	sessionId: string;
+	expectedUrl: string;
+	durationMs: number;
+	maxPendingNodes: number;
+	maxMutations: number;
 };
 
 export type ObservedPageSignals = {
 	snapshot(): ObservedPageSignalsSnapshot;
-	startPolling(): PageSignalPollingState;
-	stopPolling(): PageSignalPollingState;
-	status(): PageSignalPollingState;
-	disconnect(): void;
+	beginObservationSession(input: BeginObservationSessionInput): ObservationSessionState;
+	stopObservationSession(reason?: ObservationStopReason): ObservationSessionState;
+	status(): ObservationSessionState;
+	disconnect(reason?: ObservationStopReason): void;
 };
 
 export type ObservedPageSignalsOptions = {
@@ -25,6 +44,25 @@ export type ObservedPageSignalsOptions = {
 };
 
 const MAX_PENDING_MUTATION_NODES = 100;
+const OBSERVER_LOG_PREFIX = '[red-detector][content][observer]';
+
+type ActiveObservationSession = {
+	sessionId: string;
+	expectedUrl: string;
+	startedAt: number;
+	expiresAt: number;
+	maxPendingNodes: number;
+	maxMutations: number;
+};
+
+function logObserverEvent(event: string, details?: Record<string, unknown>): void {
+	if (details) {
+		console.log(OBSERVER_LOG_PREFIX, event, details);
+		return;
+	}
+
+	console.log(OBSERVER_LOG_PREFIX, event);
+}
 
 export function createObservedPageSignals(
 	options: ObservedPageSignalsOptions,
@@ -34,11 +72,23 @@ export function createObservedPageSignals(
 	const metaEntries = new Map<string, Set<string>>();
 	const pendingNodes = new Set<Node>();
 	let throttleTimer: ReturnType<typeof globalThis.setTimeout> | undefined;
-	let isPolling = false;
+	let activeSession: ActiveObservationSession | undefined;
+	let sessionStatus: ObservationSessionStatus = 'idle';
+	let stopReason: ObservationStopReason | undefined;
 	let lastObservedAt: number | undefined;
 	let lastScannedAt: number | undefined;
 	let pendingMutationCount = 0;
 	let pendingFullDocumentScan = false;
+
+	function clearPendingMutations(): void {
+		pendingNodes.clear();
+		pendingFullDocumentScan = false;
+		pendingMutationCount = 0;
+	}
+
+	function maxPendingMutationNodes(): number {
+		return activeSession?.maxPendingNodes ?? MAX_PENDING_MUTATION_NODES;
+	}
 
 	function clearThrottleTimer(): void {
 		if (throttleTimer !== undefined) {
@@ -121,10 +171,12 @@ export function createObservedPageSignals(
 			}
 		}
 
-		pendingNodes.clear();
-		pendingFullDocumentScan = false;
-		pendingMutationCount = 0;
+		clearPendingMutations();
 		lastScannedAt = Date.now();
+
+		if (activeSession && sessionStatus !== 'stopped') {
+			sessionStatus = 'observing';
+		}
 	}
 
 	function scheduleThrottledFlush(): void {
@@ -142,7 +194,7 @@ export function createObservedPageSignals(
 			return;
 		}
 
-		if (pendingNodes.size >= MAX_PENDING_MUTATION_NODES) {
+		if (pendingNodes.size >= maxPendingMutationNodes()) {
 			pendingNodes.clear();
 			pendingFullDocumentScan = true;
 			return;
@@ -160,17 +212,26 @@ export function createObservedPageSignals(
 		);
 	}
 
-	function pollingState(): PageSignalPollingState {
+	function observationState(): ObservationSessionState {
 		return {
-			isPolling,
+			sessionId: activeSession?.sessionId,
+			expectedUrl: activeSession?.expectedUrl,
+			status: sessionStatus,
 			throttleMs: options.throttleMs,
+			startedAt: activeSession?.startedAt,
+			expiresAt: activeSession?.expiresAt,
 			lastObservedAt,
 			lastScannedAt,
 			pendingMutationCount,
+			stopReason,
 		};
 	}
 
 	const observer = new MutationObserver((mutations) => {
+		if (!activeSession) {
+			return;
+		}
+
 		let hasRelevantMutation = false;
 
 		for (const mutation of mutations) {
@@ -197,27 +258,73 @@ export function createObservedPageSignals(
 
 		lastObservedAt = Date.now();
 		pendingMutationCount += mutations.length;
+		if (sessionStatus !== 'dirty') {
+			logObserverEvent('session-dirty', {
+				sessionId: activeSession.sessionId,
+				pendingMutationCount,
+				mutationBatchSize: mutations.length,
+			});
+		}
+		sessionStatus = 'dirty';
+
+		if (activeSession.maxMutations > 0 && pendingMutationCount >= activeSession.maxMutations) {
+			logObserverEvent('session-max-mutations-reached', {
+				sessionId: activeSession.sessionId,
+				pendingMutationCount,
+				maxMutations: activeSession.maxMutations,
+			});
+			observer.disconnect();
+			clearThrottleTimer();
+			clearPendingMutations();
+			activeSession = undefined;
+			sessionStatus = 'stopped';
+			stopReason = 'expired';
+			return;
+		}
+
 		scheduleThrottledFlush();
 	});
 
-	function startPolling(): PageSignalPollingState {
-		if (!isPolling) {
-			observer.observe(document, {
-				subtree: true,
-				childList: true,
-				attributes: true,
-				attributeFilter: ['src', 'href', 'rel', 'name', 'property', 'http-equiv', 'content'],
-			});
-			isPolling = true;
-		}
+	function beginObservationSession(
+		input: BeginObservationSessionInput,
+	): ObservationSessionState {
+		observer.disconnect();
+		clearThrottleTimer();
+		clearPendingMutations();
 
-		return pollingState();
+		const startedAt = Date.now();
+		activeSession = {
+			sessionId: input.sessionId,
+			expectedUrl: input.expectedUrl,
+			startedAt,
+			expiresAt: startedAt + input.durationMs,
+			maxPendingNodes: input.maxPendingNodes,
+			maxMutations: input.maxMutations,
+		};
+		lastObservedAt = undefined;
+		lastScannedAt = undefined;
+		stopReason = undefined;
+		sessionStatus = 'observing';
+
+		observer.observe(document, {
+			subtree: true,
+			childList: true,
+			attributes: true,
+			attributeFilter: ['src', 'href', 'rel', 'name', 'property', 'http-equiv', 'content'],
+		});
+
+		return observationState();
 	}
 
 	return {
 		snapshot() {
 			flushPendingMutations();
 			scanCurrentDocument();
+
+			if (activeSession && sessionStatus !== 'stopped') {
+				sessionStatus = 'observing';
+			}
+
 			return {
 				scripts: [...scripts].slice(0, SOURCE_LIMITS.scriptSrc),
 				stylesheets: [...stylesheets].slice(0, SOURCE_LIMITS.stylesheetHref),
@@ -225,23 +332,29 @@ export function createObservedPageSignals(
 			};
 		},
 
-		startPolling,
+		beginObservationSession,
 
-		stopPolling() {
+		stopObservationSession(reason = 'manual') {
 			observer.disconnect();
-			isPolling = false;
-			flushPendingMutations();
-			return pollingState();
+			clearThrottleTimer();
+			clearPendingMutations();
+			activeSession = undefined;
+			sessionStatus = 'stopped';
+			stopReason = reason;
+			return observationState();
 		},
 
 		status() {
-			return pollingState();
+			return observationState();
 		},
 
-		disconnect() {
+		disconnect(reason = 'invalidated') {
 			observer.disconnect();
-			isPolling = false;
-			flushPendingMutations();
+			clearThrottleTimer();
+			clearPendingMutations();
+			activeSession = undefined;
+			sessionStatus = 'stopped';
+			stopReason = reason;
 		},
 	};
 }
