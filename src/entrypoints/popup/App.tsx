@@ -11,7 +11,11 @@ import type {
   DetectionResult,
   SiteAnalysis,
 } from "../../lib/detection/types";
-import type { BackgroundApi } from "../../lib/messaging";
+import type {
+  AnalyzeActiveTabInput,
+  AnalyzeActiveTabOutput,
+  BackgroundApi,
+} from "../../lib/messaging";
 import {
   BACKGROUND_RPC_NAMESPACE,
   createBackgroundClientAdapter,
@@ -26,7 +30,10 @@ type ScanNotice = {
   text: string;
 };
 
+type ObservationMode = "idle" | "active" | "stopped" | "unknown";
+
 const POPUP_POLL_INTERVAL_MS = 1_500;
+const POPUP_LOG_PREFIX = "[red-detector][popup]";
 
 const [, injectBackgroundApi] = defineProxy(() => ({}) as BackgroundApi, {
   namespace: BACKGROUND_RPC_NAMESPACE,
@@ -37,6 +44,15 @@ const [, injectBackgroundApi] = defineProxy(() => ({}) as BackgroundApi, {
 const backgroundApi = injectBackgroundApi(
   createBackgroundClientAdapter("popup", { href: globalThis.location?.href }),
 );
+
+function logPopupEvent(event: string, details?: Record<string, unknown>): void {
+  if (details) {
+    console.log(POPUP_LOG_PREFIX, event, details);
+    return;
+  }
+
+  console.log(POPUP_LOG_PREFIX, event);
+}
 
 function normalizeError(error: unknown): string {
   return error instanceof Error
@@ -93,7 +109,7 @@ export default function App() {
     trackedOrigins: 0,
   });
   const [busy, setBusy] = createSignal(false);
-  const [pollingMode, setPollingMode] = createSignal<PollingMode>("unknown");
+  const [pollingMode, setPollingMode] = createSignal<ObservationMode>("unknown");
   const [notice, setNotice] = createSignal<ScanNotice | null>(null);
   const [errorMessage, setErrorMessage] = createSignal("");
   const [analysis, setAnalysis] = createSignal<SiteAnalysis | null>(null);
@@ -116,10 +132,12 @@ export default function App() {
 
   function pollingChipLabel() {
     return pollingMode() === "active"
-      ? "Polling"
+      ? "Observing"
       : pollingMode() === "stopped"
         ? "Stopped"
-        : "Loading";
+        : pollingMode() === "idle"
+          ? "Idle"
+          : "Loading";
   }
 
   function clearPopupPolling() {
@@ -143,14 +161,22 @@ export default function App() {
 
     pollingCheckInFlight = true;
     try {
-      const response = await backgroundApi.getActiveTabPollingState();
+      const response = await backgroundApi.getActiveObservationSessionState();
       if (!response.ok) {
+        logPopupEvent("observation-state-unavailable", {
+          code: response.error.code,
+          message: response.error.message,
+        });
         setPollingMode("unknown");
         clearPopupPolling();
         return;
       }
 
-      if (!response.value.isPolling) {
+      if (response.value.status !== "observing" && response.value.status !== "dirty") {
+        logPopupEvent("observation-state-inactive", {
+          status: response.value.status,
+          stopReason: response.value.stopReason,
+        });
         setPollingMode("stopped");
         clearPopupPolling();
         return;
@@ -161,15 +187,16 @@ export default function App() {
       const lastObservedAt = response.value.lastObservedAt ?? 0;
       const lastAnalyzedAt = latestAnalysis?.analyzedAt ?? 0;
 
-      if (!latestAnalysis || lastObservedAt > lastAnalyzedAt) {
-        await loadLatestAnalysis({
-          forceRefresh: true,
-          restartPolling: true,
-          resetLateMarkers: true,
-          source: "initial",
+      if (response.value.status === "dirty" || !latestAnalysis || lastObservedAt > lastAnalyzedAt) {
+        logPopupEvent("observation-refresh-triggered", {
+          sessionStatus: response.value.status,
+          lastObservedAt,
+          lastAnalyzedAt,
         });
+        await refreshActiveObservationSession();
       }
     } catch {
+      logPopupEvent("observation-state-check-failed");
       setPollingMode("unknown");
       clearPopupPolling();
     } finally {
@@ -188,19 +215,85 @@ export default function App() {
     }
   }
 
-  async function syncPollingState() {
+  function applyAnalysisResponse(
+    response: AnalyzeActiveTabOutput,
+    options: {
+      source: "initial" | "manual" | "auto";
+      resetLateMarkers?: boolean;
+    },
+  ) {
+    const nextAnalysis = response.analysis;
+    const previous = analysis();
+    const addedIds = previous
+      ? getAddedDetectionIds(previous.results, nextAnalysis.results)
+      : [];
+
+    if (options.resetLateMarkers) {
+      setLateAddedIds([]);
+    }
+
+    setAnalysis(nextAnalysis);
+
+    logPopupEvent("analysis-applied", {
+      source: options.source,
+      analysisSource: nextAnalysis.source,
+      cacheStatus: response.cache.status,
+      resultCount: nextAnalysis.results.length,
+      hostname: nextAnalysis.hostname,
+      sessionStatus: response.session?.status ?? "none",
+    });
+
+    if (response.session && (response.session.status === "observing" || response.session.status === "dirty")) {
+      setPollingMode("active");
+      startPopupPolling();
+    } else {
+      setPollingMode(response.cache.status === "hit" ? "idle" : "stopped");
+      clearPopupPolling();
+    }
+
+    if (addedIds.length) {
+      logPopupEvent("late-detections-found", {
+        hostname: nextAnalysis.hostname,
+        addedCount: addedIds.length,
+      });
+      setLateAddedIds((current) => mergeUniqueIds(current, addedIds));
+      setNotice({
+        variant: "success",
+        text: `Observation found ${addedIds.length} new late detection${addedIds.length === 1 ? "" : "s"} on ${nextAnalysis.hostname}.`,
+      });
+      return;
+    }
+
+    if (options.source === "manual") {
+      setNotice({
+        variant: "success",
+        text: `Refreshed ${nextAnalysis.results.length} technologies for ${nextAnalysis.hostname}. ${response.session ? "Observation is active again." : "Showing the latest cached state."}`,
+      });
+    }
+  }
+
+  async function syncObservationState() {
     try {
-      const response = await backgroundApi.getActiveTabPollingState();
+      const response = await backgroundApi.getActiveObservationSessionState();
       if (!response.ok) {
+        logPopupEvent("observation-sync-unavailable", {
+          code: response.error.code,
+          message: response.error.message,
+        });
         setPollingMode("unknown");
-        setErrorMessage(`${response.error.code}: ${response.error.message}`);
         return;
       }
 
-      setPollingMode(response.value.isPolling ? "active" : "stopped");
-      if (response.value.isPolling) {
+      logPopupEvent("observation-sync", {
+        status: response.value.status,
+        stopReason: response.value.stopReason,
+      });
+
+      if (response.value.status === "observing" || response.value.status === "dirty") {
+        setPollingMode("active");
         startPopupPolling();
       } else {
+        setPollingMode(response.value.status === "idle" ? "idle" : "stopped");
         clearPopupPolling();
       }
     } catch (error) {
@@ -210,8 +303,7 @@ export default function App() {
   }
 
   async function loadLatestAnalysis(options: {
-    forceRefresh: boolean;
-    restartPolling?: boolean;
+    input: AnalyzeActiveTabInput;
     resetLateMarkers?: boolean;
     source: "initial" | "manual" | "auto";
   }) {
@@ -233,43 +325,34 @@ export default function App() {
     }
 
     try {
-      const previous = analysis();
-      const response = await backgroundApi.analyzeActiveTab({
-        forceRefresh: options.forceRefresh,
-        restartPolling: options.restartPolling,
+      logPopupEvent("analysis-requested", {
+        source: options.source,
+        mode: options.input.mode,
+        observe: options.input.observe,
       });
 
+      const response = await backgroundApi.analyzeActiveTab(options.input);
+
       if (!response.ok) {
+        logPopupEvent("analysis-failed", {
+          source: options.source,
+          code: response.error.code,
+          message: response.error.message,
+        });
         if (isUserVisibleRefresh) {
           setErrorMessage(`${response.error.code}: ${response.error.message}`);
         }
         return;
       }
 
-      const addedIds = previous
-        ? getAddedDetectionIds(previous.results, response.value.results)
-        : [];
-      setAnalysis(response.value);
-      if (addedIds.length) {
-        setLateAddedIds((current) => mergeUniqueIds(current, addedIds));
-        setNotice({
-          variant: "success",
-          text: `Polling found ${addedIds.length} new late detection${addedIds.length === 1 ? "" : "s"} on ${response.value.hostname}.`,
-        });
-      } else if (options.source === "manual") {
-        setNotice({
-          variant: "success",
-          text: `Refreshed ${response.value.results.length} technologies for ${response.value.hostname}. Polling is active again.`,
-        });
-      }
-
-      if (options.restartPolling) {
-        setPollingMode("active");
-        startPopupPolling();
-      }
+      applyAnalysisResponse(response.value, options);
 
       await refreshStatus();
     } catch (error) {
+      logPopupEvent("analysis-request-threw", {
+        source: options.source,
+        message: normalizeError(error),
+      });
       if (isUserVisibleRefresh) {
         setErrorMessage(normalizeError(error));
       }
@@ -281,22 +364,60 @@ export default function App() {
     }
   }
 
+  async function refreshActiveObservationSession() {
+    if (refreshInFlight) {
+      return;
+    }
+
+    refreshInFlight = true;
+    try {
+      logPopupEvent("observation-refresh-requested");
+      const response = await backgroundApi.refreshActiveObservationSession();
+      if (!response.ok) {
+        logPopupEvent("observation-refresh-failed", {
+          code: response.error.code,
+          message: response.error.message,
+        });
+        setPollingMode("stopped");
+        clearPopupPolling();
+        return;
+      }
+
+      applyAnalysisResponse(response.value, {
+        source: "auto",
+      });
+      await refreshStatus();
+    } finally {
+      refreshInFlight = false;
+    }
+  }
+
   async function stopPolling() {
     setBusy(true);
     setErrorMessage("");
     setNotice(null);
     try {
-      const response = await backgroundApi.stopActiveTabPolling();
+      logPopupEvent("observation-stop-requested");
+      const response = await backgroundApi.stopActiveObservationSession();
       if (!response.ok) {
+        logPopupEvent("observation-stop-failed", {
+          code: response.error.code,
+          message: response.error.message,
+        });
         setErrorMessage(`${response.error.code}: ${response.error.message}`);
         return;
       }
+
+      logPopupEvent("observation-stopped", {
+        status: response.value.status,
+        stopReason: response.value.stopReason,
+      });
 
       clearPopupPolling();
       setPollingMode("stopped");
       setNotice({
         variant: "warning",
-        text: "Polling stopped. Existing detections stay visible, but late-loaded page signals will not be captured until refresh restarts polling.",
+        text: "Observation stopped. Existing detections stay visible, but late-loaded page signals will not be captured until refresh starts a new session.",
       });
     } catch (error) {
       setErrorMessage(normalizeError(error));
@@ -307,8 +428,10 @@ export default function App() {
 
   async function refreshAndRestartPolling() {
     await loadLatestAnalysis({
-      forceRefresh: true,
-      restartPolling: true,
+      input: {
+        mode: "refresh",
+        observe: "while-popup-open",
+      },
       resetLateMarkers: true,
       source: "manual",
     });
@@ -316,19 +439,24 @@ export default function App() {
 
   onMount(() => {
     void (async () => {
+      logPopupEvent("mount");
       await refreshStatus();
-      await syncPollingState();
       await loadLatestAnalysis({
-        forceRefresh: true,
-        restartPolling: true,
+        input: {
+          mode: "cache-first",
+          observe: "while-popup-open",
+        },
         resetLateMarkers: true,
         source: "initial",
       });
+      await syncObservationState();
     })();
   });
 
   onCleanup(() => {
+    logPopupEvent("cleanup-stop-observation");
     clearPopupPolling();
+    void backgroundApi.stopActiveObservationSession();
   });
 
   return (
@@ -356,7 +484,7 @@ export default function App() {
             disabled={busy() || pollingMode() !== "active"}
             onClick={() => void stopPolling()}
           >
-            Stop polling
+            Stop observation
           </button>
         </div>
 
