@@ -463,7 +463,7 @@ function buildJsGlobalProbeList(registry: TechnologyDefinition[]): string[] {
 function buildHtmlProbeList(registry: TechnologyDefinition[]): HtmlProbe[] {
 	return registry.flatMap((technology) =>
 		technology.rules.flatMap((rule, ruleIndex) => {
-			if (rule.kind !== 'html') {
+			if (rule.kind !== 'html' || !rule.pattern) {
 				return [];
 			}
 
