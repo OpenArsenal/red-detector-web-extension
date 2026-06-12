@@ -63,16 +63,28 @@ async function loadBackgroundApi(input: {
 	vi.stubGlobal('defineBackground', (setup: () => void) => setup);
 
 	const pollingState: PageSignalPollingState = {
-		isPolling: false,
+		status: 'idle',
 		throttleMs: 1_500,
 		pendingMutationCount: 0,
+	};
+	const observingState: PageSignalPollingState = {
+		...pollingState,
+		sessionId: 'session-1',
+		expectedUrl: HTTP_TAB.url!,
+		status: 'observing',
+		startedAt: 1_700_000_000_000,
+		expiresAt: 1_700_000_060_000,
+	};
+	const stoppedState: PageSignalPollingState = {
+		...pollingState,
+		status: 'stopped',
 	};
 
 	const contentApi = {
 		collectPageSignals: vi.fn(async () => ok(makeSignals())),
-		startPageSignalPolling: vi.fn(async () => ok({ ...pollingState, isPolling: true })),
-		stopPageSignalPolling: vi.fn(async () => ok(pollingState)),
-		getPageSignalPollingState: vi.fn(async () => ok(pollingState)),
+		beginObservationSession: vi.fn(async () => ok(observingState)),
+		stopObservationSession: vi.fn(async () => ok(stoppedState)),
+		getObservationSessionState: vi.fn(async () => ok(pollingState)),
 		...input.contentApi,
 	} satisfies ContentApi;
 
@@ -136,7 +148,9 @@ describe('background analyzeActiveTab messaging hardening', () => {
 	it('returns NO_ACTIVE_TAB when there is no selected tab', async () => {
 		const api = await loadBackgroundApi({ tab: null });
 
-		await expect(api.analyzeActiveTab({ forceRefresh: false })).resolves.toMatchObject({
+		await expect(
+			api.analyzeActiveTab({ mode: 'cache-first', observe: 'while-popup-open' }),
+		).resolves.toMatchObject({
 			ok: false,
 			error: {
 				code: 'NO_ACTIVE_TAB',
@@ -151,7 +165,9 @@ describe('background analyzeActiveTab messaging hardening', () => {
 			contentApi: { collectPageSignals },
 		});
 
-		await expect(api.analyzeActiveTab({ forceRefresh: false })).resolves.toMatchObject({
+		await expect(
+			api.analyzeActiveTab({ mode: 'cache-first', observe: 'while-popup-open' }),
+		).resolves.toMatchObject({
 			ok: false,
 			error: {
 				code: 'UNSUPPORTED_URL',
@@ -170,7 +186,9 @@ describe('background analyzeActiveTab messaging hardening', () => {
 			},
 		});
 
-		await expect(api.analyzeActiveTab({ forceRefresh: true })).resolves.toMatchObject({
+		await expect(
+			api.analyzeActiveTab({ mode: 'refresh', observe: 'while-popup-open' }),
+		).resolves.toMatchObject({
 			ok: false,
 			error: {
 				code: 'CONTENT_SCRIPT_UNAVAILABLE',
@@ -188,7 +206,7 @@ describe('background analyzeActiveTab messaging hardening', () => {
 			},
 		});
 
-		const result = api.analyzeActiveTab({ forceRefresh: true });
+		const result = api.analyzeActiveTab({ mode: 'refresh', observe: 'while-popup-open' });
 		await vi.advanceTimersByTimeAsync(CONTENT_SCRIPT_TIMEOUT_MS);
 
 		await expect(result).resolves.toMatchObject({
@@ -196,6 +214,54 @@ describe('background analyzeActiveTab messaging hardening', () => {
 			error: {
 				code: 'CONTENT_SCRIPT_UNAVAILABLE',
 				message: 'Content script did not respond before the messaging timeout.',
+			},
+		});
+	});
+
+	it('returns cached analysis without contacting the content script in cache-first mode', async () => {
+		const collectPageSignals = vi.fn(async () => ok(makeSignals()));
+		const cachedAnalysis = { ...makeAnalysis(), source: 'cache' as const };
+		const api = await loadBackgroundApi({
+			tab: HTTP_TAB,
+			cachedAnalysis,
+			contentApi: { collectPageSignals },
+		});
+
+		await expect(
+			api.analyzeActiveTab({ mode: 'cache-first', observe: 'while-popup-open' }),
+		).resolves.toMatchObject({
+			ok: true,
+			value: {
+				analysis: {
+					source: 'cache',
+				},
+				cache: {
+					status: 'hit',
+				},
+				session: undefined,
+			},
+		});
+
+		expect(collectPageSignals).not.toHaveBeenCalled();
+	});
+
+	it('starts an observation session after a fresh refresh analysis', async () => {
+		const api = await loadBackgroundApi({ tab: HTTP_TAB });
+
+		await expect(
+			api.analyzeActiveTab({ mode: 'refresh', observe: 'while-popup-open' }),
+		).resolves.toMatchObject({
+			ok: true,
+			value: {
+				analysis: {
+					source: 'fresh',
+				},
+				cache: {
+					status: 'bypassed',
+				},
+				session: {
+					status: 'observing',
+				},
 			},
 		});
 	});
