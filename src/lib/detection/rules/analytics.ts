@@ -4197,7 +4197,15 @@ export const analyticsTechnologyDefinitions = [
 				key: "_gat",
 				version: { source: "static", value: "UA" },
 				description: "Cookie name matches a known technology marker."
-			}
+			},
+      {
+				id: "google-analytics:html:11",
+        kind: "html",
+        pattern:
+          /(?:gtag|dataLayer|googletagmanager|google-analytics|google analytics|ga4)[\s\S]{0,500}G-[A-Z0-9]{6,}|G-[A-Z0-9]{6,}[\s\S]{0,500}(?:gtag|dataLayer|googletagmanager|google-analytics|google analytics|ga4)/i,
+        description:
+          "GA4 measurement ID appears near Google Analytics bootstrap/config code.",
+      },
 		],
 		metadata: {
 			saas: false,
