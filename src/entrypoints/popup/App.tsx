@@ -8,6 +8,7 @@ import { EmptyState } from "../../components/EmptyState";
 import { ErrorState } from "../../components/ErrorState";
 import type {
   AnalysisStatus,
+  CategoryId,
   DetectionResult,
   SiteAnalysis,
 } from "../../lib/detection/types";
@@ -74,7 +75,7 @@ function groupByCategory(results: DetectionResult[]) {
 
   return Object.entries(grouped)
     .map(([category, categoryResults]) => {
-      const meta = categories[category] ?? categories.unknown;
+      const meta = categories[category as CategoryId] ?? categories.unknown;
       return {
         category,
         label: meta.label,
