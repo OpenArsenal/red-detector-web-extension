@@ -1,34 +1,150 @@
 import type { AppError } from '../shared/errors';
 
-export type DetectionKind = 'dom' | 'html' | 'scriptSrc' | 'cookie' | 'header' | 'jsGlobal' | 'meta' | 'url';
+export type DetectionKind =
+	| 'dom'
+	| 'html'
+	| 'scriptSrc'
+	| 'stylesheetHref'
+	| 'resourceUrl'
+	| 'requestUrl'
+	| 'scriptContent'
+	| 'stylesheetContent'
+	| 'cookie'
+	| 'header'
+	| 'responseHeader'
+	| 'requestHeader'
+	| 'jsGlobal'
+	| 'pageGlobal'
+	| 'meta'
+	| 'link'
+	| 'storage'
+	| 'url'
+	| 'text'
+	| 'robots'
+	| 'dns'
+	| 'certIssuer'
+	| 'probe'
+	| 'relationship';
+
+export type RuntimeDetectionKind =
+	| 'dom'
+	| 'html'
+	| 'scriptSrc'
+	| 'cookie'
+	| 'header'
+	| 'jsGlobal'
+	| 'meta'
+	| 'url';
 
 export type CategoryId =
-	| 'cms'
-	| 'ecommerce'
-	| 'analytics'
-	| 'javascript-framework'
-	| 'tag-manager'
-	| 'web-server'
-	| 'cdn'
-	| 'payment'
-	| 'marketing'
-	| 'unknown';
-
+	| "framework"
+	| "ui-library"
+	| "router"
+	| "bundler"
+	| "transpiler"
+	| "minifier"
+	| "module-format"
+	| "styling-library"
+	| "styling-processor"
+	| "state-management"
+	| "http-client"
+	| "api-pattern"
+	| "analytics"
+	| "monitoring-error-tracking"
+	| "dates"
+	| "translations"
+	| "animation"
+	| "form-schema-library"
+	| "table-library"
+	| "component-library"
+	| "platform-cms-builder"
+	| "advertising-paid-media"
+	| "experimentation-optimization"
+	| "accessibility"
+	| "business-tools"
+	| "booking-scheduling"
+	| "authentication-identity"
+	| "privacy-compliance"
+	| "security"
+	| "commerce-operations"
+	| "ecommerce-extensions"
+	| "wordpress-ecosystem"
+	| "content-publishing"
+	| "community-ugc"
+	| "search"
+	| "rich-text-editors"
+	| "email-messaging"
+	| "marketing-automation"
+	| "tag-management"
+	| "surveys-feedback"
+	| "maps-location"
+	| "media-video"
+	| "infrastructure-hosting"
+	| "server-runtime-infra"
+	| "network-hardware"
+	| "mobile"
+	| "developer-tooling"
+	| "graphics-visualization"
+	| "widgets-misc"
+	| "domain-parking"
+	| "fundraising-donations"
+	| "unknown";
+	
 export type Category = {
 	id: CategoryId;
 	label: string;
 	priority: number;
 };
 
+export type EvidenceScope = {
+	frameId?: number;
+	isTopFrame?: boolean;
+	url?: string;
+	origin?: string;
+};
+
+export type VersionExtraction =
+	| {
+		source: 'match';
+		group?: number | string;
+		template?: string;
+		confidence?: number;
+	}
+	| {
+		source: 'matchedValue';
+		pattern: RegExp;
+		group?: number | string;
+		template?: string;
+		confidence?: number;
+	}
+	| {
+		source: 'static';
+		value: string;
+		confidence?: number;
+	};
+
 type DetectionRuleBase = {
+	id?: string;
 	confidence?: number;
 	description?: string;
+	version?: VersionExtraction;
 };
 
 export type PatternDetectionRule = DetectionRuleBase & {
-	kind: 'html' | 'scriptSrc' | 'url';
-	pattern: RegExp;
-	versionTemplate?: string;
+	kind:
+		| 'html'
+		| 'scriptSrc'
+		| 'stylesheetHref'
+		| 'resourceUrl'
+		| 'requestUrl'
+		| 'scriptContent'
+		| 'stylesheetContent'
+		| 'url'
+		| 'text'
+		| 'robots'
+		| 'certIssuer'
+		| 'probe';
+	pattern?: RegExp;
 	selector?: never;
 	property?: never;
 	key?: never;
@@ -38,33 +154,31 @@ export type PatternDetectionRule = DetectionRuleBase & {
 export type DomDetectionRule = DetectionRuleBase & {
 	kind: 'dom';
 	selector: string;
+	attribute?: string;
+	valuePattern?: RegExp;
 	pattern?: never;
 	property?: never;
 	key?: never;
-	valuePattern?: never;
-	versionTemplate?: never;
 };
 
 /**
- * Cookie detection is name-only by design. The content collector never exposes
- * raw cookie values, and cookie rules cannot opt into value matching without an
- * intentional type/model change.
+ * Cookie detection is name-first. Values stay unavailable to runtime rules until
+ * we add an intentional local-only redacted value matcher.
  */
 export type CookieDetectionRule = DetectionRuleBase & {
 	kind: 'cookie';
-	key: string;
+	key?: string;
+	keyPattern?: RegExp;
 	pattern?: never;
 	selector?: never;
 	property?: never;
 	valuePattern?: never;
-	versionTemplate?: never;
 };
 
 export type HeaderDetectionRule = DetectionRuleBase & {
-	kind: 'header';
+	kind: 'header' | 'responseHeader' | 'requestHeader';
 	key: string;
 	valuePattern?: RegExp;
-	versionTemplate?: string;
 	pattern?: never;
 	selector?: never;
 	property?: never;
@@ -75,18 +189,49 @@ export type MetaDetectionRule = DetectionRuleBase & {
 	key: string;
 	pattern?: RegExp;
 	valuePattern?: RegExp;
-	versionTemplate?: string;
 	selector?: never;
 	property?: never;
 };
 
 export type JsGlobalDetectionRule = DetectionRuleBase & {
-	kind: 'jsGlobal';
+	kind: 'jsGlobal' | 'pageGlobal';
 	property: string;
 	valuePattern?: RegExp;
-	versionTemplate?: string;
 	pattern?: never;
 	selector?: never;
+	key?: never;
+};
+
+export type LinkDetectionRule = DetectionRuleBase & {
+	kind: 'link';
+	rel?: string;
+	hrefPattern?: RegExp;
+	typePattern?: RegExp;
+	valuePattern?: RegExp;
+	pattern?: never;
+	selector?: never;
+	property?: never;
+	key?: never;
+};
+
+export type StorageDetectionRule = DetectionRuleBase & {
+	kind: 'storage';
+	area?: 'localStorage' | 'sessionStorage';
+	key?: string;
+	keyPattern?: RegExp;
+	valuePattern?: never;
+	pattern?: never;
+	selector?: never;
+	property?: never;
+};
+
+export type DnsDetectionRule = DetectionRuleBase & {
+	kind: 'dns';
+	recordType: 'A' | 'AAAA' | 'CNAME' | 'MX' | 'NS' | 'SOA' | 'TXT';
+	valuePattern: RegExp;
+	pattern?: never;
+	selector?: never;
+	property?: never;
 	key?: never;
 };
 
@@ -96,7 +241,23 @@ export type DetectionRule =
 	| CookieDetectionRule
 	| HeaderDetectionRule
 	| MetaDetectionRule
-	| JsGlobalDetectionRule;
+	| JsGlobalDetectionRule
+	| LinkDetectionRule
+	| StorageDetectionRule
+	| DnsDetectionRule;
+
+export type DetectionRelationshipKind = 'implies' | 'requires' | 'excludes';
+
+export type DetectionRelationship = {
+	kind: DetectionRelationshipKind;
+	target: string;
+	reason?: string;
+};
+
+export type DetectionRunOptions = {
+	disabledKinds?: readonly DetectionKind[];
+	disabledRuleIds?: readonly string[];
+};
 
 export type TechnologyDefinition = {
 	id: string;
@@ -109,6 +270,14 @@ export type TechnologyDefinition = {
 	implies?: string[];
 	requires?: string[];
 	excludes?: string[];
+	relationships?: DetectionRelationship[];
+	priority?: number;
+	metadata?: {
+		saas?: boolean;
+		oss?: boolean;
+		pricing?: string[];
+		cpe?: string;
+	};
 };
 
 export type Evidence = {
@@ -117,6 +286,9 @@ export type Evidence = {
 	matchedValue?: string;
 	confidence: number;
 	version?: string;
+	direct?: boolean;
+	sourceTechnologyId?: string;
+	scope?: EvidenceScope;
 };
 
 export type ConfidenceScore = {
@@ -134,6 +306,8 @@ export type DetectionResult = {
 	confidence: ConfidenceScore;
 	version?: string;
 	evidence: Evidence[];
+	inferred?: boolean;
+	warnings?: string[];
 };
 
 export type CookieSignals = Record<string, true>;
@@ -143,6 +317,36 @@ export type HtmlMatchSignal = {
 	captures: string[];
 };
 
+export type LinkSignal = {
+	rel: string;
+	href: string;
+	type?: string;
+	as?: string;
+	media?: string;
+};
+
+export type ResourceSignal = {
+	url: string;
+	initiatorType?: string;
+};
+
+export type RequestSignal = {
+	url: string;
+	method?: string;
+	type?: string;
+	requestHeaders?: Record<string, string>;
+	responseHeaders?: Record<string, string>;
+};
+
+export type StorageSignals = {
+	localStorage: Record<string, true>;
+	sessionStorage: Record<string, true>;
+};
+
+export type DnsRecordType = 'A' | 'AAAA' | 'CNAME' | 'MX' | 'NS' | 'SOA' | 'TXT';
+
+export type DnsSignals = Partial<Record<DnsRecordType, string[]>>;
+
 export type PageSignals = {
 	url: string;
 	hostname: string;
@@ -150,13 +354,24 @@ export type PageSignals = {
 	htmlMatches?: Record<string, HtmlMatchSignal>;
 	scripts: string[];
 	stylesheets: string[];
+	links: LinkSignal[];
+	resources: ResourceSignal[];
+	requests: RequestSignal[];
+	scriptContents: string[];
+	stylesheetContents: string[];
 	cookies: CookieSignals;
 	headers: Record<string, string>;
 	meta: Record<string, string[]>;
 	dom: {
 		selectors: Record<string, boolean>;
 	};
+	storage: StorageSignals;
 	jsGlobals: Record<string, unknown>;
+	pageGlobals: Record<string, unknown>;
+	robotsTxt: string;
+	dnsRecords: DnsSignals;
+	certIssuer: string;
+	probeResults: string[];
 	collectedAt: number;
 };
 
