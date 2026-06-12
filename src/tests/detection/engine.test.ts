@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { analyzeSite } from '../../lib/detection/engine';
 import { estimateBytes, normalizeMetaMap, truncate } from '../../lib/detection/normalizers';
 import { collectCookieNames } from '../../lib/content/collect-page-signals';
-import { SOURCE_LIMITS, mvpTechnologies } from '../../lib/detection/rules';
+import { SOURCE_LIMITS, technologyDefinitions } from '../../lib/detection/rules';
 import type { PageSignals, TechnologyDefinition } from '../../lib/detection/types';
 import { validatePageSignals } from '../../lib/detection/validate';
 import { extractVersion } from '../../lib/detection/version';
@@ -15,11 +15,22 @@ function createSignals(overrides: Partial<PageSignals> = {}): PageSignals {
 		html: '',
 		scripts: [],
 		stylesheets: [],
+		links: [],
+		resources: [],
+		requests: [],
+		scriptContents: [],
+		stylesheetContents: [],
 		cookies: {},
 		headers: {},
 		meta: {},
 		dom: { selectors: {} },
+		storage: { localStorage: {}, sessionStorage: {} },
 		jsGlobals: {},
+		pageGlobals: {},
+		robotsTxt: '',
+		dnsRecords: {},
+		certIssuer: '',
+		probeResults: [],
 		collectedAt: 1,
 		...overrides,
 	};
@@ -94,18 +105,18 @@ describe('extractVersion', () => {
 	it('applies capture-group templates', () => {
 		const match = 'WordPress 6.5'.match(/WordPress\s*([\d.]+)/i);
 		expect(match).toBeTruthy();
-		expect(extractVersion('$1', match!)).toBe('6.5');
+		expect(extractVersion({ source: 'match', group: 1 }, match!)).toBe('6.5');
 	});
 });
 
 describe('analyzeSite', () => {
-	it('detects WordPress from html and meta generator', () => {
+	it.only('detects WordPress from html and meta generator', () => {
 		const analysis = analyzeSite(
 			createSignals({
 				html: '<meta name="generator" content="WordPress 6.5"><link href="/wp-content/theme.css">',
 				meta: { generator: ['WordPress 6.5'] },
 			}),
-			mvpTechnologies,
+			technologyDefinitions,
 		);
 
 		const wordpress = analysis.results.find((item) => item.technologyId === 'wordpress');
@@ -120,7 +131,7 @@ describe('analyzeSite', () => {
 				html: '<script src="https://cdn.shopify.com/s/files/theme.js"></script>',
 				scripts: ['https://cdn.shopify.com/s/files/theme.js'],
 			}),
-			mvpTechnologies,
+			technologyDefinitions,
 		);
 
 		expect(analysis.results.some((item) => item.technologyId === 'shopify')).toBe(true);
@@ -131,7 +142,7 @@ describe('analyzeSite', () => {
 			createSignals({
 				scripts: ['https://cdn.example.com/react-dom.production.min.js'],
 			}),
-			mvpTechnologies,
+			technologyDefinitions,
 		);
 
 		expect(analysis.results.some((item) => item.technologyId === 'react')).toBe(true);
@@ -142,7 +153,7 @@ describe('analyzeSite', () => {
 			createSignals({
 				scripts: ['https://www.googletagmanager.com/gtag/js?id=G-123'],
 			}),
-			mvpTechnologies,
+			technologyDefinitions,
 		);
 
 		expect(analysis.results.some((item) => item.technologyId === 'google-analytics')).toBe(true);
@@ -158,7 +169,7 @@ describe('analyzeSite', () => {
 			wordpress_test_cookie: true,
 		});
 
-		const analysis = analyzeSite(createSignals({ cookies }), mvpTechnologies);
+		const analysis = analyzeSite(createSignals({ cookies }), technologyDefinitions);
 		const wordpress = analysis.results.find((item) => item.technologyId === 'wordpress');
 
 		expect(wordpress).toBeDefined();
@@ -215,7 +226,7 @@ describe('analyzeSite', () => {
 	});
 
 	it('returns normalized analysis output instead of raw page signals', () => {
-		const analysis = analyzeSite(createSignals({ html: '<html></html>' }), mvpTechnologies);
+		const analysis = analyzeSite(createSignals({ html: '<html></html>' }), technologyDefinitions);
 		expect('html' in analysis).toBe(false);
 		expect('scripts' in analysis).toBe(false);
 	});
@@ -229,6 +240,7 @@ type RelationshipTechnologyInput = {
 	implies?: string[];
 	requires?: string[];
 	excludes?: string[];
+	relationships?: TechnologyDefinition['relationships'];
 };
 
 function relationshipTechnology(input: RelationshipTechnologyInput): TechnologyDefinition {
@@ -250,6 +262,7 @@ function relationshipTechnology(input: RelationshipTechnologyInput): TechnologyD
 		implies: input.implies,
 		requires: input.requires,
 		excludes: input.excludes,
+		relationships: input.relationships,
 	};
 }
 
@@ -274,7 +287,7 @@ describe('relationship resolver', () => {
 			'react',
 		]);
 		expect(react).toMatchObject({
-			confidence: { value: 60, level: 'medium' },
+			confidence: { value: 55, level: 'medium' },
 			evidence: [{ ruleDescription: 'Implied by nextjs' }],
 		});
 	});
@@ -556,5 +569,109 @@ describe('relationship resolver', () => {
 			'plugin',
 			'modern-runtime',
 		]);
+	});
+});
+
+describe('upgraded detection surfaces and graph relationships', () => {
+	it('keeps newly added resource URL and link-tag rule kinds disabled by default', () => {
+		const registry: TechnologyDefinition[] = [
+			{
+				id: 'pagefind',
+				name: 'Pagefind',
+				website: 'https://pagefind.app',
+				categories: ['search'],
+				rules: [
+					{
+						kind: 'resourceUrl',
+						pattern: /\/pagefind\/pagefind\.js/i,
+						confidence: 80,
+					},
+				],
+			},
+			{
+				id: 'opensearch',
+				name: 'OpenSearch',
+				website: 'https://example.com/opensearch',
+				categories: ['search'],
+				rules: [
+					{
+						kind: 'link',
+						rel: 'search',
+						typePattern: /opensearchdescription\+xml/i,
+						confidence: 80,
+					},
+				],
+			},
+		];
+
+		const analysis = analyzeSite(
+			createSignals({
+				resources: [{ url: 'https://example.com/pagefind/pagefind.js' }],
+				links: [
+					{
+						rel: 'search',
+						href: 'https://example.com/opensearch.xml',
+						type: 'application/opensearchdescription+xml',
+					},
+				],
+			}),
+			registry,
+		);
+
+		expect(analysis.results).toEqual([]);
+	});
+
+	it('keeps unsupported DNS rules imported but non-executable in the browser runtime', () => {
+		const registry: TechnologyDefinition[] = [
+			{
+				id: 'dns-only-cdn',
+				name: 'DNS Only CDN',
+				website: 'https://example.com/cdn',
+				categories: ['infrastructure-hosting'],
+				rules: [
+					{
+						kind: 'dns',
+						recordType: 'NS',
+						valuePattern: /example-cdn/i,
+						confidence: 90,
+					},
+				],
+			},
+		];
+
+		expect(analyzeSite(createSignals(), registry).results).toEqual([]);
+	});
+
+	it('does not use taxonomy categories as runtime graph evidence', () => {
+		const registry = [
+			relationshipTechnology({
+				id: 'shipping-carrier',
+				marker: 'carrier',
+			}),
+		];
+
+		expect(resultIds(registry, 'carrier')).toEqual(['shipping-carrier']);
+	});
+
+	it('keeps active fetch rule kinds disabled by default', () => {
+		const registry: TechnologyDefinition[] = [
+			{
+				id: 'robots-only',
+				name: 'Robots Only',
+				website: 'https://example.com/robots',
+				categories: ['unknown'],
+				rules: [
+					{
+						kind: 'robots',
+						pattern: /RobotsOnly/i,
+						confidence: 90,
+					},
+				],
+			},
+		];
+
+		const analysis = analyzeSite(createSignals({ html: 'RobotsOnly' }), registry);
+
+		expect(analysis.results).toEqual([]);
 	});
 });

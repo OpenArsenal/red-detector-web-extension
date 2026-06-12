@@ -46420,7 +46420,7 @@ export const platformCmsBuilderTechnologyDefinitions = [
 				id: "wordpress:meta:16",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^WordPress(?: ([\\d.]+))?"),
+				valuePattern: new RegExp("^WordPress\\s*([\\d.]+)?"),
 				version: { source: "match", group: 1 },
 				description: "Meta tag matches a known technology marker."
 			},
@@ -46429,7 +46429,13 @@ export const platformCmsBuilderTechnologyDefinitions = [
 				kind: "meta",
 				key: "shareaholic:wp_version",
 				description: "Meta tag matches a known technology marker."
-			}
+			},
+      {
+				id: "wordpress:cookie:18",
+        kind: "cookie",
+        key: "wordpress_test_cookie",
+        description: "WordPress test cookie exists.",
+      }
 		],
 		implies: [
 			"php",
