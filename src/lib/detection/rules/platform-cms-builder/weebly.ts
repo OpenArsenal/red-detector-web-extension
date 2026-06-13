@@ -1,0 +1,110 @@
+import type { TechnologyDefinition } from '../../types';
+
+export const weeblyTechnologyDefinition = {
+	id: "weebly",
+	name: "Weebly",
+	website: "https://www.weebly.com",
+	description: "Weebly is a website and ecommerce service.",
+	icon: "Weebly.svg",
+	categories: [
+		"platform-cms-builder",
+	],
+	rules: [
+		{
+			id: "weebly:scriptSrc:0",
+			kind: "scriptSrc",
+			pattern: new RegExp("cdn\\d+\\.editmysite\\.com"),
+			description: "Script source URL matches a known technology marker.",
+		},
+		{
+			id: "weebly:jsGlobal:1",
+			kind: "jsGlobal",
+			property: "_W.configDomain",
+			description: "Page-owned global matches a known technology marker.",
+		},
+		{
+			id: "weebly:html:modern:0",
+			kind: "html",
+			pattern: new RegExp("<meta\\s+name=\"generator\"\\s+content=\"Weebly"),
+			confidence: 75,
+			description: "Document HTML matches a modern tooling marker.",
+		},
+		{
+			id: "weebly:html:modern:1",
+			kind: "html",
+			pattern: new RegExp("wsite-"),
+			confidence: 75,
+			description: "Document HTML matches a modern tooling marker.",
+		},
+		{
+			id: "weebly:html:modern:2",
+			kind: "html",
+			pattern: new RegExp("data-wsite-id"),
+			confidence: 75,
+			description: "Document HTML matches a modern tooling marker.",
+		},
+		{
+			id: "weebly:scriptContent:modern:3",
+			kind: "scriptContent",
+			pattern: new RegExp("_api\\/weebly\\/v1"),
+			confidence: 75,
+			description: "Bundled script content matches a modern tooling marker.",
+		},
+		{
+			id: "weebly:scriptContent:modern:4",
+			kind: "scriptContent",
+			pattern: new RegExp("weebly-libraries"),
+			confidence: 75,
+			description: "Bundled script content matches a modern tooling marker.",
+		},
+		{
+			id: "weebly:resourceUrl:modern:5",
+			kind: "resourceUrl",
+			pattern: new RegExp("\\.weebly\\.com\\/"),
+			confidence: 55,
+			description: "Resource filename or URL matches a modern tooling marker.",
+		},
+		{
+			id: "weebly:resourceUrl:modern:6",
+			kind: "resourceUrl",
+			pattern: new RegExp("\\.editmysite\\.com\\/"),
+			confidence: 55,
+			description: "Resource filename or URL matches a modern tooling marker.",
+		},
+		{
+			id: "weebly:resourceUrl:modern:7",
+			kind: "resourceUrl",
+			pattern: new RegExp("cdn-website\\.com\\/"),
+			confidence: 55,
+			description: "Resource filename or URL matches a modern tooling marker.",
+		},
+		{
+			id: "weebly:header:modern:8",
+			kind: "header",
+			key: "x-weebly-generated",
+			valuePattern: new RegExp(".+"),
+			confidence: 55,
+			description: "HTTP response header matches a modern tooling marker.",
+		},
+		{
+			id: "weebly:header:modern:9",
+			kind: "header",
+			key: "x-weebly-route",
+			valuePattern: new RegExp(".+"),
+			confidence: 55,
+			description: "HTTP response header matches a modern tooling marker.",
+		},
+	],
+	metadata: {
+		saas: true,
+		pricing: [
+			"freemium",
+			"low",
+			"recurring",
+		],
+	},
+	implies: [
+		"mysql",
+		"php",
+	],
+} as const satisfies TechnologyDefinition;
