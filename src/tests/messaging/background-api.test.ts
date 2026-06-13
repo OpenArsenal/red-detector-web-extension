@@ -44,7 +44,6 @@ function makeSignals(overrides: Partial<PageSignals> = {}): PageSignals {
 		dom: { selectors: {} },
 		storage: { localStorage: {}, sessionStorage: {} },
 		jsGlobals: {},
-		pageGlobals: {},
 		robotsTxt: '',
 		dnsRecords: {},
 		certIssuer: '',

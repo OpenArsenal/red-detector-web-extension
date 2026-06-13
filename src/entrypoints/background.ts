@@ -231,7 +231,6 @@ async function collectFromTab(
 			contentApi.collectPageSignals({
 				includeHtml: true,
 				selectorProbeList: buildSelectorProbeList(technologies),
-				jsGlobalProbeList: buildJsGlobalProbeList(technologies),
 				htmlProbeList: buildHtmlProbeList(technologies),
 			}),
 			CONTENT_SCRIPT_TIMEOUT_MS,
@@ -445,19 +444,6 @@ function buildSelectorProbeList(registry: TechnologyDefinition[]): string[] {
 				technology.rules
 					.filter((rule) => rule.kind === 'dom' && rule.selector)
 					.map((rule) => rule.selector!),
-			),
-		),
-	);
-}
-
-/** Build optional isolated-world global probes needed by the active rules. */
-function buildJsGlobalProbeList(registry: TechnologyDefinition[]): string[] {
-	return Array.from(
-		new Set(
-			registry.flatMap((technology) =>
-				technology.rules
-					.filter((rule) => rule.kind === 'jsGlobal' && rule.property)
-					.map((rule) => rule.property!),
 			),
 		),
 	);
