@@ -2,6 +2,31 @@ import type { TechnologyDefinition } from '../types';
 
 export const mobileTechnologyDefinitions = [
 	{
+		id: "foxappy",
+		name: "FoxAppy",
+		website: "https://foxappy.com",
+		description: "FoxAppy is a service that converts ecommerce platforms into native mobile applications for mobile devices.",
+		icon: "FoxAppy.svg",
+		categories: [
+			"mobile",
+		],
+		rules: [
+			{
+				id: "foxappy:scriptContent:0",
+				kind: "scriptContent",
+				pattern: new RegExp("com\\.foxappy\\."),
+				description: "Script content contains a bounded technology signature.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"low",
+				"recurring",
+			],
+		},
+	},
+	{
 		id: "framework7",
 		name: "Framework7",
 		website: "https://framework7.io",
@@ -9,158 +34,74 @@ export const mobileTechnologyDefinitions = [
 		icon: "Framework7.svg",
 		categories: [
 			"mobile",
-			"ui-library"
+			"widgets-misc",
+			"component-library",
 		],
 		rules: [
 			{
-				id: "framework7:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "framework7:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Framework7.Component",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "framework7:scriptSrc:1",
+				kind: "scriptSrc",
+				pattern: new RegExp("(?:\\/(?:js\\/)?)?framework7(?:-((?:\\d+\\.)+\\d+))?(?:\\.custom)?(?:\\.min)?(?:-vue)?_?[\\w\\.]{0,29}\\.js"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "framework7:scriptSrc:2",
+				kind: "scriptSrc",
+				pattern: new RegExp("(?:((?:\\d+\\.)+\\d+)\\/(?:js\\/)?)?framework7(?:-)?(?:\\.custom)?(?:\\.min)?(?:-vue)?_?[\\w\\.]{0,29}\\.js"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "framework7:dom:3",
+				kind: "dom",
+				selector: "link[href*='framework7'], .framework7-root, .framework7-modals",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "jqtouch",
 		name: "jQTouch",
 		website: "https://jqtouch.com",
-		description: "jQTouch is an open-source Zepto/ jQuery plugin with native animations, automatic navigation, and themes for mobile WebKit browsers like iPhone, G1 (Android), and Palm Pre.",
+		description: "jQTouch is an open-source Zepto/ JQuery plugin with native animations, automatic navigation, and themes for mobile WebKit browsers like iPhone, G1 (Android), and Palm Pre.",
 		icon: "jQTouch.png",
 		categories: [
 			"mobile",
-			"ui-library"
 		],
 		rules: [
 			{
 				id: "jqtouch:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("jqtouch.*\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "jqtouch:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "jqtouch:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "jQT",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
-	},
-	{
-		id: "jquery-mobile",
-		name: "jQuery Mobile",
-		website: "https://jquerymobile.com",
-		description: "jQuery Mobile is a HTML5-based user interface system designed to make responsive web sites and apps that are accessible on all smartphone, tablet and desktop devices.",
-		icon: "jQuery Mobile.svg",
-		categories: [
-			"mobile",
-			"ui-library"
-		],
-		rules: [
-			{
-				id: "jquery-mobile:scriptSrc:0",
-				kind: "scriptSrc",
-				pattern: new RegExp("jquery[.-]mobile(?:-([\\d.]+))?(?:\\.min)?\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			},
-			{
-				id: "jquery-mobile:scriptSrc:1",
-				kind: "scriptSrc",
-				pattern: new RegExp("jquery[.-]mobile(?:-)?(?:\\.min)?\\.js(?:\\?ver=([\\d.]+))?"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			},
-			{
-				id: "jquery-mobile:pageGlobal:2",
-				kind: "pageGlobal",
-				property: "jQuery.mobile.version",
-				valuePattern: new RegExp("^(.+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"jquery"
-		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
-	},
-	{
-		id: "jquery-pjax",
-		name: "jQuery-pjax",
-		website: "https://github.com/defunkt/jquery-pjax",
-		description: "jQuery PJAX is a plugin that uses AJAX and pushState.",
-		categories: [
-			"mobile",
-			"ui-library"
-		],
-		rules: [
-			{
-				id: "jquery-pjax:html:0",
-				kind: "html",
-				pattern: new RegExp("<div[^>]+data-pjax-container"),
-				description: "HTML contains a known technology marker."
-			},
-			{
-				id: "jquery-pjax:scriptSrc:1",
-				kind: "scriptSrc",
-				pattern: new RegExp("jquery[.-]pjax(?:-([\\d.]+))?(?:\\.min)?\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			},
-			{
-				id: "jquery-pjax:scriptSrc:2",
-				kind: "scriptSrc",
-				pattern: new RegExp("jquery[.-]pjax(?:-)?(?:\\.min)?\\.js(?:\\?ver=([\\d.]+))?"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			},
-			{
-				id: "jquery-pjax:pageGlobal:3",
-				kind: "pageGlobal",
-				property: "jQuery.pjax",
-				description: "Page-owned global matches a known technology marker."
-			},
-			{
-				id: "jquery-pjax:meta:4",
-				kind: "meta",
-				key: "pjax-push",
-				description: "Meta tag matches a known technology marker."
-			},
-			{
-				id: "jquery-pjax:meta:5",
-				kind: "meta",
-				key: "pjax-replace",
-				description: "Meta tag matches a known technology marker."
-			},
-			{
-				id: "jquery-pjax:meta:6",
-				kind: "meta",
-				key: "pjax-timeout",
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"jquery"
-		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "onsen-ui",
@@ -170,20 +111,19 @@ export const mobileTechnologyDefinitions = [
 		icon: "OnsenUI.svg",
 		categories: [
 			"mobile",
-			"ui-library"
 		],
 		rules: [
 			{
 				id: "onsen-ui:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("(/.*onsen.*min\\.js|.*angular-onsenui\\.min\\.js)"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("(\\/.*onsen.*min\\.js|.*angular-onsenui\\.min\\.js)"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "starti-app",
@@ -193,43 +133,41 @@ export const mobileTechnologyDefinitions = [
 		icon: "StartiApp.svg",
 		categories: [
 			"mobile",
-			"ui-library"
 		],
 		rules: [
 			{
-				id: "starti-app:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "starti-app:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "startiapp.App",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "starti-app:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "starti-app:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "startiappAlternateIcons",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "starti-app:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "starti-app:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "startiappApp",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "starti-app:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "starti-app:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "startiappUser",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "wink",
@@ -240,28 +178,28 @@ export const mobileTechnologyDefinitions = [
 		categories: [
 			"mobile",
 			"ui-library",
-			"framework"
 		],
 		rules: [
 			{
 				id: "wink:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("(?:_base/js/base|wink).*\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("(?:_base\\/js\\/base|wink).*\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "wink:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "wink:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "wink.version",
 				valuePattern: new RegExp("^(.+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:wink:wink:*:*:*:*:*:android:*:*"
-		}
-	}
+			cpe: "cpe:2.3:a:wink:wink:*:*:*:*:*:android:*:*",
+		},
+	},
 ] as const satisfies readonly TechnologyDefinition[];

@@ -8,32 +8,55 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "A2Z Events is an event management solution designed by and for event professionals.",
 		icon: "A2ZEvents.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "a2z-events:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.a2zinc\\.net/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.a2zinc\\.net\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "a2z-events:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "a2z-events:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "a2z.Widget",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "a2z-events:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "a2z-events:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "a2zAnalytics",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
+	},
+	{
+		id: "accelevents",
+		name: "Accelevents",
+		website: "https://www.accelevents.com",
+		description: "Accelevents is an enterprise-grade event management software platform that supports planning, hosting, and managing virtual, hybrid, and in-person events.",
+		icon: "Accelevents.svg",
+		categories: [
+			"booking-scheduling",
+		],
+		rules: [
+			{
+				id: "accelevents:dom:0",
+				kind: "dom",
+				selector: "link[href*='analytics.accelevents.com']",
+				description: "DOM selector matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"poa",
+			],
+		},
 	},
 	{
 		id: "acceptd",
@@ -42,65 +65,76 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Acceptd is a premier application and audition management platform designed to streamline the submission, review, and selection process for organizations and educational institutions.",
 		icon: "Acceptd.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "acceptd:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.getacceptd\\.com"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
 				id: "acceptd:meta:1",
 				kind: "meta",
 				key: "application-name",
-				valuePattern: new RegExp("^Acceptd Application$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^Acceptd Application$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "acceptd:meta:2",
+				kind: "meta",
+				key: "application-name",
+				valuePattern: new RegExp("^acceptd application$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "acuity-scheduling",
 		name: "Acuity Scheduling",
 		website: "https://acuityscheduling.com",
 		description: "Acuity Scheduling is a cloud-based appointment scheduling software solution.",
-		icon: "Acuity Scheduling.svg",
+		icon: "Acuity Scheduling.png",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "acuity-scheduling:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.acuityscheduling\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "acuity-scheduling:dom:1",
 				kind: "dom",
-				selector: "iframe[src*='app.acuityscheduling.com/']",
-				description: "DOM selector matches a known technology marker."
+				selector: "a[href*='app.acuityscheduling.com']",
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "acuity-scheduling:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "acuity-scheduling:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "ACUITY_MODAL_INIT",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "acuity-scheduling:dom:3",
+				kind: "dom",
+				selector: "iframe[src*='app.acuityscheduling.com/']",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "adalte",
@@ -109,58 +143,63 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Adalte is an online solution designed for travel agencies, tour operators, and DMCs, offering travel management capabilities.",
 		icon: "Adalte.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "adalte:meta:0",
 				kind: "meta",
 				key: "author",
-				valuePattern: new RegExp("www\\.adalte\\.com"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("www\\.adalte\\.com", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "addevent",
 		name: "AddEvent",
 		website: "https://www.addevent.com",
 		description: "AddEvent is used to Add to Calendar and event tools for websites and newsletters.",
-		icon: "AddEvent.svg",
+		icon: "addevent.png",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "addevent:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("(?://|\\.)addevent\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/\\/addevent\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "addevent:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "addevent:scriptSrc:1",
+				kind: "scriptSrc",
+				pattern: new RegExp("(?:\\/\\/|\\.)addevent\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "addevent:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "addeventatc",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
+				"freemium",
 				"low",
+				"mid",
+				"poa",
 				"recurring",
-				"freemium"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "agendize",
@@ -169,25 +208,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Agendize is a next-generation, all-in-one platform that streamlines scheduling, secures data, and improves the performance and efficiency of appointment management.",
 		icon: "Agendize.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "agendize:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.agendize\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("app\\.agendize\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "agoda",
@@ -196,35 +234,61 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Agoda is an online travel platform offering its services globally via its app and website.",
 		icon: "Agoda.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "agoda:dom:0",
 				kind: "dom",
 				selector: "link[href*='banner.agoda.com']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "agoda:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "agoda:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "agoda",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "agoda:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "agoda:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "agoda_ad_client",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
+	},
+	{
+		id: "aimharder",
+		name: "Aimharder",
+		website: "https://aimharder.com",
+		description: "Aimharder is a software platform for managing sports facility operations, including scheduling, memberships, bookings, payments, and administrative tasks.",
+		icon: "Aimharder.svg",
+		categories: [
+			"booking-scheduling",
+		],
+		rules: [
+			{
+				id: "aimharder:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\/\\/aimharder\\.com\\/js\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "aimharder:dom:1",
+				kind: "dom",
+				selector: "iframe[src*='.aimharder.com']",
+				description: "DOM selector matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+		},
 	},
 	{
 		id: "aimy",
@@ -233,30 +297,29 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Aimy is a salon management platform that provides scheduling tools, a virtual assistant, and calendar maintenance features to streamline salon operations.",
 		icon: "Aimy.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "aimy:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("widget\\.meetaimy\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "aimy:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "aimy:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "MeetAimyMeta",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "airdata",
@@ -265,25 +328,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Airdata is a ticket booking system for agents in Vietnam, offering unique features to maximize benefits for businesses in managing and selling flight tickets.",
 		icon: "Airdata.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "airdata:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "airdata:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "BOOKING_BASE_API_URL",
 				valuePattern: new RegExp("api\\.airdata\\.vn"),
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "allbookable",
@@ -292,20 +354,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Allbookable is an online booking solution that enables users to book services through a digital platform.",
 		icon: "Allbookable.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "allbookable:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.allbookable\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.allbookable\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "appointedd",
@@ -314,26 +375,25 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Appointedd is an online booking technology.",
 		icon: "Appointedd.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "appointedd:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "appointedd:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Appointedd",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "appointo",
@@ -342,65 +402,63 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Appointo is a Shopify based booking engine from Sidepanda.",
 		icon: "Appointo.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "appointo:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/appointo-14/assets/appointo_bundle.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/appointo-14\\/assets\\/appointo_bundle.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "appointo:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.appointo\\.me"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "appointo:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "appointo:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "onRefreshAppointoWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		requires: [
-			"shopify"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
+		requires: [
+			"shopify",
+		],
 	},
 	{
 		id: "appointy",
 		name: "Appointy",
 		website: "https://www.appointy.com/",
 		description: "Appointy is a cloud-based scheduling solution that helps professionals and businesses to manage their appointment scheduling activities and routines.",
-		icon: "Appointy.svg",
+		icon: "Appointy.png",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "appointy:dom:0",
 				kind: "dom",
 				selector: "a[href*='.appointy.com/'][target='_blank'], iframe[src*='.appointy.com/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"low",
 				"freemium",
-				"recurring"
-			]
-		}
+				"low",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "arlo",
@@ -409,38 +467,44 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Arlo is an event management tool that helps organize, schedule, and track events.",
 		icon: "Arlo.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "arlo:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "arlo:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "ArloST.apiClient",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "arlo:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "arlo:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ArloStarterTemplate",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "arlo:responseHeader:2",
-				kind: "responseHeader",
+				id: "arlo:header:2",
+				kind: "header",
 				key: "Content-Security-Policy-Report-Only",
-				valuePattern: new RegExp("\\.arlocdn\\.net"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("\\.arlocdn\\.net", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "arlo:header:3",
+				kind: "header",
+				key: "content-security-policy-report-only",
+				valuePattern: new RegExp("\\.arlocdn\\.net", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "asksuite",
@@ -449,38 +513,37 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Asksuite is a platform that enhances direct bookings and revenue for hotels and resorts by improving service experiences and boosting reservation sales productivity.",
 		icon: "Asksuite.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "asksuite:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "asksuite:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "AsksuiteUtil.calcTime",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "asksuite:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "asksuite:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "asksuiteLocalStorage",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "asksuite:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "asksuite:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "asksuiteLog",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "asksuite:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "asksuite:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "asksuiteSessionStorage",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "aspio",
@@ -489,27 +552,26 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Aspio is a platform that streamlines bookings and manages sales.",
 		icon: "Aspio.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "aspio:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/aspio-io-customer/public/js/aspio-io-customer-public\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		requires: [
-			"wordpress"
+				pattern: new RegExp("\\/aspio-io-customer\\/public\\/js\\/aspio-io-customer-public\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		requires: [
+			"wordpress",
+		],
 	},
 	{
 		id: "autoops",
@@ -518,20 +580,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "AutoOps is an online scheduling tool that integrates with shop management softwares for auto shops.",
 		icon: "AutoOps.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "autoops:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "autoops:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "AutoOps.addSourceTracking",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "bedbooking",
@@ -540,29 +601,28 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "BedBooking is an all-in-one software platform designed to manage short-term and vacation rental operations, including reservations.",
 		icon: "BedBooking.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "bedbooking:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("panel\\.bed-booking\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("panel\\.bed-booking\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "bedbooking:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "bedbooking:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "bedbookingAsyncInit",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "beyonk",
@@ -571,24 +631,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Beyonk is an online ticketing software that provides EPOS and booking management solutions for businesses.",
 		icon: "Beyonk.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "beyonk:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.beyonk\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "bileto",
@@ -597,20 +656,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Bileto is an all-in-one platform for ticket sale and inspection.",
 		icon: "Bileto.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "bileto:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.bileto\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.bileto\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "blink-ai",
@@ -619,32 +677,31 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "BLiNK AI is a platform that assists businesses in automating service scheduling and marketing operations for dealerships.",
 		icon: "BLiNKAI.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "blink-ai:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.blinkai\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "blink-ai:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "blink-ai:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "BlinkAI",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "blink-ai:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "blink-ai:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "blinkai.autoOpen",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "bobonus",
@@ -654,24 +711,30 @@ export const bookingSchedulingTechnologyDefinitions = [
 		icon: "Bobonus.svg",
 		categories: [
 			"booking-scheduling",
-			"platform-cms-builder"
+			"platform-cms-builder",
 		],
 		rules: [
 			{
-				id: "bobonus:responseHeader:0",
-				kind: "responseHeader",
+				id: "bobonus:header:0",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("https\\://bobonus\\.com"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("https\\:\\/\\/bobonus\\.com", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "bobonus:header:1",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("https\\:\\/\\/bobonus\\.com", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "bokabord",
@@ -680,20 +743,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "BokaBord is a platform that enables users to discover restaurants and book tables across Sweden.",
 		icon: "BokaBord.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "bokabord:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("www\\.bokabord\\.se"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "book-n-pay",
@@ -702,20 +764,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Book N Pay is a platform for booking and paying for various services and activities.",
 		icon: "BookNPay.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "book-n-pay:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.booknpay\\.net/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.booknpay\\.net\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "bookafy",
@@ -724,31 +785,30 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Bookafy is a service that offers appointment scheduling and booking solutions for businesses and professionals.",
 		icon: "Bookafy.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "bookafy:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "bookafy:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "bookafyPopup",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "bookafy:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "bookafy:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "openBookafyPopup",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "bookatable",
@@ -758,20 +818,15 @@ export const bookingSchedulingTechnologyDefinitions = [
 		icon: "Bookatable.svg",
 		categories: [
 			"booking-scheduling",
-			"table-library"
 		],
 		rules: [
 			{
 				id: "bookatable:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("bda\\.bookatable\\.com/deploy/lbui\\.direct\\.min\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("bda\\.bookatable\\.com\\/deploy\\/lbui\\.direct\\.min\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "bookbanket",
@@ -780,36 +835,35 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "BookBanket is a banquet management service designed to coordinate event planning and organize venue arrangements.",
 		icon: "BookBanket.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "bookbanket:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("api\\.bbanket\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("api\\.bbanket\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "bookbanket:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "bookbanket:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "bbanketMetrikaIdInc",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "bookbanket:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "bookbanket:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "bbanketWidget.addStyle",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "bookdinners",
@@ -819,20 +873,15 @@ export const bookingSchedulingTechnologyDefinitions = [
 		icon: "BookDinners.svg",
 		categories: [
 			"booking-scheduling",
-			"table-library"
 		],
 		rules: [
 			{
 				id: "bookdinners:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("bookdinners\\.nl/widget\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("bookdinners\\.nl\\/widget\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "booked",
@@ -841,24 +890,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Booked is a scheduling solution designed for organizational use.",
 		icon: "Booked.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "booked:dom:0",
 				kind: "dom",
 				selector: "link[href*='css/booked.css']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+			cpe: "cpe:2.3:a:twinkletoessoftware:booked:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "bookeo",
@@ -867,36 +916,35 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Bookeo is a cloud-based booking and reservation solution that caters to tour operators, travel agencies, schools, therapists, photographers and event organizers.",
 		icon: "Bookeo.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "bookeo:dom:0",
 				kind: "dom",
 				selector: "a[href*='//bookeo.com/'], iframe[src*='//bookeo.com/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "bookeo:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "bookeo:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "bookeo_start",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "bookeo:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "bookeo:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "bookeo_startMobileLabel",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "booker",
@@ -905,20 +953,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Booker is a spa and salon management platform that supports scheduling, client management, staff coordination, and payment processing.",
 		icon: "Booker.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "booker:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("api\\.booker\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "bookero",
@@ -927,36 +974,34 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Bookero is online booking system for you website or Facebook page.",
 		icon: "Bookero.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "bookero:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.bookero\\.pl"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "bookero:url:1",
 				kind: "url",
 				pattern: new RegExp("\\.bookero\\.(?:org|pl)"),
-				description: "Page URL matches a known technology marker."
+				description: "Page URL matches a known technology marker.",
 			},
 			{
-				id: "bookero:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "bookero:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "bookero_config",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "booking-experts",
@@ -965,25 +1010,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Booking Experts is an all-in-one reservation management system that integrates booking, availability, and pricing into a single platform.",
 		icon: "BookingExperts.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "booking-experts:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn-cms\\.bookingexperts\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "booking-factory",
@@ -992,23 +1036,22 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Booking Factory is an all-in-one hotel management system that facilitates management of hotel operations.",
 		icon: "BookingFactory.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "booking-factory:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.thebookingbutton\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "bookitit",
@@ -1017,24 +1060,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Bookitit is an online scheduling system.",
 		icon: "Bookitit.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "bookitit:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.bookitit\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("app\\.bookitit\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "booklux",
@@ -1043,80 +1085,81 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Booklux is an online booking system that enables users to schedule, manage, and organize reservations through a centralized digital platform.",
 		icon: "Booklux.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "booklux:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.booklux\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "booklux:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.booklux\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "bookly",
 		name: "Bookly",
 		website: "https://www.booking-wp-plugin.com",
 		description: "Bookly is a WordPress scheduling plugin that allows you to accept online reservations on your website and automate your booking system.",
-		icon: "bookly.svg",
+		icon: "bookly.png",
 		categories: [
 			"booking-scheduling",
-			"wordpress-ecosystem"
+			"wordpress-ecosystem",
 		],
 		rules: [
 			{
 				id: "bookly:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/wp-content/plugins/bookly-responsive-appointment-booking-tool/.+\\.js(?:\\?ver=(\\d+(?:\\.\\d+)+))?"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/wp-content\\/plugins\\/bookly-responsive-appointment-booking-tool\\/.+\\.js(?:\\?ver=(\\d+(?:\\.\\d+)+))?"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "bookly:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "bookly:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "BooklyL10n.daysShort",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "bookly:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "bookly:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "bookly",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "bookly:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "bookly:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "booklyCustomerProfile",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		requires: [
-			"wordpress"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
 				"low",
-				"onetime"
-			]
-		}
+				"onetime",
+			],
+			cpe: "cpe:2.3:a:booking-wp-plugin:bookly:*:*:*:*:*:wordpress:*:*",
+		},
+		requires: [
+			"wordpress",
+		],
 	},
 	{
 		id: "bookteq",
@@ -1125,31 +1168,30 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Bookteq is a sports facility booking software that enables schools, clubs, and councils to manage reservations online.",
 		icon: "Bookteq.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "bookteq:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("widget\\.bookteq\\.com"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
 				id: "bookteq:dom:1",
 				kind: "dom",
 				selector: "link[href*='.bookteq.com']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "bookvisit",
@@ -1158,29 +1200,34 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "BookVisit is an online booking and channel management platform used by hotels and tourism organizations, primarily in Scandinavia.",
 		icon: "BookVisit.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "bookvisit:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.bookvisit\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.bookvisit\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "bookvisit:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "bookvisit:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "initBookVisitWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "bookvisit:scriptSrc:2",
+				kind: "scriptSrc",
+				pattern: new RegExp("online\\.bookvisit\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "booxi",
@@ -1189,42 +1236,41 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Booxi is a cloud-based appointment management platform for small to midsize businesses.",
 		icon: "Booxi.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "booxi:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/bxe_core\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/bxe_core\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "booxi:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "booxi:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "booxi",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "booxi:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "booxi:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "booxiController",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "booxi:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "booxi:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "bxe_core",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "bottle",
@@ -1233,29 +1279,28 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Bottle is an all-in-one software for meal delivery businesses, enhancing operational efficiency and customer management.",
 		icon: "Bottle.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "bottle:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "bottle:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "webpackChunkbottle_merchant_vue",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"vue-js",
-			"stripe"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"payg",
 				"recurring",
-				"payg"
-			]
-		}
+			],
+		},
+		implies: [
+			"stripe",
+			"vue-js",
+		],
 	},
 	{
 		id: "boulevard",
@@ -1264,30 +1309,50 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Boulevard is a business management platform tailored to streamline appointment-based operations, specifically designed for the wellness industry.",
 		icon: "Boulevard.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "boulevard:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.joinboulevard\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.joinboulevard\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "boulevard:dom:1",
 				kind: "dom",
 				selector: "iframe[src*='.boulevard.io']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+	},
+	{
+		id: "brella",
+		name: "Brella",
+		website: "https://www.brella.io",
+		description: "Brella is an event networking platform that matches attendees, enables meeting scheduling, and supports in-person, virtual, and hybrid events.",
+		icon: "Brella.svg",
+		categories: [
+			"booking-scheduling",
+		],
+		rules: [
+			{
+				id: "brella:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\.brella\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+		},
 	},
 	{
 		id: "bsport",
@@ -1296,35 +1361,34 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Bsport is a fitness/boutique studio management software for scheduling, memberships, and client management.",
 		icon: "Bsport.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "bsport:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.bsport\\.io"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "bsport:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "bsport:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "BsportWidget.el_list_id",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "bsport:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "bsport:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "runtimeBsport",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "busify",
@@ -1333,59 +1397,57 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Busify is a bus software platform that enables operators to issue tickets, enhance customer experiences, and manage fleets.",
 		icon: "Busify.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "busify:dom:0",
 				kind: "dom",
 				selector: "iframe[src*='.app.busify.com/'], link[href*='app.busify.com/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "calendarhero",
 		name: "CalendarHero",
 		website: "https://calendarhero.com",
 		description: "CalendarHero (formerly Zoom.ai) is meeting scheduling software that helps you book meetings automatically.",
-		icon: "CalendarHero.svg",
+		icon: "CalendarHero.png",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "calendarhero:scriptSrc:0",
-				kind: "scriptSrc",
-				pattern: new RegExp("app\\.calendarhero\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				id: "calendarhero:jsGlobal:0",
+				kind: "jsGlobal",
+				property: "ZOOMAI.VARS",
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "calendarhero:dom:1",
+				id: "calendarhero:scriptSrc:1",
+				kind: "scriptSrc",
+				pattern: new RegExp("app\\.calendarhero\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "calendarhero:dom:2",
 				kind: "dom",
 				selector: "iframe[src*='.calendarhero.com']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
-			{
-				id: "calendarhero:pageGlobal:2",
-				kind: "pageGlobal",
-				property: "ZOOMAI.VARS",
-				description: "Page-owned global matches a known technology marker."
-			}
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"low",
 				"freemium",
-				"recurring"
-			]
-		}
+				"low",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "calendarwiz",
@@ -1394,24 +1456,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "CalendarWiz is an online scheduling calendar.",
 		icon: "CalendarWiz.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "calendarwiz:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("www\\.calendarwiz\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("www\\.calendarwiz\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "calendly",
@@ -1420,42 +1481,47 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Calendly is an app for scheduling appointments, meetings, and events.",
 		icon: "Calendly.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "calendly:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("assets\\.calendly\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("assets\\.calendly\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "calendly:dom:1",
 				kind: "dom",
 				selector: "a[href*='//calendly.com/'][target='_blank']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "calendly:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "calendly:jsGlobal:2",
+				kind: "jsGlobal",
+				property: "Calendly",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "calendly:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "Calendly.closePopupWidget",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "calendly:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "calendly:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "Calendly.showPopupWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"freemium",
 				"low",
-				"freemium"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "calenso",
@@ -1464,23 +1530,55 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Calenso is an online enterprise scheduling solution that helps companies in consulting-intensive industries organize appointments.",
 		icon: "Calenso.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "calenso:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.calenso\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.calenso\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
+	},
+	{
+		id: "casablanca",
+		name: "Casablanca",
+		website: "https://casablanca.at",
+		description: "Casablanca is a hotel booking and property management platform for accommodation businesses.",
+		icon: "default.svg",
+		categories: [
+			"booking-scheduling",
+		],
+		rules: [
+			{
+				id: "casablanca:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("frontend\\.casablanca\\.at\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "casablanca:dom:1",
+				kind: "dom",
+				selector: "a[href*='://ibe.casablanca.at/']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "casablanca:dom:2",
+				kind: "dom",
+				selector: "iframe[src*='://ibe.casablanca.at/']",
+				description: "DOM selector matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+		},
 	},
 	{
 		id: "cfix",
@@ -1489,24 +1587,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Cfixé is a scheduling platform that enables online booking for everyday services and allows professionals to embed a scheduling widget directly on their website.",
 		icon: "Cfixe.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "cfix:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("cfixe\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "chili-piper",
@@ -1515,30 +1612,29 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Chili Piper is a suite of automated scheduling tools that help revenue teams convert leads.",
 		icon: "Chili Piper.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "chili-piper:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("js\\.chilipiper\\.com/marketing\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("js\\.chilipiper\\.com\\/marketing\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "chili-piper:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "chili-piper:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ChiliPiper",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"freemium",
 				"low",
-				"freemium"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "classcreator",
@@ -1547,25 +1643,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "ClassCreator is a school class reunion planning tool that helps organize events, manage guest lists, and track RSVPs, streamlining the coordination of reunions.",
 		icon: "ClassCreator.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "classcreator:scriptContent:0",
 				kind: "scriptContent",
-				pattern: new RegExp("www\\.classcreator\\.com/"),
-				description: "Script content contains a bounded technology signature."
-			}
+				pattern: new RegExp("www\\.classcreator\\.com\\/"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "classfit",
@@ -1574,30 +1669,29 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "ClassFit is a provider of a booking and scheduling software for fitness centers.",
 		icon: "ClassFit.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "classfit:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.classfit\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "classfit:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.classfit\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "clickbus",
@@ -1606,20 +1700,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "ClickBus is an online platform that enables users to search, compare, and book bus travel routes.",
 		icon: "ClickBus.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "clickbus:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("static\\.clickbus\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "client-diary",
@@ -1628,24 +1721,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Client Diary is a scheduling and booking system used to manage appointments, track availability, and organize client interactions in one platform.",
 		icon: "ClientDiary.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "client-diary:dom:0",
 				kind: "dom",
 				selector: "iframe[src*='booking.clientdiary.com']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "clock-pms",
@@ -1654,29 +1746,28 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Clock PMS is a hotel booking software designed to streamline reservations, manage guest information, and optimise hotel operations.",
 		icon: "ClockPMS.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "clock-pms:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.clock-software\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.clock-software\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "clock-pms:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "clock-pms:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "clock_pms_iframe",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "clorder",
@@ -1685,24 +1776,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Clorder is a digital platform for ordering and marketing designed to reduce costs and enhance sales for businesses.",
 		icon: "Clorder.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "clorder:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("api\\.clorder\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "cloudbeds",
@@ -1711,36 +1801,56 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Cloudbeds is a cloud-based hotel management platform which includes tools for managing reservations, availability, rates, distribution channels, payments, guests, housekeeping, and more.",
 		icon: "Cloudbeds.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "cloudbeds:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.cloudbeds\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.cloudbeds\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "cloudbeds:dom:1",
 				kind: "dom",
 				selector: "a[href*='.cloudbeds.com/'][target='_blank']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "cloudbeds:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "cloudbeds:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "CloudBeds_widget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"payg",
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
+	},
+	{
+		id: "configio",
+		name: "Configio",
+		website: "https://www.configio.com",
+		description: "Configio is an event registration software platform that supports event planning, promotion, and execution through integrated tools for managing registrations, payments, and attendee data.",
+		icon: "Configio.svg",
+		categories: [
+			"booking-scheduling",
+		],
+		rules: [
+			{
+				id: "configio:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("media\\.configio\\.com"),
+				description: "Script source URL matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+		},
 	},
 	{
 		id: "cooltix",
@@ -1749,25 +1859,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Cooltix is an event and ticketing system designed to manage and sell tickets for concerts.",
 		icon: "Cooltix.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "cooltix:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("static\\.cooltix\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("static\\.cooltix\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"payg",
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "counseling-kit",
@@ -1776,24 +1885,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Counseling Kit is a HIPAA-compliant platform offering professional online tools designed specifically for therapists to support virtual therapy sessions.",
 		icon: "CounselingKit.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "counseling-kit:dom:0",
 				kind: "dom",
 				selector: "div[data-url*='www.counselingkit.com/'], link[href*='/ico/counselingkit/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "covermanager",
@@ -1803,29 +1911,27 @@ export const bookingSchedulingTechnologyDefinitions = [
 		icon: "CoverManager.svg",
 		categories: [
 			"booking-scheduling",
-			"table-library"
 		],
 		rules: [
 			{
 				id: "covermanager:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.covermanager\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.covermanager\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "covermanager:dom:1",
 				kind: "dom",
 				selector: "iframe[src*='.covermanager.com/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "cubilis",
@@ -1834,24 +1940,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Cubilis is a management and reservation system for all types of accommodation, such as hotels, B&Bs and hostels.",
 		icon: "Cubilis.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "cubilis:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("static\\.cubilis\\.eu/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("static\\.cubilis\\.eu\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "cvent",
@@ -1860,43 +1965,45 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Cvent is an event management software that offers a platform for managing in-person, virtual, and hybrid events.",
 		icon: "Cvent.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "cvent:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.cvent-assets\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.cvent-assets\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "cvent:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "cvent:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "CVENT",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "cvent:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "cvent:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "CVENT.version",
 				valuePattern: new RegExp("([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "cvent:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "cvent:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "Cvent_findElement",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "deardoc",
@@ -1905,23 +2012,22 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "DearDoc is an appointment scheduling system that organizes, manages, and tracks appointments to streamline booking processes.",
 		icon: "DearDoc.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "deardoc:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("ai\\.getdeardoc\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "dice",
@@ -1930,32 +2036,31 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Dice is an event and ticketing platform that enables users to discover, access, and attend live events through a streamlined digital experience.",
 		icon: "Dice.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "dice:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("widgets\\.dice\\.fm"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "dice:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.dice\\.fm"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "dice:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "dice:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "DiceEventListWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "dish",
@@ -1964,20 +2069,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "DISH is a platform that allows restaurants to independently manage online reservations and customer orders.",
 		icon: "DISH.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "dish:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.dish\\.co"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "doctena",
@@ -1986,30 +2090,35 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Doctena is an online appointment booking platform that allows users to schedule visits with doctors, dentists, and other healthcare practitioners.",
 		icon: "Doctena.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "doctena:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.doctena\\.at"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "doctena:cookie:1",
 				kind: "cookie",
-				key: "PRODDOCTENASESSID",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^PRODDOCTENASESSID$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "doctena:cookie:2",
+				kind: "cookie",
+				keyPattern: new RegExp("^proddoctenasessid$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "drchrono",
@@ -2018,32 +2127,31 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "DrChrono is an electronic health record system that centralizes clinical documentation, scheduling, billing, and patient management to support healthcare operations.",
 		icon: "DrChrono.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "drchrono:dom:0",
 				kind: "dom",
 				selector: "form[action*='drchrono.com/scheduling/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "drchrono:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "drchrono:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "DRCHRONO_REACT_BUNDLE_LOADED",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "drchrono:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "drchrono:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "dispatchDrChronoEvent",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "droplabs",
@@ -2052,29 +2160,28 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Droplabs is a Poland-based ticketing system, reservation system, and channel management tool designed to manage bookings and distribution across multiple sales channels.",
 		icon: "Droplabs.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "droplabs:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("widget\\.droplabs\\.pl/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("widget\\.droplabs\\.pl\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "droplabs:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "droplabs:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "webpackChunkdroplabs_widget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "easy-rez",
@@ -2083,30 +2190,36 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Easy Rez is a hotel property management and booking system designed to streamline reservations, room management, and guest services.",
 		icon: "EasyRez.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "easy-rez:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.easy-rez\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn\\.easy-rez\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "easy-rez:meta:1",
 				kind: "meta",
 				key: "author",
-				valuePattern: new RegExp("^Easy-Rez$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^Easy-Rez$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "easy-rez:meta:2",
+				kind: "meta",
+				key: "author",
+				valuePattern: new RegExp("^easy-rez$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "easyweek",
@@ -2115,32 +2228,31 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "EasyWeek is a software platform that enables appointment scheduling for businesses across various industries.",
 		icon: "EasyWeek.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "easyweek:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.easyweek\\.io/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.easyweek\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "easyweek:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "easyweek:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "EasyWeekWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "eatself",
@@ -2149,24 +2261,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Eatself is an online platform that facilitates meal ordering and delivery services.",
 		icon: "Eatself.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "eatself:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.eatself\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "eatstreet",
@@ -2175,26 +2286,25 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "EatStreet is a food booking platform that enables users to browse restaurants, place meal orders, and schedule deliveries or pickups through an online or mobile interface.",
 		icon: "EatStreet.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "eatstreet:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("static\\.eatstreet\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "eatstreet:cookie:1",
 				kind: "cookie",
-				key: "eatstreet-year-session",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^eatstreet\\-year\\-session$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "elina-pms",
@@ -2203,26 +2313,25 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Elina PMS is a software suite that includes a channel manager, booking engine, and property management system for handling reservations, availability, and operations.",
 		icon: "Elina.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "elina-pms:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.elinapms\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "elina-pms:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "elina-pms:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "elinaGlobalConst",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "eola",
@@ -2231,31 +2340,30 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "eola is a booking platform that enables users to manage reservations, schedules, and availability for services or events through a centralized online system.",
 		icon: "eola.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "eola:dom:0",
 				kind: "dom",
 				selector: "link[href*='backend.eola.co/'][rel*='stylesheet']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
 				id: "eola:cookie:1",
 				kind: "cookie",
-				key: "_eola_session_eola",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^_eola_session_eola$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "etermio",
@@ -2264,35 +2372,34 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Etermio is an automated system for online appointment scheduling.",
 		icon: "Etermio.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "etermio:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "etermio:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "$eTermio",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "etermio:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "etermio:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "eTermio_autoOpenWindow",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "etermio:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "etermio:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "etermio_handler",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "etix",
@@ -2301,29 +2408,28 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Etix is an international web-based ticketing service provider for the entertainment, travel, and sports industries.",
 		icon: "Etix.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "etix:dom:0",
 				kind: "dom",
 				selector: "a[href*='.etix.com/ticket/'][target='_blank']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "etix:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "etix:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Etix.javaContext",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "eventlink",
@@ -2332,49 +2438,44 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Eventlink is a platform for managing events, offering tools for registration, communication, and collaboration in a unified interface.",
 		icon: "Eventlink.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "eventlink:dom:0",
 				kind: "dom",
 				selector: "link[href*='.eventlink.com/'], iframe[src*='.eventlink.com/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "eventlink:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "eventlink:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "eventlink.organizationID",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "eventon",
 		name: "EventOn",
 		website: "https://www.myeventon.com",
 		description: "EventON is event calendar for WordPress.",
-		icon: "eventon.svg",
+		icon: "eventon.png",
 		categories: [
 			"booking-scheduling",
-			"wordpress-ecosystem"
+			"wordpress-ecosystem",
 		],
 		rules: [
 			{
 				id: "eventon:dom:0",
 				kind: "dom",
 				selector: "link#eventon_dynamic_styles-css, link[href*='/css/eventon_styles\\.css']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "eviivo",
@@ -2383,30 +2484,29 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Eviivo is an online booking system that enables hosts and hoteliers to manage reservations and availability.",
 		icon: "Eviivo.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "eviivo:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "eviivo:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "eviivo.announcement",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "eviivo:cookie:1",
 				kind: "cookie",
-				key: "eviivo_lang",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^eviivo_lang$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "evvnt",
@@ -2415,29 +2515,28 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Evvnt is a digital events marketing and management platform.",
 		icon: "Evvnt.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "evvnt:dom:0",
 				kind: "dom",
 				selector: "script[data-source*='evvnt']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "evvnt:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "evvnt:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "evvnt_require",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "eztix",
@@ -2446,29 +2545,28 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "EzTix is an event ticketing system.",
 		icon: "EzTix.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "eztix:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("kiosk\\.eztix\\.co/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("kiosk\\.eztix\\.co\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "eztix:dom:1",
 				kind: "dom",
 				selector: "script#eztixKioskLinkId",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "ezyvet",
@@ -2477,23 +2575,22 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "ezyVet is a cloud-based veterinary practice management platform designed to support clinical workflows, patient records, scheduling, and operational processes.",
 		icon: "ezyVet.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "ezyvet:scriptContent:0",
 				kind: "scriptContent",
-				pattern: new RegExp("\\.ezyvet\\.com/"),
-				description: "Script content contains a bounded technology signature."
-			}
+				pattern: new RegExp("\\.ezyvet\\.com\\/"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "fatsoma",
@@ -2502,26 +2599,25 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Fatsoma is a platform for creating event and concert websites, enabling organizers to manage listings and ticket sales.",
 		icon: "Fatsoma.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "fatsoma:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.fatsoma\\.com"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
 				id: "fatsoma:dom:1",
 				kind: "dom",
 				selector: "link[href*='.fatsomasites.com']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "fever",
@@ -2530,20 +2626,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Fever is a digital platform facilitating the discovery and booking of top events and experiences worldwide.",
 		icon: "Fever.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "fever:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("feverup\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "fieldd",
@@ -2552,30 +2647,29 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Fieldd is a scheduling software used to plan, assign, and manage field service operations.",
 		icon: "Fieldd.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "fieldd:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "fieldd:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "FielddBooking.init",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "fieldd:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "fieldd:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "FielddLeadForm",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "findigs",
@@ -2584,20 +2678,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Findigs is an all-in-one renting platform that streamlines the entire process from application to approval.",
 		icon: "Findigs.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "findigs:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.findigs\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "firefly-reservations",
@@ -2606,24 +2699,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Firefly Reservations is a management platform that provides tools for handling campground reservations.",
 		icon: "FireflyReservations.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "firefly-reservations:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.fireflyreservations\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "fitssey",
@@ -2632,30 +2724,29 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Fitssey is a booking software designed to manage studio appointments and scheduling.",
 		icon: "Fitssey.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "fitssey:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.fitssey\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "fitssey:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "fitssey:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "FitsseyWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "fleksa",
@@ -2664,29 +2755,28 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Fleksa is an online ordering system for restaurants and delivery.",
 		icon: "Fleksa.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "fleksa:dom:0",
 				kind: "dom",
 				selector: "a[href*='play.google.com/store/apps/details?id=com.fleksa.'][target='_blank']",
-				description: "DOM selector matches a known technology marker."
-			}
-		],
-		implies: [
-			"node-js",
-			"next-js"
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg",
 				"mid",
-				"recurring"
-			]
-		}
+				"payg",
+				"recurring",
+			],
+		},
+		implies: [
+			"next-js",
+			"node-js",
+		],
 	},
 	{
 		id: "flipdish",
@@ -2695,24 +2785,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Flipdish is an all-in-one technology solution designed to streamline restaurant operations.",
 		icon: "Flipdish.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "flipdish:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.web\\.flipdish\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.web\\.flipdish\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "flybook",
@@ -2721,60 +2810,58 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Flybook is specialized reservation software designed to manage bookings, availability, and operations for businesses in the adventure, tours, and rentals industry.",
 		icon: "Flybook.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "flybook:cookie:0",
 				kind: "cookie",
-				key: "flybook-generated-session-guid",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^flybook\\-generated\\-session\\-guid$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"payg",
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "foodbooking",
 		name: "FoodBooking",
 		website: "https://www.foodbooking.com",
 		description: "FoodBooking is a virtual food court based on a curated list of restaurants that use the GloriaFood ordering system.",
-		icon: "FoodBooking.svg",
+		icon: "FoodBooking.png",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "foodbooking:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.(?:fbgcdn|foodbooking)\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.(?:fbgcdn|foodbooking)\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "foodbooking:dom:1",
 				kind: "dom",
 				selector: "a[href*='.foodbooking.com/ordering/restaurant/'][target='_blank']",
-				description: "DOM selector matches a known technology marker."
-			}
-		],
-		implies: [
-			"gloriafood"
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"onetime",
 				"recurring",
-				"onetime"
-			]
-		}
+			],
+		},
+		implies: [
+			"gloriafood",
+		],
 	},
 	{
 		id: "foodomaa",
@@ -2783,31 +2870,30 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Foodomaa is a multi-restaurant food ordering and restaurant membership system.",
 		icon: "Foodomaa.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "foodomaa:cookie:0",
 				kind: "cookie",
-				key: "cloudify_session",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^foodomaa_session$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "foodomaa:cookie:1",
 				kind: "cookie",
-				key: "foodomaa_session",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^cloudify_session$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
+				"low",
 				"recurring",
-				"low"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "foratable",
@@ -2817,24 +2903,22 @@ export const bookingSchedulingTechnologyDefinitions = [
 		icon: "Foratable.svg",
 		categories: [
 			"booking-scheduling",
-			"table-library"
 		],
 		rules: [
 			{
 				id: "foratable:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("static\\.foratable\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "foreup",
@@ -2843,23 +2927,22 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "ForeUP is a golf course management platform that provides integrated tools for operations in a single system.",
 		icon: "ForeUP.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "foreup:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("foreupsoftware\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
-		],
-		requires: [
-			"wordpress"
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
+		requires: [
+			"wordpress",
+		],
 	},
 	{
 		id: "formitable",
@@ -2868,31 +2951,33 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Formitable is an reservation management system for restaurants.",
 		icon: "Formitable.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "formitable:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("formitable\\.js(?:\\?ver=([\\d.]+))?"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "formitable:scriptSrc:1",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.formitable\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "fresha",
@@ -2901,35 +2986,34 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Fresha is a leading marketplace enabling consumers to discover, book, and pay for local beauty and wellness services.",
 		icon: "Fresha.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "fresha:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.fresha\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.fresha\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "fresha:dom:1",
 				kind: "dom",
 				selector: "a[data-href*='.fresha.com/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "fresha:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "fresha:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "FRESHA_VARS",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"freemium"
-			]
-		}
+				"freemium",
+			],
+		},
 	},
 	{
 		id: "full-on-sport",
@@ -2938,20 +3022,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Full On Sport is an online event-registration platform designed for race directors, offering tools to manage sign-ups, participant data, and race operations.",
 		icon: "FullOnSport.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "full-on-sport:scriptContent:0",
 				kind: "scriptContent",
-				pattern: new RegExp("\\.fullonsport\\.com/"),
-				description: "Script content contains a bounded technology signature."
-			}
+				pattern: new RegExp("\\.fullonsport\\.com\\/"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "full-slate",
@@ -2960,24 +3043,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Full Slate is an appointment scheduling software designed to help businesses manage bookings, client information, and availability.",
 		icon: "FullSlate.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "full-slate:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.fullslate\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "fullseats",
@@ -2986,25 +3068,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "FullSeats is a booking system designed to streamline scheduling and support business growth through reservation management.",
 		icon: "FullSeats.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "fullseats:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("apps\\.fullseats\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "funbutler-booking",
@@ -3013,31 +3094,30 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Funbutler Booking is a booking and operations system designed for activity centers and entertainment venues to manage reservations and streamline daily operations.",
 		icon: "FunbutlerBooking.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "funbutler-booking:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("booking\\.funbutler\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "funbutler-booking:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "funbutler-booking:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "funbutlerAPI",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "gastronaut",
@@ -3046,24 +3126,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Gastronaut is a reservation system designed to automate the booking process, streamlining operations to enhance sales efficiency.",
 		icon: "Gastronaut.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "gastronaut:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("api\\.gastronaut\\.ai/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("api\\.gastronaut\\.ai\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "gbooking",
@@ -3072,20 +3151,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "GBooking is an online platform that provides booking and business management services for scheduling, reservations, and operational organization.",
 		icon: "GBooking.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "gbooking:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.gbooking\\.ru"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "getyourguide",
@@ -3094,23 +3172,40 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "GetYourGuide is a Berlin-based online travel agency and online marketplace for tour guides and excursions.",
 		icon: "GetYourGuide.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "getyourguide:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.getyourguide\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.getyourguide\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "getyourguide:dom:1",
+				kind: "dom",
+				selector: "a[href*='.getyourguide.']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "getyourguide:dom:2",
+				kind: "dom",
+				selector: "img[src*='cdn.getyourguide.com/']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "getyourguide:dom:3",
+				kind: "dom",
+				selector: "link[href*='cdn.getyourguide.com/']",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "gevme",
@@ -3119,45 +3214,51 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Gevme is an omnichannel event management platform designed to streamline planning, coordination, and execution across physical, virtual, and hybrid events.",
 		icon: "Gevme.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "gevme:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("analytics\\.gevme\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "gevme:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "gevme:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "GEVME.analytics",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "gevme:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "gevme:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "GevmeActivityFeed",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "gevme:meta:3",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^GEVME Analytics$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^GEVME Analytics$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "gevme:meta:4",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^gevme analytics$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "glampmanager",
@@ -3166,30 +3267,35 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "GlampManager is a booking and management software designed to streamline reservations, scheduling, and operational tasks for hospitality businesses.",
 		icon: "GlampManager.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "glampmanager:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("bookings\\.glampmanager\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "glampmanager:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("Glampmanager"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
+			{
+				id: "glampmanager:scriptContent:2",
+				kind: "scriptContent",
+				pattern: new RegExp("glampmanager"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "globres",
@@ -3198,26 +3304,25 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "GlobRes is a hospitality management solution designed to streamline operations, reservations, and customer service for hotels and other lodging providers.",
 		icon: "GlobRes.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "globres:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("api\\.globres\\.io"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "globres:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.globres\\.io"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "glofox",
@@ -3226,23 +3331,22 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Glofox is a fitness management platform that assists gyms and fitness studios in managing memberships, class scheduling, and other business operations.",
 		icon: "Glofox.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "glofox:dom:0",
 				kind: "dom",
 				selector: "a[href*='.glofox.com/'], iframe[src*='.glofox.com/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "gloriafood",
@@ -3251,29 +3355,27 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "GloriaFood is an online ordering and food delivery platform that helps restaurant owners manage orders and streamline point-of-sale operations.",
 		icon: "Oracle.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "gloriafood:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "gloriafood:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "glfBindButtons",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "gloriafood:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "gloriafood:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "glfWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
-				"freemium"
-			]
-		}
+				"freemium",
+			],
+		},
 	},
 	{
 		id: "goprep",
@@ -3282,25 +3384,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "GoPrep is a meal prep software tailored for the Meal Preparation & Delivery industry.",
 		icon: "GoPrep.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "goprep:cookie:0",
 				kind: "cookie",
-				key: "goprep_session",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^goprep_session$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "gorendezvous",
@@ -3309,20 +3410,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "GOrendezvous is an online scheduling and appointment booking software for managing availability, bookings, and calendar coordination across services and users.",
 		icon: "GOrendezvous.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "gorendezvous:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("www\\.gorendezvous\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "greminders",
@@ -3331,32 +3431,31 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "GReminders is an end-to-end meeting management platform designed for professionals to schedule, organize, and manage meetings.",
 		icon: "GReminders.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "greminders:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.greminders\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("app\\.greminders\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "greminders:dom:1",
 				kind: "dom",
 				selector: "iframe[src*='app.greminders.com/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "growcer",
@@ -3365,24 +3464,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Growcer is an online marketplace for grocery ordering and delivery, connecting customers with local stores for convenient shopping.",
 		icon: "Growcer.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "growcer:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.yogrowcer\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"onetime",
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "guestonline",
@@ -3392,30 +3490,28 @@ export const bookingSchedulingTechnologyDefinitions = [
 		icon: "Guestonline.svg",
 		categories: [
 			"booking-scheduling",
-			"table-library"
 		],
 		rules: [
 			{
 				id: "guestonline:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("ib\\.guestonline\\.\\w+"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "guestonline:dom:1",
 				kind: "dom",
 				selector: "iframe[src*='ib.guestonline.']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "guesty",
@@ -3424,37 +3520,36 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Guesty is a cloud-based platform, designed exclusively for Airbnb and vacation rental managers.",
 		icon: "Guesty.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "guesty:dom:0",
 				kind: "dom",
 				selector: "script[id*='guesty-js-extra']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
 				id: "guesty:cookie:1",
 				kind: "cookie",
-				key: "guesty-muid",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^guesty\\-muid$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "guesty:cookie:2",
 				kind: "cookie",
-				key: "guesty-utms",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^guesty\\-utms$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "guidap",
@@ -3463,32 +3558,31 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Guidap is a platform enabling online activity sales, streamlining booking, scheduling, and payment collection processes across all devices, without commissions.",
 		icon: "Guidap.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "guidap:dom:0",
 				kind: "dom",
 				selector: "link[href*='//cart.guidap.net/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "guidap:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "guidap:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "GUIDAP",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "guidap:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "guidap:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "GUIDAPInitConfig",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "haku",
@@ -3497,32 +3591,58 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Haku is a technology platform for endurance races that supports organizations in growing participation, increasing registrations, and improving event experiences.",
 		icon: "Haku.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "haku:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.hakuapp\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.hakuapp\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "haku:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "haku:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "addHakuRegisterEvent",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "haku:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "haku:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "addHakuSubmitEvent",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
+	},
+	{
+		id: "harmonizely",
+		name: "Harmonizely",
+		website: "https://harmonizely.com",
+		description: "Harmonizely is a scheduling system that enables online appointment booking, calendar management, and time coordination through a web-based interface.",
+		icon: "Harmonizely.svg",
+		categories: [
+			"booking-scheduling",
+		],
+		rules: [
+			{
+				id: "harmonizely:dom:0",
+				kind: "dom",
+				selector: "link[href*='app.harmonizely.com/']",
+				description: "DOM selector matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"freemium",
+				"low",
+				"poa",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "helixpay",
@@ -3531,23 +3651,22 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "HelixPay is an event ticketing platform providing online payment integration, digital tickets, and customizable event websites for large-scale events.",
 		icon: "HelixPay.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "helixpay:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "helixpay:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "HELIXPAY.PAGE",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "holdmyticket",
@@ -3556,20 +3675,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "HoldMyTicket is a platform offering event ticketing and box office solutions for organizers.",
 		icon: "HoldMyTicket.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "holdmyticket:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("//holdmyticket\\.com/widgets"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\/\\/holdmyticket\\.com\\/widgets"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "homhero",
@@ -3578,23 +3696,22 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Homhero is a platform that offers a range of tools and services to help vacation rental owners manage their properties and bookings.",
 		icon: "HomHero.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "homhero:dom:0",
 				kind: "dom",
 				selector: "script#homhero-scripts-js",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "hostmeapp",
@@ -3603,24 +3720,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Hostmeapp is an restaurant software. Includes reservation, waitlist, guestbook and marketing tools.",
 		icon: "Hostmeapp.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "hostmeapp:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("tables\\.hostmeapp\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "hotdoc",
@@ -3629,26 +3745,25 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "HotDoc is a platform for booking healthcare appointments, providing patients with access to medical practitioners and clinics.",
 		icon: "HotDoc.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "hotdoc:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.hotdoc\\.com\\.au"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "hotdoc:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "hotdoc:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "hotdoc.assetsURL",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "housecall-pro",
@@ -3657,30 +3772,29 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Housecall Pro is a platform that enables businesses to schedule, dispatch, invoice, and receive online bookings from customers.",
 		icon: "HousecallPro.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "housecall-pro:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.housecallpro\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "housecall-pro:scriptContent:1",
 				kind: "scriptContent",
-				pattern: new RegExp("housecallpro\\.com/"),
-				description: "Script content contains a bounded technology signature."
-			}
+				pattern: new RegExp("housecallpro\\.com\\/"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "iclose",
@@ -3689,25 +3803,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "iClose is an appointment scheduling tool that helps businesses streamline lead generation and meeting coordination without additional advertising expenses.",
 		icon: "iClosed.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "iclose:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.iclosed\\.io/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.iclosed\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "indexic",
@@ -3716,23 +3829,22 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Indexic is a booking management platform designed for tours, activities, and rental operations.",
 		icon: "Indexic.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "indexic:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.web\\.indexic\\.net"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "inevent",
@@ -3741,32 +3853,72 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "InEvent is event management software designed to streamline planning, organization, and execution of virtual, hybrid, and in-person events.",
 		icon: "InEvent.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "inevent:meta:0",
 				kind: "meta",
 				key: "apiURL",
-				valuePattern: new RegExp("inevent\\.com"),
-				description: "Meta tag matches a known technology marker."
+				valuePattern: new RegExp("inevent\\.com", "i"),
+				description: "Meta tag matches a known technology marker.",
 			},
 			{
 				id: "inevent:meta:1",
 				kind: "meta",
 				key: "namespace",
-				valuePattern: new RegExp("^InEvent$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^InEvent$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "inevent:meta:2",
+				kind: "meta",
+				key: "apiurl",
+				valuePattern: new RegExp("inevent\\.com", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "inevent:meta:3",
+				kind: "meta",
+				key: "namespace",
+				valuePattern: new RegExp("^inevent$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+	},
+	{
+		id: "ingresse",
+		name: "Ingresse",
+		website: "https://ingresse.com",
+		description: "Ingresse is a booking system that enables users to manage reservations.",
+		icon: "Ingresse.svg",
+		categories: [
+			"booking-scheduling",
+		],
+		rules: [
+			{
+				id: "ingresse:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\.ingresse\\.com"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "ingresse:scriptContent:1",
+				kind: "scriptContent",
+				pattern: new RegExp("\\.ingresse\\.com"),
+				description: "Script content contains a bounded technology signature.",
+			},
+		],
+		metadata: {
+			saas: true,
+		},
 	},
 	{
 		id: "invitario",
@@ -3775,24 +3927,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Invitario is an event marketing platform that provides a digital invitation and guest management for business events.",
 		icon: "Invitario.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "invitario:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "invitario:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "InvitarioWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"poa",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "jameda",
@@ -3801,25 +3952,57 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Jameda is an online appointment scheduling system for doctors, enabling patients to book medical consultations.",
 		icon: "Jameda.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "jameda:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn1\\.jameda-elements\\.de/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("cdn1\\.jameda-elements\\.de\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "jameda:scriptSrc:1",
+				kind: "scriptSrc",
+				pattern: new RegExp("cdn1.\\jameda-elements\\.de\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+	},
+	{
+		id: "jrni",
+		name: "jrni",
+		website: "https://www.jrni.com",
+		description: "jrni is a platform that supports customer revenue generation by centralizing booking, scheduling, and customer engagement processes within a single system.",
+		icon: "jrni.svg",
+		categories: [
+			"booking-scheduling",
+		],
+		rules: [
+			{
+				id: "jrni:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\.bookingbug\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "jrni:scriptContent:1",
+				kind: "scriptContent",
+				pattern: new RegExp("\\.jrni\\.com"),
+				description: "Script content contains a bounded technology signature.",
+			},
+		],
+		metadata: {
+			saas: true,
+		},
 	},
 	{
 		id: "kalix",
@@ -3828,24 +4011,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Kalix is a HIPAA-compliant electronic medical record, practice management, and telehealth platform designed for dietitians, nutritionists, and other healthcare professionals.",
 		icon: "Kalix.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "kalix:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.kalixhealth\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "kktix",
@@ -3854,25 +4036,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "KKTIX is a Taiwanese software platform that provides online ticketing and event management solutions.",
 		icon: "KKTIX.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "kktix:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("assets\\.kktix\\.io"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "koobcamp",
@@ -3881,36 +4062,35 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "KoobCamp is a provider of camping, village, and glamping holiday solutions.",
 		icon: "KoobCamp.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "koobcamp:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("widget\\.koobcamp\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "koobcamp:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "koobcamp:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "KOOBCAMP_WIDGETS",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "koobcamp:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "koobcamp:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "KoobCampWidgets",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "kross-booking",
@@ -3919,25 +4099,49 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Kross Booking is a booking management system that automates reservations, scheduling, and resource allocation to streamline operational workflows.",
 		icon: "KrossBooking.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "kross-booking:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("data\\.krossbooking\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("data\\.krossbooking\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
+	},
+	{
+		id: "legitfit",
+		name: "LegitFit",
+		website: "https://legitfit.com",
+		description: "Legitfit is a booking and management platform designed to support scheduling and operations for boutique fitness studios.",
+		icon: "LegitFit.svg",
+		categories: [
+			"booking-scheduling",
+		],
+		rules: [
+			{
+				id: "legitfit:meta:0",
+				kind: "meta",
+				key: "application-name",
+				valuePattern: new RegExp("^LegitFit$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"poa",
+			],
+		},
 	},
 	{
 		id: "limecall",
@@ -3946,38 +4150,37 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Limecall is a software platform that facilitates instant callback requests and manages call scheduling to enhance customer engagement and lead generation processes.",
 		icon: "Limecall.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "limecall:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.limecall\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.limecall\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "limecall:dom:1",
 				kind: "dom",
 				selector: "script[data-api-url*='app.limecall.com']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "limecall:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "limecall:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "limeCallClient",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "little-hotelier",
@@ -3986,24 +4189,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Little Hotelier is an all-in-one property management solution designed for small accomodation businesses.",
 		icon: "LittleHotelier.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "little-hotelier:cookie:0",
 				kind: "cookie",
-				key: "_littlehotelier_session",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^_littlehotelier_session$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "lobbypms",
@@ -4012,23 +4214,22 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "LobbyPMS is a platform developed to streamline daily accommodation management.",
 		icon: "LobbyPMS.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "lobbypms:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.lobbypms\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "lodgify",
@@ -4037,25 +4238,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Lodgify is a platform facilitating vacation rentals and bookings.",
 		icon: "Lodgify.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "lodgify:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.lodgify\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.lodgify\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"payg",
 				"recurring",
-				"payg"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "loopi",
@@ -4064,20 +4264,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Loopi is a digital ecosystem offering tools, integrations, and resources for tourism professionals to create, manage, and distribute multimodal tourist circuits.",
 		icon: "Loopi.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "loopi:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("widget\\.loopi-velo\\.fr/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("widget\\.loopi-velo\\.fr\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "luma",
@@ -4086,26 +4285,25 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Luma is a platform for creating event pages, sending invites, and managing tickets.",
 		icon: "Luma.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "luma:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("embed\\.lu\\.ma"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "luma:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "luma:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "luma.initCheckout",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "lumit",
@@ -4114,29 +4312,28 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Lumit is an online ordering system for restaurants.",
 		icon: "Lumit.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "lumit:dom:0",
 				kind: "dom",
 				selector: "iframe[src*='.lumit.se']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "lumit:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "lumit:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "injectLumit",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "mainboard",
@@ -4145,21 +4342,27 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Mainboard is a software platform designed to manage, schedule, and book talent.",
 		icon: "Mainboard.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "mainboard:responseHeader:0",
-				kind: "responseHeader",
+				id: "mainboard:header:0",
+				kind: "header",
 				key: "server",
-				valuePattern: new RegExp("Mainboard\\.com"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("Mainboard\\.com", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "mainboard:header:1",
+				kind: "header",
+				key: "server",
+				valuePattern: new RegExp("mainboard\\.com", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "makeplans",
@@ -4168,24 +4371,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Makeplans is a scheduling system designed for appointment booking and event registration, providing tools to manage availability, reservations, and attendee organization.",
 		icon: "Makeplans.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "makeplans:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.makeplans\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "mangomint",
@@ -4194,30 +4396,29 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Mangomint is a salon and spa management platform that centralizes scheduling, client records, payments, and operational tools for service-based businesses.",
 		icon: "Mangomint.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "mangomint:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("booking\\.mangomint\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "mangomint:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "mangomint:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Mangomint.CompanyId",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "matchi",
@@ -4227,20 +4428,18 @@ export const bookingSchedulingTechnologyDefinitions = [
 		icon: "Matchi.svg",
 		categories: [
 			"booking-scheduling",
-			"table-library"
 		],
 		rules: [
 			{
 				id: "matchi:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.matchi\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.matchi\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "maxxton",
@@ -4249,26 +4448,25 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Maxxton is a reservation and property management system.",
 		icon: "Maxxton.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "maxxton:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.maxxton\\.net"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "maxxton:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.maxxton\\.net"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "meetup-express",
@@ -4277,48 +4475,46 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Meetup Express is an appointment scheduling system designed to simplify booking and managing meetings.",
 		icon: "MeetupExpress.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "meetup-express:cookie:0",
 				kind: "cookie",
-				key: "meetup_express_quick_appointment_session",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^meetup_express_quick_appointment_session$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "menufy-online-ordering",
 		name: "Menufy Online Ordering",
 		website: "https://restaurant.menufy.com",
 		description: "Menufy is an online and mobile meal ordering service.",
-		icon: "Menufy.svg",
+		icon: "Menufy.png",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "menufy-online-ordering:dom:0",
 				kind: "dom",
 				selector: "a[href*='.menufy.com/'][target='_blank']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "menuu",
@@ -4327,69 +4523,74 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "MENUU is an online ordering system for restaurants and food delivery.",
 		icon: "Menuu.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "menuu:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("frontend\\.menuu\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("frontend\\.menuu\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "menuu:responseHeader:1",
-				kind: "responseHeader",
+				id: "menuu:header:1",
+				kind: "header",
 				key: "Access-Control-Allow-Origin",
-				valuePattern: new RegExp("frontend\\.menuu\\.com"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("frontend\\.menuu\\.com", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "menuu:header:2",
+				kind: "header",
+				key: "access-control-allow-origin",
+				valuePattern: new RegExp("frontend\\.menuu\\.com", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "mews",
 		name: "Mews",
 		website: "https://www.mews.com",
 		description: "Mews is a hospitalitions service that enables hotels to track their bookings.",
-		icon: "Mews.svg",
+		icon: "Mews.png",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "mews:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.mews\\.li/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.mews\\.li\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "mews:dom:1",
 				kind: "dom",
 				selector: "a[href*='.mews.li/'][target='_blank']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "mews:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "mews:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "Mews",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "miyn-online-appointment",
@@ -4398,24 +4599,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "MIYN Online Appointment is an advanced cloud-based online appointment scheduling software.",
 		icon: "MIYN.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "miyn-online-appointment:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "miyn-online-appointment:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "MIYNLive.settings",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "moder",
@@ -4424,30 +4624,29 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Moder is a PMS system for hotels and resorts to manage and grow their tourism businesses.",
 		icon: "Moder.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "moder:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "moder:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Moder.$attrs",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "moder:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "moder:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ModerSettings.property",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "momence",
@@ -4456,29 +4655,28 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Momence is an all-in-one toolbox for gyms and studios, enabling scheduling of online and in-person classes, events, appointments, and experiences.",
 		icon: "Momence.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "momence:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("//momence\\.com/plugin/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/\\/momence\\.com\\/plugin\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "momence:dom:1",
 				kind: "dom",
 				selector: "div[id*='momence-plugin-lead-form']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "momice",
@@ -4487,31 +4685,37 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Momice is an event management platform that offers tools for organising and managing events.",
 		icon: "Momice.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "momice:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "momice:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "webpackChunkmomice_eventsite_new",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "momice:meta:1",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^Momice$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^Momice$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "momice:meta:2",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^momice$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "motion",
@@ -4521,31 +4725,28 @@ export const bookingSchedulingTechnologyDefinitions = [
 		icon: "Motion.svg",
 		categories: [
 			"booking-scheduling",
-			"animation"
 		],
 		rules: [
 			{
 				id: "motion:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("segmentcdn\\.usemotion\\.com/next-integrations/integrations/vendor/commons\\.[a-z0-9]+\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("segmentcdn\\.usemotion\\.com\\/next-integrations\\/integrations\\/vendor\\/commons\\.[a-z0-9]+\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "motion:dom:1",
 				kind: "dom",
 				selector: "iframe[src*='app.usemotion.com']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "musement",
@@ -4554,20 +4755,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Musement is a platform that allows users to book tickets for attractions, museums, and activities, providing access to various cultural and entertainment experiences.",
 		icon: "Musement.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "musement:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.musement\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.musement\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "myrest",
@@ -4576,25 +4776,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "MyRest is a reservation system for restaurants that incorporates updated guidelines for gastro marketing.",
 		icon: "MyRest.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "myrest:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("api\\.myrest\\.io"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "mytime",
@@ -4603,31 +4802,30 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "MyTime is a scheduling and customer engagement platform that streamlines appointment management and client interactions for businesses.",
 		icon: "MyTime.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "mytime:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("www\\.mytime\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "mytime:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "mytime:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "myTimeWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "namastay",
@@ -4636,32 +4834,31 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Namastay is an optimized booking engine that simplifies the online guest journey to increase direct bookings.",
 		icon: "Namastay.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "namastay:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("sdk\\.namastay\\.io"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "namastay:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "namastay:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "closeNamastay",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "namastay:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "namastay:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "initNamastay",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "need-street",
@@ -4670,20 +4867,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Need Street is a web and mobile platform that connects healthcare providers with patients, enabling digital communication and management of healthcare services.",
 		icon: "NeedStreet.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "need-street:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("data\\.needstreet\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "nightsbridge",
@@ -4692,30 +4888,29 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "NightsBridge is a SaaS platform that provides booking and channel management tools for accommodation providers.",
 		icon: "NightsBridge.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "nightsbridge:dom:0",
 				kind: "dom",
 				selector: "a[target='_blank'][href*='.nightsbridge.co']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "nightsbridge:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "nightsbridge:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "webpackChunkNightsbridgeBookingForm",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"payg",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "nookal",
@@ -4724,88 +4919,125 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Nookal is a practice management software that organizes and manages medical appointments.",
 		icon: "Nookal.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "nookal:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("nookal\\.bookings\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "nookal:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "nookal:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "nookal",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "nookal:responseHeader:2",
-				kind: "responseHeader",
+				id: "nookal:header:2",
+				kind: "header",
 				key: "Access-Control-Allow-Origin",
-				valuePattern: new RegExp("bookings\\.nookal\\.com"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("bookings\\.nookal\\.com", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "nookal:header:3",
+				kind: "header",
+				key: "access-control-allow-origin",
+				valuePattern: new RegExp("bookings\\.nookal\\.com", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+	},
+	{
+		id: "noshow",
+		name: "NoShow",
+		website: "https://noshow.io",
+		description: "NoShow is a software platform for managing restaurant reservations, enabling booking scheduling, table allocation, and customer reservation tracking.",
+		icon: "NoShow.svg",
+		categories: [
+			"booking-scheduling",
+		],
+		rules: [
+			{
+				id: "noshow:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("app\\.noshow\\.io"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "noshow:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "initNoShowBooking",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"low",
+				"poa",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "occasion",
 		name: "Occasion",
 		website: "https://www.getoccasion.com",
 		description: "Occasion is an online booking system.",
-		icon: "Occasion.svg",
+		icon: "Occasion.png",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "occasion:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.getoccasion\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "occasion:dom:1",
 				kind: "dom",
 				selector: "iframe[src*='app.getoccasion.com']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
 				id: "occasion:dom:2",
 				kind: "dom",
 				selector: "a[href*='app.getoccasion.com']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "occasion:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "occasion:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "OCCSN.stack",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "occasion:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "occasion:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "occsnMerchantToken",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
 				"payg",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "octorate",
@@ -4814,29 +5046,28 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Octorate is a hotel booking system and channel manager, facilitating management of reservations across various platforms.",
 		icon: "Octorate.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "octorate:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.octorate\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.octorate\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "octorate:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "octorate:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "octorate",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "oddle",
@@ -4845,26 +5076,31 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Oddle is an online ordering system designed to streamline restaurant operations.",
 		icon: "Oddle.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "oddle:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("oddle-pass-wrapper\\.s3\\.ap-southeast-1"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "oddle:cookie:1",
 				kind: "cookie",
-				key: "enableOddlePass",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^enableOddlePass$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "oddle:cookie:2",
+				kind: "cookie",
+				keyPattern: new RegExp("^enableoddlepass$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "opentable",
@@ -4873,25 +5109,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "OpenTable is an online restaurant-reservation service company founded by Sid Gorham, Eric Moe and Chuck Templeton on 2 July 1998 and is based in San Francisco, California.",
 		icon: "OpenTable.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "opentable:dom:0",
 				kind: "dom",
 				selector: "iframe[src*='.opentable.com/'], form[action*='.opentable.com/'][target='_blank']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
 				"payg",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "optune",
@@ -4900,25 +5135,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "OpTuNE is an online platform for booking and managing events, designed for artists, venues, and promoters.",
 		icon: "OpTuNE.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "optune:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.optune\\.me"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "ordering",
@@ -4927,26 +5161,56 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Ordering is a multi-store online ordering and delivery platform providing marketing and loyalty tools, along with native apps for businesses.",
 		icon: "Ordering.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "ordering:dom:0",
 				kind: "dom",
 				selector: "link[href*='apiv4.ordering.co']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"onetime",
 				"low",
+				"onetime",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
+	},
+	{
+		id: "orioly",
+		name: "Orioly",
+		website: "https://orioly.com",
+		description: "Orioly is a booking and management platform for tours and activities that automates scheduling, reservations, and related business processes.",
+		icon: "Orioly.svg",
+		categories: [
+			"booking-scheduling",
+		],
+		rules: [
+			{
+				id: "orioly:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("book-now\\.orioly\\.com"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "orioly:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "isOriolyLoaded",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"mid",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "otto",
@@ -4955,26 +5219,25 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Otto is a veterinary workflow platform that streamlines scheduling, communication, and payment processes in a single system.",
 		icon: "Otto.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "otto:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "otto:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "otto.id",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "otto:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "otto:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ottoCareMicrosite",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "overfull",
@@ -4983,26 +5246,51 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Overfull is a reservation management system designed for restaurants to handle bookings, manage tables, and streamline guest scheduling.",
 		icon: "Overfull.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "overfull:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.overfull\\.fr"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
 				id: "overfull:dom:1",
 				kind: "dom",
 				selector: "iframe[src*='app.overfull.fr']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
+	},
+	{
+		id: "ownerrez",
+		name: "OwnerRez",
+		website: "https://www.ownerrez.com",
+		description: "OwnerRez is a vacation rental software platform that provides property managers with tools to manage bookings, guest communications, and property operations from a centralized system.",
+		icon: "OwnerRez.svg",
+		categories: [
+			"booking-scheduling",
+		],
+		rules: [
+			{
+				id: "ownerrez:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\.ownerrez\\.com"),
+				description: "Script source URL matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"mid",
+				"payg",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "parkflow",
@@ -5011,24 +5299,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "ParkFlow is a system for managing bookings at airport parking facilities, enabling streamlined scheduling, allocation, and tracking of parking reservations.",
 		icon: "ParkFlow.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "parkflow:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("widget\\.parkflow\\.io/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("widget\\.parkflow\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"payg",
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "periodic",
@@ -5037,30 +5324,29 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Periodic is a white-label scheduling system.",
 		icon: "Periodic.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "periodic:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/integrations/embed/periodic-embed-resize\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/integrations\\/embed\\/periodic-embed-resize\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "periodic:dom:1",
 				kind: "dom",
 				selector: "#periodic-embedded-calendar-script, .periodic-embedded-calendar-window, .bookingmain__maincontent",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "planfy",
@@ -5069,30 +5355,29 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Planfy is a booking system for businesses designed to streamline appointment scheduling and customer management.",
 		icon: "Planfy.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "planfy:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("www\\.planfy\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "planfy:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("www\\.planfy\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "planne",
@@ -5101,26 +5386,32 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Planne is a ticketing and booking reservation system.",
 		icon: "Planne.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "planne:meta:0",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^Planne$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^Planne$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "planne:meta:1",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^planne$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"payg",
 				"recurring",
-				"payg"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "planning-pod",
@@ -5129,20 +5420,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Planning Pod is an all-in-one event management software offering integrated online solutions for planning, organizing, and executing events.",
 		icon: "PlanningPod.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "planning-pod:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("run\\.planningpod\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("run\\.planningpod\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "planway",
@@ -5151,24 +5441,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Planway is an online booking system that allows businesses to manage appointments, schedule services, and streamline client reservations through a digital platform.",
 		icon: "Planway.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "planway:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.planway\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "planyo",
@@ -5177,26 +5466,25 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Planyo is a flexible reservation system designed to manage bookings for various services and resources across different industries.",
 		icon: "Planyo.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "planyo:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("www\\.planyo\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"payg",
 				"recurring",
-				"payg"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "pluralo",
@@ -5205,25 +5493,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Pluralo is an online booking platform that enables users to schedule and manage reservations across various services.",
 		icon: "Pluralo.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "pluralo:dom:0",
 				kind: "dom",
 				selector: "iframe[src*='widget.pluralo.com/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"payg",
 				"recurring",
-				"payg"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "practo",
@@ -5232,24 +5519,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Practo is an appointment system designed for health practitioners to manage and schedule patient appointments.",
 		icon: "Practo.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "practo:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.practo\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.practo\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "promotix",
@@ -5258,31 +5544,37 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "PromoTix is a ticketing software application designed to streamline event ticket sales and management.",
 		icon: "PromoTix.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "promotix:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.promotix\\.com"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
 				id: "promotix:meta:1",
 				kind: "meta",
 				key: "apple-mobile-web-app-title",
-				valuePattern: new RegExp("^PromoTix$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^PromoTix$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "promotix:meta:2",
+				kind: "meta",
+				key: "apple-mobile-web-app-title",
+				valuePattern: new RegExp("^promotix$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "quandoo",
@@ -5291,20 +5583,45 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Quandoo is a platform that allows users to find and reserve restaurants.",
 		icon: "Quandoo.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "quandoo:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("booking-widget\\.quandoo\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
+	},
+	{
+		id: "quinbook",
+		name: "QuinBook",
+		website: "https://quinbook.com",
+		description: "QuinBook is a booking and management platform for the leisure and events industry.",
+		icon: "QuinBook.svg",
+		categories: [
+			"booking-scheduling",
+		],
+		rules: [
+			{
+				id: "quinbook:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("api\\.quinbook\\.com"),
+				description: "Script source URL matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"mid",
+				"poa",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "race-roster",
@@ -5313,23 +5630,22 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Race Roster is an event organization platform that provides tools for planning, managing, and tracking endurance events such as races and fundraisers.",
 		icon: "RaceRoster.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "race-roster:scriptContent:0",
 				kind: "scriptContent",
-				pattern: new RegExp("\\.raceroster\\.com/"),
-				description: "Script content contains a bounded technology signature."
-			}
+				pattern: new RegExp("\\.raceroster\\.com\\/"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "radario",
@@ -5338,30 +5654,29 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Radario is a Russia-based ticketing system designed for event management and ticket sales.",
 		icon: "Radario.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "radario:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "radario:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "radario.accentColor",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "radario:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "radario:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "radarioButtonScript",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "reconline",
@@ -5370,20 +5685,51 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Reconline is a cloud-based online reservation system designed for hotels and hotel groups to manage bookings and availability.",
 		icon: "Reconline.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "reconline:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("www\\.reconline\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
+	},
+	{
+		id: "recranet",
+		name: "Recranet",
+		website: "https://recranet.com",
+		description: "Recranet is a software solution for booking and sales, providing businesses with tools to manage trips and activities in an organized and centralized system.",
+		icon: "Recranet.svg",
+		categories: [
+			"booking-scheduling",
+		],
+		rules: [
+			{
+				id: "recranet:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("static\\.recranet\\.com"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "recranet:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "recranetConfig",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"mid",
+				"poa",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "recras",
@@ -5392,63 +5738,67 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Recras is a Dutch-based booking engine that manages reservations, schedules, and operational data for service providers.",
 		icon: "Recras.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "recras:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.recras\\.nl/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.recras\\.nl\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "recras:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "recras:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "RecrasBooking",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "recras:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "recras:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "submitRecrasForm",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"payg",
 				"recurring",
-				"payg"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "resdiary",
 		name: "ResDiary",
 		website: "https://www.resdiary.com",
-		description: "ResDiary, is a online reservation system for hospitality operators.",
+		description: "ResDiary, is an online reservation system for hospitality operators.",
 		icon: "ResDiary.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "resdiary:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.resdiary\\.\\w+/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.resdiary\\.\\w+\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "resdiary:dom:1",
+				kind: "dom",
+				selector: "iframe[src*='resdiary']",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "resengo",
@@ -5458,26 +5808,27 @@ export const bookingSchedulingTechnologyDefinitions = [
 		icon: "Resengo.svg",
 		categories: [
 			"booking-scheduling",
-			"table-library"
 		],
 		rules: [
 			{
 				id: "resengo:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("www\\.resengo\\.\\w+"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "resengo:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "resengo:dom:1",
+				kind: "dom",
+				selector: "iframe[src*='resengo']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "resengo:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "wpJsonpResengoReservationWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "reservio",
@@ -5486,43 +5837,42 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Reservio is a cloud-based appointment scheduling and online booking solution.",
 		icon: "Reservio.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "reservio:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("static\\.reservio\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "reservio:dom:1",
 				kind: "dom",
 				selector: ".reservio-booking-button",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
 				id: "reservio:dom:2",
 				kind: "dom",
 				selector: "a[href*='.reservio.com'][target='_blank']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
 				id: "reservio:dom:3",
 				kind: "dom",
 				selector: "a[href*='bookings.reservio.com']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
+				"low",
 				"recurring",
-				"low"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "resmio",
@@ -5532,32 +5882,30 @@ export const bookingSchedulingTechnologyDefinitions = [
 		icon: "Resmio.svg",
 		categories: [
 			"booking-scheduling",
-			"table-library"
 		],
 		rules: [
 			{
 				id: "resmio:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("static\\.resmio\\.\\w+/static/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("static\\.resmio\\.\\w+\\/static\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "resmio:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "resmio:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ResmioButton",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"low",
 				"freemium",
+				"low",
+				"payg",
 				"recurring",
-				"payg"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "resova",
@@ -5566,31 +5914,36 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Resova is an online booking software.",
 		icon: "Resova.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "resova:pageGlobal:1",
-				kind: "pageGlobal",
-				property: "baseUrl",
-				valuePattern: new RegExp("\\.resova\\.(?:us|eu|co\\.uk)"),
-				description: "Page-owned global matches a known technology marker."
+				id: "resova:dom:0",
+				kind: "dom",
+				selector: "a[href*='.resova.']",
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "resova:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "resova:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "baseUrl",
+				valuePattern: new RegExp("\\.resova\\.(?:us|eu|co\\.uk)"),
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "resova:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "initResova",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "resy",
@@ -5599,30 +5952,29 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Resy is an technology and media company that provides an app and back-end management software for restaurant reservations.",
 		icon: "Resy.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "resy:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("widgets\\.resy\\.\\w+"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "resy:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "resy:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "resyWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "revinate",
@@ -5631,26 +5983,25 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Revinate is a direct booking platform used in the hospitality industry to help hotels increase reservations and manage guest engagement.",
 		icon: "Revinate.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "revinate:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("contact-api\\.inguest\\.com/.*/revinate-form\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("contact-api\\.inguest\\.com\\/.*\\/revinate-form\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "revinate:scriptContent:1",
 				kind: "scriptContent",
-				pattern: new RegExp("contact-api\\.inguest\\.com/.*/revinate-form\\.js"),
-				description: "Script content contains a bounded technology signature."
-			}
+				pattern: new RegExp("contact-api\\.inguest\\.com\\/.*\\/revinate-form\\.js"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "ridebits",
@@ -5659,24 +6010,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "RideBits is a provider of trip booking apps for ground transportation companies, offering solutions for managing bookings.",
 		icon: "RideBits.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "ridebits:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.ridebitsapp\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.ridebitsapp\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "roompot",
@@ -5685,50 +6035,48 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Roompot is a provider of holiday parks, specialising in the management and operation of parks and campsites.",
 		icon: "Roompot.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "roompot:dom:0",
 				kind: "dom",
 				selector: "link[href*='cdn.roompot.com']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "salonist",
 		name: "Salonist",
 		website: "https://salonist.io",
 		description: "Salonist is a salon management software.",
-		icon: "Salonist.svg",
+		icon: "Salonist.png",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "salonist:dom:0",
 				kind: "dom",
 				selector: "iframe[src*='.salonist.io/'], a[href*='.salonist.io/'][target='_blank']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "savvycal",
@@ -5737,25 +6085,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "SavvyCal is a meeting scheduling tool.",
 		icon: "SavvyCal.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "savvycal:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "savvycal:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "SavvyCal",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "sched",
@@ -5764,31 +6111,30 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Sched is an AI-powered platform that provides an all-in-one toolkit for event planning.",
 		icon: "Sched.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "sched:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.sched\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "sched:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.sched\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"payg",
 				"recurring",
-				"payg"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "scheduleanyone",
@@ -5797,24 +6143,29 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Schedule Anyone is a business management system designed to streamline operations with a focus on automation.",
 		icon: "ScheduleAnyone.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "scheduleanyone:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("www\\.ScheduleAnyone\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
+			{
+				id: "scheduleanyone:scriptContent:1",
+				kind: "scriptContent",
+				pattern: new RegExp("www\\.scheduleanyone\\.com"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "seated",
@@ -5823,20 +6174,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Seated is a platform offering a ticketing system for live events and live streams.",
 		icon: "Seated.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "seated:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("widget\\.seated\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("widget\\.seated\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "shore",
@@ -5845,36 +6195,35 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Shore is an appointment management software designed to streamline scheduling and organization for businesses.",
 		icon: "Shore.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "shore:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("connect\\.shore\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "shore:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "shore:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ShoreBookingButtonAlreadyLoaded",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "shore:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "shore:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "shoreBookingSettings",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "showclix",
@@ -5883,23 +6232,22 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "ShoClix is a full-service event ticketing platform that provides tools for managing ticket sales, event promotion, and attendee registration.",
 		icon: "ShowClix.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "showclix:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("www\\.showclix\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "simplotel",
@@ -5908,29 +6256,28 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Simplotel is a hotel booking engine.",
 		icon: "Simplotel.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "simplotel:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.simplotel\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn\\.simplotel\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "simplotel:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "simplotel:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "validateform_simplotel",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "simplybook-me",
@@ -5939,31 +6286,36 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "SimplyBook.me is an online appointment scheduling and booking software.",
 		icon: "SimplyBook.me.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "simplybook-me:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.simplybook\\.(?:asia|it|me)"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "simplybook-me:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "simplybook-me:dom:1",
+				kind: "dom",
+				selector: "a[href*='.simplybook.'][target='_blank']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "simplybook-me:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "configSoinSimplyPush",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "singenuity",
@@ -5972,25 +6324,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Singenuity is a software platform that enables customers to book tours and attractions online through a centralized digital system.",
 		icon: "Singenuity.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "singenuity:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "singenuity:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "__CONFIG_URL",
 				valuePattern: new RegExp("book\\.singenuity\\.com"),
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"payg",
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "sirvoy",
@@ -5999,30 +6350,29 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Sirvoy is a cloud-based hotel management software that streamlines various hotel operations, including reservation management, channel management, online booking, and property management.",
 		icon: "Sirvoy.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "sirvoy:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("svSession"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "sirvoy:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "sirvoy:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "SirvoyBookingWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "skedify",
@@ -6031,28 +6381,27 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Skedify is an appointment booking solution created for enterprises.",
 		icon: "Skedify.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "skedify:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("plugin\\.skedify\\.io"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "skedify:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "skedify:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Skedify.Plugin.version",
 				valuePattern: new RegExp("^(.+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "skiperformance",
@@ -6061,20 +6410,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Skiperformance is an online platform that provides solutions for selling lift tickets and ski passes, tailored to the needs of the ski industry.",
 		icon: "Skiperformance.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "skiperformance:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.skiperformance\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "slice",
@@ -6083,23 +6431,22 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Slice is an online food ordering platform for independent pizzerias.",
 		icon: "Slice.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "slice:dom:0",
 				kind: "dom",
 				selector: "a[href*='slicelife.com/restaurants/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "slotti",
@@ -6108,24 +6455,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Slotti is a cloud-based appointment booking and checkout system tailored for service companies.",
 		icon: "Slotti.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "slotti:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "slotti:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Slotti",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "smile-virtual",
@@ -6134,30 +6480,29 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Smile Virtual is a platform that enables patients to consult with a dentist remotely to explore options for enhancing their smile from home.",
 		icon: "SmileVirtual.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "smile-virtual:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("www\\.smilevirtual\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "smile-virtual:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.smilevirtual\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "sonline",
@@ -6166,36 +6511,35 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Sonline is a beauty salon software developed in Russia.",
 		icon: "Sonline.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "sonline:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("//sonline\\.su/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/\\/sonline\\.su\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "sonline:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "sonline:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "showSonlineWidget",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "sonline:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "sonline:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "sonlineWidgetOptions",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "squadup",
@@ -6204,32 +6548,31 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "SquadUP is a white-label event ticketing platform that enables organizers to create, manage, and sell event tickets under their own branding.",
 		icon: "SquadUP.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "squadup:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.squadup\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.squadup\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "squadup:scriptContent:1",
 				kind: "scriptContent",
-				pattern: new RegExp("\\.squadup\\.com/"),
-				description: "Script content contains a bounded technology signature."
+				pattern: new RegExp("\\.squadup\\.com\\/"),
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "squadup:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "squadup:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "SquadupConfig.configValues",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "squire",
@@ -6240,36 +6583,35 @@ export const bookingSchedulingTechnologyDefinitions = [
 		categories: [
 			"booking-scheduling",
 			"business-tools",
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "squire:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "squire:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "SquireWidget",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "squire:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "squire:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "_squireQueryClient",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "squire:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "squire:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "_squireWidgetConfig",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "starboard-suite",
@@ -6278,25 +6620,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Starboard Suite is a boat-based booking system that facilitates reservations, scheduling, and customer management for maritime services.",
 		icon: "StarboardSuite.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "starboard-suite:dom:0",
 				kind: "dom",
 				selector: "a[href*='www.starboardsuite.com'] > div#poweredby, form[action*='.starboardsuite.com']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"payg",
 				"poa",
-				"payg"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "stay22",
@@ -6306,31 +6647,33 @@ export const bookingSchedulingTechnologyDefinitions = [
 		icon: "Stay22.svg",
 		categories: [
 			"booking-scheduling",
-			"advertising-paid-media"
+			"advertising-paid-media",
 		],
 		rules: [
 			{
 				id: "stay22:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.stay22\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.stay22\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "stay22:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "stay22:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Stay22.version",
 				valuePattern: new RegExp("([\\d\\.]+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "straiv",
@@ -6339,24 +6682,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Straiv is a hotel software platform that digitalizes the guest journey, offering features such as check-in, guest directory, registration forms, messaging, and more.",
 		icon: "Straiv.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "straiv:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.straiv\\.io"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "styleseat",
@@ -6365,20 +6707,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "StyleSeat is a web-based appointment scheduling platform that enables users to book and manage beauty and personal care services online through a centralized system.",
 		icon: "StyleSeat.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "styleseat:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("www\\.styleseat\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "superhote",
@@ -6387,20 +6728,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "SuperHote is a hotel management software designed to streamline hotel bookings, reservations, and other management tasks.",
 		icon: "SuperHote.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "superhote:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.superhote\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "swoogo",
@@ -6409,31 +6749,30 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Swoogo is an event management software.",
 		icon: "Swoogo.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "swoogo:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.swoogo\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.swoogo\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "swoogo:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "swoogo:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "swoogoUrl",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"high",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "synbird",
@@ -6442,20 +6781,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "SynBird is a software tool that streamlines user-community interactions through online appointments, agendas, queues, and GRU services.",
 		icon: "SynBird.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "synbird:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.synbird\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.synbird\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "tablebooker",
@@ -6464,24 +6802,29 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Tablebooker is an online reservation system for restaurants.",
 		icon: "TableBooker.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "tablebooker:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("reservations\\.tablebooker\\.\\w+/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("reservations\\.tablebooker\\.\\w+\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "tablebooker:dom:1",
+				kind: "dom",
+				selector: "iframe",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "tablecheck",
@@ -6491,20 +6834,21 @@ export const bookingSchedulingTechnologyDefinitions = [
 		icon: "TableCheck.svg",
 		categories: [
 			"booking-scheduling",
-			"table-library"
 		],
 		rules: [
 			{
 				id: "tablecheck:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("tc_widget\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "tablecheck:dom:1",
+				kind: "dom",
+				selector: "form[action*='tablecheck']",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "tablefever",
@@ -6513,26 +6857,25 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "TableFever is a platform that helps locate top restaurants, make reservations, and explore nearby dining options for a curated culinary experience.",
 		icon: "TableFever.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "tablefever:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.tablefever\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "tablefever:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.tablefever\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "tableo",
@@ -6542,31 +6885,29 @@ export const bookingSchedulingTechnologyDefinitions = [
 		icon: "Tableo.svg",
 		categories: [
 			"booking-scheduling",
-			"table-library"
 		],
 		rules: [
 			{
 				id: "tableo:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.tableo\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "tableo:dom:1",
 				kind: "dom",
 				selector: "iframe[src*='.tableo.com']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "tashi",
@@ -6575,25 +6916,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Tashi is a web-based booking software that enables accommodation providers and tour operators to manage reservations and schedules.",
 		icon: "Tashi.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "tashi:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("meet\\.tashi\\.travel"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "teamup",
@@ -6602,24 +6942,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "TeamUp is fitness management software catering to boutique gyms, studios, and fitness boxes worldwide.",
 		icon: "TeamUp.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "teamup:dom:0",
 				kind: "dom",
 				selector: "a[href*='//goteamup.com/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "termed",
@@ -6628,26 +6967,25 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "TerMed is a platform that simplifies online booking of medical appointments.",
 		icon: "TerMed.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "termed:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("api\\.termed\\.de"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "termed:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("api\\.termed\\.de"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "thecut",
@@ -6656,20 +6994,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "theCut is a barber booking app that allows users to schedule appointments with barbers through a centralized digital platform.",
 		icon: "theCut.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "thecut:dom:0",
 				kind: "dom",
 				selector: "iframe[src*='.thecut.co']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "thefork",
@@ -6678,18 +7015,30 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Thefork is a restaurant booking, managing system.",
 		icon: "Thefork.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
-		rules: [],
+		rules: [
+			{
+				id: "thefork:dom:0",
+				kind: "dom",
+				selector: "iframe[data-src*='lafourchette']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "thefork:dom:1",
+				kind: "dom",
+				selector: "iframe[src*='lafourchette']",
+				description: "DOM selector matches a known technology marker.",
+			},
+		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"mid",
 				"freemium",
-				"recurring"
-			]
-		}
+				"mid",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "tickera",
@@ -6698,28 +7047,28 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Tickera is a WordPress plugin that enables event organizers to sell tickets directly from their websites.",
 		icon: "Tickera.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "tickera:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/wp-content/plugins/tickera/js/"),
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		requires: [
-			"wordpress"
+				pattern: new RegExp("\\/wp-content\\/plugins\\/tickera\\/js\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"onetime",
 				"low",
-				"recurring"
-			]
-		}
+				"onetime",
+				"recurring",
+			],
+			cpe: "cpe:2.3:a:tickera:tickera:*:*:*:*:*:wordpress:*:*",
+		},
+		requires: [
+			"wordpress",
+		],
 	},
 	{
 		id: "ticketbro",
@@ -6728,25 +7077,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Ticketbro is a mobile ticket booking system that enables users to browse, select, and purchase event or travel tickets directly from a smartphone.",
 		icon: "Ticketbro.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "ticketbro:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("ticketbro\\.(tools|io)(?:/widget)?/widget\\.min\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("ticketbro\\.(tools|io)(?:\\/widget)?\\/widget\\.min\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "ticketmeo",
@@ -6755,24 +7103,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Ticketmeo is a platform for managing live and virtual events, formerly known as Ploxel, that enables users to sell tickets online.",
 		icon: "Ticketmeo.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "ticketmeo:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/plugins/ploxel/js/ploxel\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\/plugins\\/ploxel\\/js\\/ploxel\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "ticketspice",
@@ -6781,23 +7128,22 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "TicketSpice is a ticketing software platform that enables businesses to sell tickets online and manage event registrations through a web-based interface.",
 		icon: "TicketSpice.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "ticketspice:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.ticketspice\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "ticketure",
@@ -6806,21 +7152,27 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Ticketure is a cloud-based admission ticketing system designed for arts and cultural organizations with timed entry requirements.",
 		icon: "Ticketure.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "ticketure:meta:0",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^Built by Ticketure"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^Built by Ticketure", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "ticketure:meta:1",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^built by ticketure", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "timepad",
@@ -6829,20 +7181,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Timepad is a Russian events system for creating, managing, and ticketing events online.",
 		icon: "Timepad.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "timepad:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.timepad\\.ru"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "timetap",
@@ -6851,31 +7202,30 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "TimeTap is a scheduling automation platform that helps organizations manage and customize appointment booking workflows to streamline scheduling operations.",
 		icon: "TimeTap.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "timetap:scriptContent:0",
 				kind: "scriptContent",
-				pattern: new RegExp("\\.timetap\\.com/"),
-				description: "Script content contains a bounded technology signature."
+				pattern: new RegExp("\\.timetap\\.com\\/"),
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
 				id: "timetap:dom:1",
 				kind: "dom",
 				selector: "iframe[src*='www.timetap.com']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "timify",
@@ -6884,31 +7234,29 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Timify is an online scheduling and resource management software for small, medium and large businesses.",
 		icon: "Timify.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "timify:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.timify\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.timify\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "timify:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "timify:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "TimifyWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
-				"low",
 				"freemium",
-				"recurring"
-			]
-		}
+				"low",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "timma",
@@ -6917,31 +7265,37 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Timma is a hair and salon booking system that enables users to schedule appointments with salons and stylists through an online platform.",
 		icon: "Timma.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "timma:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.timma\\.no"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
 				id: "timma:meta:1",
 				kind: "meta",
 				key: "author",
-				valuePattern: new RegExp("^Timma"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^Timma", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "timma:meta:2",
+				kind: "meta",
+				key: "author",
+				valuePattern: new RegExp("^timma", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "tito",
@@ -6950,24 +7304,26 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Tito is an event software platform that provides a solution for selling tickets online.",
 		icon: "Tito.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "tito:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("js\\.tito\\.io/v([\\d.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("js\\.tito\\.io\\/v([\\d.]+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "tix",
@@ -6976,24 +7332,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Tix is a system designed for managing event tickets, allowing users to organize, distribute, and track tickets.",
 		icon: "Tix.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "tix:scriptContent:0",
 				kind: "scriptContent",
-				pattern: new RegExp("\\.secure-tix\\.com/"),
-				description: "Script content contains a bounded technology signature."
-			}
+				pattern: new RegExp("\\.secure-tix\\.com\\/"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "tourcms",
@@ -7002,30 +7357,29 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "TourCMS is a platform designed for tour and activity operators, offering solutions for managing online and offline bookings and distribution.",
 		icon: "TourCMS.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "tourcms:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("mp\\.tourcms\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "tourcms:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("mp\\.tourcms\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "traveljoy",
@@ -7034,24 +7388,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "TravelJoy is an all-in-one platform for travel advisors, providing tools for managing client bookings, payments, and communication.",
 		icon: "TravelJoy.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "traveljoy:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("traveljoy\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "travello",
@@ -7060,20 +7413,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Travello is a booking platform that provides discounted travel options, tours, and holiday packages across multiple destinations worldwide.",
 		icon: "Travello.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "travello:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.travelloapp\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "tripleseat",
@@ -7082,20 +7434,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Tripleseat is an event management platform that streamlines venue booking, guest communication, and event coordination for restaurants, hotels, and hospitality teams.",
 		icon: "Tripleseat.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "tripleseat:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("api\\.tripleseat\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "triptease",
@@ -7104,70 +7455,71 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Triptease is a SaaS that provides digital tools that create better experiences and relationships between hotels and guests.",
 		icon: "Triptease.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "triptease:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.triptease\\.io/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.triptease\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "trumba",
 		name: "Trumba",
 		website: "https://www.trumba.com",
 		description: "Trumba offers web-hosted event calendar software for publishing online, interactive, calendars of events.",
-		icon: "Trumba.svg",
+		icon: "Trumba.png",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "trumba:dom:0",
 				kind: "dom",
 				selector: "a[href*='www.trumba.com/calendars/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "trumba:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "trumba:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "$Trumba",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "trumba:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "trumba:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "$Trumba.version",
 				valuePattern: new RegExp("([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "trumba:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "trumba:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "Trumba",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "tucalendi",
@@ -7176,31 +7528,30 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "TuCalendi is an online appointment scheduling tool for meetings.",
 		icon: "TuCalendi.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "tucalendi:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.tucalendi\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "tucalendi:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "tucalendi:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Tucalendi.initConfig",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "turitop",
@@ -7209,37 +7560,36 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "TuriTop is a booking software for tours and activities that streamlines scheduling and reservation management through an automated interface.",
 		icon: "TuriTop.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "turitop:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.turitop\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("app\\.turitop\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "turitop:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "turitop:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "httpTuritop",
 				valuePattern: new RegExp("app\\.turitop\\.com"),
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "turitop:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "turitop:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "turitopBuild",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "typo-00",
@@ -7248,20 +7598,19 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Typo00 is a digital ordering system designed for restaurants to streamline order management.",
 		icon: "Typo00.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "typo-00:dom:0",
 				kind: "dom",
 				selector: "link[href*='typo00-public.s3']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "uplisting",
@@ -7270,26 +7619,32 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Uplisting is a property management system for Vacation Rental owners, operators and managers.",
 		icon: "Uplisting.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "uplisting:responseHeader:0",
-				kind: "responseHeader",
+				id: "uplisting:header:0",
+				kind: "header",
 				key: "server",
-				valuePattern: new RegExp("Uplisting"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("Uplisting", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "uplisting:header:1",
+				kind: "header",
+				key: "server",
+				valuePattern: new RegExp("uplisting", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "upserve",
@@ -7298,29 +7653,28 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Upserve is a restaurant management solution featuring an Android or iOS-based point-of-sale system, online ordering, contactless payments, automated inventory management, sales analytics, and more.",
 		icon: "Upserve.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "upserve:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.upserve\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("app\\.upserve\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "upserve:dom:1",
 				kind: "dom",
 				selector: "a[href*='app.upserve.com/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "ureserv",
@@ -7330,23 +7684,21 @@ export const bookingSchedulingTechnologyDefinitions = [
 		icon: "Ureserv.svg",
 		categories: [
 			"booking-scheduling",
-			"table-library"
 		],
 		rules: [
 			{
 				id: "ureserv:dom:0",
 				kind: "dom",
 				selector: "iframe[src*='www.ureserv.com/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "vacation-labs",
@@ -7355,31 +7707,30 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Vacation Labs is a travel management platform with a fully integrated booking engine that is mobile responsive.",
 		icon: "VacationLabs.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "vacation-labs:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.vacationlabs\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "vacation-labs:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.vacationlabs\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "vagaro",
@@ -7388,25 +7739,49 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Vagaro is a software platform that enables businesses to manage and book appointments online through a centralized scheduling system.",
 		icon: "Vagaro.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "vagaro:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("www\\.schedulicity\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
+			pricing: [
+				"low",
+				"poa",
+				"recurring",
+			],
+		},
+	},
+	{
+		id: "vectera",
+		name: "Vectera",
+		website: "https://go.vectera.com",
+		description: "Vectera is an online client meeting booking system that enables scheduling, managing, and organizing virtual appointments through a web-based platform.",
+		icon: "Vectera.svg",
+		categories: [
+			"booking-scheduling",
+		],
+		rules: [
+			{
+				id: "vectera:scriptContent:0",
+				kind: "scriptContent",
+				pattern: new RegExp("www\\.vectera\\.com"),
+				description: "Script content contains a bounded technology signature.",
+			},
+		],
+		metadata: {
+			saas: true,
 			pricing: [
 				"low",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "vello",
@@ -7415,25 +7790,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Vello is an online booking tool that automates business bookings.",
 		icon: "Vello.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "vello:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("static\\.vello\\.fi/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("static\\.vello\\.fi\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "ventrata",
@@ -7442,32 +7816,103 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Ventrata is a booking platform designed for high volume tours and attractions, offering all-in-one ticketing systems.",
 		icon: "Ventrata.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "ventrata:dom:0",
 				kind: "dom",
 				selector: "script#ventratajs-js",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "ventrata:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "ventrata:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Ventrata.version",
 				valuePattern: new RegExp("([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"high",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+	},
+	{
+		id: "venuesumo",
+		name: "VenueSumo",
+		website: "https://venuesumo.com",
+		description: "VenueSumo is a cloud-based venue management platform that centralizes sales, booking, and operational workflows to support revenue tracking and optimize administrative efficiency.",
+		icon: "VenueSumo.svg",
+		categories: [
+			"booking-scheduling",
+		],
+		rules: [
+			{
+				id: "venuesumo:scriptContent:0",
+				kind: "scriptContent",
+				pattern: new RegExp("\\.venuesumo\\.app"),
+				description: "Script content contains a bounded technology signature.",
+			},
+			{
+				id: "venuesumo:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "venueSumo",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"poa",
+			],
+		},
+	},
+	{
+		id: "vertaflow-booking",
+		name: "VertaFlow Booking",
+		website: "https://vertaflow.io",
+		description: "VertaFlow Booking is an embeddable appointment-scheduling widget that syncs bookings to VertaFlow CRM.",
+		icon: "VertaFlow.svg",
+		categories: [
+			"booking-scheduling",
+		],
+		rules: [
+			{
+				id: "vertaflow-booking:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("vertaflow\\.io\\/v1\\/book\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
+		],
+	},
+	{
+		id: "vertical-booking",
+		name: "Vertical Booking",
+		website: "https://verticalbooking.com",
+		description: "Vertical Booking is a central reservation system (CRS) that provides modular tools for managing bookings.",
+		icon: "VerticalBooking.svg",
+		categories: [
+			"booking-scheduling",
+		],
+		rules: [
+			{
+				id: "vertical-booking:scriptContent:0",
+				kind: "scriptContent",
+				pattern: new RegExp("reservations\\.verticalbooking\\.com"),
+				description: "Script content contains a bounded technology signature.",
+			},
+		],
+		metadata: {
+			saas: true,
+		},
 	},
 	{
 		id: "vfairs",
@@ -7476,29 +7921,29 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "vFairs is an event management platform for organizing customizable in-person and virtual events.",
 		icon: "vFairs.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "vfairs:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("vfairs\\.com"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
 				id: "vfairs:dom:1",
 				kind: "dom",
 				selector: "scripts[data-domain*='vfairscombined.com']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+			cpe: "cpe:2.3:a:vfairs:vfairs:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "visbook",
@@ -7507,23 +7952,48 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "VisBook is a property management system used by hotels and accommodation providers to manage reservations, daily operations, and guest-related activities in a centralized platform.",
 		icon: "VisBook.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "visbook:scriptContent:0",
 				kind: "scriptContent",
-				pattern: new RegExp("reservations\\.visbook\\.com/"),
-				description: "Script content contains a bounded technology signature."
-			}
+				pattern: new RegExp("reservations\\.visbook\\.com\\/"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
+	},
+	{
+		id: "waverez",
+		name: "WaveRez",
+		website: "https://waverez.com",
+		description: "WaveRez is an online booking software platform designed for the watersport and boat tour industry.",
+		icon: "WaveRez.svg",
+		categories: [
+			"booking-scheduling",
+		],
+		rules: [
+			{
+				id: "waverez:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("reservations\\.waverez\\.com"),
+				description: "Script source URL matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"mid",
+				"poa",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "weebnb",
@@ -7532,21 +8002,27 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "WeeBnB is a rental optimization platform that provides a website for managing and promoting vacation rentals.",
 		icon: "WeeBnB.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "weebnb:meta:0",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^WeeBnB$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^WeeBnB$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "weebnb:meta:1",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^weebnb$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "weezevent",
@@ -7555,25 +8031,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Weezevent is an online ticketing and event management solution that enables organizers to sell tickets, manage registrations, and track attendance for events.",
 		icon: "Weezevent.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "weezevent:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("widget\\.weezevent\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("widget\\.weezevent\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"payg",
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "wetravel",
@@ -7582,32 +8057,31 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "WeTravel is a platform providing booking and payment solutions tailored for travel companies.",
 		icon: "WeTravel.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "wetravel:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.wetravel\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.wetravel\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "wetravel:dom:1",
 				kind: "dom",
 				selector: "link[href*='cdn.wetravel.com/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "wherewolf",
@@ -7616,25 +8090,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Wherewolf is a platform that offers capture waivers, facilitates drive bookings, and automates review processes to streamline business operations.",
 		icon: "Wherewolf.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "wherewolf:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.wherewolf\\.co"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "whova",
@@ -7643,30 +8116,36 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Whova is an all-in-one event management platform supporting in-person, hybrid, and virtual events.",
 		icon: "Whova.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "whova:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("//whova\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/\\/whova\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "whova:responseHeader:1",
-				kind: "responseHeader",
+				id: "whova:header:1",
+				kind: "header",
 				key: "Content-Security-Policy",
-				valuePattern: new RegExp("whova\\.com"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("whova\\.com", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "whova:header:2",
+				kind: "header",
+				key: "content-security-policy",
+				valuePattern: new RegExp("whova\\.com", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "winearound",
@@ -7675,25 +8154,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "WINEAROUND is a booking software that enables businesses to manage online and offline reservations, schedule appointments, streamline operations, and enhance customer service for guided tours and activities.",
 		icon: "WineAround.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "winearound:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "winearound:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "_winearoundDefaultLanguage",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "witbooking",
@@ -7702,31 +8180,30 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Witbooking is a hotel booking engine that enables the management of reservations, availability, and pricing through an online platform.",
 		icon: "Witbooking.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "witbooking:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("www\\.witbooking\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "witbooking:dom:1",
 				kind: "dom",
 				selector: "form[action*='engine.witbooking.com']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"payg",
 				"recurring",
-				"payg"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "wubook",
@@ -7735,75 +8212,73 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "WuBook is a software platform that allows efficient management of rooms and rates for hospitality operations.",
 		icon: "WuBook.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "wubook:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("//wubook\\.net/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/\\/wubook\\.net\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "wubook:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "wubook:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "_WuBook",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "wubook:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "wubook:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "wbWuBookUrl",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "x-ai",
 		name: "X.ai",
 		website: "https://x.ai",
 		description: "X.ai is a scheduling tool that organizes meeting times and improves lead conversion by adding embedded booking buttons to websites or within live chat applications.",
-		icon: "X.ai.svg",
+		icon: "X.ai.png",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "x-ai:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("(?:cdn)?x\\.ai/.*/xdotai-embed\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("(?:cdn)?x\\.ai\\/.*\\/xdotai-embed\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "x-ai:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "x-ai:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "xdotaiAction",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "x-ai:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "x-ai:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "xdotaiButton",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "xtime",
@@ -7812,60 +8287,71 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Xtime is a company that provides automotive service scheduling and management solutions primarily for car dealerships and automotive service centers.",
 		icon: "Xtime.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "xtime:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.xtime\\.com/scheduling"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.xtime\\.com\\/scheduling"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "xtime:requestUrl:1",
 				kind: "requestUrl",
 				pattern: new RegExp("xtime\\.net\\.au"),
-				description: "Observed request URL matches a known technology marker."
+				description: "Observed request URL matches a known technology marker.",
 			},
 			{
 				id: "xtime:dom:2",
 				kind: "dom",
 				selector: "a[data-modified-by='xtime']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
 				id: "xtime:dom:3",
 				kind: "dom",
 				selector: "iframe[src*='xtime.net.au']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
 				id: "xtime:dom:4",
 				kind: "dom",
 				selector: "iframe[src*='x-time']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "xtime:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "xtime:jsGlobal:5",
+				kind: "jsGlobal",
 				property: "xtime",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "xtime:responseHeader:6",
-				kind: "responseHeader",
+				id: "xtime:header:6",
+				kind: "header",
 				key: "Access-Control-Allow-Origin",
-				valuePattern: new RegExp("\\.xtime\\.net"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("\\.xtime\\.net", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "xtime:header:7",
+				kind: "header",
+				key: "access-control-allow-origin",
+				valuePattern: new RegExp("\\.xtime\\.net", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "xtime:dom:8",
+				kind: "dom",
+				selector: "a[data-modified-by='xtime'],iframe[src*='xtime.net.au'],iframe[src*='x-time']",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "yachtsys",
@@ -7874,25 +8360,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "YachtSys is a booking management system.",
 		icon: "YachtSys.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "yachtsys:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("apps\\.yachtsys\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("apps\\.yachtsys\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "yelp-reservations",
@@ -7901,13 +8386,16 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Yelp Reservations is a cloud-based restaurant management system.",
 		icon: "Yelp.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "yelp-reservations:dom:0",
+				kind: "dom",
+				selector: "iframe[src*='yelp']",
+				description: "DOM selector matches a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "yoplanning",
@@ -7916,20 +8404,45 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "YoPlanning is an online software designed for booking and planning activities.",
 		icon: "YoPlanning.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "yoplanning:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("booking\\.yoplanning\\.pro"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
+	},
+	{
+		id: "youcanbookme",
+		name: "YouCanBookMe",
+		website: "https://youcanbook.me",
+		description: "YouCanBookMe is an online scheduling solution for small businesses that enables appointment booking, calendar integration, and automated availability management.",
+		icon: "YouCanBookMe.svg",
+		categories: [
+			"booking-scheduling",
+		],
+		rules: [
+			{
+				id: "youcanbookme:scriptContent:0",
+				kind: "scriptContent",
+				pattern: new RegExp("\\.youcanbook\\.me"),
+				description: "Script content contains a bounded technology signature.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"freemium",
+				"low",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "zen-planner",
@@ -7938,30 +8451,29 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Zen Planner is a software platform designed for fitness and wellness businesses, offering features such as membership management, class scheduling, and billing automation.",
 		icon: "Zen Planner.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "zen-planner:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.zenplanner\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.zenplanner\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "zen-planner:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "zen-planner:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "zenplanner",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "zenbooker",
@@ -7970,24 +8482,23 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Zenbooker is a system that enables users to book appointments or reservations online.",
 		icon: "Zenbooker.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
-				id: "zenbooker:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "zenbooker:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Zenbooker.BadgeWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "zenchef",
@@ -7996,23 +8507,22 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Zenchef is a restaurant management software solution that simplifies the customer restaurant experience.",
 		icon: "Zenchef.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "zenchef:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("sdk\\.zenchef\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("sdk\\.zenchef\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "zenmaid",
@@ -8021,25 +8531,24 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "ZenMaid is a residential cleaning scheduling software that helps manage appointments.",
 		icon: "ZenMaid.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "zenmaid:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.zenmaid\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "zenoti",
@@ -8048,31 +8557,37 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Zenoti is a cloud-based business software for spas, salons, and medspas, providing tools for managing appointment books, employee scheduling, and enabling online booking.",
 		icon: "Zenoti.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "zenoti:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.zenoti\\.com"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
 				id: "zenoti:meta:1",
 				kind: "meta",
 				key: "Author",
-				valuePattern: new RegExp("^zenoti$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^zenoti$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "zenoti:meta:2",
+				kind: "meta",
+				key: "author",
+				valuePattern: new RegExp("^zenoti$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "zocdoc",
@@ -8081,29 +8596,28 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Zocdoc is a New York City-based company offering an online service that allows people to find and book in-person or telemedicine appointments for medical or dental care.",
 		icon: "Zocdoc.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "zocdoc:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("offsiteschedule\\.zocdoc\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "zocdoc:dom:1",
 				kind: "dom",
 				selector: "a[href*='www.zocdoc.com'][target='_blank']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "zonal-bookings",
@@ -8112,23 +8626,28 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Zonal Bookings is a reservations platform that enables hospitality businesses to centralize and manage all booking activities without charging commissions.",
 		icon: "Zonal.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "zonal-bookings:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.reservationDetails\\.zonalBookingReference"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
+			{
+				id: "zonal-bookings:scriptContent:1",
+				kind: "scriptContent",
+				pattern: new RegExp("\\.reservationdetails\\.zonalbookingreference"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "zozi",
@@ -8137,44 +8656,42 @@ export const bookingSchedulingTechnologyDefinitions = [
 		description: "Zozi is a bookings widget and calendar used to manage reservations, availability, and scheduling.",
 		icon: "Zozi.svg",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "zozi:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("a\\.zozi\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "zuppler",
 		name: "Zuppler",
 		website: "https://www.zuppler.com",
 		description: "Zuppler is a complete and branded online ordering solution for restaurants and caterers with multi-locations.",
-		icon: "Zuppler.svg",
+		icon: "Zuppler.png",
 		categories: [
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "zuppler:dom:0",
 				kind: "dom",
 				selector: "link[href*='.zuppler.com/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
-	}
+				"payg",
+			],
+		},
+	},
 ] as const satisfies readonly TechnologyDefinition[];

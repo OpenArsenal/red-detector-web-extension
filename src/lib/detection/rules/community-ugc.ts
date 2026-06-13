@@ -9,38 +9,39 @@ export const communityUgcTechnologyDefinitions = [
 		icon: "AlchemerMobile.svg",
 		categories: [
 			"community-ugc",
-			"styling-processor"
 		],
 		rules: [
 			{
 				id: "alchemer-mobile:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("sdk\\.apptentive\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("sdk\\.apptentive\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "alchemer-mobile:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "alchemer-mobile:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ApptentiveSDK",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "alchemer-mobile:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "alchemer-mobile:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "ApptentiveSDK.sdk.version",
 				valuePattern: new RegExp("^([\\d\\.])$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "ali-reviews",
@@ -50,20 +51,19 @@ export const communityUgcTechnologyDefinitions = [
 		icon: "Alireviews.svg",
 		categories: [
 			"community-ugc",
-			"ecommerce-extensions"
+			"ecommerce-extensions",
 		],
 		rules: [
 			{
-				id: "ali-reviews:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "ali-reviews:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "alireviews_tags",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "alpha-review",
@@ -72,38 +72,37 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Alpha Review is an in-store ecommerce review tool developed in Korea, designed to gather and display customer feedback directly within retail environments.",
 		icon: "AlphaReview.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "alpha-review:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/alpha_au\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/alpha_au\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "alpha-review:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "alpha-review:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ALPHAREVIEW_FRONT_ALL",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "alpha-review:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "alpha-review:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "alpha_review_count_update",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "alpha-review:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "alpha-review:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "alpha_review_count_update_on",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "annoto",
@@ -112,32 +111,31 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Annoto is a platform that transforms video viewing into an interactive, social, and collaborative experience rather than a passive individual activity.",
 		icon: "Annoto.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "annoto:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.annoto\\.io"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "annoto:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "annoto:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Annoto.boot",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "annoto:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "annoto:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "AnnotoApiPromise",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "appzi",
@@ -146,43 +144,42 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Appzi is a customer experience software that is a user feedback and bug reporting tool.",
 		icon: "Appzi.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "appzi:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.appzi\\.io/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("app\\.appzi\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "appzi:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "appzi:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "appzi.At",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "appzi:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "appzi:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "appziSettings",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "appzi:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "appzi:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "apzbtgtr",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "asknicely",
@@ -191,107 +188,104 @@ export const communityUgcTechnologyDefinitions = [
 		description: "AskNicely is a platform that measures and improves customer happiness using the Net Promoter Score (NPS) framework.",
 		icon: "AskNicely.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "asknicely:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("static\\.asknice\\.ly/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("static\\.asknice\\.ly\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "asknicely:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "asknicely:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "askNicelyConversation",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "avis-verifies",
 		name: "Avis Verifies",
 		website: "https://www.netreviews.com",
 		description: "Avis Verifies is a complete solution for managing your customer reviews.",
-		icon: "Avis Verifies.svg",
+		icon: "Avis Verifies.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "avis-verifies:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.avis-verifies\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.avis-verifies\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "avis-verifies:dom:1",
 				kind: "dom",
 				selector: "a[href*='.avis-verifies.com/'][target='_blank'], iframe[src*='.avis-verifies.com/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "avis-verifies:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "avis-verifies:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "avisVerifies",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "bazaarvoice-reviews",
 		name: "Bazaarvoice Reviews",
 		website: "https://www.bazaarvoice.com/products/ratings-and-reviews/",
 		description: "Bazaarvoice is a provider of user-generated content solutions like ratings and reviews and Q&A.",
-		icon: "Bazaarvoice.svg",
+		icon: "Bazaarvoice.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "bazaarvoice-reviews:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("apps\\.bazaarvoice\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "bazaarvoice-reviews:scriptContent:1",
-				kind: "scriptContent",
-				pattern: new RegExp("apps\\.bazaarvoice\\.com/"),
-				description: "Script content contains a bounded technology signature."
-			},
-			{
-				id: "bazaarvoice-reviews:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "bazaarvoice-reviews:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "BV.api",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "bazaarvoice-reviews:scriptContent:2",
+				kind: "scriptContent",
+				pattern: new RegExp("apps\\.bazaarvoice\\.com\\/"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"high",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "bbpress",
@@ -300,23 +294,22 @@ export const communityUgcTechnologyDefinitions = [
 		description: "bbPress is a forum software built to integrate seamlessly with WordPress, allowing discussion forums to run directly within a WordPress blog.",
 		icon: "bbPress.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "bbpress:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "bbpress:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "gdbbPressAttachmentsInit",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		requires: [
-			"wordpress"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
+		requires: [
+			"wordpress",
+		],
 	},
 	{
 		id: "cackle",
@@ -325,36 +318,35 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Cackle is a cloud services platform for increasing conversion using comments, feedback collection, online consultant and surveys.",
 		icon: "Cackle.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "cackle:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("k\\.cackle\\.me/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("k\\.cackle\\.me\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "cackle:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "cackle:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Cackle.CommentCount",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "cackle:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "cackle:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "cackle_widget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "circle",
@@ -363,38 +355,37 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Circie is an all-in-one community platform for businesses that brings together engaging courses, discussions, members, live streams, chat, events, and memberships.",
 		icon: "Circle.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "circle:dom:0",
 				kind: "dom",
 				selector: "a[href*='.circle.so/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "circle:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "circle:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "circleUser",
 				confidence: 50,
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "circle:cookie:2",
 				kind: "cookie",
-				key: "_circle_session:",
+				keyPattern: new RegExp("^_circle_session:$", "i"),
 				confidence: 50,
-				description: "Cookie name matches a known technology marker."
-			}
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "clutch",
@@ -404,20 +395,16 @@ export const communityUgcTechnologyDefinitions = [
 		icon: "clutch.svg",
 		categories: [
 			"community-ugc",
-			"widgets-misc"
+			"widgets-misc",
 		],
 		rules: [
 			{
 				id: "clutch:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("//widget\\.clutch\\.co/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\/\\/widget\\.clutch\\.co\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "cometd",
@@ -427,29 +414,28 @@ export const communityUgcTechnologyDefinitions = [
 		icon: "CometD.svg",
 		categories: [
 			"community-ugc",
-			"router"
 		],
 		rules: [
 			{
 				id: "cometd:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/cometd/jquery\\.cometd\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/cometd\\/jquery\\.cometd\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "cometd:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "cometd:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "cometMsgReceived",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		requires: [
-			"jquery"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+			cpe: "cpe:2.3:a:cometd:cometd:*:*:*:*:*:*:*:*",
+		},
+		requires: [
+			"jquery",
+		],
 	},
 	{
 		id: "commento",
@@ -458,24 +444,23 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Commento is a tool for fostering discussion and improving engagement on websites.",
 		icon: "Commento.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "commento:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.commento\\.io/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("cdn\\.commento\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "community",
@@ -484,54 +469,52 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Community is a platform enabling public figures, small to midsize businesses, and enterprise brands to connect instantly with their audience through large-scale conversational text messaging.",
 		icon: "Community.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "community:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.community\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.community\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "contlo",
 		name: "Contlo",
 		website: "https://www.contlo.com",
 		description: "Contlo is an AI powered marketing software.",
-		icon: "Contlo.svg",
+		icon: "Contlo.png",
 		categories: [
 			"community-ugc",
-			"marketing-automation"
+			"marketing-automation",
 		],
 		rules: [
 			{
 				id: "contlo:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.contlo\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.contlo\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "contlo:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "contlo:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "CONTLO_ENV",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"high",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "copiny",
@@ -540,20 +523,19 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Copiny is a Russian-based community support system.",
 		icon: "Copiny.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "copiny:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("widget\\.copiny\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "countable",
@@ -562,27 +544,26 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Countable is a community platform designed to support discussion, collaboration, and engagement among members through shared content, forums, and interactive features.",
 		icon: "Countable.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "countable:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("assets\\.countable\\.us/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("assets\\.countable\\.us\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "countable:meta:1",
 				kind: "meta",
 				key: "appleid-signin-client-id",
-				valuePattern: new RegExp("com\\.countable\\.signin"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("com\\.countable\\.signin", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "cove",
@@ -591,32 +572,31 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Cove is a commenting and community platform that integrates with Ghost sites to enable reader discussions and user engagement.",
 		icon: "Cove.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "cove:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.cove\\.chat"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "cove:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "cove:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "coveAction",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "cove:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "cove:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "coveCommentCount",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "customer-alliance",
@@ -625,59 +605,70 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Customer Alliance is a cloud-based platform facilitating customer reviews and feedback management and analysis.",
 		icon: "CustomerAlliance.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "customer-alliance:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("widget\\.customer-alliance\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("widget\\.customer-alliance\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "discourse",
 		name: "Discourse",
 		website: "https://discourse.org",
 		description: "Discourse is an open-source internet forum and mailing list management software application.",
-		icon: "Discourse.svg",
+		icon: "Discourse.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "discourse:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "discourse:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Discourse",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "discourse:meta:1",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("Discourse(?: ?/?([\\d.]+\\d))?"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"ruby-on-rails"
+				valuePattern: new RegExp("Discourse(?: ?\\/?([\\d.]+\\d))?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "discourse:meta:2",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("discourse(?: ?\\/?([\\d.]+\\d))?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:discourse:discourse:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:discourse:discourse:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"ruby-on-rails",
+		],
 	},
 	{
 		id: "discuz-x",
@@ -686,45 +677,58 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Discuz! X is an internet forum software written in PHP and supports MySQL and PostgreSQL databases.",
 		icon: "Discuz X.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "discuz-x:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "discuz-x:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "DISCUZCODE",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "discuz-x:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "discuz-x:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "discuzVersion",
 				valuePattern: new RegExp("^(.+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "discuz-x:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "discuz-x:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "discuz_uid",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "discuz-x:meta:3",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("Discuz! X([\\d\\.]+)?"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("Discuz! X([\\d\\.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "discuz-x:meta:4",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("discuz! x([\\d\\.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		implies: [
-			"php"
+			"php",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "disqus",
@@ -733,49 +737,47 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Disqus is a worldwide blog comment hosting service for web sites and online communities that use a networked platform.",
 		icon: "Disqus.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "disqus:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("disqus_url"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "disqus:dom:1",
 				kind: "dom",
 				selector: "div#disqus_thread",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "disqus:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "disqus:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "DISQUS",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "disqus:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "disqus:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "disqus_shortname",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "disqus:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "disqus:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "disqus_url",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
+				"recurring",
 			],
-			cpe: "cpe:2.3:a:disqus:disqus_comment_system:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:disqus:disqus_comment_system:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "elkarte",
@@ -784,32 +786,31 @@ export const communityUgcTechnologyDefinitions = [
 		description: "ElkArte is an open-source PHP-based forum software with MySQL integration, offering features such as user authentication, topic categorisation, post formatting, private messaging, moderation tools, and customisable themes and extensions.",
 		icon: "ElkArte.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "elkarte:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "elkarte:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "elk_forum_action",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "elkarte:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "elkarte:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "elk_iso_case_folding",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"mysql"
-		],
-		requires: [
-			"php"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"mysql",
+		],
+		requires: [
+			"php",
+		],
 	},
 	{
 		id: "famewall",
@@ -818,26 +819,25 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Famewall is a tool that converts social media mentions into visually appealing testimonials and automates the process of collecting them from customers using a custom collection feature.",
 		icon: "Famewall.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "famewall:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("embed\\.famewall\\.io/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("embed\\.famewall\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "featherx",
@@ -846,23 +846,22 @@ export const communityUgcTechnologyDefinitions = [
 		description: "FeatherX captures content from all major reviews and social media channels.",
 		icon: "FeatherX.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "featherx:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "featherx:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "featherx.clientId",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "feefo",
@@ -871,42 +870,41 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Feefo is a cloud-based consumer review and rating management software.",
 		icon: "Feefo.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "feefo:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.feefo\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.feefo\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "feefo:dom:1",
 				kind: "dom",
 				selector: "a[href*='.feefo.com/'][target='_blank'], link[href*='.feefo.com/'], img[src*='.feefo.com/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "feefo:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "feefo:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "feefoTracker",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "feefo:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "feefo:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "feefoWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "fera",
@@ -915,30 +913,29 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Fera is a product review and social proof application for ecommerce websites.",
 		icon: "Fera.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "fera:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.fera\\.ai"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "fera:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "fera:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "fera",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "fider",
@@ -947,20 +944,19 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Fider is an open-source platform for collecting, organizing, and prioritizing customer feedback to support product development decisions.",
 		icon: "Fider.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "fider:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "fider:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "webpackChunkfider",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "flamp",
@@ -969,65 +965,62 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Flamp is a city review widget that displays user-generated ratings and reviews of local businesses, helping visitors assess service quality and reputation.",
 		icon: "Flamp.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "flamp:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("widget\\.flamp\\.ru"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "flarum",
 		name: "Flarum",
 		website: "https://flarum.org/",
 		description: "Flarum is a discussion platform.",
-		icon: "flarum.svg",
+		icon: "flarum.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "flarum:html:0",
 				kind: "html",
 				pattern: new RegExp("<div id=\"flarum-loading\""),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "flarum:dom:1",
+				id: "flarum:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "app.cache.discussionList",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "flarum:jsGlobal:2",
+				kind: "jsGlobal",
+				property: "app.forum.freshness",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "flarum:dom:3",
 				kind: "dom",
 				selector: "div[id*='flarum-loading']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
-			{
-				id: "flarum:pageGlobal:2",
-				kind: "pageGlobal",
-				property: "app.cache.discussionList",
-				description: "Page-owned global matches a known technology marker."
-			},
-			{
-				id: "flarum:pageGlobal:3",
-				kind: "pageGlobal",
-				property: "app.forum.freshness",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"php",
-			"mysql"
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:flarum:flarum:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:flarum:flarum:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"mysql",
+			"php",
+		],
 	},
 	{
 		id: "flockrocket",
@@ -1036,55 +1029,53 @@ export const communityUgcTechnologyDefinitions = [
 		description: "FlockRocket is a reviews system designed to collect, manage, and display verified customer feedback.",
 		icon: "FlockRocket.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "flockrocket:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.flockrocket\\.io"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "fluxbb",
 		name: "FluxBB",
 		website: "https://fluxbb.org",
+		description: "FluxBB is a lightweight open-source forum application written in PHP.",
 		icon: "FluxBB.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "fluxbb:html:0",
 				kind: "html",
-				pattern: new RegExp("<p id=\"poweredby\">[^<]+<a href=\"https?://fluxbb\\.org/\">"),
-				description: "HTML contains a known technology marker."
+				pattern: new RegExp("<p id=\"poweredby\">[^<]+<a href=\"https?:\\/\\/fluxbb\\.org\\/\">"),
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "fluxbb:dom:1",
 				kind: "dom",
 				selector: "p#poweredby > a[href*='//fluxbb.org/']",
-				description: "DOM selector matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:fluxbb:fluxbb:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:fluxbb:fluxbb:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "forumbee",
@@ -1093,25 +1084,24 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Forumbee is a platform for hosting community Q&A spaces and discussion forums, providing organized threads for information exchange and user-driven support.",
 		icon: "Forumbee.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "forumbee:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.forumbee\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "frill",
@@ -1120,37 +1110,36 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Frill is a platform that connects customers and businesses by enabling customers to provide feedback.",
 		icon: "Frill.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "frill:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.frill\\.co/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.frill\\.co\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "frill:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "frill:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "FRILL_ENV",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "frill:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "frill:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "Frill.containers",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "fudforum",
@@ -1159,31 +1148,30 @@ export const communityUgcTechnologyDefinitions = [
 		description: "FUDforum is a discussion forum software with support for posts, topics, polls and attachments.",
 		icon: "default.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "fudforum:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "fudforum:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "fud_msg_focus",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "fudforum:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "fudforum:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "fud_tree_msg_focus",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"perl",
-			"php"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:fudforum:fudforum:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:fudforum:fudforum:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"perl",
+			"php",
+		],
 	},
 	{
 		id: "getreview",
@@ -1192,30 +1180,29 @@ export const communityUgcTechnologyDefinitions = [
 		description: "GetReview is a website reviews system designed to collect, manage, and display user feedback.",
 		icon: "GetReview.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "getreview:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.getreview\\.pl"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "getreview:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.getreview\\.pl"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "giscus",
@@ -1224,23 +1211,23 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Giscus is a comment system powered by GitHub Discussions.",
 		icon: "Giscus.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "giscus:dom:0",
 				kind: "dom",
 				selector: "link[href*='giscus.app'], div[class^='giscus-container']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
 			oss: true,
 			pricing: [
-				"freemium"
-			]
-		}
+				"freemium",
+			],
+		},
 	},
 	{
 		id: "goodreviews",
@@ -1249,30 +1236,29 @@ export const communityUgcTechnologyDefinitions = [
 		description: "GoodReviews is a tool that displays and collects Google reviews to support online reputation management and customer feedback tracking.",
 		icon: "GoodReview.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "goodreviews:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.goodreviews\\.io"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "goodreviews:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "goodreviews:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "GoodReviewObject",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "google-customer-reviews",
@@ -1281,23 +1267,21 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Google Customer Reviews is a badge on your site that can help users identify your site with the Google brand and can be placed on any page of your site.",
 		icon: "Google.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "google-customer-reviews:dom:0",
 				kind: "dom",
 				selector: "iframe[src*='.google.com/shopping/customerreviews/'], a[href*='.google.com/shopping/customerreviews/'][target='_blank']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
-				"freemium"
-			]
-		}
+				"freemium",
+			],
+		},
 	},
 	{
 		id: "higher-logic-vanilla",
@@ -1306,54 +1290,63 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Higher Logic Vanilla is a cloud-based customer community platform offering features like discussion forums, Q&A, ideation, gamification, and advanced analytics, enabling businesses to enhance customer engagement and support.",
 		icon: "Higher Logic.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "higher-logic-vanilla:dom:0",
 				kind: "dom",
 				selector: "body#DiscussionsPage, body#vanilla",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "higher-logic-vanilla:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "higher-logic-vanilla:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Vanilla",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "higher-logic-vanilla:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "higher-logic-vanilla:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "__VANILLA_GLOBALS__",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "higher-logic-vanilla:responseHeader:3",
-				kind: "responseHeader",
+				id: "higher-logic-vanilla:header:3",
+				kind: "header",
 				key: " x-vanilla-version",
-				valuePattern: new RegExp("([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Response header matches a known technology marker."
+				valuePattern: new RegExp("([\\d\\.]+)", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
 			},
 			{
-				id: "higher-logic-vanilla:responseHeader:4",
-				kind: "responseHeader",
+				id: "higher-logic-vanilla:header:4",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("Vanilla"),
-				description: "Response header matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
+				valuePattern: new RegExp("Vanilla", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "higher-logic-vanilla:header:5",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("vanilla", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"high",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "hulkapps-product-reviews",
@@ -1363,40 +1356,39 @@ export const communityUgcTechnologyDefinitions = [
 		icon: "HulkApps.svg",
 		categories: [
 			"community-ugc",
-			"ecommerce-extensions"
+			"ecommerce-extensions",
 		],
 		rules: [
 			{
 				id: "hulkapps-product-reviews:dom:0",
 				kind: "dom",
 				selector: "link[href*='reviews.hulkapps.com/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "hulkapps-product-reviews:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "hulkapps-product-reviews:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "hulkappsProductReview",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "hulkapps-product-reviews:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "hulkapps-product-reviews:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "hulkappsReviews",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"shopify"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		implies: [
+			"shopify",
+		],
 	},
 	{
 		id: "iiq-check",
@@ -1405,20 +1397,19 @@ export const communityUgcTechnologyDefinitions = [
 		description: "iiQ Check is a system designed to optimize hotel guest communication and manage review distribution.",
 		icon: "iiQCheck.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "iiq-check:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.iiq-check\\.de"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "influenster",
@@ -1427,48 +1418,43 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Influenster is a product reviews widget that displays feedback and ratings from shoppers on websites.",
 		icon: "Influenster.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "influenster:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("widget\\.influenster\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "influenster:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "influenster:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "showInfluensterWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "intensedebate",
 		name: "IntenseDebate",
 		website: "https://intensedebate.com",
 		description: "IntenseDebate is a blog commenting system that supports Typepad, Blogger and Wordpress blogs. The system allows blog owners to track and moderate comments from one place with features like threading, comment analytics, user reputation, and comment aggregation.",
-		icon: "IntenseDebate.svg",
+		icon: "IntenseDebate.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "intensedebate:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("intensedebate\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "invision-power-board",
@@ -1477,70 +1463,81 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Invision Power Board is a commercial Internet forum software developed by Invision Community (formerly Invision Power Services).",
 		icon: "Invision Power Board.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "invision-power-board:html:0",
-				kind: "html",
-				pattern: new RegExp("<link[^>]+ipb_[^>]+\\.css"),
-				description: "HTML contains a known technology marker."
-			},
-			{
-				id: "invision-power-board:scriptSrc:1",
+				id: "invision-power-board:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("jscripts/ips_"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("jscripts\\/ips_"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "invision-power-board:scriptContent:2",
+				id: "invision-power-board:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("ipb_url_filter_option"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "invision-power-board:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "invision-power-board:html:2",
+				kind: "html",
+				pattern: new RegExp("<link[^>]+ipb_[^>]+\\.css"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "invision-power-board:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "IPBoard",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "invision-power-board:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "invision-power-board:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "ipb_var",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "invision-power-board:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "invision-power-board:jsGlobal:5",
+				kind: "jsGlobal",
 				property: "ipsSettings",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "invision-power-board:cookie:6",
 				kind: "cookie",
-				key: "ipbWWLmodpids",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^ipbWWLmodpids$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "invision-power-board:cookie:7",
 				kind: "cookie",
-				key: "ipbWWLsession_id",
-				description: "Cookie name matches a known technology marker."
-			}
-		],
-		implies: [
-			"php",
-			"mysql"
+				keyPattern: new RegExp("^ipbWWLsession_id$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "invision-power-board:cookie:8",
+				kind: "cookie",
+				keyPattern: new RegExp("^ipbwwlmodpids$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "invision-power-board:cookie:9",
+				kind: "cookie",
+				keyPattern: new RegExp("^ipbwwlsession_id$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+			cpe: "cpe:2.3:a:invisioncommunity:invision_power_board:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"mysql",
+			"php",
+		],
 	},
 	{
 		id: "ipb",
@@ -1548,60 +1545,68 @@ export const communityUgcTechnologyDefinitions = [
 		website: "https://invisioncommunity.com/",
 		icon: "IPB.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "ipb:html:0",
+				id: "ipb:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("jscripts\\/ips_"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "ipb:html:1",
 				kind: "html",
 				pattern: new RegExp("<link[^>]+ipb_[^>]+\\.css"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "ipb:scriptSrc:1",
-				kind: "scriptSrc",
-				pattern: new RegExp("jscripts/ips_"),
-				description: "Script source URL matches a known technology marker."
-			},
-			{
-				id: "ipb:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "ipb:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "IPBoard",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "ipb:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "ipb:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "ipb_var",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "ipb:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "ipb:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "ipsSettings",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "ipb:cookie:5",
 				kind: "cookie",
-				key: "ipbWWLmodpids",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^ipbWWLmodpids$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "ipb:cookie:6",
 				kind: "cookie",
-				key: "ipbWWLsession_id",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^ipbWWLsession_id$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "ipb:cookie:7",
+				kind: "cookie",
+				keyPattern: new RegExp("^ipbwwlmodpids$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "ipb:cookie:8",
+				kind: "cookie",
+				keyPattern: new RegExp("^ipbwwlsession_id$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		implies: [
+			"mysql",
 			"php",
-			"mysql"
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "isso",
@@ -1609,23 +1614,22 @@ export const communityUgcTechnologyDefinitions = [
 		website: "https://github.com/posativ/isso/",
 		description: "Isso is a lightweight commenting server written in Python and JavaScript, referred to as \"Ich schrei sonst\" in German.",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "isso:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "isso:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Isso.fetchComments",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"python"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"python",
+		],
 	},
 	{
 		id: "jiglu",
@@ -1634,26 +1638,25 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Jiglu is a collaboration and communities suite that connects enterprise content with conversations to support improved communication.",
 		icon: "Jiglu.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "jiglu:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.jiglu\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.jiglu\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "judge-me",
@@ -1662,72 +1665,82 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Judge.me is a reviews app that helps you collect and display product reviews and site reviews with photos, videos and Q&A.",
 		icon: "Judge.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "judge-me:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.judge\\.me"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "judge-me:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "judge-me:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "judgeme",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "judge-me:scriptSrc:2",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\.judge\\.me"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "judge-me:jsGlobal:3",
+				kind: "jsGlobal",
+				property: "jdgm",
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "junip",
 		name: "Junip",
 		website: "https://junip.co",
-		description: "Junip provider of a ecommerce brand review platform designed to share customers' story, send review requests and display review content.",
+		description: "Junip provider of an ecommerce brand review platform designed to share customers' story, send review requests and display review content.",
 		icon: "Junip.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "junip:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.juniphq\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.juniphq\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "junip:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "junip:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "junipLoaded",
 				confidence: 50,
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "junip:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "junip:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "webpackChunkjunip_scripts",
 				confidence: 50,
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
+				"payg",
 				"recurring",
-				"payg"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "klaviyo-reviews",
@@ -1736,29 +1749,40 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Klaviyo Reviews is a built-in product review offering for Shopify and WooCommerce by Klaviyo.",
 		icon: "Klaviyo.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "klaviyo-reviews:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("klaviyo\\.com/onsite/js/reviews"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("klaviyo\\.com\\/onsite\\/js\\/reviews"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "klaviyo-reviews:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "klaviyo-reviews:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "klaviyoReviewsProductDesignMode",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"klaviyo"
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "klaviyo-reviews:scriptSrc:2",
+				kind: "scriptSrc",
+				pattern: new RegExp("static\\.klaviyo\\.com\\/onsite\\/js\\/vendors~reviews"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "klaviyo-reviews:dom:3",
+				kind: "dom",
+				selector: "div#klaviyo-product-reviews-wrapper",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
+		implies: [
+			"klaviyo",
+		],
 	},
 	{
 		id: "konfidency-reviews",
@@ -1767,26 +1791,25 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Konfidency Reviews is a platform that builds trust, boosts organic traffic, and supports purchasing decisions by providing reviews from customers who are familiar with the products.",
 		icon: "KonfidencyReviews.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "konfidency-reviews:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "konfidency-reviews:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "konfidencyCustomer",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "konfidency-reviews:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "konfidency-reviews:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "konfidencyLoader",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "kudobuzz",
@@ -1795,63 +1818,57 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Kudobuzz is a tool for collecting and managing customer reviews.",
 		icon: "kudobuzz.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "kudobuzz:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "kudobuzz:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Kudos.apiServer",
 				valuePattern: new RegExp("api\\.kudobuzz\\.com"),
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		implies: [
-			"svelte"
+			"svelte",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "letro",
 		name: "Letro",
 		website: "https://service.aainc.co.jp/product/letro/",
-		description: "Letro is a UGC and review tool for ecommerce platforms.",
+		description: "Letro is an UGC and review tool for ecommerce platforms.",
 		icon: "Letro.svg",
 		categories: [
 			"community-ugc",
 			"marketing-automation",
-			"content-publishing"
 		],
 		rules: [
 			{
 				id: "letro:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("letro\\.jp/tags"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("letro\\.jp\\/tags"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "letro:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "letro:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "__letroUgcGadget",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "letro:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "letro:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "letroUgcSet",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "linen",
@@ -1860,25 +1877,24 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Linen is a real-time chat platform built for communities.",
 		icon: "Linen.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "linen:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "linen:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "__NEXT_DATA__.props.pageProps.currentCommunity.logoUrl",
-				valuePattern: new RegExp("static\\.main\\.linendev\\.com/"),
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"typescript",
-			"elixir"
+				valuePattern: new RegExp("static\\.main\\.linendev\\.com\\/"),
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"elixir",
+			"typescript",
+		],
 	},
 	{
 		id: "lipscore",
@@ -1887,90 +1903,88 @@ export const communityUgcTechnologyDefinitions = [
 		description: "LipScore is a ratings and reviews engine.",
 		icon: "LipScore.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "lipscore:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.lipscore\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.lipscore\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "lipscore:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "lipscore:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "LipscoreSwiper",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "lipscore:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "lipscore:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "wcLipscoreInit",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "livefyre",
 		name: "Livefyre",
 		website: "https://livefyre.com",
 		description: "Livefyre is a platform that integrates with the social web to boost social interaction.",
-		icon: "Livefyre.svg",
+		icon: "Livefyre.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "livefyre:html:0",
-				kind: "html",
-				pattern: new RegExp("<[^>]+(?:id|class)=\"livefyre"),
-				description: "HTML contains a known technology marker."
-			},
-			{
-				id: "livefyre:scriptSrc:1",
+				id: "livefyre:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("livefyre_init\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "livefyre:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "livefyre:html:1",
+				kind: "html",
+				pattern: new RegExp("<[^>]+(?:id|class)=\"livefyre"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "livefyre:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "FyreLoader",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "livefyre:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "livefyre:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "L.version",
 				valuePattern: new RegExp("^(.+)$"),
 				confidence: 0,
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "livefyre:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "livefyre:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "LF.CommentCount",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "livefyre:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "livefyre:jsGlobal:5",
+				kind: "jsGlobal",
 				property: "fyre",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "loox",
@@ -1979,30 +1993,33 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Loox is a reviews app for Shopify that helps you gather reviews and user-generated photos from your customers.",
 		icon: "Loox.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
+			"ecommerce-extensions",
 		],
 		rules: [
 			{
 				id: "loox:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("loox\\.io/widget"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("loox\\.io\\/widget"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "loox:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "loox:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "loox_global_hash",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		implies: [
+			"shopify",
+		],
 	},
 	{
 		id: "loyaltyloop",
@@ -2011,37 +2028,36 @@ export const communityUgcTechnologyDefinitions = [
 		description: "LoyaltyLoop is an online review management platform that leverages customer loyalty surveys and Net Promoter Score tracking to enhance business reputation and strengthen customer relationships.",
 		icon: "LoyaltyLoop.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "loyaltyloop:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.loyaltyloop\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("app\\.loyaltyloop\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "loyaltyloop:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "loyaltyloop:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "LoyaltyLoopEventListenerInitialized",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "loyaltyloop:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "loyaltyloop:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "countOfLoyaltyLoopTestimonialWidgets",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "mastodon",
@@ -2050,103 +2066,113 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Mastodon is a free and open-source self-hosted social networking service.",
 		icon: "Mastodon.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "mastodon:cookie:0",
 				kind: "cookie",
-				key: "_mastodon_session",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^_mastodon_session$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
-				id: "mastodon:responseHeader:1",
-				kind: "responseHeader",
+				id: "mastodon:header:1",
+				kind: "header",
 				key: "Server",
-				valuePattern: new RegExp("^Mastodon$"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("^Mastodon$", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "mastodon:header:2",
+				kind: "header",
+				key: "server",
+				valuePattern: new RegExp("^mastodon$", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:joinmastodon:mastodon:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:joinmastodon:mastodon:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "mattermost",
 		name: "Mattermost",
 		website: "https://about.mattermost.com",
-		icon: "mattermost.svg",
+		icon: "mattermost.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "mattermost:html:0",
 				kind: "html",
-				pattern: new RegExp("<noscript> To use Mattermost, please enable JavaScript\\. </noscript>"),
-				description: "HTML contains a known technology marker."
+				pattern: new RegExp("<noscript> To use Mattermost, please enable JavaScript\\. <\\/noscript>"),
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "mattermost:pageGlobal:1",
-				kind: "pageGlobal",
-				property: "mattermost_webapp",
-				description: "Page-owned global matches a known technology marker."
-			},
-			{
-				id: "mattermost:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "mattermost:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "mm_config",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "mattermost:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "mattermost:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "mm_current_user_id",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "mattermost:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "mattermost:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "mm_license",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "mattermost:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "mattermost:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "mm_user",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "mattermost:pageGlobal:6",
-				kind: "pageGlobal",
+				id: "mattermost:jsGlobal:5",
+				kind: "jsGlobal",
+				property: "mattermost_webapp",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "mattermost:jsGlobal:6",
+				kind: "jsGlobal",
 				property: "webpackChunkmattermost_webapp",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "mattermost:meta:7",
 				kind: "meta",
 				key: "application-name",
-				valuePattern: new RegExp("^Mattermost$"),
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"go",
-			"react"
+				valuePattern: new RegExp("^Mattermost$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "mattermost:html:8",
+				kind: "html",
+				pattern: new RegExp("<noscript> to use mattermost, please enable javascript\\. <\\/noscript>"),
+				description: "HTML contains a known technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
 			],
-			cpe: "cpe:2.3:a:jenkins:mattermost:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:jenkins:mattermost:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"go",
+			"react",
+		],
 	},
 	{
 		id: "mighty-network",
@@ -2156,29 +2182,28 @@ export const communityUgcTechnologyDefinitions = [
 		icon: "Mighty Network.svg",
 		categories: [
 			"community-ugc",
-			"content-publishing"
+			"content-publishing",
 		],
 		rules: [
 			{
-				id: "mighty-network:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "mighty-network:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Mighty.BroadcastBotApp",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"ruby-on-rails",
-			"ruby"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
+		implies: [
+			"ruby",
+			"ruby-on-rails",
+		],
 	},
 	{
 		id: "misskey",
@@ -2187,28 +2212,39 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Misskey is a distributed microblogging platform.",
 		icon: "Misskey.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "misskey:html:0",
 				kind: "html",
 				pattern: new RegExp("<!-- Thank you for using Misskey! @syuilo -->"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "misskey:meta:1",
 				kind: "meta",
 				key: "application-name",
-				valuePattern: new RegExp("Misskey"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("Misskey", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "misskey:html:2",
+				kind: "html",
+				pattern: new RegExp("<!-- thank you for using misskey! @syuilo -->"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "misskey:meta:3",
+				kind: "meta",
+				key: "application-name",
+				valuePattern: new RegExp("misskey", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:misskey:misskey:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:misskey:misskey:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "morevago",
@@ -2217,80 +2253,78 @@ export const communityUgcTechnologyDefinitions = [
 		description: "MoreVago is a platform that displays customer testimonials and reviews to help businesses increase conversions and sales.",
 		icon: "MoreVago.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "morevago:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.morevago\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "morevago:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "morevago:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "morevagoOptions",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "morevago:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "morevago:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "objMorevago",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "mybb",
 		name: "MyBB",
 		website: "https://mybb.com",
 		description: "MyBB is a free and open-source forum software written in PHP.",
-		icon: "MyBB.svg",
+		icon: "MyBB.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "mybb:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "mybb:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "MyBB",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "mybb:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "mybb:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "MyBBEditor",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "mybb:cookie:2",
 				kind: "cookie",
-				key: "mybb[lastactive]",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^mybb\\[lastactive\\]$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "mybb:cookie:3",
 				kind: "cookie",
-				key: "mybb[lastvisit]",
-				description: "Cookie name matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
+				keyPattern: new RegExp("^mybb\\[lastvisit\\]$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:mybb:mybb:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:mybb:mybb:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "myli",
@@ -2299,26 +2333,25 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Myli is a platform enhancing customer experience, streamlining reputation management, and facilitating consumer acquisition.",
 		icon: "Myli.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "myli:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn-app\\.myli\\.io/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn-app\\.myli\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "myli:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "myli:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "myli_push.geolocate",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "nabble",
@@ -2326,35 +2359,34 @@ export const communityUgcTechnologyDefinitions = [
 		website: "https://nabble.com",
 		description: "Nabble is a platform offering free forum hosting and online web applications with customizable features.",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "nabble:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "nabble:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Nabble.analytics",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "nabble:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "nabble:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "NabbleDropdown",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "nabble:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "nabble:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "t_show_nabble_notice",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"freemium"
-			]
-		}
+				"freemium",
+			],
+		},
 	},
 	{
 		id: "nodebb",
@@ -2363,35 +2395,41 @@ export const communityUgcTechnologyDefinitions = [
 		description: "NodeBB forum software is powered by Node.js and built on either a Redis or MongoDB database.",
 		icon: "NodeBB.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "nodebb:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/nodebb\\.min\\.js\\?"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/nodebb\\.min\\.js\\?"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "nodebb:responseHeader:1",
-				kind: "responseHeader",
+				id: "nodebb:header:1",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("^NodeBB$"),
-				description: "Response header matches a known technology marker."
-			}
-		],
-		implies: [
-			"node-js"
+				valuePattern: new RegExp("^NodeBB$", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "nodebb:header:2",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("^nodebb$", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
+				"recurring",
 			],
-			cpe: "cpe:2.3:a:nodebb:nodebb:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:nodebb:nodebb:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"node-js",
+		],
 	},
 	{
 		id: "oclocher",
@@ -2401,31 +2439,36 @@ export const communityUgcTechnologyDefinitions = [
 		icon: "OClocher.svg",
 		categories: [
 			"community-ugc",
-			"animation"
 		],
 		rules: [
 			{
 				id: "oclocher:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("widget\\.oclocher\\.fr"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "oclocher:responseHeader:1",
-				kind: "responseHeader",
+				id: "oclocher:header:1",
+				kind: "header",
 				key: "Access-Control-Allow-Origin",
-				valuePattern: new RegExp("widget\\.oclocher\\.fr"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("widget\\.oclocher\\.fr", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "oclocher:header:2",
+				kind: "header",
+				key: "access-control-allow-origin",
+				valuePattern: new RegExp("widget\\.oclocher\\.fr", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "oculizm",
@@ -2434,20 +2477,19 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Oculizm is a conversion optimization tool that utilizes user-generated content and customer reviews to enhance consumer trust for retailers, resulting in increased sales and engagement.",
 		icon: "Oculizm.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "oculizm:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.oculizm\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("app\\.oculizm\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "okendo",
@@ -2457,39 +2499,50 @@ export const communityUgcTechnologyDefinitions = [
 		icon: "Okendo.svg",
 		categories: [
 			"community-ugc",
-			"ecommerce-extensions"
+			"ecommerce-extensions",
 		],
 		rules: [
 			{
-				id: "okendo:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "okendo:dom:0",
+				kind: "dom",
+				selector: "div.okeReviews",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "okendo:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "okeReviewsWidgetOnInit",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "okendo:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "okendo:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "okeWidgetControlInit",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "okendo:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "okendo:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "okendoReviews",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"shopify"
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "okendo:jsGlobal:4",
+				kind: "jsGlobal",
+				property: "okeWidgetApi",
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		implies: [
+			"shopify",
+		],
 	},
 	{
 		id: "orankl",
@@ -2498,37 +2551,36 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Orankl is a provider email marketing and review services.",
 		icon: "Orankl.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "orankl:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("www\\.orankl\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("www\\.orankl\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "orankl:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "orankl:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Orankl",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "orankl:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "orankl:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "oranklInit",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "peerboard",
@@ -2537,25 +2589,24 @@ export const communityUgcTechnologyDefinitions = [
 		description: "PeerBoard is a plug-and-play community solution, which helps groups, clubs, startups, marketplaces and businesses create discussion forums.",
 		icon: "PeerBoard.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "peerboard:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.peerboard\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.peerboard\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "peertube",
@@ -2564,21 +2615,39 @@ export const communityUgcTechnologyDefinitions = [
 		description: "PeerTube is a free and open-source, decentralized, federated video platform powered by ActivityPub and WebTorrent.",
 		icon: "PeerTube.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "peertube:meta:1",
+				id: "peertube:dom:0",
+				kind: "dom",
+				selector: "#incompatible-browser p",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "peertube:text:1",
+				kind: "text",
+				pattern: new RegExp("^We are sorry but it seems that PeerTube is not compatible with your web browser\\.$"),
+				description: "Page text contains a known technology marker.",
+			},
+			{
+				id: "peertube:meta:2",
 				kind: "meta",
 				key: "og:platform",
-				valuePattern: new RegExp("^PeerTube$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^PeerTube$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "peertube:meta:3",
+				kind: "meta",
+				key: "og:platform",
+				valuePattern: new RegExp("^peertube$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false
-		}
+			cpe: "cpe:2.3:a:framasoft:peertube:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "philomena",
@@ -2587,25 +2656,24 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Philomena is an imageboard software.",
 		icon: "Philomena.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "philomena:meta:0",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^philomena$"),
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"elixir",
-			"erlang"
+				valuePattern: new RegExp("^philomena$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"elixir",
+			"erlang",
+		],
 	},
 	{
 		id: "phpbb",
@@ -2614,79 +2682,90 @@ export const communityUgcTechnologyDefinitions = [
 		description: "phpBB is a free open-source Internet forum package in the PHP scripting language.",
 		icon: "phpBB.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "phpbb:html:0",
 				kind: "html",
 				pattern: new RegExp("Powered by <a[^>]+phpBB"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "phpbb:html:1",
 				kind: "html",
 				pattern: new RegExp("<div class=phpbb_copyright>"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "phpbb:html:2",
 				kind: "html",
-				pattern: new RegExp("<[^>]+styles/(?:sub|pro)silver/theme"),
-				description: "HTML contains a known technology marker."
+				pattern: new RegExp("<[^>]+styles\\/(?:sub|pro)silver\\/theme"),
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "phpbb:html:3",
 				kind: "html",
 				pattern: new RegExp("<img[^>]+i_icon_mini"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "phpbb:html:4",
 				kind: "html",
 				pattern: new RegExp("<table class=\"[^\"]*forumline"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "phpbb:dom:5",
-				kind: "dom",
-				selector: "div[class*='phpbb_copyright'], table[class*='forumline']",
-				description: "DOM selector matches a known technology marker."
-			},
-			{
-				id: "phpbb:pageGlobal:6",
-				kind: "pageGlobal",
+				id: "phpbb:jsGlobal:5",
+				kind: "jsGlobal",
 				property: "phpbb",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "phpbb:pageGlobal:7",
-				kind: "pageGlobal",
+				id: "phpbb:jsGlobal:6",
+				kind: "jsGlobal",
 				property: "style_cookie_settings",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "phpbb:cookie:8",
+				id: "phpbb:cookie:7",
 				kind: "cookie",
-				key: "phpbb",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^phpbb$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
-				id: "phpbb:meta:9",
+				id: "phpbb:meta:8",
 				kind: "meta",
 				key: "copyright",
-				valuePattern: new RegExp("phpBB Group"),
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
+				valuePattern: new RegExp("phpBB Group", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "phpbb:dom:9",
+				kind: "dom",
+				selector: "div[class*='phpbb_copyright'], table[class*='forumline']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "phpbb:html:10",
+				kind: "html",
+				pattern: new RegExp("powered by <a[^>]+phpbb"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "phpbb:meta:11",
+				kind: "meta",
+				key: "copyright",
+				valuePattern: new RegExp("phpbb group", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:phpbb:phpbb:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:phpbb:phpbb:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "pixelfed",
@@ -2695,16 +2774,25 @@ export const communityUgcTechnologyDefinitions = [
 		description: "PixelFed is an activitypub based image sharing platform.",
 		icon: "PixelFed.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
-		rules: [],
+		rules: [
+			{
+				id: "pixelfed:dom:0",
+				kind: "dom",
+				selector: "a[href='pixelfed.org'][title*='version']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "pixelfed:text:1",
+				kind: "text",
+				pattern: new RegExp("^Powered by Pixelfed$"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 		implies: [
-			"laravel"
+			"laravel",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "pleroma",
@@ -2713,13 +2801,34 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Pleroma is a free, federated social networking server built on open protocols.",
 		icon: "Pleroma.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "pleroma:dom:0",
+				kind: "dom",
+				selector: "noscript",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "pleroma:text:1",
+				kind: "text",
+				pattern: new RegExp("^To use Pleroma, please enable JavaScript.$"),
+				description: "Page text contains a known technology marker.",
+			},
+			{
+				id: "pleroma:dom:2",
+				kind: "dom",
+				selector: "title",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "pleroma:text:3",
+				kind: "text",
+				pattern: new RegExp("^Pleroma$"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "poll-maker",
@@ -2728,20 +2837,19 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Poll Maker is a system designed to create and manage online polls, allowing users to gather opinions, feedback, or votes.",
 		icon: "PollMaker.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "poll-maker:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("scripts\\.poll-maker\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("scripts\\.poll-maker\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "popvox",
@@ -2750,48 +2858,46 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Popvox is a platform that fosters civic engagement by providing tools for citizens to influence policy decisions and engage with elected representatives on governing innovations.",
 		icon: "Popvox.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "popvox:dom:0",
 				kind: "dom",
 				selector: "div[id*='PopVox'] > a[href*='www.popvox.com']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "powerreviews",
 		name: "PowerReviews",
 		website: "https://www.powerreviews.com/",
 		description: "Powerreviews is a provider of UGC solutions like ratings and reviews.",
-		icon: "PowerReviews.svg",
+		icon: "PowerReviews.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "powerreviews:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("ui\\.powerreviews\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "powerreviews:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "powerreviews:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "POWERREVIEWS",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "provesource",
@@ -2800,32 +2906,31 @@ export const communityUgcTechnologyDefinitions = [
 		description: "ProveSource is a solution to display social proof and boost conversion.",
 		icon: "ProveSource.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "provesource:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "provesource:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "_provesrcAsyncInit",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "provesource:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "provesource:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "provesrc.display",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "pulsem",
@@ -2834,56 +2939,60 @@ export const communityUgcTechnologyDefinitions = [
 		description: "PulseM is an online platform for managing customer reviews and business reputation across digital channels.",
 		icon: "PulseM.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "pulsem:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/embed-pulsemweb-gsd\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/embed-pulsemweb-gsd\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "pulsem:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "pulsem:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "pulsem_button_installed",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "punbb",
 		name: "punBB",
 		website: "https://punbb.informer.com",
-		icon: "punBB.svg",
+		icon: "punBB.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "punbb:html:0",
 				kind: "html",
 				pattern: new RegExp("Powered by <a href=\"[^>]+punbb"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "punbb:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "punbb:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "PUNBB",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "punbb:html:2",
+				kind: "html",
+				pattern: new RegExp("powered by <a href=\"[^>]+punbb"),
+				description: "HTML contains a known technology signature.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false
-		}
+			cpe: "cpe:2.3:a:gnu:punbb:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "pushwoosh",
@@ -2892,24 +3001,23 @@ export const communityUgcTechnologyDefinitions = [
 		description: "PushWoosh is a messaging system that supports push notifications and in-app messages.",
 		icon: "PushWoosh.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "pushwoosh:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "pushwoosh:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Pushwoosh",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "qualitelis",
@@ -2918,71 +3026,77 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Qualitelis is a hotel guest review system designed to collect, manage, and analyze feedback, helping hospitality providers improve services by addressing customer experiences and satisfaction levels.",
 		icon: "Qualitelis.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "qualitelis:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "qualitelis:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "InitWidgetQualitelis",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "qualitelis:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "qualitelis:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "resizeWidgetQualitelis",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "qualitelis:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "qualitelis:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "showHideWidgetQualitelis",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "qualitelis:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "qualitelis:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "widgetQualitelisFixed",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "question2answer",
 		name: "Question2Answer",
 		website: "https://www.question2answer.org",
 		description: "Question2Answer (Q2A) is a popular open-source Q&A platform for PHP/MySQL.",
-		icon: "question2answer.svg",
+		icon: "question2answer.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "question2answer:html:0",
-				kind: "html",
-				pattern: new RegExp("<!-- Powered by Question2Answer"),
-				description: "HTML contains a known technology marker."
+				id: "question2answer:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\.\\/qa-content\\/qa-page\\.js\\?([0-9.]+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "question2answer:scriptSrc:1",
-				kind: "scriptSrc",
-				pattern: new RegExp("\\./qa-content/qa-page\\.js\\?([0-9.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
+				id: "question2answer:html:1",
+				kind: "html",
+				pattern: new RegExp("<!-- Powered by Question2Answer"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "question2answer:html:2",
+				kind: "html",
+				pattern: new RegExp("<!-- powered by question2answer"),
+				description: "HTML contains a known technology signature.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:question2answer:question2answer:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:question2answer:question2answer:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "rasayel",
@@ -2991,37 +3105,57 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Rasayel is a customer communication platform that helps businesses sell to and support their customers over WhatsApp and other social messaging channels.",
 		icon: "Rasayel.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "rasayel:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "rasayel:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "RasayelOmniWidget",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "rasayel:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "rasayel:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "RasayelWabaWidget",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "rasayel:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "rasayel:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "RasayelWhatsAppWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
+	},
+	{
+		id: "rateabiz",
+		name: "RateAbiz",
+		website: "https://rateabiz.com",
+		description: "RateABiz is a reviews widgets for local service providers.",
+		icon: "RateAbiz.svg",
+		categories: [
+			"community-ugc",
+		],
+		rules: [
+			{
+				id: "rateabiz:scriptContent:0",
+				kind: "scriptContent",
+				pattern: new RegExp("cdn\\.rateabiz\\.com"),
+				description: "Script content contains a bounded technology signature.",
+			},
+		],
+		metadata: {
+			saas: true,
+		},
 	},
 	{
 		id: "ratesight",
@@ -3030,29 +3164,55 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Ratesight is an online review management software that helps businesses collect and track online reviews.",
 		icon: "RateSight.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "ratesight:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.ratesight\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.ratesight\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "ratesight:dom:1",
 				kind: "dom",
 				selector: "script#ratesight-sidebar-widget",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
+	},
+	{
+		id: "ravecapture",
+		name: "RaveCapture",
+		website: "https://ravecapture.com",
+		description: "RaveCapture is a platform for ecommerce stores to collect customer reviews, user-generated content, and survey responses in a single system to support trust-building and customer feedback management.",
+		icon: "RaveCapture.svg",
+		categories: [
+			"community-ugc",
+		],
+		rules: [
+			{
+				id: "ravecapture:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("trustspot\\.io"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "ravecapture:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "trustspot_key",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+		},
 	},
 	{
 		id: "realsatisfied",
@@ -3061,26 +3221,25 @@ export const communityUgcTechnologyDefinitions = [
 		description: "RealSatisfied is a platform that enables the collection of client feedback and facilitates its promotion across online channels to enhance credibility and visibility.",
 		icon: "RealSatisfied.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "realsatisfied:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.realsatisfied\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "reddit",
@@ -3088,35 +3247,37 @@ export const communityUgcTechnologyDefinitions = [
 		website: "https://code.reddit.com",
 		icon: "Reddit.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "reddit:html:0",
 				kind: "html",
 				pattern: new RegExp("(?:<a[^>]+Powered by Reddit|powered by <a[^>]+>reddit<)"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "reddit:url:1",
 				kind: "url",
-				pattern: new RegExp("^https?://(?:www\\.)?reddit\\.com"),
-				description: "Page URL matches a known technology marker."
+				pattern: new RegExp("^https?:\\/\\/(?:www\\.)?reddit\\.com"),
+				description: "Page URL matches a known technology marker.",
 			},
 			{
-				id: "reddit:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "reddit:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "reddit",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "reddit:html:3",
+				kind: "html",
+				pattern: new RegExp("(?:<a[^>]+powered by reddit|powered by <a[^>]+>reddit<)"),
+				description: "HTML contains a known technology signature.",
+			},
 		],
 		implies: [
-			"python"
+			"python",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "reevoo",
@@ -3125,48 +3286,47 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Reevoo is a provider of UGC solutions like reviews.",
 		icon: "Reevoo.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "reevoo:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.reevoo\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.reevoo\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "reevoo:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "reevoo:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ReevooApi",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "reevoo:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "reevoo:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "reevooAccessCode",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "reevoo:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "reevoo:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "reevooLoader.tracking",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "reevoo:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "reevoo:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "reevooUrl",
-				valuePattern: new RegExp("\\.reevoo\\.com/"),
-				description: "Page-owned global matches a known technology marker."
-			}
+				valuePattern: new RegExp("\\.reevoo\\.com\\/"),
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "remind",
@@ -3175,20 +3335,19 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Remind is a communication tool designed to connect educators with students and parents for timely updates and messages.",
 		icon: "Remind.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "remind:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("www\\.remind\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "rep-co",
@@ -3197,24 +3356,23 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Rep.co is a review generation platform that helps businesses and agencies manage their online reputation through automated tools.",
 		icon: "Repco.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "rep-co:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.rep\\.co"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "replybox",
@@ -3223,30 +3381,29 @@ export const communityUgcTechnologyDefinitions = [
 		description: "ReplyBox is a privacy-focused comment system designed to collect, store, and display user feedback while minimizing data exposure and supporting secure interaction.",
 		icon: "ReplyBox.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "replybox:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.getreplybox\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "replybox:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "replybox:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "replybox.site",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "repuso",
@@ -3255,24 +3412,23 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Repuso is a tool that collects, displays, and manages customer reviews across multiple platforms to support brand reputation and engagement.",
 		icon: "Repuso.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "repuso:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("//repuso\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\/\\/repuso\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "reputon",
@@ -3282,28 +3438,27 @@ export const communityUgcTechnologyDefinitions = [
 		icon: "Reputon.svg",
 		categories: [
 			"community-ugc",
-			"ecommerce-extensions"
+			"ecommerce-extensions",
 		],
 		rules: [
 			{
 				id: "reputon:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.reputon\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		requires: [
-			"shopify"
+				pattern: new RegExp("\\.reputon\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		requires: [
+			"shopify",
+		],
 	},
 	{
 		id: "reviefy",
@@ -3312,33 +3467,32 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Reviefy is a product review collection solution designed for integration with the MyCashFlow ecommerce platform.",
 		icon: "Reviefy.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "reviefy:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("api\\.reviefy\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("api\\.reviefy\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "reviefy:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "reviefy:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Reviefy",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		requires: [
-			"mycashflow"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		requires: [
+			"mycashflow",
+		],
 	},
 	{
 		id: "review-stars",
@@ -3347,24 +3501,23 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Review Stars is a digital marketing boutique that assists businesses in enhancing their positive online reputation using review generation technology.",
 		icon: "ReviewStars.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "review-stars:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.reviewstars\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.reviewstars\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "review-wave",
@@ -3373,36 +3526,35 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Review Wave is reputation management software that helps business owners obtain reviews on trusted websites to boost growth.",
 		icon: "ReviewWave.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "review-wave:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.reviewwave\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn\\.reviewwave\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "review-wave:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "review-wave:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "RWEmbedJS",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "review-wave:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "review-wave:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "_rwReviewEmbed",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "reviewdoku",
@@ -3411,20 +3563,19 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Reviewdoku is a review management platform that integrates with eCommerce stores to analyze customer feedback and optimize conversion rates.",
 		icon: "Reviewdoku.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "reviewdoku:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("api\\.reviewdoku\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "reviewforest",
@@ -3433,25 +3584,24 @@ export const communityUgcTechnologyDefinitions = [
 		description: "ReviewForest is a service that facilitates the collection of product reviews, contributing to environmental efforts.",
 		icon: "ReviewForest.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "reviewforest:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.reviewforest\\.org/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.reviewforest\\.org\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "reviewgrower",
@@ -3460,25 +3610,24 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Reviewgrower is a white-label reputation management platform that provides tools and services to improve online presence, increase reviews, convert prospects, and boost Google rankings.",
 		icon: "ReviewGrower.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "reviewgrower:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.reviewgrower\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "reviewlead",
@@ -3487,23 +3636,22 @@ export const communityUgcTechnologyDefinitions = [
 		description: "ReviewLead is a platform that boosts reputation by systematically requesting reviews from past customers.",
 		icon: "ReviewLead.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "reviewlead:dom:0",
 				kind: "dom",
 				selector: "div[data-url*='www.reviewlead.com/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "reviewpro",
@@ -3512,20 +3660,19 @@ export const communityUgcTechnologyDefinitions = [
 		description: "ReviewPro is a hotel guest review system designed to collect and analyze guest feedback.",
 		icon: "ReviewPro.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "reviewpro:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("sapi\\.reviewpro\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("sapi\\.reviewpro\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "reviewrail",
@@ -3534,24 +3681,23 @@ export const communityUgcTechnologyDefinitions = [
 		description: "ReviewRail is an online review system designed to collect, manage, and display customer feedback.",
 		icon: "ReviewRail.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "reviewrail:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.reviewrail\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("app\\.reviewrail\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "reviews-io",
@@ -3560,36 +3706,35 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Reviews.io is a review collection tool for companies to collect merchant (company) & product reviews from genuine customers, then share these on Google.",
 		icon: "Reviews.io.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "reviews-io:dom:0",
 				kind: "dom",
 				selector: "a[href*='.reviews.io/company-reviews/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "reviews-io:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "reviews-io:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "reviewsio_hasVoted",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "reviews-io:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "reviews-io:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "reviewsio_shareLink",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "reviewshake",
@@ -3598,31 +3743,30 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Reviewshake is an all-in-one reputation management tool that generates reviews, enhances your brand, and monitors your reputation.",
 		icon: "Reviewshake.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "reviewshake:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.reviewshake\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.reviewshake\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "reviewshake:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "reviewshake:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Rails.appUrl",
 				valuePattern: new RegExp("app\\.reviewshake\\.com"),
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "reviewsolicitors",
@@ -3631,29 +3775,28 @@ export const communityUgcTechnologyDefinitions = [
 		description: "ReviewSolicitors is a free and independent client-led review platform focusing on the UK legal market.",
 		icon: "ReviewSolicitors.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "reviewsolicitors:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.reviewsolicitors\\.co\\.uk/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.reviewsolicitors\\.co\\.uk\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "reviewsolicitors:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "reviewsolicitors:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "rs.getWidgetHtml",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"freemium"
-			]
-		}
+				"freemium",
+			],
+		},
 	},
 	{
 		id: "rockee",
@@ -3662,57 +3805,55 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Rockee is a content feedback and performance platform that provides insights into audience perceptions of content.",
 		icon: "Rockee.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "rockee:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.rockee\\.io/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("app\\.rockee\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "ryviu",
 		name: "Ryviu",
 		website: "https://www.ryviu.com/",
 		description: "Ryviu is customer product reviews app for building social proof for store.",
-		icon: "Ryviu.svg",
+		icon: "Ryviu.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "ryviu:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.ryviu\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "ryviu:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "ryviu:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ryviu_global_settings",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"recurring",
+				"low",
 				"payg",
-				"low"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "safebuy",
@@ -3721,20 +3862,19 @@ export const communityUgcTechnologyDefinitions = [
 		description: "SafeBuy is a platform that reviews consumer feedback, verifies site links, ensures data privacy, and checks legal compliance to generate a reliable Universal Rating for customers.",
 		icon: "SafeBuy.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "safebuy:dom:0",
 				kind: "dom",
 				selector: "a[href*='www.safebuy.org.uk'] > img[src*='.safebuy.org.uk']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "senja",
@@ -3743,37 +3883,36 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Senja is a platform that enables the collection, management, and sharing of social proof to grow businesses.",
 		icon: "Senja.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "senja:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.senja\\.io/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.senja\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "senja:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "senja:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "SenjaAffiliatePoweredBy",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "senja:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "senja:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "SenjaBuilderInitialized",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "serchen",
@@ -3782,23 +3921,22 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Serchen is a platform that enables buyers to search, compare and evaluate a vast quantity of vendors in an ever increasingly diverse range of industries.",
 		icon: "Serchen.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "serchen:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.serchen\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.serchen\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "shapo",
@@ -3807,31 +3945,30 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Shapo is a platform that simplifies the collection, management, and visualization of customer testimonials.",
 		icon: "Shapo.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "shapo:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.shapo\\.io/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn\\.shapo\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "shapo:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "shapo:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "_shapoLoaded",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "shopify-product-reviews",
@@ -3841,29 +3978,25 @@ export const communityUgcTechnologyDefinitions = [
 		icon: "Shopify.svg",
 		categories: [
 			"community-ugc",
-			"ecommerce-extensions"
+			"ecommerce-extensions",
 		],
 		rules: [
 			{
 				id: "shopify-product-reviews:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("productreviews\\.shopifycdn\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "shopify-product-reviews:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "shopify-product-reviews:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "SPR",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		implies: [
-			"shopify"
+			"shopify",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "shopperapproved",
@@ -3872,23 +4005,22 @@ export const communityUgcTechnologyDefinitions = [
 		description: "ShopperApproved is a platform that enhances eCommerce traffic, sales, and conversions by leveraging trust signals, user-generated content, and social proof.",
 		icon: "ShopperApproved.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "shopperapproved:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.shopperapproved\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.shopperapproved\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "shoutout-testimonial",
@@ -3897,23 +4029,22 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Shoutout Testimonial is a platform that enables businesses to collect customer testimonials and display them on their websites through a simple and streamlined process.",
 		icon: "ShoutoutTestimonial.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "shoutout-testimonial:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("embed\\.shoutout\\.so"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"onetime"
-			]
-		}
+				"onetime",
+			],
+		},
 	},
 	{
 		id: "simple-machines-forum",
@@ -3922,36 +4053,51 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Simple Machines Forum is a free open-source software, used for community forums and is written in PHP.",
 		icon: "Simple Machines Forum.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "simple-machines-forum:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "simple-machines-forum:dom:0",
+				kind: "dom",
+				selector: "li > span > a[title='Simple Machines Forum']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "simple-machines-forum:text:1",
+				kind: "text",
+				pattern: new RegExp("^SMF\\s([\\d\\.]+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page text contains a known technology marker.",
+			},
+			{
+				id: "simple-machines-forum:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "smf_avatarResize",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "simple-machines-forum:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "simple-machines-forum:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "smf_default_theme_url",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "simple-machines-forum:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "simple-machines-forum:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "smf_theme_url",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:simplemachines:simple_machine_forum:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:simplemachines:simple_machine_forum:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "sitejabber",
@@ -3960,20 +4106,19 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Sitejabber is the leading destination for customer ratings and reviews of businesses. Consumers find ratings and read reviews to ensure they buy from the best companies.",
 		icon: "SiteJabber.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "sitejabber:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("biz\\.sitejabber\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "socialjuice",
@@ -3983,68 +4128,24 @@ export const communityUgcTechnologyDefinitions = [
 		icon: "SocialJuice.svg",
 		categories: [
 			"community-ugc",
-			"widgets-misc"
+			"widgets-misc",
 		],
 		rules: [
 			{
 				id: "socialjuice:dom:0",
 				kind: "dom",
 				selector: "iframe[src*='embed.socialjuice.io/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"low",
 				"freemium",
-				"recurring"
-			]
-		}
-	},
-	{
-		id: "societe-des-avis-garantis",
-		name: "Societe des Avis Garantis",
-		website: "https://www.societe-des-avis-garantis.fr",
-		description: "Societe des Avis Garantis is a French company that provides customer review and rating services for businesses through its online platform.",
-		icon: "Societe des Avis Garantis.svg",
-		categories: [
-			"community-ugc"
-		],
-		rules: [
-			{
-				id: "societe-des-avis-garantis:scriptSrc:0",
-				kind: "scriptSrc",
-				pattern: new RegExp("/wp-content/plugins/ag-core/.+\\.js(?:\\?ver=(\\d+(?:\\.\\d+)+))?"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			},
-			{
-				id: "societe-des-avis-garantis:pageGlobal:1",
-				kind: "pageGlobal",
-				property: "agVanillaCode",
-				description: "Page-owned global matches a known technology marker."
-			},
-			{
-				id: "societe-des-avis-garantis:pageGlobal:2",
-				kind: "pageGlobal",
-				property: "urlCertificate",
-				valuePattern: new RegExp("\\.societe-des-avis-garantis\\.fr/"),
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		requires: [
-			"wordpress"
-		],
-		metadata: {
-			saas: true,
-			oss: false,
-			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "sotellus",
@@ -4053,29 +4154,28 @@ export const communityUgcTechnologyDefinitions = [
 		description: "SoTellUs is a video review platform.",
 		icon: "SoTellUs.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "sotellus:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("//sotellus\\.com/js/sotellus_widget\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/\\/sotellus\\.com\\/js\\/sotellus_widget\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "sotellus:cookie:1",
 				kind: "cookie",
-				key: "stu_src",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^stu_src$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "stamped",
@@ -4084,30 +4184,50 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Stamped is a provider of reviews and ratings solution.",
 		icon: "Stamped.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "stamped:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.stamped\\.io/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.stamped\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "stamped:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "stamped:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "StampedFn",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+	},
+	{
+		id: "surecritic",
+		name: "SureCritic",
+		website: "https://www.surecritic.com",
+		description: "SureCritic is a platform that collects, manages, and publishes customer reviews, enabling businesses to gather feedback and display verified ratings about products or services.",
+		icon: "SureCritic.svg",
+		categories: [
+			"community-ugc",
+		],
+		rules: [
+			{
+				id: "surecritic:dom:0",
+				kind: "dom",
+				selector: "iframe[src*='www.surecritic.com/']",
+				description: "DOM selector matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+		},
 	},
 	{
 		id: "tagshop",
@@ -4116,32 +4236,31 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Tagshop is a platform that allows ecommerce brands to create, collect, and integrate user-generated content on product pages, social ads, and emails, thereby increasing sales.",
 		icon: "Tagshop.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "tagshop:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.taggshop\\.io/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.taggshop\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "tagshop:dom:1",
 				kind: "dom",
 				selector: "div[view-url*='app.taggshop.io/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "tapatalk",
@@ -4150,20 +4269,19 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Tapatalk is a mobile-enablement platform that optimizes forums and blogs for engagement.",
 		icon: "Tapatalk.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "tapatalk:dom:0",
 				kind: "dom",
 				selector: "link[href*='.quoord.tapatalkpro.activity']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "testfreaks",
@@ -4172,36 +4290,35 @@ export const communityUgcTechnologyDefinitions = [
 		description: "TestFreaks is an impartial source that provides product and seller review content for ecommerce websites.",
 		icon: "TestFreaks.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "testfreaks:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.testfreaks\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.testfreaks\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "testfreaks:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "testfreaks:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "applyTestFreaks",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "testfreaks:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "testfreaks:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "testFreaks",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "testimonial-robot",
@@ -4210,52 +4327,53 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Testimonial Robot is a testimonials and customer review platform.",
 		icon: "TestimonialRobot.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "testimonial-robot:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("www\\.testimonialrobot\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("www\\.testimonialrobot\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "thimatic",
 		name: "Thimatic",
 		website: "https://thimatic-apps.com/",
 		description: "Thimatic is a Shopify app for product reviews.",
-		icon: "Thimatic.svg",
+		icon: "Thimatic.png",
 		categories: [
 			"community-ugc",
-			"ecommerce-extensions"
+			"ecommerce-extensions",
 		],
 		rules: [
 			{
 				id: "thimatic:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("thimatic-apps\\.com/product_review/.*?v=([\\d.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("thimatic-apps\\.com\\/product_review\\/.*?v=([\\d.]+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "true",
@@ -4264,30 +4382,29 @@ export const communityUgcTechnologyDefinitions = [
 		description: "true is a social proof platform that helps organizations increase conversions and credibility by displaying verified user interactions and trust signals on digital properties.",
 		icon: "true.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "true:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.usetrue\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "true:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("cdn\\.usetrue\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "trusted-shops",
@@ -4296,24 +4413,23 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Trusted Shops is a company that acts as a 3'rd party representing the common interests of both consumers and retailers.",
 		icon: "Trusted Shops.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "trusted-shops:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("widgets\\.trustedshops\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("widgets\\.trustedshops\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "trustify",
@@ -4322,38 +4438,37 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Trustify is a platform that collects and generates customer reviews while offering marketing tools to support businesses.",
 		icon: "Trustify.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "trustify:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.trustify\\.ch"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "trustify:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "trustify:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "badgeGetTrustifyBadgeData",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "trustify:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "trustify:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "initTrustifyBadge",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "trustindex",
@@ -4362,30 +4477,29 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Trustindex is a review management tool that helps businesses effectively manage and monitor customer reviews.",
 		icon: "Trustindex.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "trustindex:dom:0",
 				kind: "dom",
 				selector: "link[href*='.trustindex.io/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "trustindex:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "trustindex:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Trustindex",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "trustio",
@@ -4394,32 +4508,56 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Trustio is a platform that collects customer reviews on behalf of Swedish e-retailers to provide insights into their business performance.",
 		icon: "Trustio.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "trustio:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("api\\.trustio\\.se"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "trustio:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "trustio:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "createTrustioIcon",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "trustio:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "trustio:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "trustioPoints",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
+	},
+	{
+		id: "trustmary",
+		name: "Trustmary",
+		website: "https://trustmary.com",
+		description: "Trustmary is a customer experience platform that structures and presents feedback data in a way that is accessible to both artificial intelligence systems and human audiences.",
+		icon: "Trustmary.svg",
+		categories: [
+			"community-ugc",
+		],
+		rules: [
+			{
+				id: "trustmary:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("embed\\.trustmary\\.com"),
+				description: "Script source URL matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"mid",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "trustpilot",
@@ -4428,59 +4566,57 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Trustpilot is a Danish consumer review website which provide embed stand-alone applications in your website to show your most recent reviews, TrustScore, and star ratings.",
 		icon: "Trustpilot.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "trustpilot:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.trustpilot\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "trustpilot:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "trustpilot:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Trustpilot",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"mid",
 				"freemium",
-				"recurring"
-			]
-		}
+				"mid",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "trustspot",
 		name: "Trustspot",
 		website: "https://trustspot.io/",
 		description: "TrustSpot provides a solution to capture ratings & reviews, video testimonials, photos, social experiences, and product Q&A.",
-		icon: "Trustspot.svg",
+		icon: "Trustspot.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "trustspot:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("trustspot\\.io"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "trustspot:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "trustspot:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "trustspot_key",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "trustvox",
@@ -4489,83 +4625,84 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Trustvox collects reviews from customers who purchased ecommerce products and publishes them on product pages with Sincerity Seals.",
 		icon: "Trustvox.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "trustvox:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "trustvox:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "TrustvoxCertificateWidget",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "trustvox:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "trustvox:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "TrustvoxRatesWidget",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "trustvox:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "trustvox:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "_trustvox",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "trustvox:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "trustvox:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "_trustvox_colt",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "trustvox:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "trustvox:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "_trustvox_shelf_rate",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "trustvox:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "trustvox:jsGlobal:5",
+				kind: "jsGlobal",
 				property: "trustvox_id",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "twikoo",
 		name: "Twikoo",
 		website: "https://twikoo.js.org",
 		description: "Twikoo is a simple, safe, free comment system.",
-		icon: "Twikoo.svg",
+		icon: "Twikoo.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "twikoo:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/twikoo/dist/twikoo\\.all\\.min\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/twikoo\\/dist\\/twikoo\\.all\\.min\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "twikoo:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "twikoo:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "twikoo.version",
 				valuePattern: new RegExp("^([\\d\\.]+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "u-komi",
@@ -4574,36 +4711,35 @@ export const communityUgcTechnologyDefinitions = [
 		description: "U-KOMI is a user generated content review marketing tool.",
 		icon: "U-KOMI.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "u-komi:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "u-komi:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "GetUkomiSliderItemInfo",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "u-komi:pageGlobal:1",
-				kind: "pageGlobal",
-				property: "installUkomiShimsDebug",
-				description: "Page-owned global matches a known technology marker."
-			},
-			{
-				id: "u-komi:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "u-komi:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ukomiInstaLikeStep01",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "u-komi:jsGlobal:2",
+				kind: "jsGlobal",
+				property: "installUkomiShimsDebug",
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "ugc-creative",
@@ -4613,29 +4749,27 @@ export const communityUgcTechnologyDefinitions = [
 		categories: [
 			"community-ugc",
 			"marketing-automation",
-			"content-publishing"
 		],
 		rules: [
 			{
-				id: "ugc-creative:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "ugc-creative:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "UgcCreativeReview",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "ugc-creative:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "ugc-creative:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ugcReview.prototype._display_item_count",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "ultimate-bulletin-board",
@@ -4643,28 +4777,40 @@ export const communityUgcTechnologyDefinitions = [
 		website: "https://www.ubbcentral.com",
 		description: "Ultimate Bulletin Board is an internet forum software designed for online communities, offering features such as user registration, thread organisation, moderation tools, search functionality, and customisable design options to facilitate discussions and community engagement.",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "ultimate-bulletin-board:meta:0",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^UBB\\.threads\\s([\\d\\.]+)$"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
+				valuePattern: new RegExp("^UBB\\.threads\\s([\\d\\.]+)$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "ultimate-bulletin-board:meta:1",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^ubb\\.threads\\s([\\d\\.]+)$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
-				"onetime"
-			]
-		}
+				"onetime",
+			],
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "utterances",
@@ -4673,26 +4819,25 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Utterances is a lightweight comments widget built on GitHub issues.",
 		icon: "utterances.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "utterances:requestUrl:0",
 				kind: "requestUrl",
 				pattern: new RegExp("\\.utteranc\\.es"),
-				description: "Observed request URL matches a known technology marker."
+				description: "Observed request URL matches a known technology marker.",
 			},
 			{
 				id: "utterances:dom:1",
 				kind: "dom",
 				selector: "iframe[src*='utteranc.es']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "vanilla",
@@ -4701,88 +4846,115 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Vanilla is a both a cloud-based (SaaS) open-source community forum software.",
 		icon: "Vanilla.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "vanilla:html:0",
 				kind: "html",
 				pattern: new RegExp("<body id=\"(?:DiscussionsPage|vanilla)"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "vanilla:responseHeader:1",
-				kind: "responseHeader",
+				id: "vanilla:header:1",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("Vanilla"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("Vanilla", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "vanilla:html:2",
+				kind: "html",
+				pattern: new RegExp("<body id=\"(?:discussionspage|vanilla)"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "vanilla:header:3",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("vanilla", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		implies: [
-			"php"
+			"php",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "vbulletin",
 		name: "vBulletin",
 		website: "https://www.vbulletin.com",
 		description: "vBulletin is tool that is used to create and manage online forums or discussion boards. It is written in PHP and uses a MySQL database server.",
-		icon: "vBulletin.svg",
+		icon: "vBulletin.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "vbulletin:html:0",
 				kind: "html",
 				pattern: new RegExp("<div id=\"copyright\">Powered by vBulletin"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "vbulletin:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "vbulletin:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "vBulletin",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "vbulletin:cookie:2",
 				kind: "cookie",
-				key: "bblastactivity",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^bblastactivity$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "vbulletin:cookie:3",
 				kind: "cookie",
-				key: "bblastvisit",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^bblastvisit$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "vbulletin:cookie:4",
 				kind: "cookie",
-				key: "bbsessionhash",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^bbsessionhash$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "vbulletin:meta:5",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("vBulletin ?([\\d.]+)?"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
+				valuePattern: new RegExp("vBulletin ?([\\d.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "vbulletin:html:6",
+				kind: "html",
+				pattern: new RegExp("<div id=\"copyright\">powered by vbulletin"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "vbulletin:meta:7",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("vbulletin ?([\\d.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:vbulletin:vbulletin:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:vbulletin:vbulletin:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "vizium",
@@ -4791,20 +4963,19 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Vizium is a platform that aggregates and analyzes patient reviews to support healthcare quality assessment.",
 		icon: "Vizium.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "vizium:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("portal\\.vizium\\.co"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "vocalreferences",
@@ -4813,25 +4984,24 @@ export const communityUgcTechnologyDefinitions = [
 		description: "VocalReferences is a platform offering testimonial, review, and rating tools designed to help online businesses collect and display customer feedback.",
 		icon: "VocalReferences.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "vocalreferences:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("widgets\\.vocalreferences\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "vouchley",
@@ -4840,20 +5010,16 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Vouchley is a review platform designed for freelancers, allowing them to receive and showcase client reviews to build credibility and attract more business.",
 		icon: "Vouchley.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "vouchley:dom:0",
 				kind: "dom",
 				selector: "iframe[src*='.reputize.org/widgets/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "vreview",
@@ -4862,31 +5028,30 @@ export const communityUgcTechnologyDefinitions = [
 		description: "VReview is an AI review marketing solution that boosts a shopping mall's purchase conversion rate by utilising customer reviews.",
 		icon: "VReview.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "vreview:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("script\\.vreview\\.tv/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("script\\.vreview\\.tv\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "vreview:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "vreview:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "vreviewWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "vuukle",
@@ -4895,20 +5060,16 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Vuukle is an audience engagement and commenting platform.",
 		icon: "vuukle.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
-				id: "vuukle:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "vuukle:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "VUUKLE_CONFIG",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "wally",
@@ -4917,30 +5078,29 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Wally is a tool that imports, manages, and displays reviews from platforms like Google and Trustpilot on a website, providing social proof to enhance credibility.",
 		icon: "Wally.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "wally:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("embed\\.getwally\\.net"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "wally:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "wally:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "wallyIsEventListenerAdded",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
-				"onetime"
-			]
-		}
+				"onetime",
+			],
+		},
 	},
 	{
 		id: "web-wiz-forums",
@@ -4948,25 +5108,35 @@ export const communityUgcTechnologyDefinitions = [
 		website: "https://www.webwizforums.com",
 		description: "Web Wiz Forums is a web-based forum software that enables developers to create and manage online discussion boards or forums for engaging user interactions and community building.",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "web-wiz-forums:meta:0",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^Web\\sWiz\\sForums(?:\\s([\\d\\.]+))?$"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^Web\\sWiz\\sForums(?:\\s([\\d\\.]+))?$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "web-wiz-forums:meta:1",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^web\\swiz\\sforums(?:\\s([\\d\\.]+))?$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		implies: [
-			"microsoft-asp-net"
+			"microsoft-asp-net",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "winlocal",
@@ -4974,24 +5144,23 @@ export const communityUgcTechnologyDefinitions = [
 		website: "https://winlocal.ru",
 		description: "WinLocal is a monitoring and feedback collection service that helps businesses track reviews and improve visibility on maps and search results.",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "winlocal:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("api\\.winlocal\\.ru"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "wiremo",
@@ -5000,30 +5169,29 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Wiremo is a customer review platform designed for eCommerce businesses to collect, manage, and display user-generated feedback.",
 		icon: "Wiremo.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "wiremo:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("wapi\\.wiremo\\.co/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("wapi\\.wiremo\\.co\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "wiremo:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "wiremo:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "pluginWiremoIntegration",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "word-of-mouth",
@@ -5032,77 +5200,86 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Word of Mouth is a feedback platform that allows users to compare reviews and ratings for various services and businesses.",
 		icon: "WOMO.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "word-of-mouth:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("www\\.womo\\.com\\.au/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("www\\.womo\\.com\\.au\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "xenforo",
 		name: "XenForo",
 		website: "https://xenforo.com",
 		description: "XenForo is a PHP-based forum hosting program for communities that is designed to be deployed on a remote web server.",
-		icon: "XenForo.svg",
+		icon: "XenForo.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "xenforo:html:0",
 				kind: "html",
 				pattern: new RegExp("(?:jQuery\\.extend\\(true, XenForo|<a[^>]+>Forum software by XenForo™|<!--XF:branding|<html[^>]+id=\"XenForo\")"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "xenforo:html:1",
 				kind: "html",
 				pattern: new RegExp("<html id=\"XF\" "),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "xenforo:dom:2",
-				kind: "dom",
-				selector: "html[id*='XenForo'], html[id*='XF']",
-				description: "DOM selector matches a known technology marker."
-			},
-			{
-				id: "xenforo:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "xenforo:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "XF.GuestUsername",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "xenforo:cookie:3",
+				kind: "cookie",
+				keyPattern: new RegExp("^xf_csrf$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "xenforo:cookie:4",
 				kind: "cookie",
-				key: "xf_csrf",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^xf_session$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
-				id: "xenforo:cookie:5",
-				kind: "cookie",
-				key: "xf_session",
-				description: "Cookie name matches a known technology marker."
-			}
-		],
-		implies: [
-			"php",
-			"mysql"
+				id: "xenforo:dom:5",
+				kind: "dom",
+				selector: "html[id*='XenForo'], html[id*='XF']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "xenforo:html:6",
+				kind: "html",
+				pattern: new RegExp("(?:jquery\\.extend\\(true, xenforo|<a[^>]+>forum software by xenforo™|<!--xf:branding|<html[^>]+id=\"xenforo\")"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "xenforo:html:7",
+				kind: "html",
+				pattern: new RegExp("<html id=\"xf\" "),
+				description: "HTML contains a known technology signature.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:xenforo:xenforo:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:xenforo:xenforo:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"mysql",
+			"php",
+		],
 	},
 	{
 		id: "xmb",
@@ -5110,32 +5287,34 @@ export const communityUgcTechnologyDefinitions = [
 		website: "https://www.xmbforum.com",
 		icon: "XMB.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "xmb:html:0",
 				kind: "html",
 				pattern: new RegExp("<!-- Powered by XMB"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "xmb:cookie:1",
 				kind: "cookie",
-				key: "xmblva",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^xmblva$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "xmb:cookie:2",
 				kind: "cookie",
-				key: "xmblvb",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^xmblvb$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "xmb:html:3",
+				kind: "html",
+				pattern: new RegExp("<!-- powered by xmb"),
+				description: "HTML contains a known technology signature.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "yabb",
@@ -5143,21 +5322,25 @@ export const communityUgcTechnologyDefinitions = [
 		website: "https://www.yabbforum.com",
 		icon: "YaBB.png",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "yabb:html:0",
 				kind: "html",
 				pattern: new RegExp("Powered by <a href=\"[^>]+yabbforum"),
-				description: "HTML contains a known technology marker."
-			}
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "yabb:html:1",
+				kind: "html",
+				pattern: new RegExp("powered by <a href=\"[^>]+yabbforum"),
+				description: "HTML contains a known technology signature.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:yabb:yabb:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:yabb:yabb:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "yotpo-reviews",
@@ -5166,31 +5349,36 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Yotpo is a user-generated content marketing platform.",
 		icon: "Yotpo.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "yotpo-reviews:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("(?!cdn-loyalty)\\.yotpo\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.yotpo\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "yotpo-reviews:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "yotpo-reviews:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "yotpo",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "yotpo-reviews:scriptSrc:2",
+				kind: "scriptSrc",
+				pattern: new RegExp("(?!cdn-loyalty)\\.yotpo\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "zoorate",
@@ -5199,29 +5387,28 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Zoorate is a user-generated content sharing service tailored for retailers, facilitating the exchange of customer experiences and feedback.",
 		icon: "Zoorate.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "zoorate:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("widget\\.zoorate\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("widget\\.zoorate\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "zoorate:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "zoorate:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "zoorate_params",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "zyratalk",
@@ -5230,19 +5417,18 @@ export const communityUgcTechnologyDefinitions = [
 		description: "Zyratalk is a tool for handling customer conversations and managing reviews to support organized feedback tracking.",
 		icon: "Zyratalk.svg",
 		categories: [
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "zyratalk:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.zyratalk\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
-	}
+		},
+	},
 ] as const satisfies readonly TechnologyDefinition[];

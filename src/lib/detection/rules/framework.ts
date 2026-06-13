@@ -8,69 +8,81 @@ export const frameworkTechnologyDefinitions = [
 		description: "ABP Framework is a complete infrastructure to create modern web applications by following the best practices and conventions of software development.",
 		icon: "abp.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "abp-framework:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "abp-framework:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "abp.timing.timeZone",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "abp-framework:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "abp-framework:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "abp.version",
 				valuePattern: new RegExp("(.*)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"microsoft-asp-net"
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+			cpe: "cpe:2.3:a:volosoft:abp:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"microsoft-asp-net",
+		],
 	},
 	{
 		id: "actionhero-js",
 		name: "actionhero.js",
 		website: "https://www.actionherojs.com",
-		icon: "ActionHeroJs.svg",
+		icon: "actionhero.js.png",
 		categories: [
 			"framework",
-			"server-runtime-infra"
+			"server-runtime-infra",
 		],
 		rules: [
 			{
 				id: "actionhero-js:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("actionheroClient\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "actionhero-js:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "actionhero-js:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "actionheroClient",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "actionhero-js:responseHeader:2",
-				kind: "responseHeader",
+				id: "actionhero-js:header:2",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("actionhero API"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("actionhero API", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "actionhero-js:scriptSrc:3",
+				kind: "scriptSrc",
+				pattern: new RegExp("actionheroclient\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "actionhero-js:header:4",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("actionhero api", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		implies: [
-			"node-js"
+			"node-js",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "adobe-coldfusion",
@@ -79,55 +91,72 @@ export const frameworkTechnologyDefinitions = [
 		description: "Adobe ColdFusion is a server-side scripting platform for building web applications and APIs, using a language called CFML (ColdFusion Markup Language).",
 		icon: "Adobe ColdFusion.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "adobe-coldfusion:html:0",
-				kind: "html",
-				pattern: new RegExp("<!-- START headerTags\\.cfm"),
-				description: "HTML contains a known technology marker."
+				id: "adobe-coldfusion:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\/cfajax\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "adobe-coldfusion:scriptSrc:1",
-				kind: "scriptSrc",
-				pattern: new RegExp("/cfajax/"),
-				description: "Script source URL matches a known technology marker."
+				id: "adobe-coldfusion:html:1",
+				kind: "html",
+				pattern: new RegExp("<!-- START headerTags\\.cfm"),
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "adobe-coldfusion:url:2",
 				kind: "url",
 				pattern: new RegExp("\\.cfm(?:$|\\?)"),
-				description: "Page URL matches a known technology marker."
+				description: "Page URL matches a known technology marker.",
 			},
 			{
-				id: "adobe-coldfusion:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "adobe-coldfusion:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "_cfEmails",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "adobe-coldfusion:cookie:4",
-				kind: "cookie",
-				key: "CFID|CFTOKEN|CFMAGIC|CFGLOBALS",
-				description: "Cookie name matches a known technology marker."
-			},
-			{
-				id: "adobe-coldfusion:responseHeader:5",
-				kind: "responseHeader",
+				id: "adobe-coldfusion:header:4",
+				kind: "header",
 				key: "Cookie",
-				valuePattern: new RegExp("CFTOKEN="),
-				description: "Response header matches a known technology marker."
-			}
-		],
-		implies: [
-			"cfml"
+				valuePattern: new RegExp("CFTOKEN=", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "adobe-coldfusion:cookie:5",
+				kind: "cookie",
+				keyPattern: new RegExp("^CFID\\|CFTOKEN\\|CFMAGIC\\|CFGLOBALS$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "adobe-coldfusion:html:6",
+				kind: "html",
+				pattern: new RegExp("<!-- start headertags\\.cfm"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "adobe-coldfusion:header:7",
+				kind: "header",
+				key: "cookie",
+				valuePattern: new RegExp("cftoken=", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "adobe-coldfusion:cookie:8",
+				kind: "cookie",
+				keyPattern: new RegExp("^CFGLOBALS$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:adobe:coldfusion:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"cfml",
+		],
 	},
 	{
 		id: "adobe-muse",
@@ -137,122 +166,138 @@ export const frameworkTechnologyDefinitions = [
 		icon: "AdobeMuse.svg",
 		categories: [
 			"framework",
-			"content-publishing"
 		],
 		rules: [
 			{
-				id: "adobe-muse:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "adobe-muse:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Muse",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "adobe-muse:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "adobe-muse:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "museConfigLoadedAndExecuted",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "adobe-muse:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "adobe-muse:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "muse_init",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "adonisjs",
 		name: "AdonisJS",
 		website: "https://adonisjs.com",
 		description: "AdonisJS is a Node.js web application framework that follows the MVC pattern, simplifying web development with features like ORM, authentication, and WebSockets.",
-		icon: "AdonisJS.svg",
+		icon: "AdonisJS.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "adonisjs:dom:0",
-				kind: "dom",
-				selector: "link[href*='adonisjs.com/'][rel='canonical']",
-				description: "DOM selector matches a known technology marker."
+				id: "adonisjs:cookie:0",
+				kind: "cookie",
+				keyPattern: new RegExp("^adonis\\-session$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "adonisjs:cookie:1",
 				kind: "cookie",
-				key: "adonis-session",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^adonis\\-session\\-values$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
-				id: "adonisjs:cookie:2",
-				kind: "cookie",
-				key: "adonis-session-values",
-				description: "Cookie name matches a known technology marker."
-			}
-		],
-		implies: [
-			"node-js"
+				id: "adonisjs:dom:2",
+				kind: "dom",
+				selector: "link[href*='adonisjs.com/'][rel='canonical']",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"node-js",
+		],
 	},
 	{
 		id: "akka-http",
 		name: "Akka HTTP",
 		website: "https://akka.io",
-		icon: "AkkaHttp.svg",
+		description: "Akka HTTP is a toolkit for building HTTP clients and servers in Scala on the Akka actor system.",
+		icon: "akka-http.png",
 		categories: [
 			"framework",
-			"server-runtime-infra"
+			"server-runtime-infra",
 		],
 		rules: [
 			{
-				id: "akka-http:responseHeader:0",
-				kind: "responseHeader",
+				id: "akka-http:header:0",
+				kind: "header",
 				key: "Server",
-				valuePattern: new RegExp("akka-http(?:/([\\d.]+))?"),
-				version: { source: "match", group: 1 },
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("akka-http(?:\\/([\\d.]+))?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "akka-http:header:1",
+				kind: "header",
+				key: "server",
+				valuePattern: new RegExp("akka-http(?:\\/([\\d.]+))?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:lightbend:akka_http:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:lightbend:akka_http:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "amber",
 		name: "Amber",
 		website: "https://amberframework.org",
 		description: "Amber is a web application framework written in Crystal inspired by Kemal, Rails, Phoenix and other popular application frameworks.",
-		icon: "Amber.svg",
+		icon: "amber.png",
 		categories: [
 			"framework",
-			"server-runtime-infra"
+			"server-runtime-infra",
 		],
 		rules: [
 			{
-				id: "amber:responseHeader:0",
-				kind: "responseHeader",
+				id: "amber:header:0",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("^Amber$"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("^Amber$", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "amber:header:1",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("^amber$", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "angulardart",
@@ -260,27 +305,23 @@ export const frameworkTechnologyDefinitions = [
 		website: "https://webdev.dartlang.org/angular/",
 		icon: "AngularDart.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "angulardart:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "angulardart:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "ngTestabilityRegistries",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		implies: [
-			"dart"
+			"dart",
 		],
 		excludes: [
 			"angular",
-			"angularjs"
+			"angularjs",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "apache-wicket",
@@ -289,24 +330,23 @@ export const frameworkTechnologyDefinitions = [
 		description: "Apache Wicket is an open-source Java web application framework for building scalable and maintainable web applications.",
 		icon: "Apache Wicket.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "apache-wicket:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "apache-wicket:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Wicket",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"java"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:apache:wicket:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:apache:wicket:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"java",
+		],
 	},
 	{
 		id: "arwes",
@@ -315,23 +355,23 @@ export const frameworkTechnologyDefinitions = [
 		description: "Arwes is a futuristic sci-fi UI web framework.",
 		icon: "Arwes.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "arwes:dom:0",
 				kind: "dom",
 				selector: "style[data-meta^='ArwesSounds(t)']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
 			oss: true,
 			pricing: [
-				"freemium"
-			]
-		}
+				"freemium",
+			],
+		},
 	},
 	{
 		id: "aseqbase",
@@ -340,28 +380,24 @@ export const frameworkTechnologyDefinitions = [
 		description: "Aseqbase is a sequence-based web development framework designed to create robust websites.",
 		icon: "Aseqbase.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "aseqbase:meta:0",
 				kind: "meta",
 				key: "framwork",
-				valuePattern: new RegExp("^aseqbase$"),
-				description: "Meta tag matches a known technology marker."
+				valuePattern: new RegExp("^aseqbase$", "i"),
+				description: "Meta tag matches a known technology marker.",
 			},
 			{
 				id: "aseqbase:meta:1",
 				kind: "meta",
 				key: "product",
-				valuePattern: new RegExp("www\\.aseqbase\\.ir"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("www\\.aseqbase\\.ir", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "asp-net-boilerplate",
@@ -371,132 +407,333 @@ export const frameworkTechnologyDefinitions = [
 		icon: "aspnetboilerplate.png",
 		categories: [
 			"framework",
-			"ui-library"
 		],
 		rules: [
 			{
-				id: "asp-net-boilerplate:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "asp-net-boilerplate:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "abp.aspnetboilerplate.version",
 				valuePattern: new RegExp("(.*)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "asp-net-boilerplate:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "asp-net-boilerplate:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "abp.timing.utcClockProvider",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"microsoft-asp-net"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"microsoft-asp-net",
+		],
 	},
 	{
 		id: "astro",
 		name: "Astro",
 		website: "https://astro.build",
-		description: "Astro is a new JavaScript-based static site builder.",
+		description: "Astro is a web framework for content-driven sites that uses islands architecture and static generation.",
 		icon: "Astro.svg",
 		categories: [
 			"framework",
-			"content-publishing",
-			"ui-library"
+			"ui-library",
 		],
 		rules: [
 			{
-				id: "astro:pageGlobal:1",
-				kind: "pageGlobal",
-				property: "Astro",
-				description: "Page-owned global matches a known technology marker."
+				id: "astro:dom:0",
+				kind: "dom",
+				selector: "[class^='astro-']",
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "astro:meta:2",
+				id: "astro:dom:1",
+				kind: "dom",
+				selector: "astro-root",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "astro:dom:2",
+				kind: "dom",
+				selector: "link[href*='/_astro/']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "astro:jsGlobal:3",
+				kind: "jsGlobal",
+				property: "Astro",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "astro:meta:4",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^Astro(?:\\sv([\\d\\.]+))?$"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^Astro\\sv([\\d\\.]+)$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "astro:dom:5",
+				kind: "dom",
+				selector: "link[href*='/_astro/'][href$='.css']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "astro:meta:6",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^Astro(?:\\sv([\\d\\.]+))?$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "astro:meta:7",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^astro\\sv([\\d\\.]+)$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "astro:scriptSrc:8",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\/_astro\\/.+\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "astro:dom:9",
+				kind: "dom",
+				selector: "script[data-sdkn='@vercel/speed-insights/astro']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "astro:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("Astro\\.self"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "astro:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("astro:js"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "astro:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("astro:html"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "astro:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("astro:page"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "astro:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("\\/client\\/.*?astro\\."),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "astro:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("astro:scripts"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "astro:html:modern:6",
+				kind: "html",
+				pattern: new RegExp("astro-island"),
+				confidence: 75,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+			{
+				id: "astro:html:modern:7",
+				kind: "html",
+				pattern: new RegExp("data-astro-cid-"),
+				confidence: 75,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+			{
+				id: "astro:html:modern:8",
+				kind: "html",
+				pattern: new RegExp("astro-client-only"),
+				confidence: 75,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+			{
+				id: "astro:html:modern:9",
+				kind: "html",
+				pattern: new RegExp("data-astro-transition-"),
+				confidence: 75,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+			{
+				id: "astro:html:modern:10",
+				kind: "html",
+				pattern: new RegExp("class=\"astro-."),
+				confidence: 75,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+			{
+				id: "astro:scriptContent:modern:11",
+				kind: "scriptContent",
+				pattern: new RegExp("astro:after-hydration"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "astro:scriptContent:modern:12",
+				kind: "scriptContent",
+				pattern: new RegExp("astro:before-hydration"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "astro:scriptContent:modern:13",
+				kind: "scriptContent",
+				pattern: new RegExp("props\\.hydrate"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "astro:scriptContent:modern:14",
+				kind: "scriptContent",
+				pattern: new RegExp("astro:hydration"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "astro:scriptContent:modern:15",
+				kind: "scriptContent",
+				pattern: new RegExp("data-astro-hydrate"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "astro:scriptContent:modern:16",
+				kind: "scriptContent",
+				pattern: new RegExp("astro:only"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "astro:scriptContent:modern:17",
+				kind: "scriptContent",
+				pattern: new RegExp("data-astro-source"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "astro:scriptContent:modern:18",
+				kind: "scriptContent",
+				pattern: new RegExp("astro-static-slot"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+			cpe: "cpe:2.3:a:astro:astro:*:*:*:*:*:node.js:*:*",
+		},
 	},
 	{
 		id: "blade",
 		name: "Blade",
 		website: "https://lets-blade.com",
-		icon: "Blade.svg",
+		icon: "Blade.png",
 		categories: [
 			"framework",
-			"server-runtime-infra"
+			"server-runtime-infra",
 		],
 		rules: [
 			{
-				id: "blade:responseHeader:0",
-				kind: "responseHeader",
+				id: "blade:header:0",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("blade-([\\w.]+)?"),
-				version: { source: "match", group: 1 },
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("blade-([\\w.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "blade:header:1",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("blade-([\\w.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		implies: [
-			"java"
+			"java",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "blazor",
 		name: "Blazor",
 		website: "https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor",
-		icon: "Blazor.svg",
+		description: "Blazor is an ASP.NET web UI framework for building interactive web apps with C# and Razor components.",
+		icon: "Blazor.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "blazor:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("blazor\\.server\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "blazor:scriptSrc:1",
 				kind: "scriptSrc",
 				pattern: new RegExp("blazor\\.host\\.min\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "blazor:scriptSrc:2",
 				kind: "scriptSrc",
 				pattern: new RegExp("blazor\\.webassembly\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "blazor:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "blazor:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "Blazor",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		implies: [
-			"microsoft-asp-net"
+			"microsoft-asp-net",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "blitz-js",
@@ -506,37 +743,49 @@ export const frameworkTechnologyDefinitions = [
 		icon: "blitzjs.svg",
 		categories: [
 			"framework",
-			"ui-library"
 		],
 		rules: [
 			{
-				id: "blitz-js:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "blitz-js:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "__BLITZ_MIDDLEWARE_HOOKS",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "blitz-js:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "blitz-js:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "__BLITZ_SUSPENSE_ENABLED",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "blitz-js:responseHeader:2",
-				kind: "responseHeader",
+				id: "blitz-js:header:2",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("^Blitz\\.js?([0-9.]+)?"),
-				version: { source: "match", group: 1 },
-				description: "Response header matches a known technology marker."
-			}
-		],
-		implies: [
-			"next-js"
+				valuePattern: new RegExp("^Blitz\\.js?([0-9.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "blitz-js:header:3",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("^blitz\\.js?([0-9.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"next-js",
+		],
 	},
 	{
 		id: "bonfire",
@@ -544,30 +793,39 @@ export const frameworkTechnologyDefinitions = [
 		website: "https://cibonfire.com",
 		icon: "Bonfire.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "bonfire:html:0",
 				kind: "html",
-				pattern: new RegExp("Powered by <a[^>]+href=\"https?://(?:www\\.)?cibonfire\\.com[^>]*>Bonfire v([^<]+)"),
-				version: { source: "match", group: 1 },
-				description: "HTML contains a known technology marker."
+				pattern: new RegExp("Powered by <a[^>]+href=\"https?:\\/\\/(?:www\\.)?cibonfire\\.com[^>]*>Bonfire v([^<]+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "bonfire:cookie:1",
 				kind: "cookie",
-				key: "bf_session",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^bf_session$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "bonfire:html:2",
+				kind: "html",
+				pattern: new RegExp("powered by <a[^>]+href=\"https?:\\/\\/(?:www\\.)?cibonfire\\.com[^>]*>bonfire v([^<]+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "HTML contains a known technology signature.",
+			},
 		],
 		implies: [
-			"codeigniter"
+			"codeigniter",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "bridgetown",
@@ -577,29 +835,27 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Bridgetown.svg",
 		categories: [
 			"framework",
-			"content-publishing"
 		],
 		rules: [
 			{
 				id: "bridgetown:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("^/_bridgetown/static/.+\\.js$"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("^\\/_bridgetown\\/static\\/.+\\.js$"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "bridgetown:dom:1",
 				kind: "dom",
 				selector: "link[href^='/_bridgetown/static/']",
-				description: "DOM selector matches a known technology marker."
-			}
-		],
-		implies: [
-			"ruby"
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"ruby",
+		],
 	},
 	{
 		id: "cakephp",
@@ -608,37 +864,43 @@ export const frameworkTechnologyDefinitions = [
 		description: "CakePHP is an open-source web framework. It follows the model–view–controller (MVC) approach and is written in PHP.",
 		icon: "CakePHP.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "cakephp:pageGlobal:0",
-				kind: "pageGlobal",
-				property: "__cakeDebugBlockInit",
-				description: "Page-owned global matches a known technology marker."
-			},
-			{
-				id: "cakephp:cookie:1",
+				id: "cakephp:cookie:0",
 				kind: "cookie",
-				key: "cakephp",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^cakephp$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
-				id: "cakephp:meta:2",
+				id: "cakephp:meta:1",
 				kind: "meta",
 				key: "application-name",
-				valuePattern: new RegExp("CakePHP"),
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
+				valuePattern: new RegExp("CakePHP", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "cakephp:jsGlobal:2",
+				kind: "jsGlobal",
+				property: "__cakeDebugBlockInit",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "cakephp:meta:3",
+				kind: "meta",
+				key: "application-name",
+				valuePattern: new RegExp("cakephp", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:cakephp:cakephp:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:cakephp:cakephp:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "cecil",
@@ -648,206 +910,257 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Cecil.svg",
 		categories: [
 			"framework",
-			"content-publishing"
 		],
 		rules: [
 			{
 				id: "cecil:meta:0",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^Cecil(?: ([0-9.]+))?$"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^Cecil(?: ([0-9.]+))?$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "cecil:meta:1",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^cecil(?: ([0-9.]+))?$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:cecil:cecil:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:cecil:cecil:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "chicago-boss",
 		name: "Chicago Boss",
-		website: "http://chicagoboss.org/",
+		website: "https://github.com/ChicagoBoss/ChicagoBoss",
 		description: "Chicago Boss is a web framework for Erlang.",
 		icon: "Chicago Boss.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "chicago-boss:cookie:0",
 				kind: "cookie",
-				key: "_boss_session",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^_boss_session$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "chicago-boss:cookie:1",
 				kind: "cookie",
-				key: "book_like_a_boss_session",
-				description: "Cookie name matches a known technology marker."
-			}
-		],
-		implies: [
-			"erlang"
+				keyPattern: new RegExp("^book_like_a_boss_session$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"erlang",
+		],
 	},
 	{
 		id: "codeigniter",
 		name: "CodeIgniter",
 		website: "https://codeigniter.com",
-		icon: "CodeIgniter.svg",
+		description: "CodeIgniter is an open-source PHP framework for building web applications.",
+		icon: "CodeIgniter.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "codeigniter:html:0",
 				kind: "html",
 				pattern: new RegExp("<input[^>]+name=\"ci_csrf_token\""),
-				description: "HTML contains a known technology marker."
+				version: {
+					source: "match",
+					template: "2+",
+				},
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "codeigniter:requestUrl:1",
-				kind: "requestUrl",
-				pattern: new RegExp("codeigniter\\.com"),
-				description: "Observed request URL matches a known technology marker."
+				id: "codeigniter:cookie:1",
+				kind: "cookie",
+				keyPattern: new RegExp("^ci_csrf_token$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
-				id: "codeigniter:dom:2",
-				kind: "dom",
-				selector: "input[name*='ci_csrf_token']",
-				description: "DOM selector matches a known technology marker."
+				id: "codeigniter:cookie:2",
+				kind: "cookie",
+				keyPattern: new RegExp("^ci_session$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "codeigniter:cookie:3",
 				kind: "cookie",
-				key: "ci_csrf_token",
-				version: { source: "match", template: "$1?2+:" },
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^exp_last_activity$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "codeigniter:cookie:4",
 				kind: "cookie",
-				key: "ci_session",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^exp_tracker$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
-				id: "codeigniter:cookie:5",
-				kind: "cookie",
-				key: "exp_last_activity",
-				description: "Cookie name matches a known technology marker."
+				id: "codeigniter:requestUrl:5",
+				kind: "requestUrl",
+				pattern: new RegExp("codeigniter\\.com"),
+				description: "Observed request URL matches a known technology marker.",
 			},
 			{
-				id: "codeigniter:cookie:6",
-				kind: "cookie",
-				key: "exp_tracker",
-				description: "Cookie name matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
+				id: "codeigniter:dom:6",
+				kind: "dom",
+				selector: "input[name*='ci_csrf_token']",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:codeigniter:codeigniter:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:codeigniter:codeigniter:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "dancer",
 		name: "Dancer",
 		website: "https://perldancer.org",
-		description: "Dancer is a simple but powerful web application framework for Perl.",
-		icon: "Dancer.svg",
+		description: "Mono.net delivers the a Software-as-a-Service (SaaS) platform to build and sell websites and other digital products.",
+		icon: "Dancer.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "dancer:responseHeader:0",
-				kind: "responseHeader",
+				id: "dancer:header:0",
+				kind: "header",
 				key: "Server",
-				valuePattern: new RegExp("Perl Dancer ([\\d.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Response header matches a known technology marker."
+				valuePattern: new RegExp("Perl Dancer ([\\d.]+)", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
 			},
 			{
-				id: "dancer:responseHeader:1",
-				kind: "responseHeader",
+				id: "dancer:header:1",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("Perl Dancer ([\\d.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Response header matches a known technology marker."
-			}
-		],
-		implies: [
-			"perl"
+				valuePattern: new RegExp("Perl Dancer ([\\d.]+)", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "dancer:header:2",
+				kind: "header",
+				key: "server",
+				valuePattern: new RegExp("perl dancer ([\\d.]+)", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "dancer:header:3",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("perl dancer ([\\d.]+)", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
+				"poa",
 			],
-			cpe: "cpe:2.3:a:dancer:dancer:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:dancer:dancer:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"perl",
+		],
 	},
 	{
 		id: "django",
 		name: "Django",
 		website: "https://djangoproject.com",
 		description: "Django is a Python-based free and open-source web application framework.",
-		icon: "Django.svg",
+		icon: "Django.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "django:html:0",
 				kind: "html",
 				pattern: new RegExp("(?:powered by <a[^>]+>Django ?([\\d.]+)?<\\/a>|<input[^>]*name=[\"']csrfmiddlewaretoken[\"'][^>]*>)"),
-				version: { source: "match", group: 1 },
-				description: "HTML contains a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "django:dom:1",
+				id: "django:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "__admin_media_prefix__",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "django:jsGlobal:2",
+				kind: "jsGlobal",
+				property: "django",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "django:cookie:3",
+				kind: "cookie",
+				keyPattern: new RegExp("^django_language$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "django:dom:4",
 				kind: "dom",
 				selector: "input[name='csrfmiddlewaretoken']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "django:pageGlobal:2",
-				kind: "pageGlobal",
-				property: "__admin_media_prefix__",
-				description: "Page-owned global matches a known technology marker."
+				id: "django:html:5",
+				kind: "html",
+				pattern: new RegExp("(?:powered by <a[^>]+>django ?([\\d.]+)?<\\/a>|<input[^>]*name=[\"']csrfmiddlewaretoken[\"'][^>]*>)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "HTML contains a known technology signature.",
 			},
-			{
-				id: "django:pageGlobal:3",
-				kind: "pageGlobal",
-				property: "django",
-				description: "Page-owned global matches a known technology marker."
-			},
-			{
-				id: "django:cookie:4",
-				kind: "cookie",
-				key: "django_language",
-				description: "Cookie name matches a known technology marker."
-			}
-		],
-		implies: [
-			"python"
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:djangoproject:django:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:djangoproject:django:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"python",
+		],
 	},
 	{
 		id: "eleventy",
@@ -857,22 +1170,34 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Eleventy.svg",
 		categories: [
 			"framework",
-			"content-publishing"
 		],
 		rules: [
 			{
 				id: "eleventy:meta:0",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^Eleventy\\sv([\\d\\.]+)$"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^Eleventy\\sv([\\d\\.]+)$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "eleventy:meta:1",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^eleventy\\sv([\\d\\.]+)$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "express",
@@ -882,31 +1207,36 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Express.svg",
 		categories: [
 			"framework",
-			"server-runtime-infra"
+			"server-runtime-infra",
 		],
 		rules: [
 			{
-				id: "express:cookie:0",
-				kind: "cookie",
-				key: "connect\\.sid",
-				description: "Cookie name matches a known technology marker."
+				id: "express:header:0",
+				kind: "header",
+				key: "X-Powered-By",
+				valuePattern: new RegExp("^Express(?:$|,)", "i"),
+				description: "Response header matches a known technology marker.",
 			},
 			{
-				id: "express:responseHeader:1",
-				kind: "responseHeader",
-				key: "X-Powered-By",
-				valuePattern: new RegExp("^Express(?:$|,)"),
-				description: "Response header matches a known technology marker."
-			}
-		],
-		implies: [
-			"node-js"
+				id: "express:cookie:1",
+				kind: "cookie",
+				keyPattern: new RegExp("^connect\\\\\\.sid$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "express:header:2",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("^express(?:$|,)", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:expressjs:express:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:expressjs:express:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"node-js",
+		],
 	},
 	{
 		id: "farcry",
@@ -915,32 +1245,37 @@ export const frameworkTechnologyDefinitions = [
 		description: "FarCry is a web application framework that helps CFML developers build tailor-made content solutions.",
 		icon: "FarCry.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "farcry:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "farcry:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "farcryForgotPassword",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "farcry:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "farcry:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "farcryLogin",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "farcry:cookie:2",
 				kind: "cookie",
-				key: "FARCRYDEVICETYPE",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^FARCRYDEVICETYPE$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "farcry:cookie:3",
+				kind: "cookie",
+				keyPattern: new RegExp("^farcrydevicetype$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "fastapi",
@@ -949,114 +1284,130 @@ export const frameworkTechnologyDefinitions = [
 		description: "FastAPI is a web framework for building APIs with Python, utilizing standard Python type hints.",
 		icon: "FastAPI.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "fastapi:dom:0",
 				kind: "dom",
 				selector: "link[href*='fastapi.tiangolo.com'][rel='shortcut icon']",
-				description: "DOM selector matches a known technology marker."
-			}
-		],
-		implies: [
-			"python"
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false
-		}
+			cpe: "cpe:2.3:a:tiangolo:fastapi:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"python",
+		],
 	},
 	{
 		id: "fat-free-framework",
 		name: "Fat-Free Framework",
 		website: "https://fatfreeframework.com",
 		description: "Fat-Free Framework (F3) is a lightweight PHP micro-framework that enables rapid development of dynamic web applications with built-in features like URL routing, caching, multilingual support, and database integration for high performance.",
-		icon: "Fat-Free Framework.svg",
+		icon: "Fat-Free Framework.png",
 		categories: [
 			"framework",
-			"router"
 		],
 		rules: [
 			{
-				id: "fat-free-framework:responseHeader:0",
-				kind: "responseHeader",
+				id: "fat-free-framework:header:0",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("^Fat-Free Framework$"),
-				description: "Response header matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
+				valuePattern: new RegExp("^Fat-Free Framework$", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "fat-free-framework:header:1",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("^fat-free framework$", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:fatfreeframework:fat-free_framework:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:fatfreeframework:fat-free_framework:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "flask",
 		name: "Flask",
 		website: "https://github.com/pallets/flask/",
 		description: "Flask is a Python micro web framework ideal for rapidly constructing web applications, offering minimalism, flexibility, and modularity.",
-		icon: "Flask.svg",
+		icon: "Flask.png",
 		categories: [
 			"framework",
-			"server-runtime-infra"
+			"server-runtime-infra",
 		],
 		rules: [
 			{
-				id: "flask:responseHeader:0",
-				kind: "responseHeader",
+				id: "flask:header:0",
+				kind: "header",
 				key: "Server",
-				valuePattern: new RegExp("Werkzeug/?([\\d\\.]+)?"),
-				version: { source: "match", group: 1 },
-				description: "Response header matches a known technology marker."
-			}
-		],
-		implies: [
-			"python"
+				valuePattern: new RegExp("Werkzeug\\/?([\\d\\.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "flask:header:1",
+				kind: "header",
+				key: "server",
+				valuePattern: new RegExp("werkzeug\\/?([\\d\\.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:palletsprojects:flask:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:palletsprojects:flask:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"python",
+		],
 	},
 	{
 		id: "frappe",
 		name: "Frappe",
 		website: "https://frappeframework.com",
 		description: "Frappe is a full stack, batteries-included, web framework written in Python and Javascript.",
-		icon: "Frappe.svg",
+		icon: "Frappe.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "frappe:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "frappe:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "frappe.avatar",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "frappe:meta:1",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^frappe$"),
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"python",
-			"mariadb"
+				valuePattern: new RegExp("^frappe$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:frappe:frappe:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:frappe:frappe:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"mariadb",
+			"python",
+		],
 	},
 	{
 		id: "fresh",
@@ -1067,148 +1418,343 @@ export const frameworkTechnologyDefinitions = [
 		categories: [
 			"framework",
 			"server-runtime-infra",
-			"transpiler"
 		],
 		rules: [
 			{
 				id: "fresh:dom:0",
 				kind: "dom",
 				selector: "style[id='__FRSH_TWIND']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
 				id: "fresh:dom:1",
 				kind: "dom",
 				selector: "style[id='__FRSH_STYLE']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
 				id: "fresh:dom:2",
 				kind: "dom",
 				selector: "script[id='__FRSH_STATE']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
 				id: "fresh:dom:3",
 				kind: "dom",
 				selector: "link[href*='?__frsh_c=']",
-				description: "DOM selector matches a known technology marker."
-			}
-		],
-		implies: [
-			"deno",
-			"preact"
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"deno",
+			"preact",
+		],
+	},
+	{
+		id: "gatsby",
+		name: "Gatsby",
+		website: "https://www.gatsbyjs.org/",
+		description: "Gatsby is a React-based open-source framework with performance, scalability and security built-in.",
+		icon: "Gatsby.svg",
+		categories: [
+			"framework",
+			"ui-library",
+		],
+		rules: [
+			{
+				id: "gatsby:dom:0",
+				kind: "dom",
+				selector: "div#___gatsby, style#gatsby-inlined-css",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "gatsby:meta:1",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^Gatsby(?: ([0-9.]+))?$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "gatsby:meta:2",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^gatsby(?: ([0-9.]+))?$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "gatsby:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("__GATSBY"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "gatsby:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("__GATSBY_RESOLVED_PAGES"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "gatsby:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("__GATSBY_DEFERRED_CODEGEN"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "gatsby:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("__GATSBY_CHUNK_MAP"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "gatsby:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("window\\.___GATSBY"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "gatsby:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("__GATSBY_REGISTER_COMPONENT"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "gatsby:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("__GATSBY_DYNAMIC_CHUNK_MAP"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "gatsby:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("__GATSBY_ERROR_OVERLAY_HANDLER"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "gatsby:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("___loader"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "gatsby:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("___emitter"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "gatsby:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("window\\.___navigate"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "gatsby:scriptContent:modern:11",
+				kind: "scriptContent",
+				pattern: new RegExp("window\\.___replacePath"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "gatsby:resourceUrl:modern:12",
+				kind: "resourceUrl",
+				pattern: new RegExp("gatsby-config\\.[jt]s$"),
+				confidence: 55,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "gatsby:resourceUrl:modern:13",
+				kind: "resourceUrl",
+				pattern: new RegExp("gatsby-node\\.[jt]s$"),
+				confidence: 55,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "gatsby:resourceUrl:modern:14",
+				kind: "resourceUrl",
+				pattern: new RegExp("gatsby-ssr\\.[jt]s$"),
+				confidence: 55,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "gatsby:resourceUrl:modern:15",
+				kind: "resourceUrl",
+				pattern: new RegExp("gatsby-browser\\.[jt]s$"),
+				confidence: 55,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+		],
+		metadata: {
+			cpe: "cpe:2.3:a:gatsbyjs:gatsby:*:*:*:*:*:node.js:*:*",
+		},
+		implies: [
+			"react",
+			"webpack",
+		],
+	},
+	{
+		id: "gatsby-cloud-image-cdn",
+		name: "Gatsby Cloud Image CDN",
+		website: "https://www.gatsbyjs.com/products/cloud/image-cdn",
+		description: "Image CDN is a new feature of hosting on Gatsby Cloud. Instead of processing images at build time, Image CDN defers and offloads image processing to the edge.",
+		icon: "Gatsby.svg",
+		categories: [
+			"framework",
+			"infrastructure-hosting",
+		],
+		rules: [
+			{
+				id: "gatsby-cloud-image-cdn:dom:0",
+				kind: "dom",
+				selector: "img[srcset*='/_gatsby/image/'], source[srcset*='/_gatsby/image/']",
+				description: "DOM selector matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"freemium",
+				"low",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "glpi",
 		name: "GLPI",
 		website: "https://glpi-project.org",
 		description: "GLPI is an open-source IT Asset Management, issue tracking and service desk system.",
-		icon: "GLPI.svg",
+		icon: "GLPI.png",
 		categories: [
 			"framework",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "glpi:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("//.*glpi.+common\\.min\\.js\\?v=(\\d+\\.\\d+\\.\\d+)"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/\\/.*glpi.+common\\.min\\.js\\?v=(\\d+\\.\\d+\\.\\d+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "glpi:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "glpi:dom:1",
+				kind: "dom",
+				selector: "div[id*='footer-login'] > a",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "glpi:text:2",
+				kind: "text",
+				pattern: new RegExp("GLPI\\s+version\\s+([\\d\\.]+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page text contains a known technology marker.",
+			},
+			{
+				id: "glpi:dom:3",
+				kind: "dom",
+				selector: "input[name='_glpi_csrf_token']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "glpi:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "glpiUnsavedFormChanges",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
-			{
-				id: "glpi:meta:3",
-				kind: "meta",
-				key: "glpi:csrf_token",
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
 		],
 		metadata: {
-			saas: false,
 			oss: true,
 			pricing: [
 				"mid",
-				"recurring"
+				"recurring",
 			],
-			cpe: "cpe:2.3:a:glpi-project:glpi:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:glpi-project:glpi:*:*:*:*:*:*:*:* ",
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "google-web-toolkit",
 		name: "Google Web Toolkit",
 		website: "https://developers.google.com/web-toolkit",
 		description: "Google Web Toolkit (GWT) is an open-source Java software development framework that makes writing AJAX applications.",
-		icon: "Google Web Toolkit.svg",
+		icon: "Google Web Toolkit.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "google-web-toolkit:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "google-web-toolkit:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "__gwt_",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "google-web-toolkit:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "google-web-toolkit:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "__gwt_activeModules",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "google-web-toolkit:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "google-web-toolkit:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "__gwt_getMetaProperty",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "google-web-toolkit:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "google-web-toolkit:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "__gwt_isKnownPropertyValue",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "google-web-toolkit:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "google-web-toolkit:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "__gwt_stylesLoaded",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "google-web-toolkit:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "google-web-toolkit:jsGlobal:5",
+				kind: "jsGlobal",
 				property: "__gwtlistener",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
-			{
-				id: "google-web-toolkit:meta:6",
-				kind: "meta",
-				key: "gwt:property",
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"java"
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:google:web_toolkit:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:google:web_toolkit:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"java",
+		],
 	},
 	{
 		id: "gridsome",
@@ -1218,26 +1764,34 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Gridsome.svg",
 		categories: [
 			"framework",
-			"content-publishing",
-			"ui-library"
 		],
 		rules: [
 			{
 				id: "gridsome:meta:0",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^Gridsome v([\\d.]+)$"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^Gridsome v([\\d.]+)$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "gridsome:meta:1",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^gridsome v([\\d.]+)$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		implies: [
-			"vue-js"
+			"vue-js",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "guppy",
@@ -1247,28 +1801,41 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Guppy.svg",
 		categories: [
 			"framework",
-			"content-publishing"
 		],
 		rules: [
 			{
 				id: "guppy:meta:0",
 				kind: "meta",
 				key: "Author",
-				valuePattern: new RegExp("^GuppY$"),
-				description: "Meta tag matches a known technology marker."
+				valuePattern: new RegExp("^GuppY$", "i"),
+				description: "Meta tag matches a known technology marker.",
 			},
 			{
 				id: "guppy:meta:1",
 				kind: "meta",
 				key: "Generator",
-				valuePattern: new RegExp("^GuppY$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^GuppY$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "guppy:meta:2",
+				kind: "meta",
+				key: "author",
+				valuePattern: new RegExp("^guppy$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "guppy:meta:3",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^guppy$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+			cpe: "cpe:2.3:a:freeguppy:guppy:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "hamechio",
@@ -1277,24 +1844,23 @@ export const frameworkTechnologyDefinitions = [
 		description: "Hamechio is a web application framework.",
 		icon: "Hamechio.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "hamechio:meta:0",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("hamech\\.io/"),
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
+				valuePattern: new RegExp("hamech\\.io\\/", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "heliumweb",
@@ -1302,51 +1868,58 @@ export const frameworkTechnologyDefinitions = [
 		website: "https://heliumweb.adrikikicp-development.ml",
 		description: "HeliumWeb is a server-side (backend) web framework written in PHP & JavaScript",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "heliumweb:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("helium/src/helium.js/helium_web.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("helium\\/src\\/helium.js\\/helium_web.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "heliumweb:scriptSrc:1",
 				kind: "scriptSrc",
-				pattern: new RegExp("http://maven.enriquitomcfh.ml/helium.js/helium_web.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("http:\\/\\/maven.enriquitomcfh.ml\\/helium.js\\/helium_web.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "heliumweb:scriptSrc:2",
 				kind: "scriptSrc",
-				pattern: new RegExp("http://maven.enriquitomcfh.ml/helium.js/helium_web.min.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("http:\\/\\/maven.enriquitomcfh.ml\\/helium.js\\/helium_web.min.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "heliumweb:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "heliumweb:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "helium.js",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "heliumweb:responseHeader:4",
-				kind: "responseHeader",
+				id: "heliumweb:header:4",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("Adrikikicp Development"),
-				description: "Response header matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
+				valuePattern: new RegExp("Adrikikicp Development", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "heliumweb:header:5",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("adrikikicp development", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
 			oss: true,
 			pricing: [
-				"freemium"
-			]
-		}
+				"freemium",
+			],
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "helix-ultimate",
@@ -1355,81 +1928,103 @@ export const frameworkTechnologyDefinitions = [
 		description: "Helix Ultimate a free template framework for Joomla.",
 		icon: "HelixUltimate.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "helix-ultimate:dom:0",
 				kind: "dom",
 				selector: "header#sp-header, body.helix-ultimate",
-				description: "DOM selector matches a known technology marker."
-			}
-		],
-		implies: [
-			"joomla"
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"joomla",
+		],
 	},
 	{
 		id: "hexo",
 		name: "Hexo",
 		website: "https://hexo.io",
 		description: "Hexo is a blog framework powered by Node.js.",
-		icon: "Hexo.svg",
+		icon: "Hexo.png",
 		categories: [
 			"framework",
-			"content-publishing"
 		],
 		rules: [
 			{
 				id: "hexo:html:0",
 				kind: "html",
-				pattern: new RegExp("Powered by <a href=\"https?://hexo\\.io/?\"[^>]*>Hexo</"),
-				description: "HTML contains a known technology marker."
+				pattern: new RegExp("Powered by <a href=\"https?:\\/\\/hexo\\.io\\/?\"[^>]*>Hexo<\\/"),
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "hexo:meta:1",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("Hexo(?: v?([\\d.]+))?"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"node-js"
+				valuePattern: new RegExp("Hexo(?: v?([\\d.]+))?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "hexo:html:2",
+				kind: "html",
+				pattern: new RegExp("powered by <a href=\"https?:\\/\\/hexo\\.io\\/?\"[^>]*>hexo<\\/"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "hexo:meta:3",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("hexo(?: v?([\\d.]+))?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:hexo:hexo:*:*:*:*:*:node.js:*:*"
-		}
+			cpe: "cpe:2.3:a:hexo:hexo:*:*:*:*:*:node.js:*:*",
+		},
+		implies: [
+			"node-js",
+		],
 	},
 	{
 		id: "hono",
 		name: "Hono",
 		website: "https://hono.dev",
 		description: "Hono is a small, simple, and ultrafast web framework for the Edge.",
-		icon: "Hono.svg",
+		icon: "Hono.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "hono:responseHeader:0",
-				kind: "responseHeader",
+				id: "hono:header:0",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("Hono"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("Hono", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "hono:header:1",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("hono", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "hugo",
@@ -1439,22 +2034,47 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Hugo.svg",
 		categories: [
 			"framework",
-			"content-publishing"
 		],
 		rules: [
 			{
-				id: "hugo:meta:1",
+				id: "hugo:dom:0",
+				kind: "dom",
+				selector: "a[href*='hugo.']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "hugo:text:1",
+				kind: "text",
+				pattern: new RegExp("Hugo"),
+				confidence: 99,
+				description: "Page text contains a known technology marker.",
+			},
+			{
+				id: "hugo:meta:2",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("Hugo ([\\d.]+)?"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("Hugo ([\\d.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "hugo:meta:3",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("hugo ([\\d.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "includable",
@@ -1462,50 +2082,9 @@ export const frameworkTechnologyDefinitions = [
 		website: "https://includable.com",
 		icon: "Includable.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
-		rules: [
-			{
-				id: "includable:responseHeader:0",
-				kind: "responseHeader",
-				key: "X-Includable-Version",
-				description: "Response header matches a known technology marker."
-			}
-		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
-	},
-	{
-		id: "ionic",
-		name: "Ionic",
-		website: "https://ionicframework.com",
-		description: "Ionic is an open-source framework that enables developers to create cross-platform mobile, web, and desktop applications using web technologies like HTML, CSS, and JavaScript.",
-		icon: "Ionic.svg",
-		categories: [
-			"framework"
-		],
-		rules: [
-			{
-				id: "ionic:pageGlobal:0",
-				kind: "pageGlobal",
-				property: "Ionic.config",
-				description: "Page-owned global matches a known technology marker."
-			},
-			{
-				id: "ionic:pageGlobal:1",
-				kind: "pageGlobal",
-				property: "Ionic.version",
-				valuePattern: new RegExp("^(.+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		metadata: {
-			saas: false,
-			oss: true
-		}
+		rules: [],
 	},
 	{
 		id: "java-servlet",
@@ -1513,25 +2092,35 @@ export const frameworkTechnologyDefinitions = [
 		website: "https://www.oracle.com/technetwork/java/index-jsp-135475.html",
 		icon: "Java.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "java-servlet:responseHeader:0",
-				kind: "responseHeader",
+				id: "java-servlet:header:0",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("Servlet(?:\\/([\\d.]+))?"),
-				version: { source: "match", group: 1 },
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("Servlet(?:\\/([\\d.]+))?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "java-servlet:header:1",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("servlet(?:\\/([\\d.]+))?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		implies: [
-			"java"
+			"java",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "javaserver-faces",
@@ -1539,31 +2128,41 @@ export const frameworkTechnologyDefinitions = [
 		website: "https://javaserverfaces.java.net",
 		icon: "JavaServer Faces.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "javaserver-faces:dom:0",
 				kind: "dom",
 				selector: "input[type='hidden'][name='javax.faces.ViewState']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "javaserver-faces:responseHeader:1",
-				kind: "responseHeader",
+				id: "javaserver-faces:header:1",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("JSF(?:/([\\d.]+))?"),
-				version: { source: "match", group: 1 },
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("JSF(?:\\/([\\d.]+))?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "javaserver-faces:header:2",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("jsf(?:\\/([\\d.]+))?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		implies: [
-			"java"
+			"java",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "javaserver-pages",
@@ -1571,25 +2170,41 @@ export const frameworkTechnologyDefinitions = [
 		website: "https://www.oracle.com/technetwork/java/javaee/jsp/index.html",
 		icon: "Java.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "javaserver-pages:responseHeader:0",
-				kind: "responseHeader",
+				id: "javaserver-pages:header:0",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("JSP(?:/([\\d.]+))?"),
-				version: { source: "match", group: 1 },
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("JSP(?:\\/([\\d.]+))?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "javaserver-pages:header:1",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("jsp(?:\\/([\\d.]+))?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "javaserver-pages:dom:2",
+				kind: "dom",
+				selector: "form[action*='/common/dispatcher.jsp']",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		implies: [
-			"java"
+			"java",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "jekyll",
@@ -1599,74 +2214,109 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Jekyll.svg",
 		categories: [
 			"framework",
-			"content-publishing"
 		],
 		rules: [
 			{
 				id: "jekyll:html:0",
 				kind: "html",
-				pattern: new RegExp("Powered by <a href=\"https?://jekyllrb\\.com\"[^>]*>Jekyll</"),
-				description: "HTML contains a known technology marker."
+				pattern: new RegExp("Powered by <a href=\"https?:\\/\\/jekyllrb\\.com\"[^>]*>Jekyll<\\/"),
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "jekyll:html:1",
 				kind: "html",
 				pattern: new RegExp("<!-- Created with Jekyll Now -"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "jekyll:html:2",
 				kind: "html",
 				pattern: new RegExp("<!-- Begin Jekyll SEO tag"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "jekyll:pageGlobal:3",
-				kind: "pageGlobal",
-				property: "SimpleJekyllSearch",
-				description: "Page-owned global matches a known technology marker."
-			},
-			{
-				id: "jekyll:meta:4",
+				id: "jekyll:meta:3",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("Jekyll\\sv([\\d.]+)?"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"ruby"
+				valuePattern: new RegExp("Jekyll\\sv([\\d.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "jekyll:jsGlobal:4",
+				kind: "jsGlobal",
+				property: "SimpleJekyllSearch",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "jekyll:html:5",
+				kind: "html",
+				pattern: new RegExp("<!-- begin jekyll seo tag"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "jekyll:html:6",
+				kind: "html",
+				pattern: new RegExp("<!-- created with jekyll now -"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "jekyll:html:7",
+				kind: "html",
+				pattern: new RegExp("powered by <a href=\"https?:\\/\\/jekyllrb\\.com\"[^>]*>jekyll<\\/"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "jekyll:meta:8",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("jekyll\\sv([\\d.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:jekyllrb:jekyll:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:jekyllrb:jekyll:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"ruby",
+		],
 	},
 	{
 		id: "kemal",
 		name: "Kemal",
 		website: "https://kemalcr.com",
 		description: "Kemal is a fast and efficient web framework for the Crystal programming language.",
-		icon: "kemalcr.svg",
+		icon: "kemalcr.png",
 		categories: [
 			"framework",
-			"server-runtime-infra"
+			"server-runtime-infra",
 		],
 		rules: [
 			{
-				id: "kemal:responseHeader:0",
-				kind: "responseHeader",
+				id: "kemal:header:0",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("Kemal"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("Kemal", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "kemal:header:1",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("kemal", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "koa",
@@ -1675,59 +2325,76 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Koa.png",
 		categories: [
 			"framework",
-			"server-runtime-infra"
+			"server-runtime-infra",
 		],
 		rules: [
 			{
-				id: "koa:responseHeader:0",
-				kind: "responseHeader",
+				id: "koa:header:0",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("^koa$"),
-				description: "Response header matches a known technology marker."
-			}
-		],
-		implies: [
-			"node-js"
+				valuePattern: new RegExp("^koa$", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "koa:header:1",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("^koa$", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:koajs:koa:*:*:*:*:*:node.js:*:*"
-		}
+			cpe: "cpe:2.3:a:koajs:koa:*:*:*:*:*:node.js:*:*",
+		},
+		implies: [
+			"node-js",
+		],
 	},
 	{
 		id: "kohana",
 		name: "Kohana",
 		website: "https://kohanaframework.org",
 		description: "Kohana is an open-source PHP web framework designed for building web applications, following the Model-View-Controller (MVC) architectural pattern.",
-		icon: "Kohana.svg",
+		icon: "Kohana.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "kohana:cookie:0",
 				kind: "cookie",
-				key: "kohanasession",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^kohanasession$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
-				id: "kohana:responseHeader:1",
-				kind: "responseHeader",
+				id: "kohana:header:1",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("Kohana Framework ([\\d.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Response header matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
+				valuePattern: new RegExp("Kohana Framework ([\\d.]+)", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "kohana:header:2",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("kohana framework ([\\d.]+)", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:kohanaframework:kohana:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:kohanaframework:kohana:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "ktor",
@@ -1736,32 +2403,45 @@ export const frameworkTechnologyDefinitions = [
 		description: "Ktor is a Kotlin framework that allow developers to write asynchronous clients and servers applications, in Kotlin.",
 		icon: "Ktor.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "ktor:responseHeader:0",
-				kind: "responseHeader",
+				id: "ktor:header:0",
+				kind: "header",
 				key: "server",
-				valuePattern: new RegExp("^Ktor/debug$"),
-				description: "Response header matches a known technology marker."
+				valuePattern: new RegExp("^Ktor\\/debug$", "i"),
+				description: "Response header matches a known technology marker.",
 			},
 			{
-				id: "ktor:responseHeader:1",
-				kind: "responseHeader",
+				id: "ktor:header:1",
+				kind: "header",
 				key: "x-engine",
-				valuePattern: new RegExp("^Ktor$"),
-				description: "Response header matches a known technology marker."
-			}
-		],
-		implies: [
-			"kotlin"
+				valuePattern: new RegExp("^Ktor$", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "ktor:header:2",
+				kind: "header",
+				key: "server",
+				valuePattern: new RegExp("^ktor\\/debug$", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "ktor:header:3",
+				kind: "header",
+				key: "x-engine",
+				valuePattern: new RegExp("^ktor$", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:jetbrains:ktor:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:jetbrains:ktor:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"kotlin",
+		],
 	},
 	{
 		id: "laravel",
@@ -1770,30 +2450,29 @@ export const frameworkTechnologyDefinitions = [
 		description: "Laravel is a free, open-source PHP web framework.",
 		icon: "Laravel.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "laravel:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "laravel:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Laravel",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "laravel:cookie:1",
 				kind: "cookie",
-				key: "laravel_session",
-				description: "Cookie name matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
+				keyPattern: new RegExp("^laravel_session$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:laravel:laravel:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:laravel:laravel:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "leptos",
@@ -1802,82 +2481,94 @@ export const frameworkTechnologyDefinitions = [
 		description: "Leptos is a full-stack, isomorphic Rust web framework leveraging fine-grained reactivity to build declarative user interfaces.",
 		icon: "Leptos.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "leptos:html:0",
-				kind: "html",
-				pattern: new RegExp("<!--hk=_.*"),
-				description: "HTML contains a known technology marker."
-			},
-			{
-				id: "leptos:scriptContent:1",
+				id: "leptos:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("export function microtask\\(f\\)"),
 				confidence: 75,
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
+			},
+			{
+				id: "leptos:html:1",
+				kind: "html",
+				pattern: new RegExp("<!--hk=_.*"),
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "leptos:dom:2",
 				kind: "dom",
 				selector: "link[id^='leptos']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "leptos:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "leptos:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "__LEPTOS_PENDING_RESOURCES",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "leptos:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "leptos:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "__LEPTOS_RESOLVED_RESOURCES",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "leptos:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "leptos:jsGlobal:5",
+				kind: "jsGlobal",
 				property: "__LEPTOS_RESOURCE_RESOLVERS",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"rust"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"rust",
+		],
 	},
 	{
 		id: "lift",
 		name: "Lift",
 		website: "https://liftweb.net",
 		description: "Lift is a secure, scalable web framework written in Scala, designed for high performance and modularity, supporting AJAX and Comet for interactive applications.",
-		icon: "Lift.svg",
+		icon: "Lift.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "lift:responseHeader:0",
-				kind: "responseHeader",
+				id: "lift:header:0",
+				kind: "header",
 				key: "X-Lift-Version",
-				valuePattern: new RegExp("(.+)"),
-				version: { source: "match", group: 1 },
-				description: "Response header matches a known technology marker."
-			}
-		],
-		implies: [
-			"scala"
+				valuePattern: new RegExp("(.+)", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "lift:header:1",
+				kind: "header",
+				key: "x-lift-version",
+				valuePattern: new RegExp("(.+)", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:liftweb:lift:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:liftweb:lift:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"scala",
+		],
 	},
 	{
 		id: "livewire",
@@ -1887,41 +2578,41 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Livewire.svg",
 		categories: [
 			"framework",
-			"widgets-misc"
+			"widgets-misc",
 		],
 		rules: [
 			{
-				id: "livewire:html:0",
-				kind: "html",
-				pattern: new RegExp("<[^>]{1,512}\\bwire:"),
-				description: "HTML contains a known technology marker."
-			},
-			{
-				id: "livewire:scriptSrc:1",
+				id: "livewire:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("livewire(?:\\.min)?\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "livewire:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "livewire:html:1",
+				kind: "html",
+				pattern: new RegExp("<[^>]{1,512}\\bwire:"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "livewire:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "livewire",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "livewire:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "livewire:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "livewireScriptConfig",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"laravel"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+			cpe: "cpe:2.3:a:laravel:livewire:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"laravel",
+		],
 	},
 	{
 		id: "luana",
@@ -1930,31 +2621,44 @@ export const frameworkTechnologyDefinitions = [
 		description: "Luana is a web framework that uses web browser APIs and features to make a cross-platform web app look like a Native one and bring the same experience.",
 		icon: "Luana.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "luana:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "luana:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "luanaframework",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "luana:meta:1",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^Luana\\sFramework\\s([\\d\\.]+)$"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"pwa"
+				valuePattern: new RegExp("^Luana\\sFramework\\s([\\d\\.]+)$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "luana:meta:2",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^luana\\sframework\\s([\\d\\.]+)$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"pwa",
+		],
 	},
 	{
 		id: "lume",
@@ -1964,44 +2668,54 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Lume.svg",
 		categories: [
 			"framework",
-			"content-publishing"
 		],
 		rules: [
 			{
 				id: "lume:meta:0",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^Lume\\sv([\\d\\.]+)$"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"deno"
+				valuePattern: new RegExp("^Lume\\sv([\\d\\.]+)$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "lume:meta:1",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^lume\\sv([\\d\\.]+)$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"deno",
+		],
 	},
 	{
 		id: "macaron",
 		name: "Macaron",
 		website: "https://go-macaron.com",
 		description: "Macaron is a high productive and modular web framework in Go.",
-		icon: "Macaron.svg",
+		icon: "Macaron.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [],
-		implies: [
-			"go"
-		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:go-macaron:macaron:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:go-macaron:macaron:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"go",
+		],
 	},
 	{
 		id: "marko",
@@ -2012,47 +2726,51 @@ export const frameworkTechnologyDefinitions = [
 		categories: [
 			"framework",
 			"component-library",
-			"styling-library"
 		],
 		rules: [
 			{
 				id: "marko:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.marko(\\.js)?"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
 				id: "marko:dom:1",
 				kind: "dom",
 				selector: "#data-marko-key, html[data-framework='marko']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "marko:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "marko:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "markoComponent",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "marko:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "marko:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "markoSections",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "marko:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "marko:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "markoVars",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"node-js"
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "marko:dom:5",
+				kind: "dom",
+				selector: "#data-marko-key, [data-marko-key], html[data-framework='marko']",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"node-js",
+		],
 	},
 	{
 		id: "masterking32-framework",
@@ -2061,103 +2779,163 @@ export const frameworkTechnologyDefinitions = [
 		description: "MasterkinG32 framework.",
 		icon: "Masterking32.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "masterking32-framework:responseHeader:0",
-				kind: "responseHeader",
+				id: "masterking32-framework:header:0",
+				kind: "header",
 				key: "X-Powered-Framework",
-				valuePattern: new RegExp("MasterkinG(?:)"),
-				description: "Response header matches a known technology marker."
+				valuePattern: new RegExp("MasterkinG(?:)", "i"),
+				description: "Response header matches a known technology marker.",
 			},
 			{
 				id: "masterking32-framework:meta:1",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^MasterkinG(?:)"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^MasterkinG(?:)", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "masterking32-framework:header:2",
+				kind: "header",
+				key: "x-powered-framework",
+				valuePattern: new RegExp("masterking(?:)", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "masterking32-framework:meta:3",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^masterking(?:)", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "microsoft-asp-net",
 		name: "Microsoft ASP.NET",
 		website: "https://www.asp.net",
-		description: "ASP.NET is an open-source, server-side web-application framework designed for web development to produce dynamic web pages.",
+		description: "ASP. NET is an open-source, server-side web-application framework designed for web development to produce dynamic web pages.",
 		icon: "Microsoft ASP.NET.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "microsoft-asp-net:html:0",
 				kind: "html",
 				pattern: new RegExp("<input[^>]+name=\"__VIEWSTATE"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "microsoft-asp-net:url:1",
 				kind: "url",
 				pattern: new RegExp("\\.aspx?(?:$|\\?)"),
-				description: "Page URL matches a known technology marker."
+				description: "Page URL matches a known technology marker.",
 			},
 			{
-				id: "microsoft-asp-net:dom:2",
-				kind: "dom",
-				selector: "input[name*='__VIEWSTATE']",
-				description: "DOM selector matches a known technology marker."
+				id: "microsoft-asp-net:cookie:2",
+				kind: "cookie",
+				keyPattern: new RegExp("^ASP\\.NET_SessionId$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "microsoft-asp-net:cookie:3",
 				kind: "cookie",
-				key: "ASPSESSION",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^ASPSESSION$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
-				id: "microsoft-asp-net:cookie:4",
-				kind: "cookie",
-				key: "ASP\\.NET_SessionId",
-				description: "Cookie name matches a known technology marker."
-			},
-			{
-				id: "microsoft-asp-net:cookie:5",
-				kind: "cookie",
-				key: "\\.ASPXAUTH",
-				description: "Cookie name matches a known technology marker."
-			},
-			{
-				id: "microsoft-asp-net:responseHeader:6",
-				kind: "responseHeader",
+				id: "microsoft-asp-net:header:4",
+				kind: "header",
 				key: "X-AspNet-Version",
-				valuePattern: new RegExp("(.+)"),
-				version: { source: "match", group: 1 },
-				description: "Response header matches a known technology marker."
+				valuePattern: new RegExp("(.+)", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
 			},
 			{
-				id: "microsoft-asp-net:responseHeader:7",
-				kind: "responseHeader",
+				id: "microsoft-asp-net:header:5",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("^ASP\\.NET"),
-				description: "Response header matches a known technology marker."
+				valuePattern: new RegExp("^ASP\\.NET", "i"),
+				description: "Response header matches a known technology marker.",
 			},
 			{
-				id: "microsoft-asp-net:responseHeader:8",
-				kind: "responseHeader",
+				id: "microsoft-asp-net:header:6",
+				kind: "header",
 				key: "set-cookie",
-				valuePattern: new RegExp("\\.AspNetCore"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("\\.AspNetCore", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "microsoft-asp-net:dom:7",
+				kind: "dom",
+				selector: "input[name*='__VIEWSTATE']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "microsoft-asp-net:cookie:8",
+				kind: "cookie",
+				keyPattern: new RegExp("^ASP\\\\\\.NET_SessionId$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "microsoft-asp-net:cookie:9",
+				kind: "cookie",
+				keyPattern: new RegExp("^\\\\\\.ASPXAUTH$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "microsoft-asp-net:html:10",
+				kind: "html",
+				pattern: new RegExp("<input[^>]+name=\"__viewstate"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "microsoft-asp-net:cookie:11",
+				kind: "cookie",
+				keyPattern: new RegExp("^asp\\.net_sessionid$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "microsoft-asp-net:cookie:12",
+				kind: "cookie",
+				keyPattern: new RegExp("^aspsession$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "microsoft-asp-net:header:13",
+				kind: "header",
+				key: "set-cookie",
+				valuePattern: new RegExp("\\.aspnetcore", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "microsoft-asp-net:header:14",
+				kind: "header",
+				key: "x-aspnet-version",
+				valuePattern: new RegExp("(.+)", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "microsoft-asp-net:header:15",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("^asp\\.net", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:microsoft:asp.net:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:microsoft:asp.net:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "mintlify",
@@ -2167,84 +2945,101 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Mintlify.svg",
 		categories: [
 			"framework",
-			"content-publishing"
+			"content-publishing",
 		],
 		rules: [
 			{
-				id: "mintlify:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "mintlify:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "__NEXT_DATA__.props.pageProps.favicons.browserconfig",
 				valuePattern: new RegExp("mintlify\\..+\\.amazonaws\\.com"),
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "mintlify:scriptContent:1",
+				kind: "scriptContent",
+				pattern: new RegExp("\\.mintlify\\.app|\\/mintlify-assets\\/_next\\/static\\/"),
+				description: "Script content contains a bounded technology signature.",
+			},
+			{
+				id: "mintlify:meta:2",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^Mintlify$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "mojolicious",
 		name: "Mojolicious",
 		website: "https://mojolicio.us",
 		description: "Mojolicious is a Perl-based web framework designed for building web applications and APIs.",
-		icon: "Mojolicious.svg",
+		icon: "Mojolicious.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "mojolicious:responseHeader:0",
-				kind: "responseHeader",
+				id: "mojolicious:header:0",
+				kind: "header",
 				key: "server",
-				valuePattern: new RegExp("^mojolicious"),
-				description: "Response header matches a known technology marker."
+				valuePattern: new RegExp("^mojolicious", "i"),
+				description: "Response header matches a known technology marker.",
 			},
 			{
-				id: "mojolicious:responseHeader:1",
-				kind: "responseHeader",
+				id: "mojolicious:header:1",
+				kind: "header",
 				key: "x-powered-by",
-				valuePattern: new RegExp("mojolicious"),
-				description: "Response header matches a known technology marker."
-			}
-		],
-		implies: [
-			"perl"
+				valuePattern: new RegExp("mojolicious", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:mojolicious:mojolicious:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:mojolicious:mojolicious:*:*:*:*:*:perl:*:*",
+		},
+		implies: [
+			"perl",
+		],
 	},
 	{
 		id: "mono",
 		name: "Mono",
 		website: "https://mono-project.com",
 		description: "Mono is an open-source platform that enables developers to create and run .NET applications across different operating systems, facilitating cross-platform compatibility.",
-		icon: "Mono.svg",
+		icon: "Mono.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "mono:responseHeader:0",
-				kind: "responseHeader",
+				id: "mono:header:0",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("Mono"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("Mono", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "mono:header:1",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("mono", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:mono:mono:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:mono:mono:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "neos-flow",
@@ -2252,28 +3047,38 @@ export const frameworkTechnologyDefinitions = [
 		website: "https://flow.neos.io",
 		icon: "Neos.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "neos-flow:responseHeader:0",
-				kind: "responseHeader",
+				id: "neos-flow:header:0",
+				kind: "header",
 				key: "X-Flow-Powered",
-				valuePattern: new RegExp("Flow/?(.+)?$"),
-				version: { source: "match", group: 1 },
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("Flow\\/?(.+)?$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "neos-flow:header:1",
+				kind: "header",
+				key: "x-flow-powered",
+				valuePattern: new RegExp("flow\\/?(.+)?$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		implies: [
-			"php"
+			"php",
 		],
 		excludes: [
-			"typo3-cms"
+			"typo3-cms",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "nette-framework",
@@ -2281,68 +3086,101 @@ export const frameworkTechnologyDefinitions = [
 		website: "https://nette.org",
 		icon: "Nette Framework.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "nette-framework:html:0",
 				kind: "html",
 				pattern: new RegExp("<input[^>]+data-nette-rules"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "nette-framework:html:1",
 				kind: "html",
 				pattern: new RegExp("<div[^>]+id=\"snippet-"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "nette-framework:html:2",
 				kind: "html",
 				pattern: new RegExp("<input[^>]+id=\"frm-"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "nette-framework:dom:3",
-				kind: "dom",
-				selector: "input[data-nette-rules], div[id^='snippet-'], input[id^='frm-']",
-				description: "DOM selector matches a known technology marker."
-			},
-			{
-				id: "nette-framework:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "nette-framework:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "Nette",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "nette-framework:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "nette-framework:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "Nette.version",
 				valuePattern: new RegExp("^(.+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "nette-framework:cookie:6",
+				id: "nette-framework:cookie:5",
 				kind: "cookie",
-				key: "nette-browser",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^nette\\-browser$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
-				id: "nette-framework:responseHeader:7",
-				kind: "responseHeader",
+				id: "nette-framework:header:6",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("^Nette Framework"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("^Nette Framework", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "nette-framework:dom:7",
+				kind: "dom",
+				selector: "input[data-nette-rules], div[id^='snippet-'], input[id^='frm-']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "nette-framework:header:8",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("^nette framework", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		implies: [
-			"php"
+			"php",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+	},
+	{
+		id: "next-js-app-router",
+		name: "Next.js App Router",
+		website: "https://nextjs.org/docs/app",
+		description: "The Next.js App Router is a new paradigm for building applications using React's latest features.",
+		icon: "Next.js.svg",
+		categories: [
+			"framework",
+			"ui-library",
+			"server-runtime-infra",
+		],
+		rules: [
+			{
+				id: "next-js-app-router:jsGlobal:0",
+				kind: "jsGlobal",
+				property: "next.appDir",
+				valuePattern: new RegExp("true"),
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		implies: [
+			"next-js",
+		],
+		requires: [
+			"next-js",
+		],
 	},
 	{
 		id: "next-js-page-router-ssg",
@@ -2352,39 +3190,69 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Next.js.svg",
 		categories: [
 			"framework",
-			"content-publishing",
-			"router"
 		],
 		rules: [
 			{
-				id: "next-js-page-router-ssg:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "next-js-page-router-ssg:jsGlobal:0",
+				kind: "jsGlobal",
 				property: ".__NEXT_DATA__.autoExport",
 				valuePattern: new RegExp("true"),
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "next-js-page-router-ssg:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "next-js-page-router-ssg:jsGlobal:1",
+				kind: "jsGlobal",
 				property: ".__NEXT_DATA__.gsp",
 				valuePattern: new RegExp("true"),
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "next-js-page-router-ssg:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "next-js-page-router-ssg:jsGlobal:2",
+				kind: "jsGlobal",
 				property: ".__NEXT_DATA__.nextExport",
 				valuePattern: new RegExp("true"),
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		implies: [
-			"next-js"
+			"next-js",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		requires: [
+			"next-js",
+		],
+	},
+	{
+		id: "next-js-page-router-ssr",
+		name: "Next.js Page Router SSR",
+		website: "https://nextjs.org/docs/pages/building-your-application/rendering/server-side-rendering",
+		description: "Next.js Server-Side Rendering.",
+		icon: "Next.js.svg",
+		categories: [
+			"framework",
+			"server-runtime-infra",
+		],
+		rules: [
+			{
+				id: "next-js-page-router-ssr:jsGlobal:0",
+				kind: "jsGlobal",
+				property: ".__NEXT_DATA__.gip",
+				valuePattern: new RegExp("true"),
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "next-js-page-router-ssr:jsGlobal:1",
+				kind: "jsGlobal",
+				property: ".__NEXT_DATA__.gssp",
+				valuePattern: new RegExp("true"),
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		implies: [
+			"next-js",
+		],
+		requires: [
+			"next-js",
+		],
 	},
 	{
 		id: "nextra",
@@ -2394,53 +3262,51 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Nextra.svg",
 		categories: [
 			"framework",
-			"content-publishing"
 		],
 		rules: [
 			{
-				id: "nextra:scriptContent:0",
-				kind: "scriptContent",
-				pattern: new RegExp("nextra//.site/"),
-				description: "Script content contains a bounded technology signature."
+				id: "nextra:dom:0",
+				kind: "dom",
+				selector: "div.nextra-container",
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
 				id: "nextra:dom:1",
 				kind: "dom",
-				selector: "div.nextra-container",
-				description: "DOM selector matches a known technology marker."
+				selector: "div.nextra-nav-container",
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
 				id: "nextra:dom:2",
 				kind: "dom",
-				selector: "div.nextra-nav-container",
-				description: "DOM selector matches a known technology marker."
-			},
-			{
-				id: "nextra:dom:3",
-				kind: "dom",
 				selector: "div.nextra-sidebar-container",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "nextra:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "nextra:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "__nextra_internal__",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "nextra:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "nextra:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "__nextra_pageContext__",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		requires: [
-			"next-js"
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "nextra:scriptContent:5",
+				kind: "scriptContent",
+				pattern: new RegExp("nextra\\/\\/.site\\/"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		requires: [
+			"next-js",
+		],
 	},
 	{
 		id: "nordcraft",
@@ -2449,33 +3315,74 @@ export const frameworkTechnologyDefinitions = [
 		description: "Nordcraft is a platform that integrates a visual design tool with a web framework, enabling the creation of web applications and websites in a unified environment.",
 		icon: "Nordcraft.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "nordcraft:responseHeader:0",
-				kind: "responseHeader",
+				id: "nordcraft:header:0",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("^Nordcraft$"),
-				description: "Response header matches a known technology marker."
+				valuePattern: new RegExp("^Nordcraft$", "i"),
+				description: "Response header matches a known technology marker.",
 			},
 			{
 				id: "nordcraft:meta:1",
 				kind: "meta",
 				key: "application-name",
-				valuePattern: new RegExp("^Nordcraft$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^Nordcraft$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "nordcraft:header:2",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("^nordcraft$", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "nordcraft:meta:3",
+				kind: "meta",
+				key: "application-name",
+				valuePattern: new RegExp("^nordcraft$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"freemium",
 				"mid",
 				"recurring",
-				"freemium"
-			]
-		}
+			],
+		},
+	},
+	{
+		id: "nuxt-ui",
+		name: "Nuxt UI",
+		website: "https://ui.nuxt.com",
+		description: "Nuxt UI is a customizable UI library designed for Nuxt.",
+		icon: "Nuxt.js.svg",
+		categories: [
+			"framework",
+			"component-library",
+		],
+		rules: [
+			{
+				id: "nuxt-ui:dom:0",
+				kind: "dom",
+				selector: "style[id*='nuxt-ui-']",
+				description: "DOM selector matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"onetime",
+			],
+		},
+		requires: [
+			"nuxt-js",
+		],
 	},
 	{
 		id: "oat",
@@ -2484,22 +3391,35 @@ export const frameworkTechnologyDefinitions = [
 		description: "Oat++ is an open source C++ Web Framework.",
 		icon: "Oat.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "oat:responseHeader:0",
-				kind: "responseHeader",
+				id: "oat:header:0",
+				kind: "header",
 				key: "Server",
-				valuePattern: new RegExp("^oatpp/?([\\d.]+)?"),
-				version: { source: "match", group: 1 },
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("^oatpp\\/?([\\d.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "oat:header:1",
+				kind: "header",
+				key: "server",
+				valuePattern: new RegExp("^oatpp\\/?([\\d.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false
-		}
+			cpe: "cpe:2.3:a:oatpp:oat\\+\\+:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "octopress",
@@ -2509,36 +3429,44 @@ export const frameworkTechnologyDefinitions = [
 		icon: "octopress.png",
 		categories: [
 			"framework",
-			"content-publishing"
 		],
 		rules: [
 			{
-				id: "octopress:html:0",
-				kind: "html",
-				pattern: new RegExp("Powered by <a href=\"http://octopress\\.org\">"),
-				description: "HTML contains a known technology marker."
+				id: "octopress:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\/octopress\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "octopress:scriptSrc:1",
-				kind: "scriptSrc",
-				pattern: new RegExp("/octopress\\.js"),
-				description: "Script source URL matches a known technology marker."
+				id: "octopress:html:1",
+				kind: "html",
+				pattern: new RegExp("Powered by <a href=\"http:\\/\\/octopress\\.org\">"),
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "octopress:meta:2",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("Octopress"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("Octopress", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "octopress:html:3",
+				kind: "html",
+				pattern: new RegExp("powered by <a href=\"http:\\/\\/octopress\\.org\">"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "octopress:meta:4",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("octopress", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		implies: [
-			"jekyll"
+			"jekyll",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "openswoole",
@@ -2547,25 +3475,38 @@ export const frameworkTechnologyDefinitions = [
 		description: "OpenSwoole is a high-performance, asynchronous, event-driven, coroutine-based PHP framework.",
 		icon: "OpenSwoole.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "openswoole:responseHeader:0",
-				kind: "responseHeader",
+				id: "openswoole:header:0",
+				kind: "header",
 				key: "Server",
-				valuePattern: new RegExp("OpenSwoole(?:/([\\d.]+))?"),
-				version: { source: "match", group: 1 },
-				description: "Response header matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
+				valuePattern: new RegExp("OpenSwoole(?:\\/([\\d.]+))?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "openswoole:header:1",
+				kind: "header",
+				key: "server",
+				valuePattern: new RegExp("openswoole(?:\\/([\\d.]+))?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "parse-platform",
@@ -2574,49 +3515,58 @@ export const frameworkTechnologyDefinitions = [
 		description: "Parse Platform is a backend framework offering built-in support for object and file storage, user authentication, push notifications, and a customizable dashboard.",
 		icon: "ParsePlatform.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "parse-platform:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("www\\.parsecdn\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
 			pricing: [
-				"freemium"
-			]
-		}
+				"freemium",
+			],
+		},
 	},
 	{
 		id: "pelican",
 		name: "Pelican",
-		website: "https://getpelican.com",
+		website: "https://blog.getpelican.com/",
 		description: "Pelican is a static site generator written in Python.",
-		icon: "pelican.svg",
+		icon: "pelican.png",
 		categories: [
 			"framework",
-			"content-publishing"
 		],
 		rules: [
 			{
 				id: "pelican:html:0",
 				kind: "html",
+				pattern: new RegExp("powered by <a href=\"[^>]+getpelican\\.com"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "pelican:html:1",
+				kind: "html",
+				pattern: new RegExp("powered by <a href=\"https?:\\/\\/pelican\\.notmyidea\\.org"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "pelican:html:2",
+				kind: "html",
 				pattern: new RegExp("(?:powered|built|generated)\\s(?:by|with).*?<a\\s+href(?:\\s)?=(?:\\s)?\"[^\"]*(?:getpelican\\.com|pelican-bootstrap3|pelican-pure|notmyidea\\.org)[^\"]*\".*?>"),
-				description: "HTML contains a known technology marker."
-			}
-		],
-		implies: [
-			"python"
+				description: "HTML contains a known technology signature.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"python",
+		],
 	},
 	{
 		id: "phenomic",
@@ -2626,35 +3576,30 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Phenomic.svg",
 		categories: [
 			"framework",
-			"content-publishing"
 		],
 		rules: [
 			{
-				id: "phenomic:html:0",
-				kind: "html",
-				pattern: new RegExp("<[^>]+id=\"phenomic(?:root)?\""),
-				description: "HTML contains a known technology marker."
+				id: "phenomic:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\/phenomic\\.browser\\.[a-f0-9]+\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "phenomic:scriptSrc:1",
-				kind: "scriptSrc",
-				pattern: new RegExp("/phenomic\\.browser\\.[a-f0-9]+\\.js"),
-				description: "Script source URL matches a known technology marker."
+				id: "phenomic:html:1",
+				kind: "html",
+				pattern: new RegExp("<[^>]+id=\"phenomic(?:root)?\""),
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "phenomic:dom:2",
 				kind: "dom",
 				selector: "[id^='phenomic']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		implies: [
-			"react"
+			"react",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "phoenix",
@@ -2662,26 +3607,25 @@ export const frameworkTechnologyDefinitions = [
 		website: "https://github.com/Sazito/phoenix/",
 		icon: "sazito-phoenix.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "phoenix:meta:0",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^phoenix"),
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"react",
-			"webpack",
-			"node-js"
+				valuePattern: new RegExp("^phoenix", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false
-		}
+			cpe: "cpe:2.3:a:phoenixframework:phoenix:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"node-js",
+			"react",
+			"webpack",
+		],
 	},
 	{
 		id: "phoenix-framework",
@@ -2690,23 +3634,23 @@ export const frameworkTechnologyDefinitions = [
 		description: "Phoenix Framework is an open-source web application framework built using the Elixir programming language.",
 		icon: "Phoenix Framework.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "phoenix-framework:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "phoenix-framework:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Phoenix.Channel",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"elixir"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+			cpe: "cpe:2.3:a:phoenixframework:phoenix:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"elixir",
+		],
 	},
 	{
 		id: "phoenix-liveview",
@@ -2715,60 +3659,55 @@ export const frameworkTechnologyDefinitions = [
 		description: "Phoenix LiveView is a library that brings live, interactive, real-time user experiences to your Phoenix applications.",
 		icon: "Phoenix Framework.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "phoenix-liveview:dom:0",
 				kind: "dom",
 				selector: "div[data-phx-session]",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "phoenix-liveview:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "phoenix-liveview:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "liveSocket.socket",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"phoenix-framework"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"phoenix-framework",
+		],
 	},
 	{
 		id: "pinoox",
 		name: "pinoox",
 		website: "https://pinoox.com",
 		description: "Pinoox is a software development company that provides custom solutions for web, mobile, and software applications.",
-		icon: "pinoox.svg",
+		icon: "pinoox.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "pinoox:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "pinoox:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "pinoox",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "pinoox:cookie:1",
 				kind: "cookie",
-				key: "pinoox_session",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^pinoox_session$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		implies: [
-			"php"
+			"php",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "play",
@@ -2776,24 +3715,28 @@ export const frameworkTechnologyDefinitions = [
 		website: "https://www.playframework.com",
 		icon: "Play.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "play:cookie:0",
 				kind: "cookie",
-				key: "PLAY_SESSION",
-				description: "Cookie name matches a known technology marker."
-			}
-		],
-		implies: [
-			"scala"
+				keyPattern: new RegExp("^PLAY_SESSION$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "play:cookie:1",
+				kind: "cookie",
+				keyPattern: new RegExp("^play_session$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:playframework:play_framework:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:playframework:play_framework:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"scala",
+		],
 	},
 	{
 		id: "publii",
@@ -2803,32 +3746,30 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Publii.svg",
 		categories: [
 			"framework",
-			"content-publishing"
 		],
 		rules: [
 			{
 				id: "publii:dom:0",
 				kind: "dom",
 				selector: "meta[content*='Publii Open-Source CMS for Static Site']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "publii:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "publii:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "publiiDetectLoadedImages",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "publii:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "publii:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "publiiThemeMenuConfig",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "pywebio",
@@ -2837,20 +3778,19 @@ export const frameworkTechnologyDefinitions = [
 		description: "PyWebIO is a browser-based framework that transforms the browser into a rich text terminal, allowing developers to create simple web or GUI applications using input and print functions without needing HTML or JavaScript knowledge.",
 		icon: "PyWebIO.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "pywebio:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/js/pywebio\\.min\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\/js\\/pywebio\\.min\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "quarto",
@@ -2860,40 +3800,41 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Quarto.svg",
 		categories: [
 			"framework",
-			"content-publishing"
 		],
 		rules: [
 			{
-				id: "quarto:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "quarto:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "quartoOpenSearch",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "quarto:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "quarto:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "quartoToggleHeadroom",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "quarto:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "quarto:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "quartoToggleReader",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "quarto:meta:3",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^quarto-([\\d\\.]+)$"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^quarto-([\\d\\.]+)$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "qwik",
@@ -2902,13 +3843,20 @@ export const frameworkTechnologyDefinitions = [
 		description: "Qwik is designed for the fastest possible page load time, by delivering pure HTML with near 0 JavaScript.",
 		icon: "Qwik.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
-		rules: [],
+		rules: [
+			{
+				id: "qwik:dom:0",
+				kind: "dom",
+				selector: "*",
+				description: "DOM selector matches a known technology marker.",
+			},
+		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+			cpe: "cpe:2.3:a:builder:qwik:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "reflex",
@@ -2917,36 +3865,42 @@ export const frameworkTechnologyDefinitions = [
 		description: "Reflex is an open-source framework to build and deploy web apps.",
 		icon: "Reflex.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "reflex:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "reflex:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "__reflex.react",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "reflex:meta:1",
 				kind: "meta",
 				key: "application-name",
-				valuePattern: new RegExp("^Reflex$"),
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		requires: [
-			"react"
+				valuePattern: new RegExp("^Reflex$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "reflex:meta:2",
+				kind: "meta",
+				key: "application-name",
+				valuePattern: new RegExp("^reflex$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
+		requires: [
+			"react",
+		],
 	},
 	{
 		id: "remix",
@@ -2957,35 +3911,185 @@ export const frameworkTechnologyDefinitions = [
 		categories: [
 			"framework",
 			"server-runtime-infra",
-			"ui-library"
 		],
 		rules: [
 			{
-				id: "remix:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "remix:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "__remixContext",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "remix:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "remix:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "__remixRouteModules",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "remix:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "remix:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "__remixRouter",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"react"
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "remix:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("__remixContext"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "remix:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("__remixManifest"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "remix:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("__remixRouteModules"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "remix:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("__remix_entry__"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "remix:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("isOutsideRemixApp:"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "remix:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("💿 Hey developer 👋.*remix\\.run\\/guides\\/errors"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "remix:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("remix\\.run\\/route\\/meta"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "remix:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("Unknown @remix-run\\/router error"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "remix:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("[\"']remix-router-transitions[\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "remix:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("You are trying to use a blocker on a POP navigation.*@remix-run\\/router"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "remix:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("All route meta functions must return an array of meta objects"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "remix:scriptContent:modern:11",
+				kind: "scriptContent",
+				pattern: new RegExp("data-remix-run"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "remix:scriptContent:modern:12",
+				kind: "scriptContent",
+				pattern: new RegExp("data-remix-"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "remix:scriptContent:modern:13",
+				kind: "scriptContent",
+				pattern: new RegExp("remix-pending"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "remix:scriptContent:modern:14",
+				kind: "scriptContent",
+				pattern: new RegExp("remix-state"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "remix:scriptContent:modern:15",
+				kind: "scriptContent",
+				pattern: new RegExp("when your app is loading JS modules.*clientLoader.*remix\\.run\\/route\\/hydrate-fallback"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "remix:scriptContent:modern:16",
+				kind: "scriptContent",
+				pattern: new RegExp("dangerouslySetInnerHTML:.*💿 Hey developer"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "remix:header:modern:17",
+				kind: "header",
+				key: "X-Remix-Reload-Document",
+				valuePattern: new RegExp(".+", "i"),
+				confidence: 75,
+				description: "HTTP response header matches a modern tooling marker.",
+			},
+			{
+				id: "remix:header:modern:18",
+				kind: "header",
+				key: "X-Remix-Replace",
+				valuePattern: new RegExp(".+", "i"),
+				confidence: 75,
+				description: "HTTP response header matches a modern tooling marker.",
+			},
+			{
+				id: "remix:header:modern:19",
+				kind: "header",
+				key: "X-Remix-Revalidate",
+				valuePattern: new RegExp(".+", "i"),
+				confidence: 75,
+				description: "HTTP response header matches a modern tooling marker.",
+			},
+			{
+				id: "remix:header:modern:20",
+				kind: "header",
+				key: "X-Remix-Response",
+				valuePattern: new RegExp(".+", "i"),
+				confidence: 75,
+				description: "HTTP response header matches a modern tooling marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"react",
+			"react-router",
+		],
 	},
 	{
 		id: "retype",
@@ -2995,31 +4099,43 @@ export const frameworkTechnologyDefinitions = [
 		icon: "retype.svg",
 		categories: [
 			"framework",
-			"content-publishing"
 		],
 		rules: [
 			{
 				id: "retype:meta:0",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("Retype\\s([\\d\\.]+)?"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"node-js"
+				valuePattern: new RegExp("Retype\\s([\\d\\.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "retype:meta:1",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("retype\\s([\\d\\.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
 			pricing: [
 				"freemium",
 				"low",
+				"onetime",
 				"recurring",
-				"onetime"
-			]
-		}
+			],
+		},
+		implies: [
+			"node-js",
+		],
 	},
 	{
 		id: "revel",
@@ -3027,29 +4143,40 @@ export const frameworkTechnologyDefinitions = [
 		website: "https://revel.github.io",
 		icon: "Revel.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "revel:cookie:0",
 				kind: "cookie",
-				key: "REVEL_FLASH",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^REVEL_FLASH$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "revel:cookie:1",
 				kind: "cookie",
-				key: "REVEL_SESSION",
-				description: "Cookie name matches a known technology marker."
-			}
-		],
-		implies: [
-			"go"
+				keyPattern: new RegExp("^REVEL_SESSION$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "revel:cookie:2",
+				kind: "cookie",
+				keyPattern: new RegExp("^revel_flash$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "revel:cookie:3",
+				kind: "cookie",
+				keyPattern: new RegExp("^revel_session$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false
-		}
+			cpe: "cpe:2.3:a:revel:revel:*:*:*:*:*:go:*:*",
+		},
+		implies: [
+			"go",
+		],
 	},
 	{
 		id: "rspress",
@@ -3059,100 +4186,123 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Rspress.svg",
 		categories: [
 			"framework",
-			"content-publishing",
-			"bundler"
 		],
 		rules: [
 			{
 				id: "rspress:meta:0",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("Rspress\\sv([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"rspack"
+				valuePattern: new RegExp("Rspress\\sv([\\d\\.]+)", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "rspress:meta:1",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("rspress\\sv([\\d\\.]+)", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"rspack",
+		],
 	},
 	{
 		id: "ruby-on-rails",
 		name: "Ruby on Rails",
 		website: "https://rubyonrails.org",
 		description: "Ruby on Rails is a server-side web application framework written in Ruby under the MIT License.",
-		icon: "Ruby on Rails.svg",
+		icon: "Ruby on Rails.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "ruby-on-rails:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/assets/application-[a-z\\d]{32}/\\.js"),
+				pattern: new RegExp("\\/assets\\/application-[a-z\\d]{32}\\/\\.js"),
 				confidence: 50,
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "ruby-on-rails:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "ruby-on-rails:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ReactOnRails",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "ruby-on-rails:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "ruby-on-rails:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "__REACT_ON_RAILS_EVENT_HANDLERS_RAN_ONCE__",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "ruby-on-rails:pageGlobal:3",
-				kind: "pageGlobal",
-				property: "_rails_loaded",
-				description: "Page-owned global matches a known technology marker."
-			},
-			{
-				id: "ruby-on-rails:cookie:4",
+				id: "ruby-on-rails:cookie:3",
 				kind: "cookie",
-				key: "_session_id",
+				keyPattern: new RegExp("^_session_id$", "i"),
 				confidence: 75,
-				description: "Cookie name matches a known technology marker."
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
-				id: "ruby-on-rails:responseHeader:5",
-				kind: "responseHeader",
+				id: "ruby-on-rails:header:4",
+				kind: "header",
 				key: "Server",
-				valuePattern: new RegExp("mod_(?:rails|rack)"),
-				description: "Response header matches a known technology marker."
+				valuePattern: new RegExp("mod_(?:rails|rack)", "i"),
+				description: "Response header matches a known technology marker.",
 			},
 			{
-				id: "ruby-on-rails:responseHeader:6",
-				kind: "responseHeader",
+				id: "ruby-on-rails:header:5",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("mod_(?:rails|rack)"),
-				description: "Response header matches a known technology marker."
+				valuePattern: new RegExp("mod_(?:rails|rack)", "i"),
+				description: "Response header matches a known technology marker.",
 			},
 			{
-				id: "ruby-on-rails:meta:7",
+				id: "ruby-on-rails:meta:6",
 				kind: "meta",
 				key: "csrf-param",
-				valuePattern: new RegExp("^authenticity_token$"),
+				valuePattern: new RegExp("^authenticity_token$", "i"),
 				confidence: 50,
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"ruby"
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "ruby-on-rails:jsGlobal:7",
+				kind: "jsGlobal",
+				property: "_rails_loaded",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "ruby-on-rails:header:8",
+				kind: "header",
+				key: "server",
+				valuePattern: new RegExp("mod_(?:rails|rack)", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "ruby-on-rails:header:9",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("mod_(?:rails|rack)", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:rubyonrails:rails:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:rubyonrails:rails:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"ruby",
+		],
 	},
 	{
 		id: "saber",
@@ -3162,37 +4312,46 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Saber.svg",
 		categories: [
 			"framework",
-			"content-publishing"
 		],
 		rules: [
 			{
 				id: "saber:html:0",
 				kind: "html",
 				pattern: new RegExp("<div [^>]*id=\"_saber\""),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "saber:dom:1",
-				kind: "dom",
-				selector: "div[id*='_saber']",
-				description: "DOM selector matches a known technology marker."
-			},
-			{
-				id: "saber:meta:2",
+				id: "saber:meta:1",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^Saber v([\\d.]+)$"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^Saber v([\\d.]+)$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "saber:dom:2",
+				kind: "dom",
+				selector: "div[id*='_saber']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "saber:meta:3",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^saber v([\\d.]+)$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		implies: [
-			"vue-js"
+			"vue-js",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "sails-js",
@@ -3200,30 +4359,39 @@ export const frameworkTechnologyDefinitions = [
 		website: "https://sailsjs.org",
 		icon: "Sails.js.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "sails-js:cookie:0",
 				kind: "cookie",
-				key: "sails\\.sid",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^sails\\.sid$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
-				id: "sails-js:responseHeader:1",
-				kind: "responseHeader",
+				id: "sails-js:header:1",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("^Sails(?:$|[^a-z0-9])"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("^Sails(?:$|[^a-z0-9])", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "sails-js:cookie:2",
+				kind: "cookie",
+				keyPattern: new RegExp("^sails\\\\\\.sid$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "sails-js:header:3",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("^sails(?:$|[^a-z0-9])", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		implies: [
-			"express"
+			"express",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "sapper",
@@ -3231,36 +4399,38 @@ export const frameworkTechnologyDefinitions = [
 		website: "https://sapper.svelte.dev",
 		icon: "Sapper.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "sapper:html:0",
 				kind: "html",
 				pattern: new RegExp("<script[^>]*>__SAPPER__"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "sapper:scriptContent:1",
+				id: "sapper:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "__SAPPER__",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "sapper:scriptContent:2",
 				kind: "scriptContent",
 				pattern: new RegExp("__SAPPER__"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "sapper:pageGlobal:2",
-				kind: "pageGlobal",
-				property: "__SAPPER__",
-				description: "Page-owned global matches a known technology marker."
-			}
+				id: "sapper:html:3",
+				kind: "html",
+				pattern: new RegExp("<script[^>]*>__sapper__"),
+				description: "HTML contains a known technology signature.",
+			},
 		],
 		implies: [
+			"node-js",
 			"svelte",
-			"node-js"
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "scully",
@@ -3270,32 +4440,44 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Scully.svg",
 		categories: [
 			"framework",
-			"content-publishing",
-			"ui-library"
 		],
 		rules: [
 			{
-				id: "scully:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "scully:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "ScullyIO",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "scully:meta:1",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^Scully\\s([\\d\\.]+)$"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"angular"
+				valuePattern: new RegExp("^Scully\\s([\\d\\.]+)$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "scully:meta:2",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^scully\\s([\\d\\.]+)$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+			cpe: "cpe:2.3:a:scully:scully:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"angular",
+		],
 	},
 	{
 		id: "seosphera",
@@ -3304,56 +4486,54 @@ export const frameworkTechnologyDefinitions = [
 		description: "Seosphera is a web development platform designed to build, manage, and deploy websites and web applications.",
 		icon: "Seosphera.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "seosphera:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.seosphera\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.seosphera\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "seosphera:dom:1",
 				kind: "dom",
 				selector: "link[href*='.seosphera.com']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "shiny",
 		name: "Shiny",
-		website: "https://shiny.posit.co",
+		website: "https://shiny.rstudio.com",
 		description: "Shiny is an R package that enables the creation of interactive web applications using only R code, facilitating reactive programming and providing a variety of prebuilt widgets for dynamic user interfaces.",
-		icon: "Shiny.svg",
+		icon: "Shiny.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "shiny:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "shiny:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Shiny.addCustomMessageHandler",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "shiny:responseHeader:1",
-				kind: "responseHeader",
+				id: "shiny:header:1",
+				kind: "header",
 				key: "x-powered-by",
-				valuePattern: new RegExp("^Shiny Server$"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("^Shiny Server$", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:rstudio:shiny_server:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:rstudio:shiny_server:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "shopify-web-components",
@@ -3362,53 +4542,60 @@ export const frameworkTechnologyDefinitions = [
 		description: "Storefront Web Components let you bring Shopify-powered commerce capabilities to any website.",
 		icon: "Shopify.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "shopify-web-components:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.shopify\\.com/storefront/web-components\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("cdn\\.shopify\\.com\\/storefront\\/web-components\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "sitepad",
 		name: "SitePad",
 		website: "https://sitepad.com",
 		description: "SitePad is a WYSIWYG drag and drop website building and maintenance program.",
-		icon: "SitePad.svg",
+		icon: "SitePad.png",
 		categories: [
 			"framework",
-			"content-publishing"
 		],
 		rules: [
 			{
 				id: "sitepad:meta:0",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^SitePad(?:\\s([\\d\\.]+))?$"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
+				valuePattern: new RegExp("^SitePad(?:\\s([\\d\\.]+))?$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "sitepad:meta:1",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^sitepad(?:\\s([\\d\\.]+))?$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
 				"freemium",
+				"low",
 				"recurring",
-				"low"
-			]
-		}
+			],
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "snap",
@@ -3417,25 +4604,35 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Snap.png",
 		categories: [
 			"framework",
-			"server-runtime-infra"
+			"server-runtime-infra",
 		],
 		rules: [
 			{
-				id: "snap:responseHeader:0",
-				kind: "responseHeader",
+				id: "snap:header:0",
+				kind: "header",
 				key: "Server",
-				valuePattern: new RegExp("Snap/([.\\d]+)"),
-				version: { source: "match", group: 1 },
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("Snap\\/([.\\d]+)", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "snap:header:1",
+				kind: "header",
+				key: "server",
+				valuePattern: new RegExp("snap\\/([.\\d]+)", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		implies: [
-			"haskell"
+			"haskell",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "solidstart",
@@ -3446,50 +4643,45 @@ export const frameworkTechnologyDefinitions = [
 		categories: [
 			"framework",
 			"server-runtime-infra",
-			"ui-library"
 		],
 		rules: [
 			{
-				id: "solidstart:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "solidstart:jsGlobal:0",
+				kind: "jsGlobal",
+				property: "_$HY",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "solidstart:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "_$HY.init",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"solidjs"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"solidjs",
+		],
 	},
 	{
 		id: "spring",
 		name: "Spring",
-		website: "https://spring.io",
+		website: "https://spring.io/",
 		description: "Spring is a comprehensive framework for building enterprise-level Java applications, providing tools and infrastructure for application development, including dependency injection, transaction management, and integration with various technologies.",
-		icon: "Spring.svg",
+		icon: "Spring.png",
 		categories: [
 			"framework",
-			"animation"
 		],
-		rules: [
-			{
-				id: "spring:responseHeader:0",
-				kind: "responseHeader",
-				key: "X-Application-Context",
-				description: "Response header matches a known technology marker."
-			}
-		],
-		implies: [
-			"java"
-		],
+		rules: [],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:vmware:spring_framework:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:vmware:spring_framework:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"java",
+		],
 	},
 	{
 		id: "stencil",
@@ -3498,26 +4690,25 @@ export const frameworkTechnologyDefinitions = [
 		description: "Stenciljs is an open-source web component compiler that enables developers to create reusable, interoperable UI components that can work across different frameworks and platforms.",
 		icon: "Stencil.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "stencil:dom:0",
 				kind: "dom",
 				selector: "html[data-stencil-build][class*='hydrated'], stencil-router, stencil-route-link",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "stencil:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "stencil:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "stencil.inspect",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "stimulusreflex",
@@ -3526,30 +4717,151 @@ export const frameworkTechnologyDefinitions = [
 		description: "StimulusReflex lets you create reactive web interfaces with Ruby on Rails.",
 		icon: "stimulus-reflex-logo.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "stimulusreflex:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.stimulate"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
 				id: "stimulusreflex:dom:1",
 				kind: "dom",
 				selector: "[data-reflex]",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		implies: [
 			"ruby-on-rails",
-			"stimulus"
+			"stimulus",
+		],
+	},
+	{
+		id: "storybook",
+		name: "Storybook",
+		website: "https://storybook.js.org",
+		description: "Storybook is a frontend workshop for building UI components and pages in isolation.",
+		icon: "storybook.svg",
+		categories: [
+			"framework",
+			"developer-tooling",
+			"component-library",
+		],
+		rules: [
+			{
+				id: "storybook:jsGlobal:0",
+				kind: "jsGlobal",
+				property: "__STORYBOOK_ADDONS",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "storybook:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "STORYBOOK_ADDON_STATE",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "storybook:jsGlobal:2",
+				kind: "jsGlobal",
+				property: "STORYBOOK_BUILDER",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "storybook:jsGlobal:3",
+				kind: "jsGlobal",
+				property: "__STORYBOOKADDONS__",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "storybook:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("__STORYBOOK_PREVIEW__"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "storybook:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("data-storybook(-.*)?"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "storybook:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("storybook-wrapper"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "storybook:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("sb-previewBlock"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "storybook:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("__STORYBOOK_STATE__"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "storybook:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("window\\.__STORYBOOK_MANAGER__"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "storybook:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("window\\.__STORYBOOK_COMPOSECONFIGS"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "storybook:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("STORYBOOK_HOOKS_CONTEXT"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "storybook:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("STORYBOOK_ADDON_STATE"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "storybook:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("STORYBOOK_ADDON_ACTIONS"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "storybook:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("STORYBOOK_ADDON_BACKGROUNDS"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "storybook:scriptContent:modern:11",
+				kind: "scriptContent",
+				pattern: new RegExp("STORYBOOK_ADDON_DOCS"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "streamlit",
@@ -3558,47 +4870,48 @@ export const frameworkTechnologyDefinitions = [
 		description: "Streamlit is an open-source Python framework enabling data scientists and AI/ML engineers to create data applications with minimal coding requirements.",
 		icon: "Streamlit.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "streamlit:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "streamlit:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "streamlitDebug",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "streamlit:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "streamlit:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "webpackChunk_streamlit_app",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "streamlit:cookie:2",
 				kind: "cookie",
-				key: "_streamlit_csrf",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^_streamlit_csrf$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "streamlit:cookie:3",
 				kind: "cookie",
-				key: "_streamlit_xsrf",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^_streamlit_xsrf$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "streamlit:cookie:4",
 				kind: "cookie",
-				key: "streamlit_session",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^streamlit_session$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
 			oss: true,
 			pricing: [
-				"freemium"
-			]
-		}
+				"freemium",
+			],
+			cpe: "cpe:2.3:a:snowflake:streamlit:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "surge",
@@ -3608,33 +4921,32 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Surge.svg",
 		categories: [
 			"framework",
-			"content-publishing"
 		],
 		rules: [
 			{
 				id: "surge:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("surge\\.sh(?:\\/[-\\w]{0,40})?\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "surge:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.surge\\.sh"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
 				id: "surge:url:2",
 				kind: "url",
 				pattern: new RegExp("surge\\.sh"),
-				description: "Page URL matches a known technology marker."
+				description: "Page URL matches a known technology marker.",
 			},
 			{
 				id: "surge:dom:3",
 				kind: "dom",
 				selector: "link[href*='.surge.sh/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
@@ -3642,10 +4954,155 @@ export const frameworkTechnologyDefinitions = [
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
+	},
+	{
+		id: "sveltekit",
+		name: "SvelteKit",
+		website: "https://kit.svelte.dev",
+		description: "SvelteKit is the official Svelte framework for building web applications with a flexible filesystem-based routing.",
+		icon: "Svelte.svg",
+		categories: [
+			"framework",
+			"component-library",
+		],
+		rules: [
+			{
+				id: "sveltekit:dom:0",
+				kind: "dom",
+				selector: "#svelte-announcer",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "sveltekit:dom:1",
+				kind: "dom",
+				selector: "a",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "sveltekit:dom:2",
+				kind: "dom",
+				selector: "a,body",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "sveltekit:meta:3",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("SvelteKit", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "sveltekit:meta:4",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("sveltekit", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "sveltekit:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("__sveltekit"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sveltekit:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("\\$app\\/navigation"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sveltekit:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("\\$app\\/stores"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sveltekit:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("\\$app\\/forms"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sveltekit:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("\\$app\\/environment"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sveltekit:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("data-sveltekit-"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sveltekit:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("data-sveltekit-prefetch"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sveltekit:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("data-sveltekit-hydrate"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sveltekit:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("data-sveltekit-enhanced"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sveltekit:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("__sveltekit_hydrate"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sveltekit:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("__sveltekit_data"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sveltekit:scriptContent:modern:11",
+				kind: "scriptContent",
+				pattern: new RegExp("sveltekit\\.start"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sveltekit:scriptContent:modern:12",
+				kind: "scriptContent",
+				pattern: new RegExp("__sveltekit_ssr"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+		],
+		metadata: {
+			oss: true,
+			cpe: "cpe:2.3:a:svelte:sveltekit:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"node-js",
+			"svelte",
+			"vite",
+		],
 	},
 	{
 		id: "symfony",
@@ -3654,42 +5111,41 @@ export const frameworkTechnologyDefinitions = [
 		description: "Symfony is a PHP web application framework and a set of reusable PHP components/libraries.",
 		icon: "Symfony.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "symfony:scriptContent:0",
-				kind: "scriptContent",
-				pattern: new RegExp("/@?symfony/"),
-				description: "Script content contains a bounded technology signature."
-			},
-			{
-				id: "symfony:dom:1",
+				id: "symfony:dom:0",
 				kind: "dom",
 				selector: "div.sf-toolbar-block, div.sf-toolbar",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "symfony:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "symfony:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Sfjs",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "symfony:cookie:3",
+				id: "symfony:cookie:2",
 				kind: "cookie",
-				key: "sf_redirect",
-				description: "Cookie name matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
+				keyPattern: new RegExp("^sf_redirect$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "symfony:scriptContent:3",
+				kind: "scriptContent",
+				pattern: new RegExp("\\/@?symfony\\/"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:sensiolabs:symfony:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:sensiolabs:symfony:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "the-com",
@@ -3699,29 +5155,28 @@ export const frameworkTechnologyDefinitions = [
 		icon: "The.com.svg",
 		categories: [
 			"framework",
-			"platform-cms-builder"
+			"platform-cms-builder",
 		],
 		rules: [
 			{
 				id: "the-com:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("the-dotcom-public-cdn\\.s3\\.amazonaws\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		implies: [
-			"react",
-			"amazon-s3"
+				pattern: new RegExp("the-dotcom-public-cdn\\.s3\\.amazonaws\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg",
 				"mid",
-				"recurring"
-			]
-		}
+				"payg",
+				"recurring",
+			],
+		},
+		implies: [
+			"amazon-s3",
+			"react",
+		],
 	},
 	{
 		id: "thinkphp",
@@ -3730,57 +5185,70 @@ export const frameworkTechnologyDefinitions = [
 		description: "ThinkPHP is an open-source PHP framework with MVC structure developed and maintained by Shanghai Topthink Company.",
 		icon: "ThinkPHP.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "thinkphp:cookie:0",
 				kind: "cookie",
-				key: "thinkphp_show_page_trace",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^thinkphp_show_page_trace$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
-				id: "thinkphp:responseHeader:1",
-				kind: "responseHeader",
+				id: "thinkphp:header:1",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("ThinkPHP"),
-				description: "Response header matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
+				valuePattern: new RegExp("ThinkPHP", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "thinkphp:header:2",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("thinkphp", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:thinkphp:thinkphp:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:thinkphp:thinkphp:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "total-js",
 		name: "total.js",
 		website: "https://totaljs.com",
 		description: "Total.js is a versatile platform offering open-source JavaScript/Node.js libraries and tools for both server-side and client-side web development.",
-		icon: "total.js.svg",
+		icon: "total.js.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "total-js:responseHeader:0",
-				kind: "responseHeader",
+				id: "total-js:header:0",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("^total\\.js"),
-				description: "Response header matches a known technology marker."
-			}
-		],
-		implies: [
-			"node-js"
+				valuePattern: new RegExp("^total\\.js", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "total-js:header:1",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("^total\\.js", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+			cpe: "cpe:2.3:a:totaljs:total.js:*:*:*:*:*:node.js:*:*",
+		},
+		implies: [
+			"node-js",
+		],
 	},
 	{
 		id: "twistphp",
@@ -3788,24 +5256,27 @@ export const frameworkTechnologyDefinitions = [
 		website: "https://twistphp.com",
 		icon: "TwistPHP.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "twistphp:responseHeader:0",
-				kind: "responseHeader",
+				id: "twistphp:header:0",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("TwistPHP"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("TwistPHP", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "twistphp:header:1",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("twistphp", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		implies: [
-			"php"
+			"php",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "vaadin",
@@ -3815,37 +5286,74 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Vaadin.svg",
 		categories: [
 			"framework",
-			"transpiler"
 		],
 		rules: [
 			{
 				id: "vaadin:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("vaadinBootstrap\\.js(?:\\?v=([\\d.]+))?"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "vaadin:pageGlobal:1",
-				kind: "pageGlobal",
-				property: "Vaadin",
-				description: "Page-owned global matches a known technology marker."
-			},
-			{
-				id: "vaadin:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "vaadin:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "vaadin",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"java"
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "vaadin:jsGlobal:2",
+				kind: "jsGlobal",
+				property: "Vaadin",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "vaadin:scriptSrc:3",
+				kind: "scriptSrc",
+				pattern: new RegExp("vaadinbootstrap\\.js(?:\\?v=([\\d.]+))?"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:vaadin:vaadin:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:vaadin:vaadin:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"java",
+		],
+	},
+	{
+		id: "vinext",
+		name: "Vinext",
+		website: "https://github.com/cloudflare/vinext",
+		description: "Vinext is a Vite plugin that reimplements the Next.js API surface, enabling Next.js-compatible development and deployment across a range of hosting environments.",
+		icon: "Vinext.svg",
+		categories: [
+			"framework",
+		],
+		rules: [
+			{
+				id: "vinext:jsGlobal:0",
+				kind: "jsGlobal",
+				property: "__VINEXT_RSC_CHUNKS__",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "vinext:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "__VINEXT_RSC_DONE__",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			oss: true,
+		},
 	},
 	{
 		id: "vitepress",
@@ -3855,26 +5363,148 @@ export const frameworkTechnologyDefinitions = [
 		icon: "vite.svg",
 		categories: [
 			"framework",
-			"content-publishing",
-			"ui-library",
-			"bundler"
 		],
 		rules: [
 			{
-				id: "vitepress:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "vitepress:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "__VP_HASH_MAP__",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"vue-js",
-			"vite"
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "vitepress:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("__VITEPRESS_"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vitepress:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("window\\.__VP_"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vitepress:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("__VP_HASH_MAP"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vitepress:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("__VP_SITE_DATA"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vitepress:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("__VP_SITE_DATA__"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vitepress:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("window\\.__VITEPRESS_DEV__"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vitepress:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("window\\.__VITEPRESS_SSR__"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vitepress:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("div\\[class\\*=\"VPDoc\"\\]"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vitepress:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("div\\[class\\*=\"VPNav\"\\]"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vitepress:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("div\\[class\\*=\"VPSidebar\"\\]"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vitepress:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("div\\[class\\*=\"VPContent\"\\]"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vitepress:scriptContent:modern:11",
+				kind: "scriptContent",
+				pattern: new RegExp("div\\[class\\*=\"VPFooter\"\\]"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vitepress:scriptContent:modern:12",
+				kind: "scriptContent",
+				pattern: new RegExp("class=\"vp-doc\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vitepress:scriptContent:modern:13",
+				kind: "scriptContent",
+				pattern: new RegExp("class=\"VPHomeHero\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vitepress:scriptContent:modern:14",
+				kind: "scriptContent",
+				pattern: new RegExp("__VITEPRESS_DATA__"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vitepress:scriptContent:modern:15",
+				kind: "scriptContent",
+				pattern: new RegExp("window\\.__VITEPRESS_INITIAL_STATE__"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vitepress:scriptContent:modern:16",
+				kind: "scriptContent",
+				pattern: new RegExp("__VP_STATIC_DATA__"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vitepress:scriptContent:modern:17",
+				kind: "scriptContent",
+				pattern: new RegExp("__vitepress_runtime_data__"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"vite",
+			"vue-js",
+		],
 	},
 	{
 		id: "vuepress",
@@ -3884,34 +5514,118 @@ export const frameworkTechnologyDefinitions = [
 		icon: "VuePress.svg",
 		categories: [
 			"framework",
-			"content-publishing",
-			"ui-library"
 		],
 		rules: [
 			{
-				id: "vuepress:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "vuepress:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "__VUEPRESS__.version",
 				valuePattern: new RegExp("([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "vuepress:meta:1",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^VuePress(?: ([0-9.]+)(-[a-z]+.[0-9]+)?)?$"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"vue-js"
+				valuePattern: new RegExp("^VuePress(?: ([0-9.]+)(-[a-z]+.[0-9]+)?)?$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "vuepress:meta:2",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^vuepress(?: ([0-9.]+)(-[a-z]+.[0-9]+)?)?$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "vuepress:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("\\[\\s*vuepress\\s*\\]\\s*Cannot\\s+resolve\\s+layout"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vuepress:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("\\$vuepress"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vuepress:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("__VUEPRESS_VERSION__"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vuepress:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("__VUEPRESS_DEV__"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vuepress:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("(?:VPSidebarItem|VPNavLink)\\s*,\\s*\\{\\s*(?:key|item|text|link)\\s*:"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vuepress:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("__VUEPRESS_PREFETCH__"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vuepress:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("__VUEPRESS_PRELOAD__"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vuepress:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("\"VUEPRESS_TAB_STORE\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vuepress:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("\"VUEPRESS_CODE_TAB_STORE\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vuepress:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("__VUEPRESS_SSR__"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"vue-js",
+		],
 	},
 	{
 		id: "web2py",
@@ -3919,39 +5633,51 @@ export const frameworkTechnologyDefinitions = [
 		website: "https://web2py.com",
 		icon: "Web2py.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "web2py:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("web2py\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "web2py:responseHeader:1",
-				kind: "responseHeader",
+				id: "web2py:header:1",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("web2py"),
-				description: "Response header matches a known technology marker."
+				valuePattern: new RegExp("web2py", "i"),
+				description: "Response header matches a known technology marker.",
 			},
 			{
 				id: "web2py:meta:2",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^Web2py"),
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"python",
-			"jquery"
+				valuePattern: new RegExp("^Web2py", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "web2py:header:3",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("web2py", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "web2py:meta:4",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^web2py", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:web2py:web2py:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:web2py:web2py:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"jquery",
+			"python",
+		],
 	},
 	{
 		id: "wt",
@@ -3960,32 +5686,31 @@ export const frameworkTechnologyDefinitions = [
 		description: "Wt is a C++ library for developing web applications.",
 		icon: "Wt.svg",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "wt:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "wt:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Wt.WT.$",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "wt:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "wt:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "WtOnLoad",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "wt:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "wt:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "WtSignalEmit",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "xeora",
@@ -3993,148 +5718,204 @@ export const frameworkTechnologyDefinitions = [
 		website: "https://www.xeora.org",
 		icon: "xeora.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "xeora:html:0",
-				kind: "html",
-				pattern: new RegExp("<input type=\"hidden\" name=\"_sys_bind_\\d+\" id=\"_sys_bind_\\d+\" />"),
-				description: "HTML contains a known technology marker."
-			},
-			{
-				id: "xeora:scriptSrc:1",
+				id: "xeora:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/_bi_sps_v.+\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/_bi_sps_v.+\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "xeora:dom:2",
+				id: "xeora:html:1",
+				kind: "html",
+				pattern: new RegExp("<input type=\"hidden\" name=\"_sys_bind_\\d+\" id=\"_sys_bind_\\d+\" \\/>"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "xeora:header:2",
+				kind: "header",
+				key: "Server",
+				valuePattern: new RegExp("XeoraEngine", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "xeora:header:3",
+				kind: "header",
+				key: "X-Powered-By",
+				valuePattern: new RegExp("XeoraCube", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "xeora:dom:4",
 				kind: "dom",
 				selector: "input[type='hidden'][name^='_sys_bind_'][id^='_sys_bind_']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "xeora:responseHeader:3",
-				kind: "responseHeader",
-				key: "Server",
-				valuePattern: new RegExp("XeoraEngine"),
-				description: "Response header matches a known technology marker."
+				id: "xeora:header:5",
+				kind: "header",
+				key: "server",
+				valuePattern: new RegExp("xeoraengine", "i"),
+				description: "Response header matches a known technology marker.",
 			},
 			{
-				id: "xeora:responseHeader:4",
-				kind: "responseHeader",
-				key: "X-Powered-By",
-				valuePattern: new RegExp("XeoraCube"),
-				description: "Response header matches a known technology marker."
-			}
+				id: "xeora:header:6",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("xeoracube", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		implies: [
-			"microsoft-asp-net"
+			"microsoft-asp-net",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "yii",
 		name: "Yii",
 		website: "https://www.yiiframework.com",
 		description: "Yii is an open-source, object-oriented, component-based MVC PHP web application framework.",
-		icon: "Yii.svg",
+		icon: "Yii.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "yii:html:0",
-				kind: "html",
-				pattern: new RegExp("Powered by <a href=\"http://www\\.yiiframework\\.com/\" rel=\"external\">Yii Framework</a>"),
-				description: "HTML contains a known technology marker."
+				id: "yii:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\/assets\\/[a-zA-Z0-9]{8}\\/yii\\.js$"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "yii:html:1",
-				kind: "html",
-				pattern: new RegExp("<input type=\"hidden\" value=\"[a-zA-Z0-9]{40}\" name=\"YII_CSRF_TOKEN\" \\/>"),
-				description: "HTML contains a known technology marker."
+				id: "yii:scriptSrc:1",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\/yii\\.(?:validation|activeForm)\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "yii:html:2",
 				kind: "html",
+				pattern: new RegExp("Powered by <a href=\"http:\\/\\/www\\.yiiframework\\.com\\/\" rel=\"external\">Yii Framework<\\/a>"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "yii:html:3",
+				kind: "html",
+				pattern: new RegExp("<input type=\"hidden\" value=\"[a-zA-Z0-9]{40}\" name=\"YII_CSRF_TOKEN\" \\/>"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "yii:html:4",
+				kind: "html",
 				pattern: new RegExp("<!\\[CDATA\\[YII-BLOCK-(?:HEAD|BODY-BEGIN|BODY-END)\\]"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "yii:scriptSrc:3",
-				kind: "scriptSrc",
-				pattern: new RegExp("/assets/[a-zA-Z0-9]{8}\\/yii\\.js$"),
-				description: "Script source URL matches a known technology marker."
+				id: "yii:cookie:5",
+				kind: "cookie",
+				keyPattern: new RegExp("^YII_CSRF_TOKEN$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
-				id: "yii:scriptSrc:4",
+				id: "yii:scriptSrc:6",
 				kind: "scriptSrc",
 				pattern: new RegExp("yii(?:\\.|)?(?:validation|activeform)\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "yii:dom:5",
+				id: "yii:dom:7",
 				kind: "dom",
 				selector: "input[name='YII_CSRF_TOKEN'][type='hidden'], a[href*='//www.yiiframework.com/'][rel='external']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "yii:pageGlobal:6",
-				kind: "pageGlobal",
+				id: "yii:jsGlobal:8",
+				kind: "jsGlobal",
 				property: "yii.init",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "yii:cookie:7",
+				id: "yii:scriptSrc:9",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\/assets\\/[a-za-z0-9]{8}\\/yii\\.js$"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "yii:scriptSrc:10",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\/yii\\.(?:validation|activeform)\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "yii:html:11",
+				kind: "html",
+				pattern: new RegExp("<!\\[cdata\\[yii-block-(?:head|body-begin|body-end)\\]"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "yii:html:12",
+				kind: "html",
+				pattern: new RegExp("<input type=\"hidden\" value=\"[a-za-z0-9]{40}\" name=\"yii_csrf_token\" \\/>"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "yii:html:13",
+				kind: "html",
+				pattern: new RegExp("powered by <a href=\"http:\\/\\/www\\.yiiframework\\.com\\/\" rel=\"external\">yii framework<\\/a>"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "yii:cookie:14",
 				kind: "cookie",
-				key: "YII_CSRF_TOKEN",
-				description: "Cookie name matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
+				keyPattern: new RegExp("^yii_csrf_token$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:yiiframework:yii:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:yiiframework:yii:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "zk",
 		name: "ZK",
 		website: "https://zkoss.org",
 		description: "ZK is a framework for building rich, interactive web applications using Java, providing a set of tools and components to create dynamic user interfaces.",
-		icon: "ZK.svg",
+		icon: "ZK.png",
 		categories: [
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
-				id: "zk:html:0",
-				kind: "html",
-				pattern: new RegExp("<!-- ZK [.\\d\\s]+-->"),
-				description: "HTML contains a known technology marker."
+				id: "zk:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("zkau\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "zk:scriptSrc:1",
-				kind: "scriptSrc",
-				pattern: new RegExp("zkau/"),
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		implies: [
-			"java"
+				id: "zk:html:1",
+				kind: "html",
+				pattern: new RegExp("<!-- ZK [.\\d\\s]+-->"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "zk:html:2",
+				kind: "html",
+				pattern: new RegExp("<!-- zk [.\\d\\s]+-->"),
+				description: "HTML contains a known technology signature.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"java",
+		],
 	},
 	{
 		id: "zola",
@@ -4144,26 +5925,380 @@ export const frameworkTechnologyDefinitions = [
 		icon: "Zola.svg",
 		categories: [
 			"framework",
-			"content-publishing"
 		],
 		rules: [
 			{
 				id: "zola:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.getzola\\.org"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "zola:meta:1",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^Zola(?:\\s[\\d\\.]+)?$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^Zola(?:\\s[\\d\\.]+)?$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "zola:meta:2",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^zola(?:\\s[\\d\\.]+)?$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
-	}
+			oss: true,
+		},
+	},
+	{
+		id: "docusaurus",
+		name: "Docusaurus",
+		website: "docusaurus.io",
+		description: "A modern static site generator that makes it easy to build documentation websites.",
+		categories: [
+			"framework",
+		],
+		rules: [
+			{
+				id: "docusaurus:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("window\\.__docusaurus"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "docusaurus:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("__DOCUSAURUS_CHUNK_LOADING_MANIFEST"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "docusaurus:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("__DOCUSAURUS_ASYNC_LOADER__"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "docusaurus:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("__DOCUSAURUS_SSR__"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "docusaurus:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("window\\.__DOCUSAURUS_CONTEXT__"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "docusaurus:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("div\\[class\\*=\"docusaurus\"\\]"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "docusaurus:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("div\\[class\\*=\"navbar--fixed-top\"\\]"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "docusaurus:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("div\\[class\\*=\"main-wrapper\"\\]"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "docusaurus:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("div\\[class\\*=\"theme-doc-markdown\"\\]"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "docusaurus:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("div\\[class\\*=\"docs-wrapper\"\\]"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "docusaurus:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("class=\"navbar__brand\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "docusaurus:scriptContent:modern:11",
+				kind: "scriptContent",
+				pattern: new RegExp("class=\"docusaurus-highlight-code-line\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "docusaurus:scriptContent:modern:12",
+				kind: "scriptContent",
+				pattern: new RegExp("__DOCUSAURUS_INITIAL_STATE__"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "docusaurus:scriptContent:modern:13",
+				kind: "scriptContent",
+				pattern: new RegExp("__DOCUSAURUS_CLIENT_CONTEXT__"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "docusaurus:scriptContent:modern:14",
+				kind: "scriptContent",
+				pattern: new RegExp("window\\.__DOCUSAURUS\\.routeDidUpdate"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "docusaurus:scriptContent:modern:15",
+				kind: "scriptContent",
+				pattern: new RegExp("window\\.__DOCUSAURUS\\.prefetch"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "docusaurus:scriptContent:modern:16",
+				kind: "scriptContent",
+				pattern: new RegExp("window\\.__DOCUSAURUS_SSR_CONTEXT__"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "docusaurus:scriptContent:modern:17",
+				kind: "scriptContent",
+				pattern: new RegExp("data-docusaurus-ssr=\"true\""),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+		],
+	},
+	{
+		id: "next-js",
+		name: "Next.js",
+		website: "https://nextjs.org/",
+		description: "Free and open-source React front-end web development framework that enables functionality such as server-side rendering and generating static websites for React based web applications.",
+		categories: [
+			"framework",
+		],
+		rules: [
+			{
+				id: "next-js:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("window\\.__NEXT_P\\s*="),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "next-js:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("__NEXT_CROSS_ORIGIN"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "next-js:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("data-nextjs-page"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "next-js:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("__NEXT_HYDRATED_STATE__"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "next-js:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("__NEXT_HYDRATE_MARKER__"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "next-js:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("__NEXT_DROP_CLIENT_FILE__"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "next-js:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("getServerSideProps"),
+				confidence: 85,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "next-js:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("getInitialProps"),
+				confidence: 85,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "next-js:header:modern:8",
+				kind: "header",
+				key: "server",
+				valuePattern: new RegExp("Vercel"),
+				confidence: 75,
+				description: "HTTP response header matches a modern tooling marker.",
+			},
+			{
+				id: "next-js:header:modern:9",
+				kind: "header",
+				key: "x-vercel-cache",
+				valuePattern: new RegExp("HIT"),
+				confidence: 75,
+				description: "HTTP response header matches a modern tooling marker.",
+			},
+			{
+				id: "next-js:header:modern:10",
+				kind: "header",
+				key: "x-vercel-id",
+				valuePattern: new RegExp("."),
+				confidence: 75,
+				description: "HTTP response header matches a modern tooling marker.",
+			},
+			{
+				id: "next-js:header:modern:11",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("nextjs"),
+				confidence: 75,
+				description: "HTTP response header matches a modern tooling marker.",
+			},
+		],
+	},
+	{
+		id: "nuxt",
+		name: "Nuxt",
+		website: "https://nuxtjs.org/",
+		description: "Nuxt.js is a free and open-source web application framework based on Vue.js, Node.js, Webpack and Babel.js.",
+		categories: [
+			"framework",
+		],
+		rules: [
+			{
+				id: "nuxt:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("$nuxt"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "nuxt:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("\\$nuxt\\."),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "nuxt:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("_nuxt\\/"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "nuxt:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("__NUXT_STATE__"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "nuxt:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("__NUXT_LOADED__"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "nuxt:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("__NUXT_ERROR__"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "nuxt:resourceUrl:modern:6",
+				kind: "resourceUrl",
+				pattern: new RegExp("\\.nuxt\\/"),
+				confidence: 65,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "nuxt:resourceUrl:modern:7",
+				kind: "resourceUrl",
+				pattern: new RegExp("_nuxt\\/"),
+				confidence: 65,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "nuxt:resourceUrl:modern:8",
+				kind: "resourceUrl",
+				pattern: new RegExp("\\/_nuxt\\/"),
+				confidence: 65,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+		],
+	},
+	{
+		id: "tanstack-start",
+		name: "TanStack Start",
+		website: "https://tanstack.com/start",
+		description: "Start building your app with TanStack Start.Full-stack React and Solid framework powered by TanStack Router",
+		categories: [
+			"framework",
+		],
+		rules: [
+			{
+				id: "tanstack-start:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("Expected to find a dehydrated data on window\\.__TSR_SSR__\\.dehydrated\\.\\.\\. but we did not\\. Please file an issue!"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-start:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][\\w$]*\\.__beforeLoadContext\\s*=\\s*[a-zA-Z_$][\\w$]*\\.ssr!?\\.serializer\\.parse\\(\\s*[a-zA-Z_$][\\w$]*\\.__beforeLoadContext\\s*,?\\s*\\)", "s"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-start:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("(\\w+)\\.parse\\(window\\.__TSR_SSR__\\.dehydrated\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-start:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][\\w$]*\\.clientSsr\\s*=\\s*\\{\\s*getStreamedValue\\s*:\\s*(?:function\\s*\\([^)]*\\)|[a-zA-Z_$][\\w$]*\\s*=>)\\s*\\{\\s*.*?window\\.__TSR_SSR__.*?streamedValues.*?serializer\\.parse\\(.*?\\).*?\\}\\s*\\}", "s"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+		],
+	},
 ] as const satisfies readonly TechnologyDefinition[];

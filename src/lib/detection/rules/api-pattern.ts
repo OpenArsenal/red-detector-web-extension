@@ -9,21 +9,24 @@ export const apiPatternTechnologyDefinitions = [
 		icon: "Amplify JS.png",
 		categories: [
 			"api-pattern",
-			"developer-tooling"
+			"developer-tooling",
 		],
 		rules: [
 			{
 				id: "amplify-js:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("(?:((?:\\d+\\.)+\\d+)\\/)?amplify(?:-production)?(?:\\.core)?(?:\\.store)?(?:\\.min)?(?:[-\\.][\\d\\w]{0,40})?\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "anime-js",
@@ -34,35 +37,38 @@ export const apiPatternTechnologyDefinitions = [
 		categories: [
 			"api-pattern",
 			"animation",
-			"graphics-visualization"
+			"graphics-visualization",
 		],
 		rules: [
 			{
-				id: "anime-js:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "anime-js:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "AnimeJS",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "anime-js:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "anime-js:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "anime.version",
 				valuePattern: new RegExp("^([\\d\\.]+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "anime-js:responseHeader:2",
 				kind: "responseHeader",
 				key: "Access-Control-Allow-Origin",
 				valuePattern: new RegExp("animejs\\.com"),
-				description: "Response header matches a known technology marker."
-			}
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "api-spreadsheets",
@@ -72,15 +78,15 @@ export const apiPatternTechnologyDefinitions = [
 		icon: "APISpreadsheets.svg",
 		categories: [
 			"api-pattern",
-			"developer-tooling"
+			"developer-tooling",
 		],
 		rules: [
 			{
 				id: "api-spreadsheets:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("api\\.apispreadsheets\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
@@ -88,9 +94,9 @@ export const apiPatternTechnologyDefinitions = [
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "apiary",
@@ -100,36 +106,36 @@ export const apiPatternTechnologyDefinitions = [
 		icon: "Apiary.svg",
 		categories: [
 			"api-pattern",
-			"developer-tooling"
+			"developer-tooling",
 		],
 		rules: [
 			{
-				id: "apiary:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "apiary:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Apiary",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "apiary:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "apiary:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "apiaryUserModel",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "apiary:meta:2",
 				kind: "meta",
 				key: "author",
 				valuePattern: new RegExp("^Apiary$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
 			oss: false,
 			pricing: [
-				"freemium"
-			]
-		}
+				"freemium",
+			],
+		},
 	},
 	{
 		id: "bowser",
@@ -138,21 +144,24 @@ export const apiPatternTechnologyDefinitions = [
 		description: "A small, fast and rich-API browser/platform/engine detector for both browser and node.",
 		categories: [
 			"api-pattern",
-			"developer-tooling"
+			"developer-tooling",
 		],
 		rules: [
 			{
 				id: "bowser:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("(?:((?:\\d+\\.)+\\d+)\\/)?bowser(?:\\.min)?(?:[-\\.][\\d\\w]{0,64})?\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "dimple",
@@ -162,24 +171,27 @@ export const apiPatternTechnologyDefinitions = [
 		categories: [
 			"api-pattern",
 			"graphics-visualization",
-			"developer-tooling"
+			"developer-tooling",
 		],
 		rules: [
 			{
 				id: "dimple:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("dimple(?:\\/lib\\/[\\w\\.]+)?(?:\\/theme\\/js\\/[\\w\\.-]+)?\\.js(?:\\?ver=((?:\\d+\\.)+\\d+))?"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		requires: [
-			"d3"
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		requires: [
+			"d3",
+		],
 	},
 	{
 		id: "feednami",
@@ -188,26 +200,26 @@ export const apiPatternTechnologyDefinitions = [
 		description: "Feednami is a web service developed as a replacement for the discontinued Google Feed API, enabling applications to access and parse RSS and Atom feeds.",
 		categories: [
 			"api-pattern",
-			"developer-tooling"
+			"developer-tooling",
 		],
 		rules: [
 			{
-				id: "feednami:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "feednami:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "feednami.load",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "feednami:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "feednami:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "feednami.promiseLoaded",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+			oss: false,
+		},
 	},
 	{
 		id: "fixer",
@@ -217,20 +229,20 @@ export const apiPatternTechnologyDefinitions = [
 		icon: "Fixer.svg",
 		categories: [
 			"api-pattern",
-			"developer-tooling"
+			"developer-tooling",
 		],
 		rules: [
 			{
 				id: "fixer:scriptContent:0",
 				kind: "scriptContent",
-				pattern: new RegExp("api\\.fixer\\.io/"),
-				description: "Script content contains a bounded technology signature."
-			}
+				pattern: new RegExp("api\\.fixer\\.io\\/"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+			oss: false,
+		},
 	},
 	{
 		id: "fresco",
@@ -240,25 +252,28 @@ export const apiPatternTechnologyDefinitions = [
 		icon: "default.svg",
 		categories: [
 			"api-pattern",
-			"developer-tooling"
+			"developer-tooling",
 		],
 		rules: [
 			{
-				id: "fresco:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "fresco:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Fresco.version",
 				valuePattern: new RegExp("^([\\d\\.]+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: false,
 			oss: true,
 			pricing: [
-				"freemium"
-			]
-		}
+				"freemium",
+			],
+		},
 	},
 	{
 		id: "genezio",
@@ -268,7 +283,7 @@ export const apiPatternTechnologyDefinitions = [
 		icon: "genezio.svg",
 		categories: [
 			"api-pattern",
-			"developer-tooling"
+			"developer-tooling",
 		],
 		rules: [
 			{
@@ -276,8 +291,8 @@ export const apiPatternTechnologyDefinitions = [
 				kind: "responseHeader",
 				key: "X-Powered-By",
 				valuePattern: new RegExp("^genezio$"),
-				description: "Response header matches a known technology marker."
-			}
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: false,
@@ -285,9 +300,9 @@ export const apiPatternTechnologyDefinitions = [
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "hexia",
@@ -297,26 +312,26 @@ export const apiPatternTechnologyDefinitions = [
 		icon: "Hexia.svg",
 		categories: [
 			"api-pattern",
-			"developer-tooling"
+			"developer-tooling",
 		],
 		rules: [
 			{
 				id: "hexia:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("sdk\\.hexia\\.io"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "hexia:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "hexia:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "hexia.address",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+			oss: false,
+		},
 	},
 	{
 		id: "howler-js",
@@ -326,40 +341,46 @@ export const apiPatternTechnologyDefinitions = [
 		icon: "Howler.js.svg",
 		categories: [
 			"api-pattern",
-			"developer-tooling"
+			"developer-tooling",
 		],
 		rules: [
 			{
 				id: "howler-js:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("howler@([\\d.]+)/dist/howler\\.min\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("howler@([\\d.]+)\\/dist\\/howler\\.min\\.js"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "howler-js:scriptSrc:1",
 				kind: "scriptSrc",
-				pattern: new RegExp("howler/([\\d.]+)/howler(?:\\.core)?\\.min\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("howler\\/([\\d.]+)\\/howler(?:\\.core)?\\.min\\.js"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "howler-js:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "howler-js:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "Howler",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "howler-js:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "howler-js:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "HowlerGlobal",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "htmx",
@@ -369,33 +390,36 @@ export const apiPatternTechnologyDefinitions = [
 		icon: "Htmx.svg",
 		categories: [
 			"api-pattern",
-			"developer-tooling"
+			"developer-tooling",
 		],
 		rules: [
 			{
 				id: "htmx:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/htmx\\.org@([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/htmx\\.org@([\\d\\.]+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "htmx:dom:1",
 				kind: "dom",
 				selector: "script[data-src*='/dist/htmx.min.js']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "htmx:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "htmx:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "htmx",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "intersection-observer",
@@ -405,27 +429,30 @@ export const apiPatternTechnologyDefinitions = [
 		icon: "W3C.svg",
 		categories: [
 			"api-pattern",
-			"developer-tooling"
+			"developer-tooling",
 		],
 		rules: [
 			{
 				id: "intersection-observer:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.jsdelivr\\.net/npm/intersection-observer@([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn\\.jsdelivr\\.net\\/npm\\/intersection-observer@([\\d\\.]+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "intersection-observer:scriptSrc:1",
 				kind: "scriptSrc",
-				pattern: new RegExp("/assets/(?:.+)?intersection-observer\\.[\\d\\w\\.]+\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\/assets\\/(?:.+)?intersection-observer\\.[\\d\\w\\.]+\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: false,
-			oss: false
-		}
+			oss: false,
+		},
 	},
 	{
 		id: "kuroco",
@@ -435,21 +462,21 @@ export const apiPatternTechnologyDefinitions = [
 		icon: "Kuroco.svg",
 		categories: [
 			"api-pattern",
-			"developer-tooling"
+			"developer-tooling",
 		],
 		rules: [
 			{
 				id: "kuroco:responseHeader:0",
 				kind: "responseHeader",
 				key: "x-kuroco-edge-log",
-				description: "Response header matches a known technology marker."
+				description: "Response header matches a known technology marker.",
 			},
 			{
 				id: "kuroco:responseHeader:1",
 				kind: "responseHeader",
 				key: "x-rcms-hash",
-				description: "Response header matches a known technology marker."
-			}
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
@@ -458,9 +485,9 @@ export const apiPatternTechnologyDefinitions = [
 				"freemium",
 				"mid",
 				"recurring",
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "moxie",
@@ -469,30 +496,30 @@ export const apiPatternTechnologyDefinitions = [
 		description: "mOxie is a library providing polyfills for XHR2 and File API, ensuring compatibility with older browsers that lack native support.",
 		categories: [
 			"api-pattern",
-			"developer-tooling"
+			"developer-tooling",
 		],
 		rules: [
 			{
-				id: "moxie:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "moxie:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "mOxie",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "moxie:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "moxie:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "moxie",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: false,
 			oss: true,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "plupload",
@@ -502,39 +529,45 @@ export const apiPatternTechnologyDefinitions = [
 		icon: "Plupload.svg",
 		categories: [
 			"api-pattern",
-			"developer-tooling"
+			"developer-tooling",
 		],
 		rules: [
 			{
 				id: "plupload:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("plupload(?:\\.min)?\\.js(?:\\?ver=([\\d.]+))?"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "plupload:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "plupload:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "plupload.DONE",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "plupload:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "plupload:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "plupload.VERSION",
 				valuePattern: new RegExp("([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
 			oss: true,
 			pricing: [
-				"freemium"
+				"freemium",
 			],
-			cpe: "cpe:2.3:a:plupload:plupload:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:plupload:plupload:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "riot-js",
@@ -545,35 +578,38 @@ export const apiPatternTechnologyDefinitions = [
 		categories: [
 			"api-pattern",
 			"ui-library",
-			"framework"
+			"framework",
 		],
 		rules: [
 			{
 				id: "riot-js:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("riot(?:\\+compiler)?(?:\\.min)?\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "riot-js:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "riot-js:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "riot",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "riot-js:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "riot-js:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "riot.version",
 				valuePattern: new RegExp("v([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:riot.js:riot-compiler:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:riot.js:riot-compiler:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "scalar",
@@ -584,26 +620,25 @@ export const apiPatternTechnologyDefinitions = [
 		categories: [
 			"api-pattern",
 			"content-publishing",
-			"developer-tooling"
+			"developer-tooling",
 		],
 		rules: [
 			{
 				id: "scalar:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/npm/@scalar/api-reference@(\\d+\\.\\d+\\.\\d+)"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/npm\\/@scalar\\/api-reference@(\\d+\\.\\d+\\.\\d+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "scalar:dom:1",
 				kind: "dom",
 				selector: "div[class*='scalar-api-reference']",
-				description: "DOM selector matches a known technology marker."
-			}
-		],
-		implies: [
-			"vue-js",
-			"typescript"
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
@@ -611,9 +646,13 @@ export const apiPatternTechnologyDefinitions = [
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		implies: [
+			"vue-js",
+			"typescript",
+		],
 	},
 	{
 		id: "screenfull-js",
@@ -622,28 +661,34 @@ export const apiPatternTechnologyDefinitions = [
 		description: "Simple wrapper for cross-browser usage of the JavaScript Fullscreen API.",
 		categories: [
 			"api-pattern",
-			"developer-tooling"
+			"developer-tooling",
 		],
 		rules: [
 			{
 				id: "screenfull-js:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("screenfull(?:\\.min)?\\.js(?:\\?v(?:er)?=((?:\\d+\\.)+\\d+))?"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "screenfull-js:scriptSrc:1",
 				kind: "scriptSrc",
 				pattern: new RegExp("(?:((?:\\d+\\.)+\\d+)\\/)?screenfull(?:\\.min)?\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "sheety",
@@ -653,15 +698,15 @@ export const apiPatternTechnologyDefinitions = [
 		icon: "Sheety.svg",
 		categories: [
 			"api-pattern",
-			"developer-tooling"
+			"developer-tooling",
 		],
 		rules: [
 			{
 				id: "sheety:scriptContent:0",
 				kind: "scriptContent",
-				pattern: new RegExp("api\\.sheety\\.co/"),
-				description: "Script content contains a bounded technology signature."
-			}
+				pattern: new RegExp("api\\.sheety\\.co\\/"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
@@ -669,9 +714,9 @@ export const apiPatternTechnologyDefinitions = [
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "sockjs",
@@ -681,41 +726,655 @@ export const apiPatternTechnologyDefinitions = [
 		icon: "SockJS.png",
 		categories: [
 			"api-pattern",
-			"developer-tooling"
+			"developer-tooling",
 		],
 		rules: [
 			{
 				id: "sockjs:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("sockjs(?:-((?:\\d+\\.)+\\d+))?(?:\\.min)?\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "sockjs:scriptSrc:1",
 				kind: "scriptSrc",
 				pattern: new RegExp("(?:((?:\\d+\\.)+\\d+)\\/)?sockjs(?:\\.min)?\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "sockjs:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "sockjs:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "SockJS.CLOSED",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "sockjs:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "sockjs:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "SockJS.version",
 				valuePattern: new RegExp("([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: false,
-			oss: true
-		}
-	}
+			oss: true,
+		},
+	},
+	{
+		id: "apollo-graphql",
+		name: "Apollo GraphQL",
+		website: "https://www.apollographql.com/",
+		description: "A comprehensive state management library for JavaScript with GraphQL",
+		categories: [
+			"api-pattern",
+			"http-client",
+		],
+		rules: [
+			{
+				id: "apollo-graphql:resourceUrl:modern:0",
+				kind: "resourceUrl",
+				pattern: new RegExp("@apollo\\/client[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "apollo-graphql:resourceUrl:modern:1",
+				kind: "resourceUrl",
+				pattern: new RegExp("apollo-client[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "apollo-graphql:resourceUrl:modern:2",
+				kind: "resourceUrl",
+				pattern: new RegExp("apollo-boost[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "apollo-graphql:html:modern:3",
+				kind: "html",
+				pattern: new RegExp("__APOLLO_STATE__"),
+				confidence: 75,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+			{
+				id: "apollo-graphql:html:modern:4",
+				kind: "html",
+				pattern: new RegExp("__APOLLO_CLIENT__"),
+				confidence: 75,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+			{
+				id: "apollo-graphql:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("\"Cache data may be lost when replacing the \\w+ field of a Query object\\."),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "apollo-graphql:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("\"Missing selection set for object of type [^\"]+ returned for query field [^\"]+\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "apollo-graphql:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("\"keyArgs\":\\[\"sort\",\"limit\"\\],\"merge\":function"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "apollo-graphql:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("https:\\/\\/go\\.apollo\\.dev\\/c\\/err#"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "apollo-graphql:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("Symbol\\.for\\(\"ApolloErrorMessageHandler_[^\"]+\"\\)"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "apollo-graphql:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("Symbol\\.for\\(\"apollo\\.dataMasking\"\\)"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "apollo-graphql:scriptContent:modern:11",
+				kind: "scriptContent",
+				pattern: new RegExp("http:\\/\\/dev\\.apollodata\\.com\\/core\\/fragments\\.html"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "apollo-graphql:scriptContent:modern:12",
+				kind: "scriptContent",
+				pattern: new RegExp("Warning: fragment with name .+ already exists\\.[^\"]+unique-names"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "apollo-graphql:scriptContent:modern:13",
+				kind: "scriptContent",
+				pattern: new RegExp("\\[\"ROOT_QUERY\"\\]|\\[\"ROOT_MUTATION\"\\]"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "apollo-graphql:scriptContent:modern:14",
+				kind: "scriptContent",
+				pattern: new RegExp("\"__ref\":\"[^\"]+:\\{\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "apollo-graphql:scriptContent:modern:15",
+				kind: "scriptContent",
+				pattern: new RegExp("\"storeFactory\",\"cacheKeyRoot\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "apollo-graphql:scriptContent:modern:16",
+				kind: "scriptContent",
+				pattern: new RegExp("\"__APOLLO_CLIENT__\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "apollo-graphql:header:modern:17",
+				kind: "header",
+				key: "apollo-operation-name",
+				valuePattern: new RegExp(".*"),
+				confidence: 55,
+				description: "HTTP response header matches a modern tooling marker.",
+			},
+			{
+				id: "apollo-graphql:header:modern:18",
+				kind: "header",
+				key: "apollo-preflight",
+				valuePattern: new RegExp("true"),
+				confidence: 55,
+				description: "HTTP response header matches a modern tooling marker.",
+			},
+			{
+				id: "apollo-graphql:header:modern:19",
+				kind: "header",
+				key: "apollo-federation-include-trace",
+				valuePattern: new RegExp(".*"),
+				confidence: 55,
+				description: "HTTP response header matches a modern tooling marker.",
+			},
+			{
+				id: "apollo-graphql:header:modern:20",
+				kind: "header",
+				key: "apollo-require-preflight",
+				valuePattern: new RegExp("true"),
+				confidence: 55,
+				description: "HTTP response header matches a modern tooling marker.",
+			},
+		],
+	},
+	{
+		id: "graphql",
+		name: "GraphQL",
+		website: "https://graphql.org/",
+		description: "A query language for your API",
+		categories: [
+			"api-pattern",
+		],
+		rules: [
+			{
+				id: "graphql:html:modern:0",
+				kind: "html",
+				pattern: new RegExp("\\/graphql"),
+				confidence: 65,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+			{
+				id: "graphql:resourceUrl:modern:1",
+				kind: "resourceUrl",
+				pattern: new RegExp("graphql-request[.\\-@/]"),
+				confidence: 65,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "graphql:resourceUrl:modern:2",
+				kind: "resourceUrl",
+				pattern: new RegExp("graphql-tag[.\\-@/]"),
+				confidence: 65,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "graphql:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("\"graphql\""),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "graphql:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("\"__typename\""),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "graphql:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("\"__schema\""),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "graphql:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("\"\\$[a-zA-Z]+\":.*\"kind\":\"Variable\""),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "graphql:header:modern:7",
+				kind: "header",
+				key: "content-type",
+				valuePattern: new RegExp("application\\/graphql"),
+				confidence: 55,
+				description: "HTTP response header matches a modern tooling marker.",
+			},
+		],
+	},
+	{
+		id: "relay",
+		name: "Relay",
+		website: "https://relay.dev/",
+		description: "A JavaScript framework for building data-driven React applications with GraphQL",
+		categories: [
+			"api-pattern",
+		],
+		rules: [
+			{
+				id: "relay:resourceUrl:modern:0",
+				kind: "resourceUrl",
+				pattern: new RegExp("relay-runtime[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "relay:resourceUrl:modern:1",
+				kind: "resourceUrl",
+				pattern: new RegExp("react-relay[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "relay:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("\"relay-runtime\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "relay:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("\"react-relay\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "relay:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("\"RelayEnvironmentProvider\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "relay:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("\"RelayModernEnvironment\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "relay:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("\"RelayNetwork\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+		],
+	},
+	{
+		id: "urql",
+		name: "urql",
+		website: "https://formidable.com/open-source/urql/",
+		description: "A highly customizable and versatile GraphQL client",
+		categories: [
+			"api-pattern",
+			"http-client",
+		],
+		rules: [
+			{
+				id: "urql:resourceUrl:modern:0",
+				kind: "resourceUrl",
+				pattern: new RegExp("urql[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "urql:resourceUrl:modern:1",
+				kind: "resourceUrl",
+				pattern: new RegExp("@urql\\/"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "urql:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("\"urql\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "urql:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("\"@urql\\/core\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "urql:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("\"@urql\\/exchange-graphcache\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "urql:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("\"urqlClient\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "urql:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("\"@urql\\/core: "),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "urql:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("\"No exchange has handled this operation\""),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "urql:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("\"The exchanges have been set up incorrectly\""),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "urql:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("\"No more operations can be spawned\""),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "urql:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("\"fetchExchange: Network request failed\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "urql:scriptContent:modern:11",
+				kind: "scriptContent",
+				pattern: new RegExp("\"cacheExchange: Invalid undefined value\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "urql:scriptContent:modern:12",
+				kind: "scriptContent",
+				pattern: new RegExp("\"subscriptionExchange: Failed to connect\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "urql:scriptContent:modern:13",
+				kind: "scriptContent",
+				pattern: new RegExp("\\{(?:[^}]*exchanges:\\s*\\[[^]]+\\],[^}]*url:|url:[^,]+,exchanges:\\s*\\[[^]]+\\])"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "urql:scriptContent:modern:14",
+				kind: "scriptContent",
+				pattern: new RegExp("\\{query:[^,]+,variables:[^,]+,pause:"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "urql:header:modern:15",
+				kind: "header",
+				key: "x-graphql-event-stream",
+				valuePattern: new RegExp("true"),
+				confidence: 55,
+				description: "HTTP response header matches a modern tooling marker.",
+			},
+			{
+				id: "urql:header:modern:16",
+				kind: "header",
+				key: "x-graphql-transport-ws",
+				valuePattern: new RegExp("true"),
+				confidence: 55,
+				description: "HTTP response header matches a modern tooling marker.",
+			},
+		],
+	},
+	{
+		id: "server-sent-events",
+		name: "Server-Sent Events",
+		website: "https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events",
+		description: "Server push technology enabling a client to receive automatic updates from a server",
+		categories: [
+			"api-pattern",
+		],
+		rules: [
+			{
+				id: "server-sent-events:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("\"text\\/event-stream\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "server-sent-events:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("\"eventsource\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "server-sent-events:resourceUrl:modern:2",
+				kind: "resourceUrl",
+				pattern: new RegExp("eventsource[.\\-@/]"),
+				confidence: 65,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "server-sent-events:header:modern:3",
+				kind: "header",
+				key: "content-type",
+				valuePattern: new RegExp("text\\/event-stream"),
+				confidence: 55,
+				description: "HTTP response header matches a modern tooling marker.",
+			},
+		],
+	},
+	{
+		id: "trpc",
+		name: "tRPC",
+		website: "https://trpc.io/",
+		description: "End-to-end typesafe APIs made easy",
+		categories: [
+			"api-pattern",
+		],
+		rules: [
+			{
+				id: "trpc:resourceUrl:modern:0",
+				kind: "resourceUrl",
+				pattern: new RegExp("@trpc\\/client[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "trpc:resourceUrl:modern:1",
+				kind: "resourceUrl",
+				pattern: new RegExp("@trpc\\/server[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "trpc:resourceUrl:modern:2",
+				kind: "resourceUrl",
+				pattern: new RegExp("@trpc\\/react-query[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "trpc:resourceUrl:modern:3",
+				kind: "resourceUrl",
+				pattern: new RegExp("@trpc\\/next[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "trpc:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("TRPCClientError"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "trpc:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("TRPCUntypedClient"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "trpc:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("createTRPCClient"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "trpc:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("createTRPCProxyClient"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "trpc:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("httpBatchLink"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "trpc:html:modern:9",
+				kind: "html",
+				pattern: new RegExp("\\/api\\/trpc\\/"),
+				confidence: 65,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+			{
+				id: "trpc:html:modern:10",
+				kind: "html",
+				pattern: new RegExp("\\/trpc\\/"),
+				confidence: 65,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+		],
+	},
+	{
+		id: "websocket",
+		name: "WebSocket",
+		website: "https://developer.mozilla.org/en-US/docs/Web/API/WebSocket",
+		description: "Full-duplex communication channels over a single TCP connection",
+		categories: [
+			"api-pattern",
+		],
+		rules: [
+			{
+				id: "websocket:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("\"socket\\.io\""),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "websocket:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("\"sockjs\""),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "websocket:resourceUrl:modern:2",
+				kind: "resourceUrl",
+				pattern: new RegExp("socket\\.io[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "websocket:resourceUrl:modern:3",
+				kind: "resourceUrl",
+				pattern: new RegExp("sockjs[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "websocket:resourceUrl:modern:4",
+				kind: "resourceUrl",
+				pattern: new RegExp("ws[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "websocket:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("[\"']wss?:\\/\\/"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+		],
+	},
 ] as const satisfies readonly TechnologyDefinition[];

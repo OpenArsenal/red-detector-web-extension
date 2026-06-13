@@ -8,70 +8,109 @@ export const stylingLibraryTechnologyDefinitions = [
 		description: "Adobe Fonts is a web-based service providing access to a vast library of high-quality fonts for web and print design.",
 		icon: "Adobe Fonts.svg",
 		categories: [
-			"styling-library"
+			"styling-library",
 		],
 		rules: [
 			{
-				id: "adobe-fonts:html:0",
-				kind: "html",
-				pattern: new RegExp("<link [^>]*href=\"[^\"]+use\\.typekit\\.(?:net|com)"),
-				description: "HTML contains a known technology marker."
-			},
-			{
-				id: "adobe-fonts:scriptSrc:1",
+				id: "adobe-fonts:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("use\\.typekit\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "adobe-fonts:html:1",
+				kind: "html",
+				pattern: new RegExp("<link [^>]*href=\"[^\"]+use\\.typekit\\.(?:net|com)"),
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "adobe-fonts:dom:2",
 				kind: "dom",
 				selector: "link[href*='use.typekit.net'], link[href*='use.typekit.com']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "adobe-fonts:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "adobe-fonts:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "Typekit.config.js",
 				valuePattern: new RegExp("^(.+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
-				"low",
 				"freemium",
-				"recurring"
-			]
-		}
+				"low",
+				"recurring",
+			],
+		},
 	},
 	{
-		id: "bootbox-js",
-		name: "Bootbox.js",
-		website: "https://bootboxjs.com/",
-		description: "Bootbox.js is a small JavaScript library which allows you to create custom modal dialogs using Bootstrap modals, without having to worry about creating, managing, or removing any of the required DOM elements or JavaScript event handlers.",
-		icon: "Bootbox.js.png",
+		id: "ant-design",
+		name: "Ant Design",
+		website: "https://ant.design",
+		description: "Ant Design is an UI library that can be used with data flow solutions and application frameworks in any React ecosystem.",
+		icon: "Ant Design.svg",
 		categories: [
 			"styling-library",
 			"component-library",
-			"developer-tooling"
 		],
 		rules: [
 			{
-				id: "bootbox-js:scriptSrc:0",
-				kind: "scriptSrc",
-				pattern: new RegExp("(?:((?:\\d+\\.)+\\d+)\\/)?bootbox(?:\\.min)?\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			}
+				id: "ant-design:html:0",
+				kind: "html",
+				pattern: new RegExp("<[^>]*class=\"ant-(?:btn|col|row|layout|breadcrumb|menu|pagination|steps|select|cascader|checkbox|calendar|form|input-number|input|mention|rate|radio|slider|switch|tree-select|time-picker|transfer|upload|avatar|badge|card|carousel|collapse|list|popover|tooltip|table|tabs|tag|timeline|tree|alert|modal|message|notification|progress|popconfirm|spin|anchor|back-top|divider|drawer)"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "ant-design:html:1",
+				kind: "html",
+				pattern: new RegExp("<i class=\"anticon anticon-"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "ant-design:dom:2",
+				kind: "dom",
+				selector: "link[href*='antd']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "ant-design:jsGlobal:3",
+				kind: "jsGlobal",
+				property: "antd.version",
+				valuePattern: new RegExp("^([\\d\\.]+)$"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "ant-design:dom:4",
+				kind: "dom",
+				selector: "div[class*='ant-collapse']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "ant-design:jsGlobal:5",
+				kind: "jsGlobal",
+				property: "__ANTD_STYLE_CACHE_MANAGER_FOR_SSR__",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "ant-design:dom:6",
+				kind: "dom",
+				selector: "div[class*='ant-collapse'], link[href*='antd'], div[class*='ant-spin-container']",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "bootstrap",
@@ -81,58 +120,216 @@ export const stylingLibraryTechnologyDefinitions = [
 		icon: "Bootstrap.svg",
 		categories: [
 			"styling-library",
-			"component-library"
+			"component-library",
 		],
 		rules: [
 			{
-				id: "bootstrap:html:0",
-				kind: "html",
-				pattern: new RegExp("<style>\\s+/\\*!\\s+\\* Bootstrap v(\\d\\.\\d\\.\\d)"),
-				version: { source: "match", group: 1 },
-				description: "HTML contains a known technology marker."
+				id: "bootstrap:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("bootstrap(?:[^>]*?([0-9a-fA-F]{7,40}|[\\d]+(?:.[\\d]+(?:.[\\d]+)?)?)|)[^>]*?(?:\\.min)?\\.js"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "bootstrap:html:1",
 				kind: "html",
+				pattern: new RegExp("<style>\\s+\\/\\*!\\s+\\* Bootstrap v(\\d\\.\\d\\.\\d)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "bootstrap:html:2",
+				kind: "html",
 				pattern: new RegExp("<link[^>]* href=[^>]*?bootstrap(?:[^>]*?([0-9a-fA-F]{7,40}|[\\d]+(?:.[\\d]+(?:.[\\d]+)?)?)|)[^>-]*?(?:\\.min)?\\.css"),
-				version: { source: "match", group: 1 },
-				description: "HTML contains a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "bootstrap:scriptSrc:2",
-				kind: "scriptSrc",
-				pattern: new RegExp("bootstrap(?:[^>]*?([0-9a-fA-F]{7,40}|[\\d]+(?:.[\\d]+(?:.[\\d]+)?)?)|)[^>]*?(?:\\.min)?\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			},
-			{
-				id: "bootstrap:pageGlobal:4",
-				kind: "pageGlobal",
-				property: "bootstrap.Alert",
-				description: "Page-owned global matches a known technology marker."
-			},
-			{
-				id: "bootstrap:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "bootstrap:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "bootstrap.Alert.VERSION",
 				valuePattern: new RegExp("^(.+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "bootstrap:pageGlobal:6",
-				kind: "pageGlobal",
+				id: "bootstrap:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "jQuery.fn.tooltip.Constructor.VERSION",
 				valuePattern: new RegExp("^(.+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "bootstrap:dom:5",
+				kind: "dom",
+				selector: "body[data-bs-theme]",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "bootstrap:dom:6",
+				kind: "dom",
+				selector: "link[href*=\"cdn.jsdelivr.net/npm/bootstrap\"]",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "bootstrap:dom:7",
+				kind: "dom",
+				selector: "style",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "bootstrap:text:8",
+				kind: "text",
+				pattern: new RegExp("--bs-(?:gutter|emphasis|space-x|tertiary-bg|secondary-color)"),
+				description: "Page text contains a known technology marker.",
+			},
+			{
+				id: "bootstrap:jsGlobal:9",
+				kind: "jsGlobal",
+				property: "bootstrap.Alert",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "bootstrap:scriptSrc:10",
+				kind: "scriptSrc",
+				pattern: new RegExp("bootstrap(?:[^>]*?([0-9a-fa-f]{7,40}|[\\d]+(?:.[\\d]+(?:.[\\d]+)?)?)|)[^>]*?(?:\\.min)?\\.js"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "bootstrap:html:11",
+				kind: "html",
+				pattern: new RegExp("<link[^>]* href=[^>]*?bootstrap(?:[^>]*?([0-9a-fa-f]{7,40}|[\\d]+(?:.[\\d]+(?:.[\\d]+)?)?)|)[^>-]*?(?:\\.min)?\\.css"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "bootstrap:html:12",
+				kind: "html",
+				pattern: new RegExp("<style>\\s+\\/\\*!\\s+\\* bootstrap v(\\d\\.\\d\\.\\d)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "bootstrap:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("data-bs-(?:toggle|target|parent|container|placement|trigger|content|template|theme|dismiss|ride|slide-to)=\"[^\"]{1,50}\""),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "bootstrap:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("data-bs-backdrop=\"(?:true|false|static)\""),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "bootstrap:stylesheetContent:modern:2",
+				kind: "stylesheetContent",
+				pattern: new RegExp("data-bs-[a-zA-Z0-9-]+(?:=\"[^\"]*\")?"),
+				confidence: 55,
+				description: "Stylesheet content matches a modern styling marker.",
+			},
+			{
+				id: "bootstrap:stylesheetContent:modern:3",
+				kind: "stylesheetContent",
+				pattern: new RegExp("\\.bs-tooltip-(top|bottom|left|right|auto)"),
+				confidence: 55,
+				description: "Stylesheet content matches a modern styling marker.",
+			},
+			{
+				id: "bootstrap:stylesheetContent:modern:4",
+				kind: "stylesheetContent",
+				pattern: new RegExp("\\.bs-popover-(top|bottom|left|right|auto)"),
+				confidence: 55,
+				description: "Stylesheet content matches a modern styling marker.",
+			},
+			{
+				id: "bootstrap:stylesheetContent:modern:5",
+				kind: "stylesheetContent",
+				pattern: new RegExp("\\.sticky-(sm|md|lg|xl|xxl)-(top|bottom)"),
+				confidence: 55,
+				description: "Stylesheet content matches a modern styling marker.",
+			},
+			{
+				id: "bootstrap:stylesheetContent:modern:6",
+				kind: "stylesheetContent",
+				pattern: new RegExp("\\* Bootstrap\\s+v\\d+\\.\\d+\\.\\d+\\s+\\(https:\\/\\/getbootstrap\\.com\\/\\)"),
+				confidence: 65,
+				description: "Stylesheet content matches a modern styling marker.",
+			},
+			{
+				id: "bootstrap:stylesheetContent:modern:7",
+				kind: "stylesheetContent",
+				pattern: new RegExp("\\[data-bs-theme=([\"'])?[a-zA-Z0-9-]+([\"'])?\\]"),
+				confidence: 65,
+				description: "Stylesheet content matches a modern styling marker.",
+			},
+			{
+				id: "bootstrap:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("Bootstrap doesn't allow more than one instance per element\\. Bound instance:"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "bootstrap:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("throw new TypeError\\(\"Bootstrap's dropdowns require Popper \\(https:\\/\\/popper\\.js\\.org\\)\"\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "bootstrap:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("\\.getPropertyValue\\([\"']--bs-position[\"']\\)"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "bootstrap:stylesheetContent:modern:11",
+				kind: "stylesheetContent",
+				pattern: new RegExp("--bs-[a-zA-Z0-9-]+:\\s*[^;]+;"),
+				confidence: 65,
+				description: "Stylesheet content matches a modern styling marker.",
+			},
+			{
+				id: "bootstrap:stylesheetContent:modern:12",
+				kind: "stylesheetContent",
+				pattern: new RegExp("var\\(--bs-[a-zA-Z0-9-]+\\)"),
+				confidence: 65,
+				description: "Stylesheet content matches a modern styling marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:getbootstrap:bootstrap:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:getbootstrap:bootstrap:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "bootstrap-icons",
@@ -142,38 +339,95 @@ export const stylingLibraryTechnologyDefinitions = [
 		icon: "Bootstrap Icons.svg",
 		categories: [
 			"styling-library",
-			"component-library"
 		],
-		rules: [],
+		rules: [
+			{
+				id: "bootstrap-icons:dom:0",
+				kind: "dom",
+				selector: "link[href*='bootstrap-icons']",
+				description: "DOM selector matches a known technology marker.",
+			},
+		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+	},
+	{
+		id: "bootstrap-table",
+		name: "Bootstrap Table",
+		website: "https://bootstrap-table.wenzhixin.net.cn/",
+		description: "Bootstrap Table is a JavaScript plugin for building data tables with Bootstrap.",
+		icon: "Bootstrap Table.svg",
+		categories: [
+			"styling-library",
+			"widgets-misc",
+		],
+		rules: [
+			{
+				id: "bootstrap-table:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("bootstrap-table(?:\\.min)?\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "bootstrap-table:html:1",
+				kind: "html",
+				pattern: new RegExp("<link[^>]+href=\"[^>]*bootstrap-table(?:\\.min)?\\.css"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "bootstrap-table:dom:2",
+				kind: "dom",
+				selector: "link[href*='bootstrap-table.min.css']",
+				description: "DOM selector matches a known technology marker.",
+			},
+		],
+		metadata: {
+			cpe: "cpe:2.3:a:bootstrap-table:bootstrap_table:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"bootstrap",
+			"jquery",
+		],
 	},
 	{
 		id: "bulma",
 		name: "Bulma",
 		website: "https://bulma.io",
-		description: "Bulma is a free class-based framework for CSS.",
+		description: "Bulma is an open-source CSS framework based on Flexbox.",
 		icon: "Bulma.svg",
 		categories: [
 			"styling-library",
-			"component-library"
+			"component-library",
 		],
 		rules: [
 			{
-				id: "bulma:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "bulma:dom:0",
+				kind: "dom",
+				selector: "link[href*='bulma']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "bulma:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Bulma.VERSION",
 				valuePattern: new RegExp("([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "bulma:dom:2",
+				kind: "dom",
+				selector: "link[href*='bulma-'][href$='.min.css']",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "bunny-fonts",
@@ -182,23 +436,227 @@ export const stylingLibraryTechnologyDefinitions = [
 		description: "Bunny Fonts is an open-source, privacy-first web font platform designed to put privacy back into the internet.",
 		icon: "Bunny.svg",
 		categories: [
-			"styling-library"
+			"styling-library",
 		],
 		rules: [
 			{
 				id: "bunny-fonts:dom:0",
 				kind: "dom",
 				selector: "link[href*='fonts.bunny.net']",
-				description: "DOM selector matches a known technology marker."
-			}
-		],
-		implies: [
-			"bunny"
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"bunny",
+		],
+	},
+	{
+		id: "chakra-ui",
+		name: "Chakra UI",
+		website: "https://chakra-ui.com",
+		description: "Chakra UI is a simple, modular and accessible component library that gives you the building blocks you need to build your React applications.",
+		icon: "Chakra UI.svg",
+		categories: [
+			"styling-library",
+			"component-library",
+		],
+		rules: [
+			{
+				id: "chakra-ui:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\.chakra-ui\\."),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "chakra-ui:dom:1",
+				kind: "dom",
+				selector: "html[style*='chakra-ui-color-mode'], body.chakra-ui-dark, body.chakra-ui-light, div.chakra-portal",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "chakra-ui:dom:2",
+				kind: "dom",
+				selector: "html[style*='chakra-ui-color-mode'], body.chakra-ui-dark, body.chakra-ui-light, div.chakra-portal, div.chakra-container",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "chakra-ui:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("data-chakra-component=\"(?:Button|Modal|Tooltip|Popover|Menu|Drawer|Alert|Toast)\""),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "chakra-ui:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("data-popper-(?:reference-hidden|escaped|placement)=\"chakra-[^\"]{1,50}\""),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "chakra-ui:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("data-theme-color=\"chakra-[^\"]{1,30}\""),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "chakra-ui:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("data-theme=\"chakra-ui-(?:light|dark)\""),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "chakra-ui:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("chakra-(?:button|modal|menu|popover|toast|drawer|alert|form)__[a-zA-Z-]{1,30}\\b"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "chakra-ui:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("chakra-(?:stack|wrap|container|box|text|heading|link)(?:-[a-zA-Z]{1,20})?\\b"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "chakra-ui:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("chakra-(?:fade|scale|slide)-(?:bottom|top|left|right)(?:-(?:enter|exit)(?:-active)?)?\\b"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "chakra-ui:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("chakra-(?:portal-(?:zIndex|overlay|content)|modal-(?:overlay|content-wrapper|body|header|footer))\\b"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "chakra-ui:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("chakra-(?:error-boundary|strict-mode-warning)\\b"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "chakra-ui:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("var\\(--chakra-(?:colors|sizes|fonts|space|radii|shadows)-[^)]{1,50}\\)"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "chakra-ui:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("useChakra(?:Context|ColorMode|Theme|Toast|Disclosure|Modal|Menu|Tabs)\\b"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "chakra-ui:scriptContent:modern:11",
+				kind: "scriptContent",
+				pattern: new RegExp("_(?:hover|active|focus|disabled|invalid|checked|expanded|selected)=\"chakra-[^\"]{1,50}\""),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "chakra-ui:scriptContent:modern:12",
+				kind: "scriptContent",
+				pattern: new RegExp("sx=\\{[^}]{0,500}?_(?:hover|focus|active):"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "chakra-ui:scriptContent:modern:13",
+				kind: "scriptContent",
+				pattern: new RegExp("import\\s+\\{[^}]{1,200}\\}\\s+from\\s+[\"']@chakra-ui\\/(?:react|core|icons|system|theme|hooks)[\"']"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "chakra-ui:scriptContent:modern:14",
+				kind: "scriptContent",
+				pattern: new RegExp("ChakraProvider\\s+theme=\\{[^}]{1,500}\\}"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "chakra-ui:scriptContent:modern:15",
+				kind: "scriptContent",
+				pattern: new RegExp("extendTheme\\(\\{[^}]{1,500}\\}\\)"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "chakra-ui:resourceUrl:modern:16",
+				kind: "resourceUrl",
+				pattern: new RegExp("@chakra-ui\\/(?:react|core|icons|system|theme|hooks)\\b"),
+				confidence: 45,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "chakra-ui:resourceUrl:modern:17",
+				kind: "resourceUrl",
+				pattern: new RegExp("chakra-ui-core(?:@[\\d.]{1,10})?(?:\\.min)?\\.js$"),
+				confidence: 45,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "chakra-ui:resourceUrl:modern:18",
+				kind: "resourceUrl",
+				pattern: new RegExp("chakra-(?:components|theme|utils)\\.[a-f0-9]{8}\\.js$"),
+				confidence: 45,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "chakra-ui:resourceUrl:modern:19",
+				kind: "resourceUrl",
+				pattern: new RegExp("(?:chakra-theme|theme\\.chakra)\\.(?:js|ts)$"),
+				confidence: 45,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "chakra-ui:resourceUrl:modern:20",
+				kind: "resourceUrl",
+				pattern: new RegExp("chunk-chakra-[a-z-]{1,30}\\.[a-f0-9]{8}\\.js$"),
+				confidence: 45,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "chakra-ui:resourceUrl:modern:21",
+				kind: "resourceUrl",
+				pattern: new RegExp("chakra-[a-z-]{1,30}-[a-f0-9]{8}\\.js$"),
+				confidence: 45,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "chakra-ui:resourceUrl:modern:22",
+				kind: "resourceUrl",
+				pattern: new RegExp("@chakra-ui\\/icons(?:-[a-z]+)?(?:@[\\d.]{1,10})?\\b\\.js$"),
+				confidence: 45,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "chakra-ui:resourceUrl:modern:23",
+				kind: "resourceUrl",
+				pattern: new RegExp("emotion-(?:cache|element)-chakra\\b"),
+				confidence: 45,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+		],
+		metadata: {
+			oss: true,
+		},
+		implies: [
+			"react",
+		],
 	},
 	{
 		id: "cufon",
@@ -207,52 +665,22 @@ export const stylingLibraryTechnologyDefinitions = [
 		description: "Cufon is a tool used to overlap real text with an image.",
 		icon: "Cufon.png",
 		categories: [
-			"styling-library"
+			"styling-library",
 		],
 		rules: [
 			{
 				id: "cufon:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cufon-yui\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "cufon:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "cufon:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Cufon",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
-	},
-	{
-		id: "daisyui",
-		name: "daisyUI",
-		website: "https://daisyui.com",
-		description: "daisyUI is a customisable Tailwind CSS component library that prevents verbose markup in frontend applications. With a focus on customising and creating themes for user interfaces, daisyUI uses pure CSS and Tailwind utility classes, allowing developers to write clean HTML.",
-		icon: "daisyUI.svg",
-		categories: [
-			"styling-library",
-			"component-library"
-		],
-		rules: [
-			{
-				id: "daisyui:scriptContent:0",
-				kind: "scriptContent",
-				pattern: new RegExp("daisyUI"),
-				description: "Script content contains a bounded technology signature."
-			}
-		],
-		implies: [
-			"tailwind-css"
-		],
-		metadata: {
-			saas: false,
-			oss: true
-		}
 	},
 	{
 		id: "emfont",
@@ -261,47 +689,19 @@ export const stylingLibraryTechnologyDefinitions = [
 		description: "Emfont is an open-source CJK webfont service that enables self-hosted, cache-efficient, and privacy-conscious distribution of open-source fonts.",
 		icon: "Emfont.svg",
 		categories: [
-			"styling-library"
+			"styling-library",
 		],
 		rules: [
 			{
-				id: "emfont:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "emfont:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "emfont.Emfont",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
-	},
-	{
-		id: "flowbite",
-		name: "Flowbite",
-		website: "https://github.com/themesberg/flowbite",
-		description: "Flowbite is an open-source library of UI components based on the utility-first Tailwind CSS framework featuring dark mode support, a Figma design system, and more.",
-		icon: "Flowbite.svg",
-		categories: [
-			"styling-library",
-			"component-library"
-		],
-		rules: [
-			{
-				id: "flowbite:scriptSrc:0",
-				kind: "scriptSrc",
-				pattern: new RegExp("/flowbite(?:@([\\d\\.]+)/|\\.bundle\\.js)"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		implies: [
-			"tailwind-css"
-		],
-		metadata: {
-			saas: false,
-			oss: true
-		}
+		},
 	},
 	{
 		id: "font-awesome",
@@ -311,65 +711,100 @@ export const stylingLibraryTechnologyDefinitions = [
 		icon: "Font Awesome.svg",
 		categories: [
 			"styling-library",
-			"component-library",
-			"styling-processor"
 		],
 		rules: [
 			{
 				id: "font-awesome:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("(?:F|f)o(?:n|r)t-?(?:A|a)wesome(?:.*?([0-9a-fA-F]{7,40}|[\\d]+(?:.[\\d]+(?:.[\\d]+)?)?)|)"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "font-awesome:scriptSrc:1",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.fontawesome\\.com/([0-9a-z]+).js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.fontawesome\\.com\\/([0-9a-z]+).js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "font-awesome:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "font-awesome:dom:2",
+				kind: "dom",
+				selector: "link[href*='awesome']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "font-awesome:dom:3",
+				kind: "dom",
+				selector: "link[href*='font-awesome']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "font-awesome:dom:4",
+				kind: "dom",
+				selector: "link[href*='fontawesome-free']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "font-awesome:dom:5",
+				kind: "dom",
+				selector: "link[href*='kit-pro.fontawesome.com']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "font-awesome:jsGlobal:6",
+				kind: "jsGlobal",
 				property: "FontAwesomeCdnConfig",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "font-awesome:pageGlobal:4",
-				kind: "pageGlobal",
-				property: "FontAwesomeKitConfig.asyncLoading",
-				description: "Page-owned global matches a known technology marker."
-			},
-			{
-				id: "font-awesome:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "font-awesome:jsGlobal:7",
+				kind: "jsGlobal",
 				property: "___FONT_AWESOME___",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "font-awesome:dom:8",
+				kind: "dom",
+				selector: "[class*='fa']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "font-awesome:jsGlobal:9",
+				kind: "jsGlobal",
+				property: "FontAwesomeKitConfig.asyncLoading",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "font-awesome:scriptSrc:10",
+				kind: "scriptSrc",
+				pattern: new RegExp("(?:f|f)o(?:n|r)t-?(?:a|a)wesome(?:.*?([0-9a-fa-f]{7,40}|[\\d]+(?:.[\\d]+(?:.[\\d]+)?)?)|)"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
-				"low",
 				"freemium",
-				"recurring"
-			]
-		}
+				"low",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "fontserver",
 		name: "FontServer",
 		website: "https://fontserver.ir",
-		description: "FontServer is a online font delivery network service-provider for websites.",
+		description: "FontServer is an online font delivery network service-provider for websites.",
 		icon: "FontServer.svg",
 		categories: [
-			"styling-library"
+			"styling-library",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "fontserver:dom:0",
+				kind: "dom",
+				selector: "link[href*='.font']",
+				description: "DOM selector matches a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "fork-awesome",
@@ -379,42 +814,48 @@ export const stylingLibraryTechnologyDefinitions = [
 		icon: "Fork Awesome.png",
 		categories: [
 			"styling-library",
-			"component-library"
 		],
-		rules: [],
+		rules: [
+			{
+				id: "fork-awesome:dom:0",
+				kind: "dom",
+				selector: "link[href*='fork-awesome.min.css']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "fork-awesome:dom:1",
+				kind: "dom",
+				selector: "link[href*='npm/fork-awesome']",
+				description: "DOM selector matches a known technology marker.",
+			},
+		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "glyphicons",
 		name: "Glyphicons",
 		website: "https://glyphicons.com",
 		description: "Glyphicons are icon fonts which you can use in your web projects.",
-		icon: "Glyphicons.svg",
+		icon: "Glyphicons.png",
 		categories: [
 			"styling-library",
-			"component-library"
 		],
 		rules: [
 			{
 				id: "glyphicons:html:0",
 				kind: "html",
 				pattern: new RegExp("(?:<link[^>]* href=[^>]+glyphicons(?:\\.min)?\\.css|<img[^>]* src=[^>]+glyphicons)"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "glyphicons:dom:1",
 				kind: "dom",
 				selector: "link[href*='glyphicons.css'], link[href*='glyphicons.min.css']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "google-font-api",
@@ -424,26 +865,61 @@ export const stylingLibraryTechnologyDefinitions = [
 		icon: "Google Font API.svg",
 		categories: [
 			"styling-library",
-			"api-pattern"
 		],
 		rules: [
 			{
 				id: "google-font-api:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("googleapis\\.com/.+webfont"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("googleapis\\.com\\/.+webfont"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "google-font-api:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "google-font-api:dom:1",
+				kind: "dom",
+				selector: "link[href*='fonts.g']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "google-font-api:dom:2",
+				kind: "dom",
+				selector: "style[data-href*='fonts.g']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "google-font-api:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "WebFonts",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+	},
+	{
+		id: "headless-ui",
+		name: "Headless UI",
+		website: "https://headlessui.dev",
+		description: "Headless UI is an unstyled component library for either React.js or Vue.js from the same people that created Tailwind CSS.",
+		icon: "Headless UI.svg",
+		categories: [
+			"styling-library",
+			"component-library",
+		],
+		rules: [
+			{
+				id: "headless-ui:dom:0",
+				kind: "dom",
+				selector: "button",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "headless-ui:dom:1",
+				kind: "dom",
+				selector: "div",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "hoefler-and-co",
@@ -452,70 +928,101 @@ export const stylingLibraryTechnologyDefinitions = [
 		description: "Hoefler&Co is a digital type foundry (font design studio) in Woburn, Massachusetts (formerly New York City), founded by type designer Jonathan Hoefler. Hoefler&Co designs typefaces for clients and for retail on its website.",
 		icon: "Hoefler&Co.svg",
 		categories: [
-			"styling-library"
+			"styling-library",
 		],
 		rules: [
 			{
 				id: "hoefler-and-co:dom:0",
 				kind: "dom",
 				selector: "link[href*='cloud.typography.com/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "i30con",
 		name: "i30con",
 		website: "https://30nama.com/",
 		description: "i30con is an icon toolkit based on CSS and JavaScript.",
-		icon: "30namaPlayer.svg",
+		icon: "30namaPlayer.png",
 		categories: [
 			"styling-library",
-			"component-library"
 		],
 		rules: [
 			{
 				id: "i30con:dom:0",
 				kind: "dom",
 				selector: "[class^='i30con']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
+		],
+	},
+	{
+		id: "ionic",
+		name: "Ionic",
+		website: "https://ionicframework.com",
+		description: "Ionic is an open-source framework that enables developers to create cross-platform mobile, web, and desktop applications using web technologies like HTML, CSS, and JavaScript.",
+		icon: "ionic.png",
+		categories: [
+			"styling-library",
+			"framework",
+		],
+		rules: [
+			{
+				id: "ionic:jsGlobal:0",
+				kind: "jsGlobal",
+				property: "Ionic.config",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "ionic:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "Ionic.version",
+				valuePattern: new RegExp("^(.+)$"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "ionicons",
 		name: "Ionicons",
 		website: "https://ionicons.com",
 		description: "Ionicons is an open-source icon set crafted for web, iOS, Android, and desktop apps.",
-		icon: "Ionicons.svg",
+		icon: "Ionicons.png",
 		categories: [
 			"styling-library",
-			"component-library"
 		],
 		rules: [
 			{
-				id: "ionicons:dom:0",
+				id: "ionicons:html:0",
+				kind: "html",
+				pattern: new RegExp("<link[^>]* href=[^>]+ionicons(?:\\.min)?\\.css"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "ionicons:dom:1",
 				kind: "dom",
 				selector: "link[href*='/ionicons.min.css'], link[href*='/ionicons.css']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "lucide",
@@ -525,20 +1032,305 @@ export const stylingLibraryTechnologyDefinitions = [
 		icon: "Lucide.svg",
 		categories: [
 			"styling-library",
-			"component-library"
 		],
 		rules: [
 			{
 				id: "lucide:dom:0",
 				kind: "dom",
 				selector: "svg.lucide",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "lucide:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("(?:from\\s+[\"']lucide|import\\s*\\{[^}]{1,200}\\}\\s*from\\s*[\"']lucide)(?:-react|-vue|-svelte|-angular)?\\b"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "lucide:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("\\<(?:LucideIcon|createLucideIcon)\\b"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "lucide:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("lucide-icon-[a-zA-Z0-9-]{1,40}\\b"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "lucide:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("\"lucide-\"\\.concat\\("),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "lucide:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("absoluteStrokeWidth:\\s*([a-zA-Z_$][a-zA-Z0-9_$]*)"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "lucide:stylesheetContent:modern:5",
+				kind: "stylesheetContent",
+				pattern: new RegExp("\\.lucide(?:-icon)?(?:\\[[^\\]]+\\]|\\.[a-zA-Z0-9-]+)?\\s*\\{[^}]*\\}"),
+				confidence: 45,
+				description: "Stylesheet content matches a modern styling marker.",
+			},
+			{
+				id: "lucide:stylesheetContent:modern:6",
+				kind: "stylesheetContent",
+				pattern: new RegExp("\\.lucide-(?:spin|pulse|rotate-\\d+)"),
+				confidence: 45,
+				description: "Stylesheet content matches a modern styling marker.",
+			},
+			{
+				id: "lucide:stylesheetContent:modern:7",
+				kind: "stylesheetContent",
+				pattern: new RegExp("(?:\\.lucide|\\[data-lucide\\])\\s*>\\s*\\*"),
+				confidence: 45,
+				description: "Stylesheet content matches a modern styling marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+	},
+	{
+		id: "mantine",
+		name: "Mantine",
+		website: "https://mantine.dev",
+		description: "Mantine is an open-source UI framework and component library for React.",
+		icon: "Mantine.svg",
+		categories: [
+			"styling-library",
+			"widgets-misc",
+			"component-library",
+		],
+		rules: [
+			{
+				id: "mantine:dom:0",
+				kind: "dom",
+				selector: "style[data-emotion='mantine-global'], style[data-emotion='mantine']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "mantine:dom:1",
+				kind: "dom",
+				selector: "style[data-emotion='mantine-global'], style[data-emotion='mantine'], html[data-mantine-color-scheme]",
+				description: "DOM selector matches a known technology marker.",
+			},
+		],
+		metadata: {
+			oss: true,
+		},
+		implies: [
+			"typescript",
+		],
+		requires: [
+			"react",
+		],
+	},
+	{
+		id: "mui",
+		name: "MUI",
+		website: "https://mui.com",
+		description: "MUI(formerly Material UI) is a simple and customisable component library to build faster, beautiful, and more accessible React applications.",
+		icon: "MUI.svg",
+		categories: [
+			"styling-library",
+			"component-library",
+		],
+		rules: [
+			{
+				id: "mui:stylesheetContent:0",
+				kind: "stylesheetContent",
+				pattern: new RegExp("\\.MuiPaper-root"),
+				description: "Stylesheet content contains a bounded technology signature.",
+			},
+			{
+				id: "mui:dom:1",
+				kind: "dom",
+				selector: "style[data-meta='MuiPaper'], div.MuiBox-root, div.MuiPaper-root, style[data-meta='MuiButton']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "mui:dom:2",
+				kind: "dom",
+				selector: "style[data-meta='MuiPaper'], div.MuiBox-root, div.MuiPaper-root, style[data-meta='MuiButton'], input.MuiInputBase-input, div.MuiContainer-root",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "mui:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("https:\\/\\/mui\\.com\\/production-error\\/\\?code="),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "mui:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("Symbol\\.for\\([\"']mui\\.nested[\"']\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "mui:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("\\.muiName\\s*=\\s*[\"'](Button|Slider|TextField|Checkbox|Radio|Switch|Select|Autocomplete|Tooltip|Modal|Dialog|Drawer|AppBar|IconButton)[\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "mui:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("name:\\s*[\"'](Mui[A-Z][a-zA-Z0-9]*)[\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "mui:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("\\.\\s*__mui_systemSx\\b"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "mui:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("from\\s+[\"']@mui\\/material(?:\\/styles)?[\"']\\s*;"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "mui:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("import\\s+\\{\\s*(?:[^{}]*,\\s*)?(?:styled|alpha|createTheme|ThemeProvider)(?:\\s*,\\s*[^{}]*)?\\s*\\}\\s+from\\s+[\"']@mui\\/material(?:\\/styles)?[\"']"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "mui:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("import\\s+\\{\\s*(?:[^{}]*,\\s*)?(?:Button|TextField|Checkbox|Radio|Select|Switch|Slider|Dialog|Drawer|AppBar|Toolbar|IconButton|Typography|Box|Grid|Paper|Card|Divider|List|Avatar)(?:\\s*,\\s*[^{}]*)?\\s*\\}\\s+from\\s+[\"']@mui\\/material(?:\\/[a-zA-Z0-9]+)?[\"']"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "mui:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("from\\s+[\"']@mui\\/icons-material(?:\\/[a-zA-Z0-9]+)?[\"']"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "mui:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("MuiButtonBase-(?:root|focusVisible|disabled|color(?:Primary|Secondary))\\b"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "mui:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("MuiButton-(?:contained(?:Primary)|outlined(?:Secondary)|text(?:Success)|size(?:Large)|fullWidth)\\b"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "mui:scriptContent:modern:11",
+				kind: "scriptContent",
+				pattern: new RegExp("data-mui-(?:color-scheme=\"(?:light|dark)\"|internal-clone-element=\"true\")"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "mui:scriptContent:modern:12",
+				kind: "scriptContent",
+				pattern: new RegExp("(?:private-mui-(?:x-id|focusVisible|hidden|root|colorAction)|StyledEngineProvider\\s+injectFirst)\\b"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "mui:scriptContent:modern:13",
+				kind: "scriptContent",
+				pattern: new RegExp("var\\(--mui-(?:palette|typography|spacing|shadows|shape|zIndex|transitions)-[^)]{1,50}\\)"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "mui:scriptContent:modern:14",
+				kind: "scriptContent",
+				pattern: new RegExp("import\\s+\\{[^}]{1,200}\\}\\s+from\\s+[\"']@mui\\/(?:material|system|base|joy-ui|icons-material)[\"']"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "mui:scriptContent:modern:15",
+				kind: "scriptContent",
+				pattern: new RegExp("components:\\s*\\{\\s*MuiButton:\\s*\\{[^}]{1,500}\\}\\s*\\}"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "mui:scriptContent:modern:16",
+				kind: "scriptContent",
+				pattern: new RegExp("data-mui-base-(?:button|select|slider|switch|tabs|input)\\b"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "mui:scriptContent:modern:17",
+				kind: "scriptContent",
+				pattern: new RegExp("aria-(?:owns|controls|haspopup|expanded)=\"mui-[^\"]{1,50}\""),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "mui:scriptContent:modern:18",
+				kind: "scriptContent",
+				pattern: new RegExp("id=\"(?:modal|menu)-[^\"]{1,30}\"\\s+role=\"(?:presentation|menu)\"\\s+class=\"Mui(?:Modal-root|Menu-list)"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "mui:scriptContent:modern:19",
+				kind: "scriptContent",
+				pattern: new RegExp("createTheme\\(\\{\\s*palette:\\s*\\{\\s*primary:\\s*\\{[^}]{1,500}\\}\\s*\\}\\s*\\}"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "mui:scriptContent:modern:20",
+				kind: "scriptContent",
+				pattern: new RegExp("(?:Material-UI|MUI):\\s"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "mui:scriptContent:modern:21",
+				kind: "scriptContent",
+				pattern: new RegExp("data-(?:mui-inject-first=\"true\"|emotion=\"mui(?:-[a-z]+)?\")\\b"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			oss: true,
+			pricing: [
+				"freemium",
+				"payg",
+			],
+		},
+		implies: [
+			"react",
+		],
 	},
 	{
 		id: "myfonts",
@@ -547,90 +1339,194 @@ export const stylingLibraryTechnologyDefinitions = [
 		description: "MyFonts is a digital fonts distributor, based in Woburn, Massachusetts.",
 		icon: "MyFonts.svg",
 		categories: [
-			"styling-library"
+			"styling-library",
 		],
 		rules: [
 			{
 				id: "myfonts:requestUrl:0",
 				kind: "requestUrl",
-				pattern: new RegExp("\\.myfonts\\.net/"),
-				description: "Observed request URL matches a known technology marker."
+				pattern: new RegExp("\\.myfonts\\.net\\/"),
+				description: "Observed request URL matches a known technology marker.",
 			},
 			{
 				id: "myfonts:dom:1",
 				kind: "dom",
 				selector: "link[href*='.myfonts.net']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "myfonts:responseHeader:2",
-				kind: "responseHeader",
+				id: "myfonts:header:2",
+				kind: "header",
 				key: "content-security-policy",
-				valuePattern: new RegExp("\\.myfonts\\.net"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("\\.myfonts\\.net", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
 				"freemium",
-				"onetime"
-			]
-		}
+				"onetime",
+			],
+		},
 	},
 	{
-		id: "preline-ui",
-		name: "Preline UI",
-		website: "https://preline.co",
-		description: "Preline UI is an open-source set of prebuilt UI components based on the utility-first Tailwind CSS framework.",
-		icon: "Preline UI.svg",
+		id: "radix-ui",
+		name: "Radix UI",
+		website: "https://www.radix-ui.com",
+		description: "Radix UI is a React-based user interface component library that offers accessible, responsive, and customisable components for building web applications.",
+		icon: "Radix UI.svg",
 		categories: [
 			"styling-library",
-			"component-library"
+			"component-library",
 		],
 		rules: [
 			{
-				id: "preline-ui:scriptSrc:0",
-				kind: "scriptSrc",
-				pattern: new RegExp("/preline\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		implies: [
-			"tailwind-css"
-		],
-		metadata: {
-			saas: false,
-			oss: true
-		}
-	},
-	{
-		id: "shadcn-ui",
-		name: "shadcn/ui",
-		website: "https://ui.shadcn.com",
-		description: "shadcn/ui is a component system built with Radix UI and Tailwind CSS.",
-		icon: "shadcn-ui.svg",
-		categories: [
-			"styling-library",
-			"component-library"
-		],
-		rules: [
-			{
-				id: "shadcn-ui:stylesheetContent:0",
+				id: "radix-ui:stylesheetContent:0",
 				kind: "stylesheetContent",
-				pattern: new RegExp("--destructive-foreground"),
+				pattern: new RegExp("--radix-accordion-content-height"),
 				description: "Stylesheet content contains a bounded technology signature.",
-			}
-		],
-		implies: [
-			"radix-ui",
-			"tailwind-css"
+			},
+			{
+				id: "radix-ui:stylesheetContent:1",
+				kind: "stylesheetContent",
+				pattern: new RegExp("--radix-toast-swipe-end-x"),
+				description: "Stylesheet content contains a bounded technology signature.",
+			},
+			{
+				id: "radix-ui:stylesheetContent:2",
+				kind: "stylesheetContent",
+				pattern: new RegExp("--radix-toast-swipe-move-x"),
+				description: "Stylesheet content contains a bounded technology signature.",
+			},
+			{
+				id: "radix-ui:stylesheetContent:3",
+				kind: "stylesheetContent",
+				pattern: new RegExp("--radix-navigation-menu-viewport-width"),
+				description: "Stylesheet content contains a bounded technology signature.",
+			},
+			{
+				id: "radix-ui:stylesheetContent:4",
+				kind: "stylesheetContent",
+				pattern: new RegExp("--radix-navigation-menu-viewport-height"),
+				description: "Stylesheet content contains a bounded technology signature.",
+			},
+			{
+				id: "radix-ui:stylesheetContent:5",
+				kind: "stylesheetContent",
+				pattern: new RegExp("--radix-select-trigger-width"),
+				description: "Stylesheet content contains a bounded technology signature.",
+			},
+			{
+				id: "radix-ui:stylesheetContent:6",
+				kind: "stylesheetContent",
+				pattern: new RegExp("--radix-select-trigger-height"),
+				description: "Stylesheet content contains a bounded technology signature.",
+			},
+			{
+				id: "radix-ui:stylesheetContent:7",
+				kind: "stylesheetContent",
+				pattern: new RegExp("--radix-context-menu-content-transform-origin"),
+				description: "Stylesheet content contains a bounded technology signature.",
+			},
+			{
+				id: "radix-ui:stylesheetContent:8",
+				kind: "stylesheetContent",
+				pattern: new RegExp("--radix-context-menu-content-available-height"),
+				description: "Stylesheet content contains a bounded technology signature.",
+			},
+			{
+				id: "radix-ui:stylesheetContent:9",
+				kind: "stylesheetContent",
+				pattern: new RegExp("--radix-dropdown-menu-content-available-height"),
+				description: "Stylesheet content contains a bounded technology signature.",
+			},
+			{
+				id: "radix-ui:stylesheetContent:10",
+				kind: "stylesheetContent",
+				pattern: new RegExp("--radix-dropdown-menu-content-transform-origin"),
+				description: "Stylesheet content contains a bounded technology signature.",
+			},
+			{
+				id: "radix-ui:stylesheetContent:11",
+				kind: "stylesheetContent",
+				pattern: new RegExp("--radix-hover-card-content-transform-origin"),
+				description: "Stylesheet content contains a bounded technology signature.",
+			},
+			{
+				id: "radix-ui:stylesheetContent:12",
+				kind: "stylesheetContent",
+				pattern: new RegExp("--radix-popover-trigger-width"),
+				description: "Stylesheet content contains a bounded technology signature.",
+			},
+			{
+				id: "radix-ui:stylesheetContent:13",
+				kind: "stylesheetContent",
+				pattern: new RegExp("--radix-popover-content-transform-origin"),
+				description: "Stylesheet content contains a bounded technology signature.",
+			},
+			{
+				id: "radix-ui:stylesheetContent:14",
+				kind: "stylesheetContent",
+				pattern: new RegExp("--radix-select-content-available-height"),
+				description: "Stylesheet content contains a bounded technology signature.",
+			},
+			{
+				id: "radix-ui:stylesheetContent:15",
+				kind: "stylesheetContent",
+				pattern: new RegExp("--radix-select-content-transform-origin"),
+				description: "Stylesheet content contains a bounded technology signature.",
+			},
+			{
+				id: "radix-ui:stylesheetContent:16",
+				kind: "stylesheetContent",
+				pattern: new RegExp("--radix-tooltip-content-transform-origin"),
+				description: "Stylesheet content contains a bounded technology signature.",
+			},
+			{
+				id: "radix-ui:dom:17",
+				kind: "dom",
+				selector: "a[data-radix-collection-item], button[data-radix-collection-item]",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		requires: [
+			"react",
+		],
+	},
+	{
+		id: "shoelace",
+		name: "Shoelace",
+		website: "https://shoelace.style",
+		description: "Shoelace is an open-source, framework-agnostic component for building accessible web applications.",
+		icon: "Shoelace.svg",
+		categories: [
+			"styling-library",
+			"component-library",
+		],
+		rules: [
+			{
+				id: "shoelace:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\/npm\\/@shoelace-style\\/shoelace@([\\d.]+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "shoelace:dom:1",
+				kind: "dom",
+				selector: "html[data-shoelace-version]",
+				description: "DOM selector matches a known technology marker.",
+			},
+		],
+		metadata: {
+			oss: true,
+		},
 	},
 	{
 		id: "sifr",
@@ -639,20 +1535,16 @@ export const stylingLibraryTechnologyDefinitions = [
 		description: "sIFR is a JavaScript and Adobe Flash dynamic web fonts implementation.",
 		icon: "sIFR.png",
 		categories: [
-			"styling-library"
+			"styling-library",
 		],
 		rules: [
 			{
 				id: "sifr:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("sifr\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "symbolset",
@@ -661,20 +1553,19 @@ export const stylingLibraryTechnologyDefinitions = [
 		description: "Symbolset is a tool that converts words into icons by utilizing font technology, enabling visual representation of text-based content for various applications.",
 		icon: "Symbolset.svg",
 		categories: [
-			"styling-library"
+			"styling-library",
 		],
 		rules: [
 			{
 				id: "symbolset:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.symbolset\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("cdn\\.symbolset\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "tailwind-css",
@@ -684,45 +1575,234 @@ export const stylingLibraryTechnologyDefinitions = [
 		icon: "tailwindcss.svg",
 		categories: [
 			"styling-library",
-			"component-library"
+			"component-library",
 		],
 		rules: [
 			{
 				id: "tailwind-css:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.tailwindcss(?:tailwind-config-cdn)?\\.(?:com|js)|/npm/@tailwindcss/browser"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.tailwindcss(?:tailwind-config-cdn)?\\.(?:com|js)"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "tailwind-css:stylesheetContent:1",
+				kind: "stylesheetContent",
+				pattern: new RegExp("--tw-(?:rotate|translate|space-x|text-opacity|border-opacity)"),
+				description: "Stylesheet content contains a bounded technology signature.",
+			},
+			{
+				id: "tailwind-css:dom:2",
+				kind: "dom",
+				selector: "link[rel='stylesheet'][href*='tailwind']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "tailwind-css:jsGlobal:3",
+				kind: "jsGlobal",
+				property: "tailwind",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "tailwind-css:scriptSrc:4",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\.tailwindcss(?:tailwind-config-cdn)?\\.(?:com|js)|\\/npm\\/@tailwindcss\\/browser"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "tailwind-css:stylesheetContent:5",
 				kind: "stylesheetContent",
 				pattern: new RegExp("--tw-(?:rotate|translate|space-x|text-opacity|border-opacity|bg-opacity|scale|ring|blur|shadow|brightness|contrast|grayscale|invert|sepia)"),
 				description: "Stylesheet content contains a bounded technology signature.",
 			},
 			{
-				id: "tailwind-css:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "tailwind-css:dom:6",
+				kind: "dom",
+				selector: "link[rel='stylesheet'][href*='.css']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "tailwind-css:dom:7",
+				kind: "dom",
+				selector: "style",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "tailwind-css:text:8",
+				kind: "text",
+				pattern: new RegExp("\\/\\/\\*! tailwindcss v([\\d.]+) \\| MIT License \\| https:\\/\\/tailwindcss\\.com\\*\\/"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page text contains a known technology marker.",
+			},
+			{
+				id: "tailwind-css:jsGlobal:9",
+				kind: "jsGlobal",
 				property: "hexToTailwindColorVar",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "tailwind-css:pageGlobal:4",
-				kind: "pageGlobal",
-				property: "tailwind",
-				description: "Page-owned global matches a known technology marker."
-			},
-			{
-				id: "tailwind-css:meta:5",
+				id: "tailwind-css:meta:10",
 				kind: "meta",
 				key: "application-name",
-				valuePattern: new RegExp("^Tailwind CSS$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^Tailwind CSS$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "tailwind-css:dom:11",
+				kind: "dom",
+				selector: "body [class]",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "tailwind-css:html:modern:0",
+				kind: "html",
+				pattern: new RegExp("<[^>]+class=\"[^\"]*\\[[^\\]]+\\][^\"]*\"", "i"),
+				confidence: 75,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+			{
+				id: "tailwind-css:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("@tailwind\\s+(?:base|components|utilities|variants)\\b"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tailwind-css:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("@layer\\s+(?:base|components|utilities)\\b"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tailwind-css:stylesheetContent:modern:3",
+				kind: "stylesheetContent",
+				pattern: new RegExp("\\/\\*\\s*!\\s*tailwindcss\\s+v\\d+\\.\\d+\\.\\d+\\s*\\|\\s*MIT\\s*License\\s*\\|\\s*https:\\/\\/tailwindcss\\.com\\s*\\*\\/"),
+				confidence: 75,
+				description: "Stylesheet content matches a modern styling marker.",
+			},
+			{
+				id: "tailwind-css:stylesheetContent:modern:4",
+				kind: "stylesheetContent",
+				pattern: new RegExp("--tw-(?:ring-inset|ring-offset-width|ring-offset-color|ring-color|ring-offset-shadow|ring-shadow|shadow|shadow-colored)"),
+				confidence: 75,
+				description: "Stylesheet content matches a modern styling marker.",
+			},
+			{
+				id: "tailwind-css:stylesheetContent:modern:5",
+				kind: "stylesheetContent",
+				pattern: new RegExp("\\.space-[xy]-\\d+\\s*>\\s*:not\\(\\[hidden\\]\\)\\s*~\\s*:not\\(\\[hidden\\]\\)"),
+				confidence: 75,
+				description: "Stylesheet content matches a modern styling marker.",
+			},
+			{
+				id: "tailwind-css:stylesheetContent:modern:6",
+				kind: "stylesheetContent",
+				pattern: new RegExp("\\[-?-tw-[^\\]]*\\]"),
+				confidence: 75,
+				description: "Stylesheet content matches a modern styling marker.",
+			},
+			{
+				id: "tailwind-css:stylesheetContent:modern:7",
+				kind: "stylesheetContent",
+				pattern: new RegExp("--tw-[a-z-]+:\\s*[^;]*;"),
+				confidence: 75,
+				description: "Stylesheet content matches a modern styling marker.",
+			},
+			{
+				id: "tailwind-css:stylesheetContent:modern:8",
+				kind: "stylesheetContent",
+				pattern: new RegExp("(?:\\*|:before|:after|:first|:last|:only|:even:before|::after|::backdrop)\\s*\\{[^}]*(?:--tw-[a-z-]+:[^;]*;.*){5,}", "s"),
+				confidence: 75,
+				description: "Stylesheet content matches a modern styling marker.",
+			},
+			{
+				id: "tailwind-css:stylesheetContent:modern:9",
+				kind: "stylesheetContent",
+				pattern: new RegExp("\\*\\s*,\\s*:after\\s*,\\s*:before\\s*\\{[^}]*--tw-[a-z-]+:"),
+				confidence: 75,
+				description: "Stylesheet content matches a modern styling marker.",
+			},
+			{
+				id: "tailwind-css:stylesheetContent:modern:10",
+				kind: "stylesheetContent",
+				pattern: new RegExp("::backdrop\\s*\\{[^}]*--tw-[a-z-]+:"),
+				confidence: 75,
+				description: "Stylesheet content matches a modern styling marker.",
+			},
+			{
+				id: "tailwind-css:html:modern:11",
+				kind: "html",
+				pattern: new RegExp("<[^>]+class=\"[^\"]*(?:group|peer)\\/(?:[\\w-]+)[^\"]*\"", "i"),
+				confidence: 65,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+			{
+				id: "tailwind-css:html:modern:12",
+				kind: "html",
+				pattern: new RegExp("<[^>]+class=\"[^\"]*(?:hover|focus|active|group-hover|dark):[\\w-]+[^\"]*\"", "i"),
+				confidence: 65,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+			{
+				id: "tailwind-css:html:modern:13",
+				kind: "html",
+				pattern: new RegExp("<[^>]+class=\"(?:[^\"]*\\s)?(?:flex|grid)\\s+(?:items|justify)-(?:center|start|end|between)[^\"]*\"", "i"),
+				confidence: 65,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+			{
+				id: "tailwind-css:scriptContent:modern:14",
+				kind: "scriptContent",
+				pattern: new RegExp("@apply\\s+(?:[\\w-]+(?:\\/[0-9]+)?(?:\\s+)?){1,15};"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tailwind-css:scriptContent:modern:15",
+				kind: "scriptContent",
+				pattern: new RegExp("@variants\\s+(?:[\\w-]+(?:,\\s*[\\w-]+)*)\\s*\\{"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tailwind-css:scriptContent:modern:16",
+				kind: "scriptContent",
+				pattern: new RegExp("@screen\\s+(?:sm|md|lg|xl|2xl)\\b"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tailwind-css:stylesheetContent:modern:17",
+				kind: "stylesheetContent",
+				pattern: new RegExp("\\.(?:bg|text|border)-(?:[\\w-]+)(?:-\\d+)?\\/\\d+"),
+				confidence: 65,
+				description: "Stylesheet content matches a modern styling marker.",
+			},
+			{
+				id: "tailwind-css:stylesheetContent:modern:18",
+				kind: "stylesheetContent",
+				pattern: new RegExp("--tw-(?:translate-[xy]|rotate|skew-[xy]|scale-[xy]):"),
+				confidence: 65,
+				description: "Stylesheet content matches a modern styling marker.",
+			},
+			{
+				id: "tailwind-css:stylesheetContent:modern:19",
+				kind: "stylesheetContent",
+				pattern: new RegExp("--tw-ring-(?:inset|offset-width|offset-color|color|offset-shadow|shadow):"),
+				confidence: 65,
+				description: "Stylesheet content matches a modern styling marker.",
+			},
+			{
+				id: "tailwind-css:stylesheetContent:modern:20",
+				kind: "stylesheetContent",
+				pattern: new RegExp("\\.(?:sm|md|lg|xl|2xl)\\\\:[\\w-]+"),
+				confidence: 65,
+				description: "Stylesheet content matches a modern styling marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "twitter-emoji-twemoji",
@@ -730,34 +1810,36 @@ export const stylingLibraryTechnologyDefinitions = [
 		website: "https://twitter.github.io/twemoji/",
 		description: "Twitter Emoji is a set of open-source emoticons and emojis for Twitter, TweetDeck, and also for Android and iOS versions of the application.",
 		categories: [
-			"styling-library"
+			"styling-library",
 		],
 		rules: [
 			{
 				id: "twitter-emoji-twemoji:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("twemoji(?:\\.min)?\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "twitter-emoji-twemoji:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "twitter-emoji-twemoji:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "twemoji",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "twitter-emoji-twemoji:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "twitter-emoji-twemoji:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "twemoji.base",
-				valuePattern: new RegExp("twemoji\\.maxcdn\\.com/v/([\\d\\.]+)/"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				valuePattern: new RegExp("twemoji\\.maxcdn\\.com\\/v\\/([\\d\\.]+)\\/"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "typekit",
@@ -766,81 +1848,376 @@ export const stylingLibraryTechnologyDefinitions = [
 		description: "Typekit is an online service which offers a subscription library of fonts.",
 		icon: "Typekit.png",
 		categories: [
-			"styling-library"
+			"styling-library",
 		],
 		rules: [
 			{
-				id: "typekit:html:0",
-				kind: "html",
-				pattern: new RegExp("<link [^>]*href=\"[^\"]+use\\.typekit\\.(?:net|com)"),
-				description: "HTML contains a known technology marker."
-			},
-			{
-				id: "typekit:scriptSrc:1",
+				id: "typekit:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("use\\.typekit\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "typekit:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "typekit:html:1",
+				kind: "html",
+				pattern: new RegExp("<link [^>]*href=\"[^\"]+use\\.typekit\\.(?:net|com)"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "typekit:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "Typekit.config.js",
 				valuePattern: new RegExp("^(.+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
-				"low",
 				"freemium",
-				"recurring"
-			]
-		}
+				"low",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "zurb-foundation",
 		name: "ZURB Foundation",
 		website: "https://foundation.zurb.com",
 		description: "Zurb Foundation is used to prototype in the browser. Allows rapid creation of websites or applications while leveraging mobile and responsive technology. The front end framework is the collection of HTML, CSS, and Javascript containing design patterns.",
-		icon: "ZURBFoundation.svg",
+		icon: "ZURB Foundation.png",
 		categories: [
 			"styling-library",
-			"component-library"
+			"component-library",
 		],
 		rules: [
 			{
 				id: "zurb-foundation:html:0",
 				kind: "html",
 				pattern: new RegExp("<link[^>]+foundation[^>\"]+css"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "zurb-foundation:html:1",
 				kind: "html",
 				pattern: new RegExp("<div [^>]*class=\"[^\"]*(?:small|medium|large)-\\d{1,2} columns"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "zurb-foundation:dom:2",
-				kind: "dom",
-				selector: "link[href*='foundation'][href*='css']",
-				description: "DOM selector matches a known technology marker."
-			},
-			{
-				id: "zurb-foundation:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "zurb-foundation:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "Foundation.version",
 				valuePattern: new RegExp("([\\d.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "zurb-foundation:dom:3",
+				kind: "dom",
+				selector: "link[href*='foundation'][href*='css']",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
-	}
+	},
+	{
+		id: "foundation",
+		name: "Foundation",
+		website: "https://foundation.zurb.com/",
+		description: "The most advanced responsive front-end framework in the world.",
+		categories: [
+			"styling-library",
+		],
+		rules: [
+			{
+				id: "foundation:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("grid-(?:margin|padding)-[xy](?:\\s|$)"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "foundation:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("cell-(?:block(?:-container|-y)?)\\b"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "foundation:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("xy-grid-(?:container|frame|cell)\\b"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "foundation:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("(?:^|\\s)(?:medium|large|xlarge|xxlarge)-(?:expand|unstack|offset|push|pull)-\\d{1,2}(?:\\s|$)"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "foundation:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("(?:^|\\s)responsive-embed-(?:widescreen|panorama|square|portrait)\\b"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "foundation:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("data-(?:whatinput|whatintent|interchange|equalizer-watch|magellan|abide|accordion|dropdown|drilldown|responsive-(?:accordion-tabs|tabs))(?:=|$)"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "foundation:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("Foundation\\.(?:Abide|Accordion|Dropdown(?:Menu)?|Equalizer|Interchange|Magellan|OffCanvas|Orbit|ResponsiveMenu|ResponsiveToggle|Reveal|Slider|SmoothScroll|Sticky|Tabs|Toggler|Tooltip|ResponsiveAccordionTabs)\\b\\("),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "foundation:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("off-canvas-(?:content|absolute|fixed|reveal|overlap-(?:left|right|top|bottom))\\b"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "foundation:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("drilldown-(?:submenu(?:-cover)?|subitem|current|parent)\\b"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "foundation:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("orbit-(?:container|wrapper|slides|slide|bullets|previous|next|figure)\\b"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "foundation:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("(?:^|\\s)(?:show|hide)-for-(?:sr|landscape|portrait)(?:-only)?\\b"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "foundation:scriptContent:modern:11",
+				kind: "scriptContent",
+				pattern: new RegExp("(?:form-error\\s+is-visible|is-invalid-(?:input|label|container))-(?:abide|equalizer|magellan)\\b"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "foundation:scriptContent:modern:12",
+				kind: "scriptContent",
+				pattern: new RegExp("'(?:closeme|resizeme|scrollme|mutate|toggled|sticky\\.zf|magellan)\\.zf'"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "foundation:scriptContent:modern:13",
+				kind: "scriptContent",
+				pattern: new RegExp("'(?:down|up|left|right)\\.zf\\.(?:drilldown|accordion|dropdown)'"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "foundation:scriptContent:modern:14",
+				kind: "scriptContent",
+				pattern: new RegExp("mui-(?:enter|leave|slide|fade|hinge|spin|scale)(?:-(?:active|from|to))?\\b"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "foundation:scriptContent:modern:15",
+				kind: "scriptContent",
+				pattern: new RegExp("(?:^|\\s)is-(?:animating|entering|leaving|active|complete)-mui\\b"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "foundation:resourceUrl:modern:16",
+				kind: "resourceUrl",
+				pattern: new RegExp("foundation-sites@[0-9.]{1,10}\\/dist\\/(?:js|css)\\/foundation(?:\\.min)?\\.(?:js|css)$"),
+				confidence: 45,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "foundation:resourceUrl:modern:17",
+				kind: "resourceUrl",
+				pattern: new RegExp("foundation-sites\\/dist\\/(?:js|css)\\/plugins\\/foundation\\.[a-z]{1,20}\\.(?:js|css)$"),
+				confidence: 45,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "foundation:resourceUrl:modern:18",
+				kind: "resourceUrl",
+				pattern: new RegExp("foundation\\.(?:core|grid|typography|forms|controls|float|prototype|rtl)(?:\\.min)?\\.(?:js|css)$"),
+				confidence: 45,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "foundation:resourceUrl:modern:19",
+				kind: "resourceUrl",
+				pattern: new RegExp("foundation\\.(?:abide|accordion|drilldown|dropdown|equalizer|interchange|magellan|offcanvas|orbit|responsivemenu|reveal|slider|smoothscroll|sticky|tabs|toggler|tooltip)\\.js$"),
+				confidence: 45,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "foundation:resourceUrl:modern:20",
+				kind: "resourceUrl",
+				pattern: new RegExp("(?:motion-ui\\/dist\\/motion-ui|foundation-motion-ui)(?:\\.min)?\\.(?:js|css)$"),
+				confidence: 45,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "foundation:resourceUrl:modern:21",
+				kind: "resourceUrl",
+				pattern: new RegExp("_foundation-settings\\.scss$"),
+				confidence: 45,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "foundation:resourceUrl:modern:22",
+				kind: "resourceUrl",
+				pattern: new RegExp("foundation-custom\\.scss$"),
+				confidence: 45,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+		],
+	},
+	{
+		id: "shadcn-ui",
+		name: "shadcn/ui",
+		website: "https://ui.shadcn.com",
+		description: "A set of high-quality React components out of the box. It is written in TypeScript with predictable static types.",
+		categories: [
+			"styling-library",
+		],
+		rules: [
+			{
+				id: "shadcn-ui:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("\\w+\\.displayName\\s*=\\s*[\"'](Button|Dialog|DropdownMenu)[\"'];\\s*(?:.*\\s*)*\\w+\\s*=\\s*\\w+\\.forwardRef"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "shadcn-ui:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("className:\\s*\\w+\\(\\s*\\w+\\(\\{\\s*variant:\\s*\\w+,\\s*size:\\s*\\w+,\\s*className:\\s*\\w+\\s*\\}\\)\\)"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "shadcn-ui:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("let\\s+\\w+\\s*=\\s*\\(\\s*0\\s*,\\s*\\w+\\s*\\.\\s*F\\s*\\)\\s*\\(\\s*[\"'](?:[^\"']*whitespace-nowrap[^\"']*rounded-md[^\"']*ring-offset-background[^\"']*)"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "shadcn-ui:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("variants:\\s*\\{\\s*variant:\\s*\\{\\s*default:[^}]*text-primary-foreground[^}]*,\\s*destructive:[^}]*text-destructive-foreground[^}]*,\\s*outline:[^}]*border-input\\s*bg-background[^}]*,\\s*secondary:[^}]*bg-secondary\\s*text-secondary-foreground[^}]*,\\s*ghost:[^}]*hover:bg-accent[^}]*,\\s*link:[^}]*text-primary\\s*underline-offset-4[^}]*\\s*\\}"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "shadcn-ui:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("data-\\[state=open\\]:animate-in\\s+data-\\[state=closed\\]:animate-out\\s+data-\\[state=closed\\]:fade-out-0\\s+data-\\[state=open\\]:fade-in-0\\s+data-\\[state=closed\\]:zoom-out-95\\s+data-\\[state=open\\]:zoom-in-95\\s+data-\\[state=closed\\]:slide-out-to-left-1\\/2"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "shadcn-ui:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("className:\\s*[\"'][^\"']*absolute\\s+right-4\\s+top-4\\s+rounded-sm\\s+opacity-70\\s+ring-offset-background[^\"']*[\"'][^>]*>\\s*\\([^)]*\\.jsx\\)\\([^)]*\\{\\s*className:\\s*[\"']h-4\\s+w-4[\"']\\s*\\}\\),\\s*\\([^)]*\\.jsx\\)\\([^)]*\\{\\s*className:\\s*[\"']sr-only[\"'][^}]*\\},\\s*[\"']Close[\"']"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "shadcn-ui:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("\\(\\s*0\\s*,\\s*\\w+\\.jsxs?\\s*\\)\\(\\s*\\w+\\s*,\\s*\\{\\s*(?:[^}]*,)?\\s*children:\\s*\\[\\s*\\(\\s*0\\s*,\\s*\\w+\\.jsx\\s*\\)\\(\\s*\\w+\\s*\\.\\s*\\w+\\s*,\\s*\\{\\s*className:[^}]*\\}\\s*\\)\\s*,\\s*\\(\\s*0\\s*,\\s*\\w+\\.jsx\\s*\\)\\(\\s*[\"']input[\"']\\s*,\\s*\\{\\s*(?:[^}]*,)?\\s*placeholder:\\s*[\"']Search\\.\\.\\.[\"']"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "shadcn-ui:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("class=[\"'](?:[^\"']{0,100}?\\s)?(?:destructive|outline|secondary|ghost|link)(?:\\s[^\"']{0,100})?[\"']"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "shadcn-ui:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("from\\s+[\"']@\\/components\\/ui\\/(?:accordion|alert-dialog|aspect-ratio|avatar|badge|calendar|card|carousel|checkbox|collapsible|command|context-menu|dialog|dropdown-menu|hover-card|input|label|menubar|navigation-menu|popover|progress|radio-group|scroll-area|select|separator|sheet|skeleton|slider|switch|table|tabs|textarea|toggle|tooltip)[\"']"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "shadcn-ui:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("\\(\\s*0\\s*,\\s*\\w+\\.jsxs?\\s*\\)\\(\\s*\\w+\\s*\\.\\s*\\w+\\s*,\\s*\\{\\s*(?:[^}]*,)?\\s*children:\\s*\\[\\s*\\(\\s*0\\s*,\\s*\\w+\\.jsx\\s*\\)\\(\\s*\\w+\\s*\\.\\s*\\w+\\s*,\\s*\\{[^}]*\\}\\s*\\)\\s*,\\s*\\(\\s*0\\s*,\\s*\\w+\\.jsx\\s*\\)\\(\\s*\\w+\\s*,\\s*\\{\\s*className:[^}]*\\}\\s*\\)\\s*\\]\\s*\\}\\s*\\)"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "shadcn-ui:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("toast:[^{]*\\{\\s*(?:[^}]*,)?\\s*title:\\s*[\"'][^\"']*[\"']\\s*,\\s*description:\\s*[\"'][^\"']*[\"']\\s*,\\s*(?:action\\s*:\\s*\\{[^}]*\\}\\s*,\\s*)?(?:variant\\s*:\\s*[\"'](?:default|destructive)[\"']\\s*,\\s*)?\\s*(?:duration\\s*:\\s*\\d+\\s*,\\s*)?\\s*\\}"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "shadcn-ui:scriptContent:modern:11",
+				kind: "scriptContent",
+				pattern: new RegExp("\\(\\s*0\\s*,\\s*\\w+\\.jsxs?\\s*\\)\\(\\s*\\w+\\s*\\.\\s*\\w+\\s*,\\s*\\{\\s*(?:[^}]*,)?\\s*children:\\s*\\[\\s*[^,]*,\\s*\\(\\s*0\\s*,\\s*\\w+\\.jsx\\s*\\)\\(\\s*\\w+\\s*,\\s*\\{\\s*className:\\s*[\"']h-4\\s+w-4\\s+(?:shrink|transition)-0[^\"']*data-\\[state=open\\]:rotate-180[^\"']*[\"']"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "shadcn-ui:scriptContent:modern:12",
+				kind: "scriptContent",
+				pattern: new RegExp("cn\\(\\s*buttonVariants\\(\\{[^}]*variant:"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "shadcn-ui:scriptContent:modern:13",
+				kind: "scriptContent",
+				pattern: new RegExp("cn\\(\\s*alertVariants\\(\\{[^}]*variant:"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "shadcn-ui:scriptContent:modern:14",
+				kind: "scriptContent",
+				pattern: new RegExp("cn\\(\\s*cardVariants\\(\\{[^}]*variant:"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "shadcn-ui:scriptContent:modern:15",
+				kind: "scriptContent",
+				pattern: new RegExp("cn\\(\\s*[\"'](?:fixed|absolute)\\s+(?:inset-0|inset-x-0|inset-y-0)\\s+z-50\\s+flex\\s+items-center\\s+justify-center[\"']"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+		],
+	},
 ] as const satisfies readonly TechnologyDefinition[];

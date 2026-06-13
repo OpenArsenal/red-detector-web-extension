@@ -1,9 +1,11 @@
-import type { CategoryId, TechnologyDefinition } from '../types';
+import type { CategoryId, DetectionRule, TechnologyDefinition } from '../types';
 import { frameworkTechnologyDefinitions } from './framework';
 import { uiLibraryTechnologyDefinitions } from './ui-library';
 import { routerTechnologyDefinitions } from './router';
 import { bundlerTechnologyDefinitions } from './bundler';
 import { transpilerTechnologyDefinitions } from './transpiler';
+import { minifierTechnologyDefinitions } from './minifier';
+import { moduleFormatTechnologyDefinitions } from './module-format';
 import { stylingLibraryTechnologyDefinitions } from './styling-library';
 import { stylingProcessorTechnologyDefinitions } from './styling-processor';
 import { stateManagementTechnologyDefinitions } from './state-management';
@@ -55,6 +57,8 @@ export const technologyDefinitionsByCategory = {
 	"router": routerTechnologyDefinitions,
 	"bundler": bundlerTechnologyDefinitions,
 	"transpiler": transpilerTechnologyDefinitions,
+	"minifier": minifierTechnologyDefinitions,
+	"module-format": moduleFormatTechnologyDefinitions,
 	"styling-library": stylingLibraryTechnologyDefinitions,
 	"styling-processor": stylingProcessorTechnologyDefinitions,
 	"state-management": stateManagementTechnologyDefinitions,
@@ -101,4 +105,91 @@ export const technologyDefinitionsByCategory = {
 	"fundraising-donations": fundraisingDonationsTechnologyDefinitions,
 } as const satisfies Partial<Record<CategoryId, readonly TechnologyDefinition[]>>;
 
-export const generatedTechnologyDefinitions = Object.values(technologyDefinitionsByCategory).flat() satisfies readonly TechnologyDefinition[];
+const baseGeneratedTechnologyDefinitions: readonly TechnologyDefinition[] = Object.values(technologyDefinitionsByCategory).flat();
+
+export const generatedTechnologyDefinitions = mergeTechnologyDefinitions(baseGeneratedTechnologyDefinitions);
+
+function mergeTechnologyDefinitions(definitions: readonly TechnologyDefinition[]): TechnologyDefinition[] {
+	const merged = new Map<string, TechnologyDefinition>();
+
+	for (const definition of definitions) {
+		const existing = merged.get(definition.id);
+		if (!existing) {
+			merged.set(definition.id, {
+				...definition,
+				categories: [...definition.categories],
+				rules: [...definition.rules],
+				implies: definition.implies ? [...definition.implies] : undefined,
+				requires: definition.requires ? [...definition.requires] : undefined,
+				excludes: definition.excludes ? [...definition.excludes] : undefined,
+				relationships: definition.relationships ? [...definition.relationships] : undefined,
+			});
+			continue;
+		}
+
+		existing.categories = uniqueValues([...existing.categories, ...definition.categories]);
+		existing.rules = mergeRules(existing.rules, definition.rules);
+		existing.implies = mergeOptionalStrings(existing.implies, definition.implies);
+		existing.requires = mergeOptionalStrings(existing.requires, definition.requires);
+		existing.excludes = mergeOptionalStrings(existing.excludes, definition.excludes);
+		existing.relationships = definition.relationships
+			? [...(existing.relationships ?? []), ...definition.relationships]
+			: existing.relationships;
+	}
+
+	return Array.from(merged.values());
+}
+
+function mergeRules(existingRules: readonly DetectionRule[], incomingRules: readonly DetectionRule[]): DetectionRule[] {
+	const signatures = new Set(existingRules.map(ruleSignature));
+	const merged = [...existingRules];
+
+	for (const rule of incomingRules) {
+		const signature = ruleSignature(rule);
+		if (signatures.has(signature)) {
+			continue;
+		}
+		signatures.add(signature);
+		merged.push(rule);
+	}
+
+	return merged;
+}
+
+function mergeOptionalStrings(
+	existing: readonly string[] | undefined,
+	incoming: readonly string[] | undefined,
+): string[] | undefined {
+	if (!existing?.length && !incoming?.length) {
+		return undefined;
+	}
+	return uniqueValues([...(existing ?? []), ...(incoming ?? [])]);
+}
+
+function uniqueValues<T>(values: readonly T[]): T[] {
+	return Array.from(new Set(values));
+}
+
+function ruleSignature(rule: DetectionRule): string {
+	const pattern = 'pattern' in rule && rule.pattern ? `${rule.pattern.source}/${rule.pattern.flags}` : '';
+	const valuePattern = 'valuePattern' in rule && rule.valuePattern ? `${rule.valuePattern.source}/${rule.valuePattern.flags}` : '';
+	const keyPattern = 'keyPattern' in rule && rule.keyPattern ? `${rule.keyPattern.source}/${rule.keyPattern.flags}` : '';
+	const hrefPattern = 'hrefPattern' in rule && rule.hrefPattern ? `${rule.hrefPattern.source}/${rule.hrefPattern.flags}` : '';
+	const typePattern = 'typePattern' in rule && rule.typePattern ? `${rule.typePattern.source}/${rule.typePattern.flags}` : '';
+
+	return JSON.stringify({
+		kind: rule.kind,
+		pattern,
+		valuePattern,
+		keyPattern,
+		hrefPattern,
+		typePattern,
+		selector: 'selector' in rule ? rule.selector : undefined,
+		attribute: 'attribute' in rule ? rule.attribute : undefined,
+		property: 'property' in rule ? rule.property : undefined,
+		key: 'key' in rule ? rule.key : undefined,
+		rel: 'rel' in rule ? rule.rel : undefined,
+		recordType: 'recordType' in rule ? rule.recordType : undefined,
+		area: 'area' in rule ? rule.area : undefined,
+	});
+}

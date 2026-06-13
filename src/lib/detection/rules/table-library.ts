@@ -2,46 +2,6 @@ import type { TechnologyDefinition } from '../types';
 
 export const tableLibraryTechnologyDefinitions = [
 	{
-		id: "bootstrap-table",
-		name: "Bootstrap Table",
-		website: "https://bootstrap-table.wenzhixin.net.cn/",
-		icon: "Bootstrap Table.svg",
-		categories: [
-			"table-library",
-			"styling-library",
-			"component-library",
-			"developer-tooling"
-		],
-		rules: [
-			{
-				id: "bootstrap-table:html:0",
-				kind: "html",
-				pattern: new RegExp("<link[^>]+href=\"[^>]*bootstrap-table(?:\\.min)?\\.css"),
-				description: "HTML contains a known technology marker."
-			},
-			{
-				id: "bootstrap-table:scriptSrc:1",
-				kind: "scriptSrc",
-				pattern: new RegExp("bootstrap-table(?:\\.min)?\\.js"),
-				description: "Script source URL matches a known technology marker."
-			},
-			{
-				id: "bootstrap-table:dom:2",
-				kind: "dom",
-				selector: "link[href*='bootstrap-table.min.css']",
-				description: "DOM selector matches a known technology marker."
-			}
-		],
-		implies: [
-			"bootstrap",
-			"jquery"
-		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
-	},
-	{
 		id: "datatables",
 		name: "DataTables",
 		website: "https://datatables.net",
@@ -49,40 +9,51 @@ export const tableLibraryTechnologyDefinitions = [
 		icon: "DataTables.png",
 		categories: [
 			"table-library",
-			"developer-tooling"
+			"widgets-misc",
 		],
 		rules: [
 			{
 				id: "datatables:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("dataTables.*\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "datatables:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "datatables:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "$.fn.dataTable.version",
 				valuePattern: new RegExp("^(.+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "datatables:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "datatables:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "jQuery.fn.dataTable.version",
 				valuePattern: new RegExp("^(.+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"jquery"
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "datatables:scriptSrc:3",
+				kind: "scriptSrc",
+				pattern: new RegExp("datatables.*\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:datatables:datatables.net:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:datatables:datatables.net:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"jquery",
+		],
 	},
 	{
 		id: "handsontable",
@@ -92,75 +63,75 @@ export const tableLibraryTechnologyDefinitions = [
 		icon: "Handsontable.svg",
 		categories: [
 			"table-library",
-			"developer-tooling"
+			"widgets-misc",
 		],
 		rules: [
 			{
 				id: "handsontable:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("(?:((?:\\d+\\.)+\\d+)\\/)?(?:jquery\\.)?handsontable(?:\\.full)?(?:\\.min)?(?:\\.[\\w]+)?\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "handsontable:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "handsontable:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Handsontable",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "handsontable:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("handsontable"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "handsontable:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("\\bHandsontable\\b"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "handsontable:resourceUrl:modern:2",
+				kind: "resourceUrl",
+				pattern: new RegExp("handsontable"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "handsontable:html:modern:3",
+				kind: "html",
+				pattern: new RegExp("class=\"ht_master\""),
+				confidence: 65,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+			{
+				id: "handsontable:html:modern:4",
+				kind: "html",
+				pattern: new RegExp("class=\"htCore\""),
+				confidence: 65,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+			{
+				id: "handsontable:html:modern:5",
+				kind: "html",
+				pattern: new RegExp("class=\"handsontable\""),
+				confidence: 65,
+				description: "Document HTML matches a modern tooling marker.",
+			},
 		],
 		metadata: {
 			saas: true,
 			oss: true,
 			pricing: [
-				"poa"
-			]
-		}
-	},
-	{
-		id: "masonry",
-		name: "Masonry",
-		website: "https://masonry.desandro.com",
-		description: "Masonry is a JavaScript library that enables a cascading grid layout, positioning elements based on available vertical space for an optimized, gap-free arrangement.",
-		categories: [
-			"table-library",
-			"developer-tooling"
-		],
-		rules: [
-			{
-				id: "masonry:pageGlobal:0",
-				kind: "pageGlobal",
-				property: "Masonry.Item",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		metadata: {
-			saas: false,
-			oss: true
-		}
-	},
-	{
-		id: "tablesorter",
-		name: "Tablesorter",
-		website: "https://mottie.github.io/tablesorter/",
-		description: "Flexible client-side table sorting.",
-		categories: [
-			"table-library",
-			"developer-tooling"
-		],
-		rules: [
-			{
-				id: "tablesorter:scriptSrc:0",
-				kind: "scriptSrc",
-				pattern: new RegExp("(?:((?:\\d+\\.)+\\d+)[-\\/](?:dist\\/js\\/)?)?(?:jquery\\.)?tablesorter(?:[\\.\\/]pager)?(?:-custom-controls)?(?:\\.widgets)?(?:\\.min)?\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "tabulator",
@@ -170,55 +141,631 @@ export const tableLibraryTechnologyDefinitions = [
 		icon: "Tabulator.svg",
 		categories: [
 			"table-library",
-			"developer-tooling"
+			"widgets-misc",
 		],
 		rules: [
 			{
-				id: "tabulator:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "tabulator:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Tabulator",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
 			oss: true,
 			pricing: [
-				"freemium"
-			]
-		}
+				"freemium",
+			],
+		},
 	},
 	{
-		id: "wookmark",
-		name: "WookMark",
-		website: "https://wookmark.com",
-		description: "WookMark is a plugin for laying out elements of varying heights in a column-based grid.",
-		icon: "WookMark.svg",
+		id: "ag-grid",
+		name: "AG Grid",
+		website: "https://www.ag-grid.com/",
+		description: "The best JavaScript Data Table for building Enterprise Applications",
 		categories: [
 			"table-library",
-			"developer-tooling"
 		],
 		rules: [
 			{
-				id: "wookmark:scriptSrc:0",
-				kind: "scriptSrc",
-				pattern: new RegExp("wookmark\\.min\\.js(?:\\?ver=([\\d\\.]+))?"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				id: "ag-grid:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("ag-grid-community"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
 			},
 			{
-				id: "wookmark:pageGlobal:1",
-				kind: "pageGlobal",
-				property: "Wookmark",
-				description: "Page-owned global matches a known technology marker."
-			}
+				id: "ag-grid:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("ag-grid-enterprise"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "ag-grid:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("ag-grid-react"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "ag-grid:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("ag-grid-angular"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "ag-grid:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("ag-grid-vue"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "ag-grid:resourceUrl:modern:5",
+				kind: "resourceUrl",
+				pattern: new RegExp("ag-grid"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "ag-grid:html:modern:6",
+				kind: "html",
+				pattern: new RegExp("class=\"ag-root-wrapper\""),
+				confidence: 65,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+			{
+				id: "ag-grid:html:modern:7",
+				kind: "html",
+				pattern: new RegExp("class=\"ag-theme-"),
+				confidence: 65,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+			{
+				id: "ag-grid:html:modern:8",
+				kind: "html",
+				pattern: new RegExp("ag-header-cell"),
+				confidence: 65,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+			{
+				id: "ag-grid:html:modern:9",
+				kind: "html",
+				pattern: new RegExp("ag-body-viewport"),
+				confidence: 65,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+			{
+				id: "ag-grid:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("AgGridReact"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "ag-grid:scriptContent:modern:11",
+				kind: "scriptContent",
+				pattern: new RegExp("AgGridVue"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "ag-grid:scriptContent:modern:12",
+				kind: "scriptContent",
+				pattern: new RegExp("AgGridAngular"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "ag-grid:scriptContent:modern:13",
+				kind: "scriptContent",
+				pattern: new RegExp("gridOptions\\s*="),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "ag-grid:scriptContent:modern:14",
+				kind: "scriptContent",
+				pattern: new RegExp("columnDefs\\s*:"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
 		],
-		requires: [
-			"jquery"
+	},
+	{
+		id: "react-table-legacy",
+		name: "React Table (Legacy)",
+		website: "https://github.com/TanStack/table/tree/v7",
+		description: "Hooks for building lightweight, fast and extendable datagrids for React",
+		categories: [
+			"table-library",
 		],
-		metadata: {
-			saas: false,
-			oss: true
-		}
-	}
+		rules: [
+			{
+				id: "react-table-legacy:resourceUrl:modern:0",
+				kind: "resourceUrl",
+				pattern: new RegExp("react-table[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "react-table-legacy:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("\"react-table\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-table-legacy:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("\"useTable\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-table-legacy:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("\"useSortBy\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-table-legacy:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("\"useFilters\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-table-legacy:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("\"usePagination\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-table-legacy:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("\"useGroupBy\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+		],
+	},
+	{
+		id: "react-virtualized",
+		name: "React Virtualized",
+		website: "https://github.com/bvaughn/react-virtualized",
+		description: "React components for efficiently rendering large lists and tabular data",
+		categories: [
+			"table-library",
+		],
+		rules: [
+			{
+				id: "react-virtualized:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("react-virtualized"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-virtualized:resourceUrl:modern:1",
+				kind: "resourceUrl",
+				pattern: new RegExp("react-virtualized"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "react-virtualized:html:modern:2",
+				kind: "html",
+				pattern: new RegExp("class=\"ReactVirtualized__"),
+				confidence: 65,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+			{
+				id: "react-virtualized:html:modern:3",
+				kind: "html",
+				pattern: new RegExp("ReactVirtualized__Grid"),
+				confidence: 65,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+			{
+				id: "react-virtualized:html:modern:4",
+				kind: "html",
+				pattern: new RegExp("ReactVirtualized__List"),
+				confidence: 65,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+			{
+				id: "react-virtualized:html:modern:5",
+				kind: "html",
+				pattern: new RegExp("ReactVirtualized__Table"),
+				confidence: 65,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+		],
+	},
+	{
+		id: "react-virtuoso",
+		name: "React Virtuoso",
+		website: "https://virtuoso.dev/",
+		description: "The most powerful virtual list component for React",
+		categories: [
+			"table-library",
+		],
+		rules: [
+			{
+				id: "react-virtuoso:resourceUrl:modern:0",
+				kind: "resourceUrl",
+				pattern: new RegExp("react-virtuoso[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "react-virtuoso:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("\"react-virtuoso\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-virtuoso:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("\"Virtuoso\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-virtuoso:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("\"GroupedVirtuoso\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-virtuoso:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("\"TableVirtuoso\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-virtuoso:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("\"VirtuosoGrid\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+		],
+	},
+	{
+		id: "react-window",
+		name: "React Window",
+		website: "https://github.com/bvaughn/react-window",
+		description: "React components for efficiently rendering large lists and tabular data",
+		categories: [
+			"table-library",
+		],
+		rules: [
+			{
+				id: "react-window:resourceUrl:modern:0",
+				kind: "resourceUrl",
+				pattern: new RegExp("react-window[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "react-window:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("\"react-window\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-window:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("\"FixedSizeList\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-window:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("\"VariableSizeList\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-window:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("\"FixedSizeGrid\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-window:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("\"VariableSizeGrid\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+		],
+	},
+	{
+		id: "tanstack-table",
+		name: "TanStack Table",
+		website: "https://tanstack.com/table",
+		description: "Headless UI for building powerful tables & datagrids",
+		categories: [
+			"table-library",
+		],
+		rules: [
+			{
+				id: "tanstack-table:resourceUrl:modern:0",
+				kind: "resourceUrl",
+				pattern: new RegExp("@tanstack\\/table-core[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-table:resourceUrl:modern:1",
+				kind: "resourceUrl",
+				pattern: new RegExp("@tanstack\\/react-table[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-table:resourceUrl:modern:2",
+				kind: "resourceUrl",
+				pattern: new RegExp("@tanstack\\/vue-table[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-table:resourceUrl:modern:3",
+				kind: "resourceUrl",
+				pattern: new RegExp("@tanstack\\/solid-table[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-table:resourceUrl:modern:4",
+				kind: "resourceUrl",
+				pattern: new RegExp("@tanstack\\/svelte-table[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-table:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("\"getCoreRowModel\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-table:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("\"getSortedRowModel\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-table:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("\"getFilteredRowModel\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-table:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("\"getPaginationRowModel\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-table:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("\"getExpandedRowModel\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-table:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("\"getGroupedRowModel\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-table:scriptContent:modern:11",
+				kind: "scriptContent",
+				pattern: new RegExp("\"columnSizingInfo\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-table:scriptContent:modern:12",
+				kind: "scriptContent",
+				pattern: new RegExp("\"columnPinning\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-table:scriptContent:modern:13",
+				kind: "scriptContent",
+				pattern: new RegExp("\"debugTable\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-table:scriptContent:modern:14",
+				kind: "scriptContent",
+				pattern: new RegExp("\"debugHeaders\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-table:scriptContent:modern:15",
+				kind: "scriptContent",
+				pattern: new RegExp("\"debugColumns\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-table:scriptContent:modern:16",
+				kind: "scriptContent",
+				pattern: new RegExp("\\bflexRender\\b"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-table:scriptContent:modern:17",
+				kind: "scriptContent",
+				pattern: new RegExp("\\buseReactTable\\b"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+		],
+	},
+	{
+		id: "tanstack-virtual",
+		name: "TanStack Virtual",
+		website: "https://tanstack.com/virtual",
+		description: "Headless UI for virtualizing scrollable elements",
+		categories: [
+			"table-library",
+		],
+		rules: [
+			{
+				id: "tanstack-virtual:resourceUrl:modern:0",
+				kind: "resourceUrl",
+				pattern: new RegExp("@tanstack\\/virtual-core[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-virtual:resourceUrl:modern:1",
+				kind: "resourceUrl",
+				pattern: new RegExp("@tanstack\\/react-virtual[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-virtual:resourceUrl:modern:2",
+				kind: "resourceUrl",
+				pattern: new RegExp("@tanstack\\/vue-virtual[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-virtual:resourceUrl:modern:3",
+				kind: "resourceUrl",
+				pattern: new RegExp("@tanstack\\/solid-virtual[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-virtual:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("exports\\.Virtualizer\\b"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-virtual:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("exports\\.useVirtualizer\\b"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-virtual:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("exports\\.useWindowVirtualizer\\b"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-virtual:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("exports\\.observeElementRect\\b"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-virtual:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("exports\\.observeElementOffset\\b"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-virtual:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("exports\\.elementScroll\\b"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-virtual:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("exports\\.windowScroll\\b"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-virtual:scriptContent:modern:11",
+				kind: "scriptContent",
+				pattern: new RegExp("exports\\.measureElement\\b"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-virtual:scriptContent:modern:12",
+				kind: "scriptContent",
+				pattern: new RegExp("exports\\.defaultRangeExtractor\\b"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-virtual:scriptContent:modern:13",
+				kind: "scriptContent",
+				pattern: new RegExp("\"getVirtualItems\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-virtual:scriptContent:modern:14",
+				kind: "scriptContent",
+				pattern: new RegExp("\"getMeasurements\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-virtual:scriptContent:modern:15",
+				kind: "scriptContent",
+				pattern: new RegExp("\"calculateRange\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-virtual:scriptContent:modern:16",
+				kind: "scriptContent",
+				pattern: new RegExp("\"maybeNotify\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "tanstack-virtual:scriptContent:modern:17",
+				kind: "scriptContent",
+				pattern: new RegExp("\"getIndexes\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+		],
+	},
 ] as const satisfies readonly TechnologyDefinition[];

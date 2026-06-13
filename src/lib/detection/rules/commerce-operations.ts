@@ -8,16 +8,14 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "4Partners is an international dropshipping service that allows you to launch a ready-made online store.",
 		icon: "4Partners.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "99minds",
@@ -26,53 +24,48 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "99minds is an online platform for managing and scaling gift cards, store credit, digital wallets, and loyalty programs.",
 		icon: "99minds.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "99minds:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.99minds\\.io"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "99minds:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "99minds:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "_99mindsDataLayer",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "addi",
 		name: "Addi",
 		website: "https://co.addi.com/",
 		description: "Addi is a service that allows users to make purchases and pay for them in installments over time.",
-		icon: "addi.svg",
+		icon: "addi.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "addi:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("s3\\.amazonaws\\.com/widgets\\.addi\\.com/bundle\\.min\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("s3\\.amazonaws\\.com\\/widgets\\.addi\\.com\\/bundle\\.min\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "adyen",
@@ -81,22 +74,21 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Adyen allows businesses to accept ecommerce, mobile, and point-of-sale payments.",
 		icon: "Adyen.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "adyen:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "adyen:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "adyen.encrypt.version",
 				valuePattern: new RegExp("^(.+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "affirm",
@@ -105,149 +97,153 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Affirm is a loan company that allows users to buy goods or services offered by online merchants and pay off those purchases in fixed monthly payments.",
 		icon: "Affirm.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "affirm:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.affirm\\.com/js/v([\\d\\.]+)/affirm\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.affirm\\.com\\/js\\/v([\\d\\.]+)\\/affirm\\.js"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "affirm:dom:1",
 				kind: "dom",
 				selector: "link[href*='.affirm.com']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "affirm:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "affirm:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "_affirm_config",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "affirm:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "affirm:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "affirm.Rollbar",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "afterpay",
 		name: "Afterpay",
 		website: "https://www.afterpay.com/",
 		description: "Afterpay is a 'buy now, pay later' platform that makes it possible to pay off purchased goods in fortnightly instalments.",
-		icon: "afterpay.svg",
+		icon: "afterpay.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "afterpay:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("portal\\.afterpay\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "afterpay:scriptSrc:1",
 				kind: "scriptSrc",
 				pattern: new RegExp("static\\.afterpay\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "afterpay:scriptSrc:2",
 				kind: "scriptSrc",
 				pattern: new RegExp("present-afterpay\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "afterpay:scriptSrc:3",
 				kind: "scriptSrc",
 				pattern: new RegExp("afterpay-products\\.min\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "afterpay:scriptSrc:4",
 				kind: "scriptSrc",
-				pattern: new RegExp("js\\.stripe\\.com/v3/fingerprinted/js/elements-afterpay-clearpay-message-.+\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("js\\.stripe\\.com\\/v3\\/fingerprinted\\/js\\/elements-afterpay-clearpay-message-.+\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "afterpay:scriptContent:5",
-				kind: "scriptContent",
-				pattern: new RegExp("AFTERPAY"),
-				description: "Script content contains a bounded technology signature."
-			},
-			{
-				id: "afterpay:dom:6",
+				id: "afterpay:dom:5",
 				kind: "dom",
 				selector: "#afterpay, .afterpay, .AfterpayMessage, [aria-label='Afterpay'], link[href*='/wp-content/plugins/afterpay-gateway-for-woocommerce/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "afterpay:pageGlobal:7",
-				kind: "pageGlobal",
-				property: "AfterPay",
-				description: "Page-owned global matches a known technology marker."
-			},
-			{
-				id: "afterpay:pageGlobal:8",
-				kind: "pageGlobal",
+				id: "afterpay:jsGlobal:6",
+				kind: "jsGlobal",
 				property: "Afterpay",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "afterpay:pageGlobal:9",
-				kind: "pageGlobal",
+				id: "afterpay:jsGlobal:7",
+				kind: "jsGlobal",
 				property: "Afterpay.version",
 				valuePattern: new RegExp("([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "afterpay:pageGlobal:10",
-				kind: "pageGlobal",
+				id: "afterpay:jsGlobal:8",
+				kind: "jsGlobal",
 				property: "AfterpayAttractWidget",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "afterpay:pageGlobal:11",
-				kind: "pageGlobal",
+				id: "afterpay:jsGlobal:9",
+				kind: "jsGlobal",
 				property: "AfterpayGenericErrorHtml",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "afterpay:pageGlobal:12",
-				kind: "pageGlobal",
+				id: "afterpay:jsGlobal:10",
+				kind: "jsGlobal",
 				property: "AfterpayWidgetHtml",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "afterpay:pageGlobal:13",
-				kind: "pageGlobal",
+				id: "afterpay:jsGlobal:11",
+				kind: "jsGlobal",
 				property: "afterpay_product",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "afterpay:pageGlobal:14",
-				kind: "pageGlobal",
+				id: "afterpay:jsGlobal:12",
+				kind: "jsGlobal",
 				property: "checkout.enabledpayments.afterpay",
 				valuePattern: new RegExp("^true$"),
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "afterpay:scriptContent:13",
+				kind: "scriptContent",
+				pattern: new RegExp("AFTERPAY"),
+				description: "Script content contains a bounded technology signature.",
+			},
+			{
+				id: "afterpay:jsGlobal:14",
+				kind: "jsGlobal",
+				property: "AfterPay",
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
-			cpe: "cpe:2.3:a:afterpay:afterpay:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:afterpay:afterpay:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "aftership",
@@ -256,26 +252,28 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "AfterShip provides automated shipment tracking as a service.",
 		icon: "AfterShip.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "aftership:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "aftership:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "aftership.__VERSION__",
 				valuePattern: new RegExp("([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "aftership-returns-center",
@@ -284,30 +282,64 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "AfterShip Returns Center is an interactive self-service return solution.",
 		icon: "AfterShip Returns Center.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "aftership-returns-center:url:0",
 				kind: "url",
 				pattern: new RegExp("https.+\\.returnscenter\\.com"),
-				description: "Page URL matches a known technology marker."
+				description: "Page URL matches a known technology marker.",
 			},
 			{
 				id: "aftership-returns-center:dom:1",
 				kind: "dom",
 				selector: "a[href*='.returnscenter.com']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
+	},
+	{
+		id: "airwallex",
+		name: "Airwallex",
+		website: "https://www.airwallex.com/us",
+		description: "Airwallex is a global payments and financial platform for online payments, multi-currency accounts, transfers, and embedded finance.",
+		icon: "Airwallex.svg",
+		categories: [
+			"commerce-operations",
+		],
+		rules: [
+			{
+				id: "airwallex:dom:0",
+				kind: "dom",
+				selector: "iframe[title='Airwallex action popup'], link[href*='static.airwallex.com/widgets/sdk-controller/sdk/v1/index.js'], script#airwallex-fraud-api, script[src*='checkout.airwallex.com/'], script[src*='checkout-demo.airwallex.com/']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "airwallex:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "Airwallex",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "airwallex:jsGlobal:2",
+				kind: "jsGlobal",
+				property: "_AirwallexSDKs",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			pricing: [
+				"payg",
+			],
+		},
 	},
 	{
 		id: "amazon-pay",
@@ -316,72 +348,71 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Amazon Pay is an online payments processing service that is owned by Amazon. It lets you use the payment methods associated with your Amazon account to make payments for goods and services.",
 		icon: "Amazon Pay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "amazon-pay:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/amazonpayments(?:\\.min)?\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/amazonpayments(?:\\.min)?\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "amazon-pay:scriptSrc:1",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.payments-amazon\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.payments-amazon\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "amazon-pay:requestUrl:2",
 				kind: "requestUrl",
 				pattern: new RegExp("payments\\.amazon\\.com"),
-				description: "Observed request URL matches a known technology marker."
+				description: "Observed request URL matches a known technology marker.",
 			},
 			{
 				id: "amazon-pay:dom:3",
 				kind: "dom",
 				selector: "img[src*='amazonpay'], [aria-labelledby='pi-amazon'], meta[id='amazon-payments-metadata'], [data-amazon-payments='true']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "amazon-pay:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "amazon-pay:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "AmazonPayments",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "amazon-pay:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "amazon-pay:jsGlobal:5",
+				kind: "jsGlobal",
 				property: "OffAmazonPayments",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "amazon-pay:pageGlobal:6",
-				kind: "pageGlobal",
+				id: "amazon-pay:jsGlobal:6",
+				kind: "jsGlobal",
 				property: "enableAmazonPay",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "amazon-pay:pageGlobal:7",
-				kind: "pageGlobal",
+				id: "amazon-pay:jsGlobal:7",
+				kind: "jsGlobal",
 				property: "onAmazonPaymentsReady",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "amazon-pay:meta:8",
 				kind: "meta",
 				key: "id",
-				valuePattern: new RegExp("amazon-payments-metadata"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("amazon-payments-metadata", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "american-express",
@@ -390,48 +421,40 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "American Express, also known as Amex, facilitates electronic funds transfers throughout the world, most commonly through branded credit cards, debit cards and prepaid cards.",
 		icon: "Amex.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "american-express:dom:0",
 				kind: "dom",
 				selector: "[aria-labelledby='pi-american_express']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "amex-express-checkout",
 		name: "Amex Express Checkout",
 		website: "https://www.americanexpress.com/us/express-checkout/",
 		description: "Amex Express Checkout is a service that simplifies the checkout experience by auto-filling necessary cardholder payment data into merchant checkout fields.",
-		icon: "AmexExpress.svg",
+		icon: "amex.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "amex-express-checkout:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("aexp-static\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "amex-express-checkout:dom:1",
 				kind: "dom",
 				selector: "img[alt*='We accept Amex']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "antavo",
@@ -440,30 +463,29 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Antavo is a software platform that provides AI-driven loyalty and promotion management solutions to help businesses design, automate, and analyze customer reward programs.",
 		icon: "Antavo.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "antavo:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.antavo\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "antavo:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "antavo:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Antavo.AJAX",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "apc",
@@ -473,13 +495,15 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "APC.svg",
 		categories: [
 			"commerce-operations",
-			"bundler"
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "apc:text:0",
+				kind: "text",
+				pattern: new RegExp("\\APC\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "aplazame",
@@ -488,35 +512,34 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Aplazame is a consumer credit company that provides instant financing service for online purchases. It combines an overtime payment method integrated at the ecommerce checkout with marketing tools to enable ecommerce to use financing as a promotional lever to boost sales.",
 		icon: "Aplazame.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "aplazame:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.aplazame\\.com/aplazame\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn\\.aplazame\\.com\\/aplazame\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "aplazame:scriptSrc:1",
 				kind: "scriptSrc",
-				pattern: new RegExp("aplazame\\.com/static/aplazame\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("aplazame\\.com\\/static\\/aplazame\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "aplazame:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "aplazame:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "aplazame",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "apple-pay",
@@ -525,75 +548,71 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Apple Pay is a mobile payment and digital wallet service by Apple that allows users to make payments in person, in iOS apps, and on the web.",
 		icon: "Apple.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "apple-pay:dom:0",
 				kind: "dom",
 				selector: "[aria-labelledby='pi-apple_pay']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
 				id: "apple-pay:dom:1",
 				kind: "dom",
 				selector: "script#apple-pay",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
 				id: "apple-pay:dom:2",
 				kind: "dom",
 				selector: "script#apple-pay-shop-capabilities",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
 				id: "apple-pay:dom:3",
 				kind: "dom",
 				selector: "input#applePayMerchantId",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "apple-pay:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "apple-pay:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "ApplePay",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "apple-pay:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "apple-pay:jsGlobal:5",
+				kind: "jsGlobal",
 				property: "applePayButtonClicked",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "apple-pay:pageGlobal:6",
-				kind: "pageGlobal",
+				id: "apple-pay:jsGlobal:6",
+				kind: "jsGlobal",
 				property: "braintree.applePay",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "apple-pay:pageGlobal:7",
-				kind: "pageGlobal",
+				id: "apple-pay:jsGlobal:7",
+				kind: "jsGlobal",
 				property: "checkout.enabledpayments.applepay",
 				valuePattern: new RegExp("^true$"),
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "apple-pay:pageGlobal:8",
-				kind: "pageGlobal",
+				id: "apple-pay:jsGlobal:8",
+				kind: "jsGlobal",
 				property: "dw.applepay",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "apple-pay:pageGlobal:9",
-				kind: "pageGlobal",
+				id: "apple-pay:jsGlobal:9",
+				kind: "jsGlobal",
 				property: "enableApplePay",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "appstle",
@@ -602,35 +621,34 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Appstle is a platform that boosts ecommerce revenue through retention-focused customer experiences.",
 		icon: "Appstle.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "appstle:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "appstle:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "AppstleIncluded",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "appstle:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "appstle:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "appstleInit",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		requires: [
-			"shopify"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
+		requires: [
+			"shopify",
+		],
 	},
 	{
 		id: "apxium",
@@ -639,23 +657,22 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Apxium is a software solution designed for automating accounts payable processes.",
 		icon: "Apxium.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "apxium:dom:0",
 				kind: "dom",
 				selector: "div > apx-appskin-page-header",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "asendia",
@@ -664,41 +681,40 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Asendia is an international mail joint venture of French La Poste and Swiss Post.",
 		icon: "Asendia.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "asendia:text:0",
+				kind: "text",
+				pattern: new RegExp("\\Asendia\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "atome",
 		name: "Atome",
 		website: "https://www.atome.sg/",
 		description: "Atome is a brand that allows users to purchase products online and pay for them in monthly installments.",
-		icon: "atome.svg",
+		icon: "atome.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "atome:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("gateway\\.apaylater\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("gateway\\.apaylater\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "atome:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "atome:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "atomeWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "australia-post",
@@ -707,13 +723,22 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Australia Post is the government business enterprise that provides postal services in Australia.",
 		icon: "AusPost.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "australia-post:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bAusPost\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+			{
+				id: "australia-post:text:1",
+				kind: "text",
+				pattern: new RegExp("\\bAustralia Post\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "authorize-net",
@@ -722,37 +747,43 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Authorize.net is a secure online payment gateway service that enables businesses to accept payments through various channels, such as ecommerce websites, mobile devices, and retail stores, providing a trusted platform for processing credit card and electronic cheque payments.",
 		icon: "authorize.net.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "authorize-net:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.authorize\\.net/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.authorize\\.net\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "authorize-net:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "authorize-net:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "config.authorizenet_public_client_key",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "authorize-net:responseHeader:2",
-				kind: "responseHeader",
+				id: "authorize-net:header:2",
+				kind: "header",
 				key: "Content-Security-Policy",
-				valuePattern: new RegExp("\\.authorize\\.net\\s"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("\\.authorize\\.net\\s", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "authorize-net:header:3",
+				kind: "header",
+				key: "content-security-policy",
+				valuePattern: new RegExp("\\.authorize\\.net\\s", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"payg",
 				"recurring",
-				"payg"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "auxilia",
@@ -761,29 +792,34 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Auxilia is a software solution designed to streamline donor management processes for nonprofits.",
 		icon: "Auxilia.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "auxilia:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.theauxilia\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "auxilia:cookie:1",
 				kind: "cookie",
-				key: "messagesUtk",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^messagesUtk$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "auxilia:cookie:2",
+				kind: "cookie",
+				keyPattern: new RegExp("^messagesutk$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "b2c-europe",
@@ -792,13 +828,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "B2C Europe offers logistic solutions for your ecommerce businesses.",
 		icon: "B2C Europe.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "b2c-europe:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bB2C Europe\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "barion",
@@ -807,35 +846,34 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Barion is a payment gateway and card acceptance system facilitating secure online transactions for businesses and consumers.",
 		icon: "Barion.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "barion:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("pixel\\.barion\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("pixel\\.barion\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "barion:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "barion:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "BarionAnalyticsObject",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "barion:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "barion:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "barion_pixel_id",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "beans",
@@ -844,48 +882,53 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Beans is a provider of ecommerce loyalty programs.",
 		icon: "Beans.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "beans:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.trybeans\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "beans:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "beans:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Beans3",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "billbee",
 		name: "Billbee",
-		website: "https://www.billbee.io",
+		website: "https://www.billbee.io/",
 		description: "Billbee is an order processing and inventory management solution.",
-		icon: "Billbee.svg",
+		icon: "Billbee.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
+		rules: [
+			{
+				id: "billbee:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bBillbee\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "binance-pay",
@@ -894,23 +937,21 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Binance Pay is a contactless, borderless, and secure cryptocurrency payment technology designed by Binance.",
 		icon: "Binance.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "binance-pay:dom:0",
 				kind: "dom",
 				selector: "a[href*='app.binance.com/payment/secpay']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
-				"freemium"
-			]
-		}
+				"freemium",
+			],
+		},
 	},
 	{
 		id: "bitcoin",
@@ -919,21 +960,19 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Bitcoin is a decentralized digital currency, without a central bank or single administrator, that can be sent from user to user on the peer-to-peer bitcoin network without the need for intermediaries.",
 		icon: "Bitcoin.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "bitcoin:dom:0",
 				kind: "dom",
 				selector: "[aria-labelledby='pi-bitcoin']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:bitcoin:bitcoin:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:bitcoin:bitcoin:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "bitpay",
@@ -943,29 +982,27 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "BitPay.svg",
 		categories: [
 			"commerce-operations",
-			"form-schema-library"
 		],
 		rules: [
 			{
 				id: "bitpay:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("bitpay"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
 				id: "bitpay:dom:1",
 				kind: "dom",
 				selector: "form[action*='bitpay.com']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "bleckmann",
@@ -974,28 +1011,27 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Bleckmann is a logistics provider offering services to fashion and lifestyle brands, ensuring they meet customer delivery promises.",
 		icon: "Bleckmann.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "bleckmann:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "bleckmann:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "API_BASE_URL_FE",
 				valuePattern: new RegExp("\\.bleckmann\\.com"),
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "bleckmann:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "bleckmann:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "apiCall",
 				valuePattern: new RegExp("\\.bleckmann\\.com"),
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "bobgo",
@@ -1004,25 +1040,24 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Bobgo is a smart shipping and order management solution designed to streamline logistics and simplify order fulfillment for businesses.",
 		icon: "Bobgo.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "bobgo:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("api\\.bobgo\\.co\\.za"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "bolt-payments",
@@ -1031,65 +1066,64 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Bolt powers a checkout experience designed to convert shoppers.",
 		icon: "Bolt.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "bolt-payments:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("connect\\.bolt\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("connect\\.bolt\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "bolt-payments:scriptSrc:1",
 				kind: "scriptSrc",
-				pattern: new RegExp("account\\.bolt\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("account\\.bolt\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "bolt-payments:requestUrl:2",
 				kind: "requestUrl",
 				pattern: new RegExp("connect\\.bolt\\.com"),
-				description: "Observed request URL matches a known technology marker."
+				description: "Observed request URL matches a known technology marker.",
 			},
 			{
 				id: "bolt-payments:dom:3",
 				kind: "dom",
 				selector: "bolt-checkout-button",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "bolt-payments:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "bolt-payments:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "BoltCheckout",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "bolt-payments:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "bolt-payments:jsGlobal:5",
+				kind: "jsGlobal",
 				property: "BoltPopup",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "bolt-payments:pageGlobal:6",
-				kind: "pageGlobal",
+				id: "bolt-payments:jsGlobal:6",
+				kind: "jsGlobal",
 				property: "BoltTrack",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "bolt-payments:pageGlobal:7",
-				kind: "pageGlobal",
+				id: "bolt-payments:jsGlobal:7",
+				kind: "jsGlobal",
 				property: "bolt_callbacks",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "bon-loyalty",
@@ -1099,32 +1133,31 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "BON Loyalty.svg",
 		categories: [
 			"commerce-operations",
-			"ecommerce-extensions"
+			"ecommerce-extensions",
 		],
 		rules: [
 			{
 				id: "bon-loyalty:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.bonloyalty\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("app\\.bonloyalty\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "bon-loyalty:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "bon-loyalty:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "bonShopInfo.appearance",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		requires: [
-			"shopify"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"freemium"
-			]
-		}
+				"freemium",
+			],
+		},
+		requires: [
+			"shopify",
+		],
 	},
 	{
 		id: "bontii",
@@ -1133,24 +1166,23 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Bontii is a subscription module facilitating integration between webshop and payment solutions.",
 		icon: "Bontii.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "bontii:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("api\\.bontii\\.dk/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("api\\.bontii\\.dk\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "bootpay",
@@ -1159,96 +1191,106 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Bootpay is a payment integration service from Korea that enables businesses to process online transactions.",
 		icon: "Bootpay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "bootpay:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.bootpay\\.co\\.kr/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.bootpay\\.co\\.kr\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "borderfree",
 		name: "Borderfree",
 		website: "https://www.borderfree.com",
 		description: "Borderfree is an cross-border ecommerce solutions provider.",
-		icon: "Borderfree.svg",
+		icon: "Borderfree.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "borderfree:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("global\\.prd\\.borderfree\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "borderfree:scriptSrc:1",
 				kind: "scriptSrc",
 				pattern: new RegExp("wm\\.prd\\.borderfree\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "borderfree:scriptSrc:2",
 				kind: "scriptSrc",
 				pattern: new RegExp("bfx-objects\\.prd\\.borderfree\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "borderfree:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "borderfree:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "bfx._apiKey",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "borderfree:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "borderfree:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "bfx._brand",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "borderfree:cookie:5",
 				kind: "cookie",
-				key: "bfx.apiKey:",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^bfx\\.apiKey:$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "borderfree:cookie:6",
 				kind: "cookie",
-				key: "bfx.country:",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^bfx\\.country:$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "borderfree:cookie:7",
 				kind: "cookie",
-				key: "bfx.language",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^bfx\\.language$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "borderfree:cookie:8",
 				kind: "cookie",
-				key: "bfx.logLevel",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^bfx\\.logLevel$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "borderfree:cookie:9",
+				kind: "cookie",
+				keyPattern: new RegExp("^bfx\\.apikey:$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "borderfree:cookie:10",
+				kind: "cookie",
+				keyPattern: new RegExp("^bfx\\.loglevel$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "boxtal",
@@ -1257,13 +1299,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Boxtal is a cloud-based multi-carrier shipping solution.",
 		icon: "Boxtal.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "boxtal:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bBoxtal\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "bpost",
@@ -1272,13 +1317,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Bpost, also known as the Belgian Post Group, is the Belgian company responsible for the delivery of national and international mail.",
 		icon: "Bpost.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "bpost:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bBpost\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "braintree",
@@ -1287,34 +1335,33 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Braintree, a division of PayPal, specializes in mobile and web payment systems for ecommerce companies. Braintree provides clients with a merchant account and a payment gateway.",
 		icon: "Braintree.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "braintree:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("js\\.braintreegateway\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "braintree:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "braintree:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Braintree",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "braintree:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "braintree:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "Braintree.version",
 				valuePattern: new RegExp("^(.+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "bread",
@@ -1323,59 +1370,58 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Bread is a buy now, pay later platform for ecommerce websites.",
 		icon: "Bread.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "bread:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.getbread\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "bread:dom:1",
 				kind: "dom",
 				selector: "#bread-mini-cart-btn",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "bread:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "bread:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "BreadCalc",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "bread:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "bread:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "BreadError",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "bread:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "bread:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "BreadLoaded",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "bread:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "bread:jsGlobal:5",
+				kind: "jsGlobal",
 				property: "BreadShopify",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "bread:pageGlobal:6",
-				kind: "pageGlobal",
+				id: "bread:jsGlobal:6",
+				kind: "jsGlobal",
 				property: "bread.appHost",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "bridgerpay",
@@ -1384,21 +1430,27 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "BridgerPay is a payment operations platform designed to scale with businesses of any size.",
 		icon: "BridgerPay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "bridgerpay:responseHeader:0",
-				kind: "responseHeader",
+				id: "bridgerpay:header:0",
+				kind: "header",
 				key: "Content-Security-Policy",
-				valuePattern: new RegExp("\\.bridgerpay\\.com"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("\\.bridgerpay\\.com", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "bridgerpay:header:1",
+				kind: "header",
+				key: "content-security-policy",
+				valuePattern: new RegExp("\\.bridgerpay\\.com", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "briqpay",
@@ -1407,26 +1459,25 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Briqpay is a payment optimization platform that streamlines business payment processes through its Payments Unleashed solution.",
 		icon: "Briqpay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "briqpay:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("api\\.briqpay\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "briqpay:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "briqpay:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "_briqpay.checkout",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "brt",
@@ -1435,38 +1486,72 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "BRT, also known as Bartolini, is an Italian-based logistics service provider.",
 		icon: "BRT.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "brt:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bBRT\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "bsecure",
 		name: "bSecure",
 		website: "https://www.bsecure.pk",
-		description: "bSecure is a one-click checkout solution for selling your products all across the globe instantly.",
+		description: "bSecure is an one-click checkout solution for selling your products all across the globe instantly.",
 		icon: "bSecure.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "bsecure:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "bsecure:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "bsecure_js_object",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
+	},
+	{
+		id: "buckydrop",
+		name: "BuckyDrop",
+		website: "https://www.buckydrop.com",
+		description: "BuckyDrop is a drop-shipping service specializing in sourcing, fulfillment, and operations across Chinese ecommerce platforms.",
+		icon: "BuckyDrop.svg",
+		categories: [
+			"commerce-operations",
+		],
+		rules: [
+			{
+				id: "buckydrop:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("cdn\\.mybuckyshop\\.com"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "buckydrop:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "buckyShop.addCSS",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"freemium",
+				"low",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "budbee",
@@ -1475,13 +1560,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Budbee is a tech company that operates a logistics service for ecommerce.",
 		icon: "Budbee.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "budbee:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bBudbee\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "captain-up",
@@ -1490,20 +1578,19 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Captain Up is a service that enhances user engagement and retention by utilising gamification, social, and communication tools to maximise user engagement and lifetime value.",
 		icon: "CaptainUp.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "captain-up:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "captain-up:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "captain",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "carecart",
@@ -1513,27 +1600,26 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "CareCart.png",
 		categories: [
 			"commerce-operations",
-			"ecommerce-extensions"
+			"ecommerce-extensions",
 		],
 		rules: [
 			{
 				id: "carecart:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.carecart\\.io/api/abandoned-cart/"),
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		implies: [
-			"shopify"
+				pattern: new RegExp("app\\.carecart\\.io\\/api\\/abandoned-cart\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		implies: [
+			"shopify",
+		],
 	},
 	{
 		id: "carecart-cartly-abandoned-cart-recovery",
@@ -1543,27 +1629,26 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "CareCart.svg",
 		categories: [
 			"commerce-operations",
-			"ecommerce-extensions"
+			"ecommerce-extensions",
 		],
 		rules: [
 			{
 				id: "carecart-cartly-abandoned-cart-recovery:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.carecart\\.io/api/abandoned-cart/"),
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		implies: [
-			"shopify"
+				pattern: new RegExp("app\\.carecart\\.io\\/api\\/abandoned-cart\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		implies: [
+			"shopify",
+		],
 	},
 	{
 		id: "cartbot",
@@ -1573,34 +1658,33 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "CartBot.svg",
 		categories: [
 			"commerce-operations",
-			"ecommerce-extensions"
+			"ecommerce-extensions",
 		],
 		rules: [
 			{
 				id: "cartbot:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn-app\\.cart-bot\\.net/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn-app\\.cart-bot\\.net\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "cartbot:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "cartbot:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "CartBotScriptAppended",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		requires: [
-			"shopify"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		requires: [
+			"shopify",
+		],
 	},
 	{
 		id: "carthook",
@@ -1609,28 +1693,27 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "CartHook is a solution for creating post-purchase upsell offers on Shopify.",
 		icon: "CartHook.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "carthook:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("api\\.c\\.carthook\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		requires: [
-			"shopify"
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		requires: [
+			"shopify",
+		],
 	},
 	{
 		id: "cartrocket",
@@ -1639,26 +1722,25 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "CartRocket is a tool for cart abandonment analytics, providing insights into dropped transactions to improve recovery strategies.",
 		icon: "CartRocket.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "cartrocket:dom:0",
 				kind: "dom",
 				selector: "iframe[src*='cartrocket.com/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
 				id: "cartrocket:cookie:1",
 				kind: "cookie",
-				key: "crt_conv_cp_vtr",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^crt_conv_cp_vtr$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "cartstack",
@@ -1667,30 +1749,29 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "CartStack is a SaaS solution that allows any company with an ecommerce site or reservation system to increase revenue through reminding/encouraging consumers to return to their abandoned cart and complete their purchase.",
 		icon: "CartStack.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "cartstack:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("api\\.cartstack\\.\\w+"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "cartstack:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "cartstack:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "_cartstack",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "cashew",
@@ -1699,30 +1780,67 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Cashew is a buy now, pay later platform that allows its customers to shop now and pay later in equal monthly installments.",
 		icon: "cashew.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "cashew:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.cashewpayments\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.cashewpayments\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "cashew:responseHeader:1",
-				kind: "responseHeader",
+				id: "cashew:header:1",
+				kind: "header",
 				key: "Content-Security-Policy",
-				valuePattern: new RegExp("\\.cashewpayments\\.com"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("\\.cashewpayments\\.com", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "cashew:header:2",
+				kind: "header",
+				key: "content-security-policy",
+				valuePattern: new RegExp("\\.cashewpayments\\.com", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
+	},
+	{
+		id: "cashew-payments",
+		name: "Cashew Payments",
+		website: "https://www.cashewpayments.com",
+		description: "Cashew Payments is a buy now, pay later platform that allows its customers to shop now and pay later in equal monthly installments.",
+		icon: "Cashew Payments.svg",
+		categories: [
+			"commerce-operations",
+		],
+		rules: [
+			{
+				id: "cashew-payments:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\.cashewpayments\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "cashew-payments:header:1",
+				kind: "header",
+				key: "Content-Security-Policy",
+				valuePattern: new RegExp("\\.cashewpayments\\.com", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"payg",
+			],
+		},
 	},
 	{
 		id: "catch",
@@ -1731,20 +1849,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Catch is a payment solution which allows merchants to use payments via bank payments instead of credit/debit cards.",
 		icon: "Catch.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "catch:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "catch:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Catch",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "celeritas",
@@ -1753,41 +1867,43 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Celeritas offers transportation logistics services for package deliveries.",
 		icon: "Celeritas.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "celeritas:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bCeleritas\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "chargeafter",
 		name: "ChargeAfter",
 		website: "https://chargeafter.com/",
-		description: "ChargeAfter is a platform that connects retailers and lenders to offer consumers personalized Point of Sale Financing options at checkout from multiple lenders. ",
+		description: "ChargeAfter is a platform that connects retailers and lenders to offer consumers personalized Point of Sale Financing options at checkout from multiple lenders.",
 		icon: "ChargeAfter.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "chargeafter:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.chargeafter\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "chargeafter:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "chargeafter:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ChargeAfter",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "chargebee",
@@ -1796,37 +1912,39 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Chargebee is a PCI Level 1 certified recurring billing platform for SaaS and subscription-based businesses.",
 		icon: "Chargebee.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "chargebee:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("js\\.chargebee\\.com/v([\\d.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("js\\.chargebee\\.com\\/v([\\d.]+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "chargebee:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "chargebee:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Chargebee",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "chargebee:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "chargebee:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "chargebeeTrackFunc",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "chatt",
@@ -1837,24 +1955,23 @@ export const commerceOperationsTechnologyDefinitions = [
 		categories: [
 			"commerce-operations",
 			"email-messaging",
-			"community-ugc"
+			"community-ugc",
 		],
 		rules: [
 			{
 				id: "chatt:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("getchatt\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "checkout-com",
@@ -1863,24 +1980,26 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Checkout.com is an international payment platform that processes different payment methods across a variety of currencies.",
 		icon: "Checkout.com.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "checkout-com:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.checkout\\.com/js/.+js(?:\\?ver=)?([\\d\\.]+)?"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("cdn\\.checkout\\.com\\/js\\/.+js(?:\\?ver=)?([\\d\\.]+)?"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "chronofresh",
@@ -1889,13 +2008,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Chronofresh is an express transport service for food products.",
 		icon: "Chronopost.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "chronofresh:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bChronofresh\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "chronopost",
@@ -1904,13 +2026,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Chronopost provides a domestic and international express shipping and delivery service.",
 		icon: "Chronopost.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "chronopost:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bChronopost\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "citruspay",
@@ -1919,38 +2044,40 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "CitrusPay provides payement gateway and wallet services.",
 		icon: "citruspay.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "citruspay:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("checkout-static\\.citruspay\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("checkout-static\\.citruspay\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "citymail",
 		name: "CityMail",
 		website: "https://www.citymail.se",
 		description: "CityMail is a private postal organisation operating in Sweden.",
-		icon: "CityMail.svg",
+		icon: "CityMail.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "citymail:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bCitymail\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "cleverinsight",
@@ -1959,20 +2086,19 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "CleverInsight is a tool that helps businesses measure customer satisfaction and design loyalty programs to improve customer retention.",
 		icon: "CleverInsight.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "cleverinsight:dom:0",
 				kind: "dom",
 				selector: "iframe[src*='app.clevernps.com']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "coinbase-commerce",
@@ -1981,20 +2107,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Coinbase Commerce is a platform that enables merchants to accept cryptocurrency payments.",
 		icon: "Coinbase.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "coinbase-commerce:dom:0",
 				kind: "dom",
 				selector: "a[href^='https://commerce.coinbase.com/checkout/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "colis-priv",
@@ -2004,13 +2126,15 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "Colis Prive.svg",
 		categories: [
 			"commerce-operations",
-			"bundler"
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "colis-priv:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bColis Priv[eé]\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "colissimo",
@@ -2020,13 +2144,15 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "DPD.svg",
 		categories: [
 			"commerce-operations",
-			"bundler"
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "colissimo:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bColissimo\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "conekta",
@@ -2035,31 +2161,36 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Conekta is a Mexican payment platform.",
 		icon: "Conekta.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "conekta:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("conektaapi/v([\\d.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("conektaapi\\/v([\\d.]+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "conekta:scriptSrc:1",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.conekta\\.\\w+/js/(?:v([\\d.]+)|)"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("cdn\\.conekta\\.\\w+\\/js\\/(?:v([\\d.]+)|)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "convertim",
@@ -2068,24 +2199,23 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Convertim is an ecommerce checkout platform.",
 		icon: "Convertim.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "convertim:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "convertim:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "convertimSetup",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "correos",
@@ -2094,13 +2224,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Correos is a state-owned company responsible for providing postal service in Spain.",
 		icon: "Correos.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "correos:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bCorreos\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "corso",
@@ -2109,27 +2242,26 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Corso is an all-in-one platform for Shopify that provides shipping protection, returns, exchanges, and warranty management to streamline post-purchase processes.",
 		icon: "Corso.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "corso:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("cdn\\.corso\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
-		],
-		requires: [
-			"shopify"
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		requires: [
+			"shopify",
+		],
 	},
 	{
 		id: "coureon",
@@ -2138,13 +2270,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Coureon is a digital logistics carrier for international shipping.",
 		icon: "Coureon.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "coureon:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bCoureon\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "ctt",
@@ -2153,13 +2288,22 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "CTT operates as the national postal service of Portugal.",
 		icon: "CTT.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "ctt:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bTourline Express\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+			{
+				id: "ctt:text:1",
+				kind: "text",
+				pattern: new RegExp("\\bCTT\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "cubyn",
@@ -2168,26 +2312,28 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Cubyn is B2B logistics company headquartered in France.",
 		icon: "Cubyn.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "cubyn:scriptSrc:0",
-				kind: "scriptSrc",
-				pattern: new RegExp("\\.cubyn\\.com"),
-				description: "Script source URL matches a known technology marker."
+				id: "cubyn:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bCubyn\\b"),
+				description: "Page text contains a known technology marker.",
 			},
 			{
-				id: "cubyn:scriptContent:1",
+				id: "cubyn:scriptSrc:1",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\.cubyn\\.com"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "cubyn:scriptContent:2",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.cubyn\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "culqi",
@@ -2196,57 +2342,52 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Culqi is a payment processing platform that enables businesses to accept card payments and receive funds on the same day.",
 		icon: "Culqi.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "culqi:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.culqi\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "culqi:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "culqi:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Culqi3DS",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "culqi:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "culqi:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "CulqiCheckout",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "cybersource",
 		name: "Cybersource",
 		website: "https://www.cybersource.com/",
 		description: "Cybersource is an ecommerce credit card payment system solution.",
-		icon: "cybersource.svg",
+		icon: "cybersource.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "cybersource:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cybersource\\..+\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "dachser",
@@ -2255,13 +2396,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Dachser is a German freight company.",
 		icon: "Dachser.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "dachser:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bDachser\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "deko",
@@ -2270,20 +2414,19 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Deko is a retail finance technology platform used by UK merchants, formerly known as Pay4Later.",
 		icon: "Deko.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "deko:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("secure\\.dekopay\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "delivengo",
@@ -2292,48 +2435,49 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Delivengo is an international shipping service powered by La Poste.",
 		icon: "La Poste.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "delivengo:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bDelivengo\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "deliverr",
 		name: "Deliverr",
 		website: "https://deliverr.com",
-		description: "Deliverr is a fulfilment service that facilitates shipping services for ecommerce businesses.",
+		description: "Deliverr is a fulfillment service that facilitates shipping services for ecommerce businesses.",
 		icon: "Deliverr.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "deliverr:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("fast-tags\\.deliverr\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "deliverr:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "deliverr:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "deliverrScript",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"cart-functionality"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
 				"payg",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		implies: [
+			"cart-functionality",
+		],
 	},
 	{
 		id: "descartes",
@@ -2342,26 +2486,25 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Descartes is a technology platform that offers solutions for logistics and supply chain management.",
 		icon: "Descartes.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "descartes:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.descartes\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.descartes\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "descartes:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("ies\\.descartes"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "deuna",
@@ -2370,26 +2513,25 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "DEUNA is an AI-powered platform that orchestrates global payments and enhances commerce performance.",
 		icon: "DEUNA.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "deuna:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "deuna:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "DeunaCDL",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "deuna:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "deuna:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "DunaCheckout",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "deutsche-post",
@@ -2398,13 +2540,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Deutsche Post is a German multinational package delivery and supply chain management company in Germany.",
 		icon: "Deutsche Post.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "deutsche-post:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bDeutsche Post\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "dhl",
@@ -2413,63 +2558,76 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "DHL is an international courier, package delivery and express mail service, which is a division of the German logistics firm Deutsche Post.",
 		icon: "DHL.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "dhl:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bDHL\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+			{
+				id: "dhl:dom:1",
+				kind: "dom",
+				selector: "img[alt*='dhl' i]",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "dhl:text:2",
+				kind: "text",
+				pattern: new RegExp("\\bUK Mail\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "dividebuy",
 		name: "DivideBuy",
 		website: "https://dividebuy.co.uk/",
 		description: "Dividebuy provides retailer financing solutions.",
-		icon: "DivideBuy.svg",
+		icon: "DivideBuy.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "dividebuy:dom:0",
 				kind: "dom",
 				selector: "div[class*='dividebuy-softcredit']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "dividebuy:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "dividebuy:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "display_dividebuy_modal",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "divido",
 		name: "Divido",
 		website: "https://www.divido.com/",
 		description: "Divio is a Buy now pay later solution. Divido provided whitelabel platform connects lenders, retailers and channel partners at the point of sale",
-		icon: "Divido.svg",
+		icon: "Divido.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "divido:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.divido\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "doxo",
@@ -2478,26 +2636,25 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "doxo is a bill payment service that enables users to manage and pay multiple bills in one place through a single account and login.",
 		icon: "doxo.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "doxo:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("embed\\.doxo\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("embed\\.doxo\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "doxo:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "doxo:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "doxoConnectWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "dpd",
@@ -2507,13 +2664,15 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "DPD.svg",
 		categories: [
 			"commerce-operations",
-			"bundler"
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "dpd:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bDPD\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "dwolla",
@@ -2522,24 +2681,23 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Dwolla is a payment platform that enables businesses to transfer funds electronically through the Automated Clearing House (ACH) network.",
 		icon: "Dwolla.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "dwolla:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("www\\.dwolla\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "dx",
@@ -2548,13 +2706,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "DX (also known as DX Freight) is a British mail, courier and logistics company.",
 		icon: "DX.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "dx:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bDX\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "easylog",
@@ -2562,13 +2723,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		website: "https://www.easylog.com.br",
 		description: "EasyLog is a logistics company based in Brazil.",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "easylog:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bEasylog\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "eber",
@@ -2577,42 +2741,41 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Eber is a consumer engagement management platform for retail, F&B, hotels, and more.",
 		icon: "Eber.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "eber:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("widget\\.eber\\.co/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("widget\\.eber\\.co\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "eber:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "eber:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Eber",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "eber:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "eber:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "EberVars.channelId",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "eber:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "eber:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "intervalEberJQuery",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"high",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "ecovium",
@@ -2621,28 +2784,40 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Ecovium is an end-to-end logistics company in Germany.",
 		icon: "Ecovium.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "ecovium:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bMHP\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+			{
+				id: "ecovium:text:1",
+				kind: "text",
+				pattern: new RegExp("\\bEcovium\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "envialia",
 		name: "Envialia",
 		website: "https://www.envialia.com",
-		description: "",
+		description: ".",
 		icon: "Envialia.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "envialia:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bEnvialia\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "enviopack",
@@ -2651,20 +2826,19 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Enviopack is a technological solution designed to optimize ecommerce logistics by improving efficiency and streamlining operational processes.",
 		icon: "Enviopack.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "enviopack:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("api\\.enviopack\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "esw",
@@ -2673,32 +2847,34 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "ESW (eShopWorld) is a company providing payments, shipping, and delivery services focusing on cross-border ecommerce.",
 		icon: "ESW.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "esw:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("Eswhooks\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "esw:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "esw:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "eshopworld",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "esw:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "esw:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "eswRetailerDisplayConfiguration",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "esw:scriptSrc:3",
+				kind: "scriptSrc",
+				pattern: new RegExp("eswhooks\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "etika",
@@ -2707,87 +2883,82 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "etika is a fintech company based in Manchester which provide buy now pay later solution.",
 		icon: "etika.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "etika:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "etika:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "EtikaProductJsHelper",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "etika:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "etika:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "etikaBannerInject",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "etika:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "etika:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "etikaGlobal",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "eway-payments",
 		name: "eWAY Payments",
 		website: "https://www.eway.com.au/",
 		description: "eWAY is a global omnichannel payment provider. The company processes secure credit card payments for merchants. eWay works through eCommerce.",
-		icon: "eway.svg",
+		icon: "eway.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "eway-payments:html:0",
-				kind: "html",
-				pattern: new RegExp("<img [^>]*src=\"[^/]*//[^/]*eway\\.com"),
-				description: "HTML contains a known technology marker."
-			},
-			{
-				id: "eway-payments:scriptSrc:1",
+				id: "eway-payments:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("secure\\.ewaypayments\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "eway-payments:html:1",
+				kind: "html",
+				pattern: new RegExp("<img [^>]*src=\"[^/]*\\/\\/[^/]*eway\\.com"),
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "eway-payments:scriptContent:2",
 				kind: "scriptContent",
 				pattern: new RegExp("api\\.ewaypayments\\.com"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "eway-payments:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "eway-payments:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "eWAY.eventHandler",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "eway-payments:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "eway-payments:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "eWAYUtils",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "eway-payments:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "eway-payments:jsGlobal:5",
+				kind: "jsGlobal",
 				property: "ewayVars",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "exemptify",
@@ -2797,39 +2968,38 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "Exemptify.png",
 		categories: [
 			"commerce-operations",
-			"ecommerce-extensions"
+			"ecommerce-extensions",
 		],
 		rules: [
 			{
 				id: "exemptify:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.modules4u\\.biz/shopify/exemptify"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.modules4u\\.biz\\/shopify\\/exemptify"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "exemptify:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "exemptify:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ExemptifyTriggerUpdate",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "exemptify:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "exemptify:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "m4u_ex_vat_postfix_txt",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"shopify"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		implies: [
+			"shopify",
+		],
 	},
 	{
 		id: "extend",
@@ -2838,27 +3008,29 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Extend is a service that offers brands product and shipping protection, creating a new revenue source while enhancing customer loyalty and trust.",
 		icon: "Extend.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "extend:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("sdk\\.helloextend\\.com/extend-sdk-client/v([\\d.]+)/extend-sdk-client\\.min\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("sdk\\.helloextend\\.com\\/extend-sdk-client\\/v([\\d.]+)\\/extend-sdk-client\\.min\\.js"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "extend:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "extend:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Extend",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "eyefitu",
@@ -2867,35 +3039,34 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "EyeFitU is a Size-as-a-Service AI platform for ecommerce that provides automated sizing intelligence to improve fit accuracy and reduce returns.",
 		icon: "EyeFitU.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "eyefitu:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("web-sdk\\.eyefitu\\.com"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "eyefitu:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "eyefitu:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "eyefitu.version",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "eyefitu:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "eyefitu:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "eyefituCalls",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "facebook-pay",
@@ -2904,72 +3075,76 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Facebook pay is a payment solution which can be used on any site or app outside Facebook ecosystem.",
 		icon: "Facebook.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "facebook-pay:dom:0",
 				kind: "dom",
 				selector: "[aria-labelledby='pi-facebook_pay']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "fat-zebra",
 		name: "Fat Zebra",
 		website: "https://www.fatzebra.com/",
 		description: "Fat Zebra provides a process of accepting credit card payments online.",
-		icon: "fatzebra.svg",
+		icon: "fatzebra.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "fat-zebra:html:0",
-				kind: "html",
-				pattern: new RegExp("<(?:iframe|img|form)[^>]+paynow\\.pmnts\\.io"),
-				description: "HTML contains a known technology marker."
+				id: "fat-zebra:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("paynow\\.pmnts\\.io"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "fat-zebra:html:1",
 				kind: "html",
-				pattern: new RegExp("<(?:iframe)[^>]+FatZebraFrame"),
-				description: "HTML contains a known technology marker."
+				pattern: new RegExp("<(?:iframe|img|form)[^>]+paynow\\.pmnts\\.io"),
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "fat-zebra:scriptSrc:2",
-				kind: "scriptSrc",
-				pattern: new RegExp("paynow\\.pmnts\\.io"),
-				description: "Script source URL matches a known technology marker."
+				id: "fat-zebra:html:2",
+				kind: "html",
+				pattern: new RegExp("<(?:iframe)[^>]+FatZebraFrame"),
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "fat-zebra:dom:3",
 				kind: "dom",
 				selector: "iframe[src*='paynow.pmnts.io']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
 				id: "fat-zebra:dom:4",
 				kind: "dom",
 				selector: "form[action*='paynow.pmnts.io']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
 				id: "fat-zebra:dom:5",
 				kind: "dom",
 				selector: "iframe[src*='FatZebraFrame']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "fat-zebra:html:6",
+				kind: "html",
+				pattern: new RegExp("<(?:iframe)[^>]+fatzebraframe"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "fat-zebra:dom:7",
+				kind: "dom",
+				selector: "iframe[src*='paynow.pmnts.io'], form[action*='paynow.pmnts.io'], iframe[src*='FatZebraFrame']",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "fedex",
@@ -2978,13 +3153,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "FedEx is an American multinational company which focuses on transportation, ecommerce and business services.",
 		icon: "FedEx.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "fedex:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bFedEx\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "feroot",
@@ -2993,20 +3171,19 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Feroot is a platform for creating PCI DSS 4.0.1–compliant payment pages that ensure safe handling of transaction and customer data.",
 		icon: "Feroot.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "feroot:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("pg\\.feroot\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "finconnect",
@@ -3015,26 +3192,25 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "FinConnect is a platform that enables financial transactions and connections between individuals and businesses, supporting money management and access to related services.",
 		icon: "FinConnect.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "finconnect:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.finconnect\\.nl"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "finconnect:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "finconnect:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "FinConnect.documentReady",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "flip-pay",
@@ -3043,32 +3219,31 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Flip-Pay is a platform that provides advanced content monetization solutions, offering end-to-end paywall services for publishers and digital businesses.",
 		icon: "FlipPay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "flip-pay:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.flip-pay\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "flip-pay:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "flip-pay:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "flipPay.getCustomerAcessStatus",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "flip-pay:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "flip-pay:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "flipPayConfig",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "flow",
@@ -3077,41 +3252,40 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Flow is an ecommerce platform that enables brands and retailers to sell their merchandise to customers internationally by creating localized shopping experiences.",
 		icon: "Flow.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "flow:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("(?:shopify-)?cdn\\.flow\\.io/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("(?:shopify-)?cdn\\.flow\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "flow:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "flow:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "flow.cart",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "flow:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "flow:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "flow.countryPicker",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "flow:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "flow:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "flow_cart_localize",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "fondue",
@@ -3120,30 +3294,29 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Fondue is a platform that helps businesses drive profitable growth by ditching discount codes and giving cash back instead.",
 		icon: "Fondue.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "fondue:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("public\\.getfondue\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("public\\.getfondue\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "fondue:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "fondue:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Fondue",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "forte",
@@ -3152,23 +3325,22 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Forte, a CSG Company offers merchants and partners a broad range of payment solutions.",
 		icon: "Forte.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "forte:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("checkout\\.forte\\.net"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "four",
@@ -3177,26 +3349,25 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Pay with four is a Buy now pay later solution.",
 		icon: "Four.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "four:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("scripts\\.paywithfour\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "four:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "four:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Four",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "france-express",
@@ -3205,13 +3376,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "France Express is a delivery service based in France.",
 		icon: "France Express.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "france-express:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bFrance Express\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "frequenceo",
@@ -3220,13 +3394,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Frequenceo is a fixed-rate postage service in France.",
 		icon: "La Poste.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "frequenceo:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bFrequenceo\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "fundiin",
@@ -3235,27 +3412,26 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Fundiin is the BNPL leader in Vietnam in providing zero-cost buy-now-pay-later facilities.",
 		icon: "Fundiin.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "fundiin:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "fundiin:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "websiteEnableSuggestFundiin",
 				valuePattern: new RegExp("true"),
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "fundiin:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "fundiin:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "websiteMaximumSuggestFundiinWithPrediction",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "gameball",
@@ -3264,39 +3440,38 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Gameball is a loyalty & retention platform that offers gamified customer engagement tools for customers such as rewards, points, and referrals.",
 		icon: "Gameball.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "gameball:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("assets\\.gameball\\.co/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("assets\\.gameball\\.co\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "gameball:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "gameball:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "GbSdk.settings.shop",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "gameball:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "gameball:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "gbReferralCodeInput",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring",
 				"payg",
-				"poa"
-			]
-		}
+				"poa",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "geodis",
@@ -3305,13 +3480,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "GEODIS is a global transport and logistics company.",
 		icon: "GEODIS.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "geodis:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bGeodis\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "getrooster",
@@ -3319,31 +3497,30 @@ export const commerceOperationsTechnologyDefinitions = [
 		website: "https://www.getrooster.com",
 		description: "GetRooster is a system designed to optimise the conversion of abandoning visitors.",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "getrooster:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("//app\\.getrooster\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/\\/app\\.getrooster\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "getrooster:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "getrooster:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "_GT_config.gt_host",
-				valuePattern: new RegExp("//app\\.getrooster\\.com/"),
-				description: "Page-owned global matches a known technology marker."
-			}
+				valuePattern: new RegExp("\\/\\/app\\.getrooster\\.com\\/"),
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "global-e",
@@ -3352,53 +3529,100 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Global-e is a provider of cross-border ecommerce solutions.",
 		icon: "Global-e.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "global-e:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.global-e\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "global-e:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "global-e:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "GLOBALE_ENGINE_CONFIG",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "global-e:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "global-e:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "GlobalE",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "global-e:cookie:3",
 				kind: "cookie",
-				key: "GlobalE_CT_Data",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^GlobalE_CT_Data$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "global-e:cookie:4",
 				kind: "cookie",
-				key: "GlobalE_Data",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^GlobalE_Data$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "global-e:cookie:5",
 				kind: "cookie",
-				key: "GlobalE_SupportThirdPartCookies",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^GlobalE_SupportThirdPartCookies$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "global-e:jsGlobal:6",
+				kind: "jsGlobal",
+				property: "GLBE_PARAMS",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "global-e:cookie:7",
+				kind: "cookie",
+				keyPattern: new RegExp("^GLBE_SESS_ID$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "global-e:cookie:8",
+				kind: "cookie",
+				keyPattern: new RegExp("^GlobalE_Consent$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "global-e:cookie:9",
+				kind: "cookie",
+				keyPattern: new RegExp("^glbe_sess_id$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "global-e:cookie:10",
+				kind: "cookie",
+				keyPattern: new RegExp("^globale_consent$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "global-e:cookie:11",
+				kind: "cookie",
+				keyPattern: new RegExp("^globale_ct_data$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "global-e:cookie:12",
+				kind: "cookie",
+				keyPattern: new RegExp("^globale_data$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "global-e:cookie:13",
+				kind: "cookie",
+				keyPattern: new RegExp("^globale_supportthirdpartcookies$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "globalshopex",
@@ -3407,63 +3631,61 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "GlobalShopex offers a logistics ecommerce solution easy to integrate, which helps online businesses to sell in over 200 countries.",
 		icon: "GlobalShopex.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "globalshopex:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("//globalshopex\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/\\/globalshopex\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "globalshopex:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "globalshopex:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "GSXMiniCheckout",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "globalshopex:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "globalshopex:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "GSXPreviewCheckout",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "glopal",
 		name: "Glopal",
 		website: "https://www.glopal.com",
 		description: "Glopal provides advanced international marketing solutions for ecommerce retailers and brands seeking to grow their businesses' globally.",
-		icon: "Glopal.svg",
+		icon: "Glopal.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "glopal:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.glopal\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.glopal\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
+				"payg",
 				"recurring",
-				"payg"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "glow",
@@ -3472,26 +3694,25 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Glow is a rewards platform that helps businesses increase repeat sales by encouraging one-time buyers to return through structured customer retention programs.",
 		icon: "Glow.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "glow:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("www\\.glowloyalty\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"payg",
 				"recurring",
-				"payg"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "gls",
@@ -3501,13 +3722,15 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "GLS.svg",
 		categories: [
 			"commerce-operations",
-			"bundler"
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "gls:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bGLS\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "google-pay",
@@ -3516,53 +3739,48 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Google Pay is a digital wallet platform and online payment system developed by Google to power in-app and tap-to-pay purchases on mobile devices, enabling users to make payments with Android phones, tablets or watches.",
 		icon: "Google.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "google-pay:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("pay\\.google\\.com/([a-z/]+)/pay\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("pay\\.google\\.com\\/([a-z/]+)\\/pay\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "google-pay:dom:1",
 				kind: "dom",
 				selector: "[aria-labelledby='pi-google_pay'], ul[data-shopify-buttoncontainer] li",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "google-wallet",
 		name: "Google Wallet",
 		website: "https://wallet.google.com",
-		icon: "Google Wallet.svg",
+		icon: "Google Wallet.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "google-wallet:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("checkout\\.google\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "google-wallet:scriptSrc:1",
 				kind: "scriptSrc",
 				pattern: new RegExp("wallet\\.google\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "grab-pay-later",
@@ -3571,85 +3789,82 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Grab Pay Later is a buy now pay later solution offered by Grab.",
 		icon: "Grab.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "grab-pay-later:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("grab-paylater\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "grab-pay-later:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "grab-pay-later:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "GrabWidget",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "grab-pay-later:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "grab-pay-later:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "grab_widget_money_format",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "happy-returns",
 		name: "Happy Returns",
 		website: "https://happyreturns.com",
 		description: "Happy Returns is a return software and reverse logistics company, provides a packaging-free, in-person way for customers to return an online purchase for an immediate refund.",
-		icon: "Happy Returns.svg",
+		icon: "Happy Returns.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "happy-returns:dom:0",
 				kind: "dom",
 				selector: "a[href*='.happyreturns.com'], img[src*='.happyreturns.com/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "heartland-payment-systems",
 		name: "Heartland Payment Systems",
 		website: "https://www.heartlandpaymentsystems.com",
-		description: "Heartland Payment Systems is a US-based payment processing and technology provider.",
+		description: "Heartland Payment Systems is an US-based payment processing and technology provider.",
 		icon: "Heartland Payment Systems.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "heartland-payment-systems:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.heartlandportico\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg",
 				"low",
-				"recurring"
-			]
-		}
+				"payg",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "hermes",
@@ -3658,13 +3873,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Hermes offers integrated solutions along the supply chain and partners with national and international trading companies.",
 		icon: "Hermes.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "hermes:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bHermes\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "heylight",
@@ -3673,44 +3891,43 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "HeyLight is a BNPL system allowing instalment payments for online purchases.",
 		icon: "HeyLight.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "heylight:dom:0",
 				kind: "dom",
 				selector: "div#heidipay-container, div[data-heidipay], div#pagolight-pro-dialog, iframe#heidipay-iframe-product-description-pagolight, style#heyLightFonts",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "heylight:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "heylight:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "closePagodilModal",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "heylight:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "heylight:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "openPagodilModal",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "heylight:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "heylight:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "pagodilLang",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "heylight:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "heylight:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "pagodilSprintf",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "heypongo",
@@ -3719,24 +3936,23 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "HeyPongo is a platform that helps merchants convert visitors into loyal customers and boost revenue through customer engagement tools.",
 		icon: "HeyPongo.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "heypongo:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("api\\.heypongo\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "hipay",
@@ -3745,29 +3961,27 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "HiPay is a payment gateway provider and payment orchestration platform.",
 		icon: "HiPay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "hipay:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.hipay\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.hipay\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "hipay:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "hipay:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "HiPay",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "homerr",
@@ -3776,13 +3990,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Homerr is a logistics company operating in the Netherlands and Belgium.",
 		icon: "Homerr.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "homerr:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bHomerr\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "hoolah",
@@ -3791,29 +4008,28 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "hoolah is Asia's omni-channel buy now pay later platform.",
 		icon: "hoolah.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "hoolah:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("merchant\\.cdn\\.hoolah\\.co/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("merchant\\.cdn\\.hoolah\\.co\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "hoolah:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "hoolah:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "hoolah",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "humm",
@@ -3822,68 +4038,91 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Humm (formerly Flexigroup) is a buy now pay later service operating in Australia.",
 		icon: "Humm.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "humm:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("widgets\\.shophumm\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "humm:scriptSrc:1",
 				kind: "scriptSrc",
-				pattern: new RegExp("/wp-content/plugins/oxipay-payment-gateway/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/wp-content\\/plugins\\/oxipay-payment-gateway\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "humm:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "humm:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "checkout.enabledpayments.humm",
 				valuePattern: new RegExp("^true$"),
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
+	},
+	{
+		id: "hypersoft",
+		name: "Hypersoft",
+		website: "https://hypersoft.de",
+		description: "Hypersoft is a provider of POS systems designed for restaurants and cafés.",
+		icon: "Hypersoft.svg",
+		categories: [
+			"commerce-operations",
+		],
+		rules: [
+			{
+				id: "hypersoft:header:0",
+				kind: "header",
+				key: "Access-Control-Allow-Origin",
+				valuePattern: new RegExp("\\.myhypersoftapp\\.de", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+		},
 	},
 	{
 		id: "iamport",
 		name: "Iamport",
 		website: "https://www.iamport.kr",
 		description: "Iamport is an information technology company based in South Korea.",
-		icon: "Iamport.svg",
+		icon: "Iamport.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "iamport:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.iamport\\.kr/js/iamport\\.payment-([\\d\\.]+)\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn\\.iamport\\.kr\\/js\\/iamport\\.payment-([\\d\\.]+)\\.js"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "iamport:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "iamport:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "IMP.request_pay",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "instamojo",
@@ -3892,27 +4131,23 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Instamojo is a Bangalore-based company that provides a platform for selling digital goods and collecting payment online.",
 		icon: "instamojo.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "instamojo:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "instamojo:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "INITIAL_STATE.seller.avatar",
-				valuePattern: new RegExp("\\.instamojo\\.com/"),
-				description: "Page-owned global matches a known technology marker."
+				valuePattern: new RegExp("\\.instamojo\\.com\\/"),
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "instamojo:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "instamojo:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Instamojo",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "inveterate",
@@ -3921,37 +4156,36 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Inveterate is a loyalty platform designed to support flexible, scalable loyalty programs across various industries.",
 		icon: "Inveterate.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "inveterate:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.inveterate\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "inveterate:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "inveterate:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Inveterate",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "inveterate:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "inveterate:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "inveterate",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "iugu",
@@ -3960,26 +4194,25 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "iugu is a financial management platform that enables businesses to handle payments, billing, and invoicing through a unified system.",
 		icon: "iugu.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "iugu:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("js\\.iugu\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "iugu:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "iugu:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Iugu.CreditCard",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "iyzico",
@@ -3988,54 +4221,28 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "iyzico is a payment receipt system management platform that offers ePayment solutions.",
 		icon: "iyzico.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "iyzico:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "iyzico:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "iyz.ideaSoft",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "iyzico:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "iyzico:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "iyz.position",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
-	},
-	{
-		id: "jquery-payment",
-		name: "jQuery Payment",
-		website: "https://plugins.jquery.com/payment",
-		description: "jQuery Payment is a general-purpose library for building credit card forms, validating input fields, and formatting card numbers.",
-		icon: "jQuery.svg",
-		categories: [
-			"commerce-operations"
-		],
-		rules: [
-			{
-				id: "jquery-payment:scriptSrc:0",
-				kind: "scriptSrc",
-				pattern: new RegExp("/jquery-payment/jquery\\.payment\\.min\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		requires: [
-			"jquery"
-		],
-		metadata: {
-			saas: false,
-			oss: true
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "juspay",
@@ -4044,45 +4251,40 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Juspay is a developer of an online platform designed to be used for mobile-based payments.",
 		icon: "juspay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "juspay:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "juspay:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Juspay",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "just",
 		name: "JUST",
 		website: "https://www.getjusto.com",
-		description: "JUST is a one-click payment solution for online business and online shoppers.",
+		description: "JUST is an one-click payment solution for online business and online shoppers.",
 		icon: "JUST.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "just:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("checkout-button-.+/just-pay-button\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("checkout-button-.+\\/just-pay-button\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "kangaroo-rewards",
@@ -4091,45 +4293,47 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Kangaroo Rewards is a platform designed to help businesses grow by fostering customer loyalty and enhancing brand recognition.",
 		icon: "KangarooRewards.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "kangaroo-rewards:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("www\\.kangaroorewards\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("www\\.kangaroorewards\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "kangaroo-rewards:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "kangaroo-rewards:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "KangarooApps.Loyalties",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "keen-delivery",
 		name: "Keen Delivery",
 		website: "https://www.keendelivery.com",
-		description: "Keen Delivery is a Dutch shipping platform ",
+		description: "Keen Delivery is a Dutch shipping platform.",
 		icon: "Keen Delivery.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "keen-delivery:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bKeen Delivery\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "keptify",
@@ -4138,37 +4342,39 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Keptify helps ecommerce sites of any size to increase sales and conversion rates by providing visitors with a personalised shopping experience.",
 		icon: "Keptify.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "keptify:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.keptify\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("app\\.keptify\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "keptify:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "keptify:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "KEPTIFY_BASE_URL",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "keptify:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "keptify:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "_keptify.version",
 				valuePattern: new RegExp("^([\\d\\.]+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "klarna-checkout",
@@ -4177,62 +4383,61 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Klarna Checkout is a complete payment solution where Klarna handles a store's entire checkout.",
 		icon: "Klarna.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "klarna-checkout:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.klarnaservices\\.com/lib\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.klarnaservices\\.com\\/lib\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "klarna-checkout:dom:1",
 				kind: "dom",
 				selector: "[aria-labelledby='pi-klarna']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "klarna-checkout:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "klarna-checkout:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "KlarnaOnsiteService",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "klarna-checkout:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "klarna-checkout:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "_klarnaCheckout",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "klarna-checkout:cookie:4",
 				kind: "cookie",
-				key: "ku1-sid",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^ku1\\-sid$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "klarna-checkout:cookie:5",
 				kind: "cookie",
-				key: "ku1-vid",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^ku1\\-vid$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
-				id: "klarna-checkout:responseHeader:6",
-				kind: "responseHeader",
+				id: "klarna-checkout:header:6",
+				kind: "header",
 				key: "content-security-policy",
-				valuePattern: new RegExp("\\.klarna(?:cdn|services)\\.(?:net|com)"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("\\.klarna(?:cdn|services)\\.(?:net|com)", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg",
 				"low",
-				"recurring"
-			]
-		}
+				"payg",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "klasha",
@@ -4241,26 +4446,22 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Klasha is a payment solution provider that handles a store's entire checkout.",
 		icon: "Klasha.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "klasha:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("klasha-integration\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "klasha:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "klasha:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "KlashaClient",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "knit-pay",
@@ -4269,20 +4470,19 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Knit Pay is a platform designed for collecting payments and managing businesses while ensuring customer data security.",
 		icon: "Knitpay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "knit-pay:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "knit-pay:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "knit_pay_payment_button_ajax_object",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "kueskipay",
@@ -4291,32 +4491,30 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "KueskiPay is a buy-now-pay-later solution.",
 		icon: "KueskiPay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "kueskipay:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.kueskipay\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "kueskipay:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "kueskipay:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "kueskypushhead",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"cart-functionality"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
+		implies: [
+			"cart-functionality",
+		],
 	},
 	{
 		id: "laterpay",
@@ -4325,28 +4523,44 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Laterpay is a service that simplifies payments on the Internet. In addition to the classic immediate purchase option, Laterpay also allows you to buy digital content such as articles or videos now and pay later.",
 		icon: "laterpay.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "laterpay:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("https?://connectormwi\\.laterpay\\.net/([0-9.]+)[a-zA-z-]*/live/[\\w-]+\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("https?:\\/\\/connectormwi\\.laterpay\\.net\\/([0-9.]+)[a-zA-z-]*\\/live\\/[\\w-]+\\.js"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "laterpay:meta:1",
 				kind: "meta",
 				key: "laterpay:connector:callbacks:on_user_has_access",
-				valuePattern: new RegExp("deobfuscateText"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("deobfuscateText", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "laterpay:scriptSrc:2",
+				kind: "scriptSrc",
+				pattern: new RegExp("https?:\\/\\/connectormwi\\.laterpay\\.net\\/([0-9.]+)[a-za-z-]*\\/live\\/[\\w-]+\\.js"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "laterpay:meta:3",
+				kind: "meta",
+				key: "laterpay:connector:callbacks:on_user_has_access",
+				valuePattern: new RegExp("deobfuscatetext", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "latitudepay",
@@ -4355,42 +4569,41 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "LatitudePay is an interest-free, buy now, pay later solution.",
 		icon: "LatitudePay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "latitudepay:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.latitudepayapps\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.latitudepayapps\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "latitudepay:dom:1",
 				kind: "dom",
 				selector: "a[href*='latitudepay.com/'][target='_blank'], img[src='.latitudepayapps.com/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "latitudepay:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "latitudepay:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "checkout.enabledpayments.latitudepay",
 				valuePattern: new RegExp("^true$"),
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "latitudepay:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "latitudepay:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "wc_ga_pro.available_gateways.latitudepay",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"freemium"
-			]
-		}
+				"freemium",
+			],
+		},
 	},
 	{
 		id: "lawpay",
@@ -4399,24 +4612,23 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Payment for law firms.",
 		icon: "Lawpay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "lawpay:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\b(?:lawpay)\\b"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"payg",
 				"recurring",
-				"payg"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "laybuy",
@@ -4425,66 +4637,65 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Laybuy is a payment service that lets you receive your purchase now and spread the total cost over 6 weekly automatic payments interest free.",
 		icon: "LayBuy.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "laybuy:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.laybuy\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.laybuy\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "laybuy:scriptSrc:1",
 				kind: "scriptSrc",
-				pattern: new RegExp("/wp-content/plugins/woo-laybuy/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/wp-content\\/plugins\\/woo-laybuy\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "laybuy:dom:2",
 				kind: "dom",
 				selector: "iframe[src='.laybuy.com/'], a[href*='.laybuy.com/what-is-laybuy']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "laybuy:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "laybuy:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "LaybuyHelper",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "laybuy:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "laybuy:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "checkout.enabledpayments.laybuy",
 				valuePattern: new RegExp("^true$"),
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "laybuy:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "laybuy:jsGlobal:5",
+				kind: "jsGlobal",
 				property: "laybuyEnableCart",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "laybuy:pageGlobal:6",
-				kind: "pageGlobal",
+				id: "laybuy:jsGlobal:6",
+				kind: "jsGlobal",
 				property: "laybuyMoneyOverides",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "laybuy:pageGlobal:7",
-				kind: "pageGlobal",
+				id: "laybuy:jsGlobal:7",
+				kind: "jsGlobal",
 				property: "wc_ga_pro.available_gateways.laybuy",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "layup",
@@ -4493,31 +4704,36 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "LayUp is a payment technology platform enabling customers to pay for goods and services over time.",
 		icon: "LayUp.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "layup:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("layup\\.co\\.za"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "layup:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "layup:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "LayUpCheckoutButton",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "layup:scriptSrc:2",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\layup\\.co\\.za"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "lemon-squeezy",
@@ -4526,29 +4742,28 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Lemon Squeezy is a platform designed for SaaS businesses, providing functionalities such as payment processing, subscription management, global tax compliance, fraud prevention, multi-currency support, failed payment recovery, and integration with PayPal, with the aim of facilitating the operational management of software businesses.",
 		icon: "Lemon Squeezy.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "lemon-squeezy:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "lemon-squeezy:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "LemonSqueezy",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "lemon-squeezy:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "lemon-squeezy:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "lemonSqueezyAffiliateConfig",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "liberapay",
@@ -4557,26 +4772,22 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Liberapay is a non-profit organisation subscription payment platform.",
 		icon: "Liberapay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "liberapay:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("//liberapay\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/\\/liberapay\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "liberapay:dom:1",
 				kind: "dom",
 				selector: "a[href*='//liberapay.com/'][target='_blank']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "lily",
@@ -4585,35 +4796,34 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Lily is a BigCommerce app that rewards customers with loyalty points for making purchases, signing up, following or sharing on social media, and more.",
 		icon: "Lily.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "lily:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "lily:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "lilyCustomerId",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "lily:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "lily:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "lilyHash",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "lily:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "lily:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "lilyPl",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		requires: [
-			"bigcommerce"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
+		requires: [
+			"bigcommerce",
+		],
 	},
 	{
 		id: "limepay",
@@ -4622,78 +4832,97 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Limepay is a buy now, pay later platform that's fully integrated with the merchant's payment platform.",
 		icon: "Limepay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "limepay:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/wp-content/plugins/Limepay-v\\d+/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/wp-content\\/plugins\\/Limepay-v\\d+\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "limepay:scriptSrc:1",
 				kind: "scriptSrc",
-				pattern: new RegExp("/limepay-installment-show\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/limepay-installment-show\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "limepay:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "limepay:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "LimepayIdentity",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "limepay:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "limepay:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "wc_ga_pro.available_gateways.limepay",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "limepay:scriptSrc:4",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\/wp-content\\/plugins\\/limepay-v\\d+\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "localised",
 		name: "Localised",
 		website: "https://www.localised.com",
 		description: "Localised is local-first ecommerce platform.",
-		icon: "Localised.svg",
+		icon: "Localised.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "localised:requestUrl:0",
 				kind: "requestUrl",
 				pattern: new RegExp("api\\.localised\\.com"),
-				description: "Observed request URL matches a known technology marker."
-			}
+				description: "Observed request URL matches a known technology marker.",
+			},
+			{
+				id: "localised:dom:1",
+				kind: "dom",
+				selector: "img[src='.localised.com']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "localised:dom:2",
+				kind: "dom",
+				selector: "span",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "logoix",
 		name: "LogoiX",
 		website: "https://www.logoix.com",
 		description: "LogoiX is a German shipping company.",
-		icon: "LogoiX.svg",
+		icon: "LogoiX.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "logoix:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bLogoiX\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "loloyal",
@@ -4702,42 +4931,41 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Loloyal is a loyalty and rewards program for Shopify that helps small businesses increase customer engagement and retention through user-friendly features.",
 		icon: "Loloyal.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "loloyal:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("static\\.loloyal\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "loloyal:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("static\\.loloyal\\.com"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "loloyal:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "loloyal:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "LOLOYAL_ONSITE",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "loloyal:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "loloyal:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "LOLOYAL_ONSITE_ALL_LOCALE",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "loop-returns",
@@ -4746,81 +4974,79 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Loop Returns is a return portal that automated all the returns and refunds of products.",
 		icon: "Loop.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "loop-returns:dom:0",
 				kind: "dom",
 				selector: "a[href*='.loopreturns.com/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "loop-returns:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "loop-returns:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Loop.config.variantParam",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "loop-returns:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "loop-returns:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "LoopOnstore",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "lootly",
 		name: "Lootly",
 		website: "https://lootly.io",
 		description: "Lootly is a loyalty and referral marketing automation software suite for ecommerce businesses.",
-		icon: "Lootly.svg",
+		icon: "Lootly.png",
 		categories: [
 			"commerce-operations",
-			"marketing-automation"
+			"marketing-automation",
 		],
 		rules: [
 			{
 				id: "lootly:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("lootly\\.io/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("lootly\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "lootly:dom:1",
 				kind: "dom",
 				selector: "iframe[src*='lootly.io/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "lootly:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "lootly:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "Lootly.config",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "lootly:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "lootly:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "lootlyWidgetInit",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "loyalis",
@@ -4828,20 +5054,19 @@ export const commerceOperationsTechnologyDefinitions = [
 		website: "https://www.loyalis.nl",
 		description: "Loyalis is a loyalty program for ecommerce that enables businesses to reward customers based on purchases and engagement.",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "loyalis:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "loyalis:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "loyalisOptions.key",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "loyaltylion",
@@ -4850,32 +5075,34 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "LoyaltyLion is a data-driven ecommerce loyalty and engagement platform.",
 		icon: "LoyaltyLion.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "loyaltylion:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("sdk\\.loyaltylion\\.net/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("sdk\\.loyaltylion\\.net\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "loyaltylion:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "loyaltylion:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "loyaltylion.version",
 				valuePattern: new RegExp("([\\d\\-]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "loyalzoo",
@@ -4884,24 +5111,23 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Loyalzoo is a platform that enables businesses to manage customer loyalty, marketing campaigns, and subscription services.",
 		icon: "Loyalzoo.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "loyalzoo:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.loyalzoo\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "loyoly",
@@ -4910,25 +5136,24 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Loyoly is a loyalty and referral platform integrating user-generated content and reviews, enabling customer engagement with brands.",
 		icon: "Loyoly.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "loyoly:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("assets\\.loyoly\\.io/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("assets\\.loyoly\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "malomo",
@@ -4937,31 +5162,30 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Malomo is a cloud-based shipment tracking solution that helps small to midsize eCommerce businesses provide customers with shipping updates via white-label package tracking pages.",
 		icon: "Malomo.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "malomo:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.gomalomo\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.gomalomo\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "malomo:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "malomo:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Malomo",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "mapmychannel",
@@ -4970,25 +5194,24 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "MapMyChannel is a cloud-based fulfillment platform that integrates with ecommerce systems to automate inventory, shipping, and order management.",
 		icon: "MapMyChannel.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "mapmychannel:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.mapmychannel\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.mapmychannel\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "marsello",
@@ -4997,31 +5220,36 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Marsello is an omnichannel loyalty platform that integrates with sales channels, enhancing customer engagement and retention by providing a unified experience across various points of sale.",
 		icon: "Marsello.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "marsello:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.marsello\\.com"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
 				id: "marsello:cookie:1",
 				kind: "cookie",
-				key: "marselloExitPopup",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^marselloExitPopup$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "marsello:cookie:2",
+				kind: "cookie",
+				keyPattern: new RegExp("^marselloexitpopup$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "mastercard",
@@ -5030,20 +5258,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "MasterCard facilitates electronic funds transfers throughout the world, most commonly through branded credit cards, debit cards and prepaid cards.",
 		icon: "Mastercard.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "mastercard:dom:0",
 				kind: "dom",
 				selector: "[aria-labelledby='pi-mastercard'], [aria-labelledby='pi-master']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "midtrans",
@@ -5052,23 +5276,22 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Midtrans is a payment gateway system from Indonesia.",
 		icon: "Midtrans.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "midtrans:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app(?:\\.sandbox)?\\.midtrans\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("app(?:\\.sandbox)?\\.midtrans\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "minibc",
@@ -5077,34 +5300,33 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "MiniBC is a BigCommerce payment app builder that enables the creation and management of custom payment solutions within the BigCommerce platform.",
 		icon: "MiniBC.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "minibc:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("apps\\.minibc\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "minibc:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("apps\\.minibc\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
-		],
-		requires: [
-			"bigcommerce"
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
+		requires: [
+			"bigcommerce",
+		],
 	},
 	{
 		id: "mintpay",
@@ -5113,42 +5335,37 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Mintpay is a system that allows purchases to be made immediately and paid for later in installments.",
 		icon: "Mintpay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "mintpay:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/wp-content/plugins/mintpay/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\/wp-content\\/plugins\\/mintpay\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "mobicred",
 		name: "mobicred",
 		website: "https://mobicred.co.za/",
 		description: "Mobicred is a credit facility that allows you to safely shop online with our participating retailers.",
-		icon: "Mobicred.svg",
+		icon: "Mobicred.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "mobicred:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.mobicredwidget\\.co\\.za"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "mokka",
@@ -5157,20 +5374,19 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Mokka is a Buy Now Pay Later solution that connects target customer acquisition and settlement costs through marketing and promotion.",
 		icon: "Mokka.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "mokka:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("revoiframe\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "mollie",
@@ -5179,26 +5395,25 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Mollie is a payment provider for Belgium and the Netherlands, offering payment methods such as credit card, iDEAL, Bancontact/Mister cash, PayPal, SCT, SDD, and others.",
 		icon: "Mollie.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "mollie:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/wp-content/plugins/mollie-payments-for-woocommerce/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/wp-content\\/plugins\\/mollie-payments-for-woocommerce\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "mollie:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "mollie:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Mollie",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "mondial-relay",
@@ -5208,14 +5423,15 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "Mondial Relay.svg",
 		categories: [
 			"commerce-operations",
-			"bundler",
-			"api-pattern"
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "mondial-relay:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bMondial Relay\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "moneris",
@@ -5224,30 +5440,40 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Moneris (formerly Moneris Solutions) is Canada's largest financial technology company that specialises in payment processing.",
 		icon: "Moneris.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "moneris:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "moneris:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "initialServerData.monerisConfiguration",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "moneris:responseHeader:1",
-				kind: "responseHeader",
+				id: "moneris:header:1",
+				kind: "header",
 				key: "content-security-policy",
-				valuePattern: new RegExp("\\.moneris\\.com"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("\\.moneris\\.com", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
+	},
+	{
+		id: "moyasar",
+		name: "Moyasar",
+		website: "https://moyasar.com/en",
+		description: "Moyasar is a payment gateway platform for accepting online payments in Saudi Arabia and the MENA region.",
+		icon: "Moyasar.png",
+		categories: [
+			"commerce-operations",
+		],
+		rules: [],
 	},
 	{
 		id: "mrw",
@@ -5256,13 +5482,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "MRW is a Spanish courier company specialised in express national and international shipping services.",
 		icon: "MRW.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "mrw:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bMRW\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "mul-pay",
@@ -5270,26 +5499,25 @@ export const commerceOperationsTechnologyDefinitions = [
 		website: "https://static.mul-pay.jp",
 		description: "Mul-Pay is a payment gateway platform from Japan.",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "mul-pay:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("static\\.mul-pay\\.jp/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("static\\.mul-pay\\.jp\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "mul-pay:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "mul-pay:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Multipayment.config",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "my-flying-box",
@@ -5299,13 +5527,15 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "My Flying Box.svg",
 		categories: [
 			"commerce-operations",
-			"bundler"
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "my-flying-box:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bMy Flying Box\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "mycred",
@@ -5314,30 +5544,29 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "MyCred is a points management system for WordPress that allows sites to define, track, and adjust user points based on custom rules and interactions.",
 		icon: "MyCred.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "mycred:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/wp-content/plugins/mycred/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/wp-content\\/plugins\\/mycred\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "mycred:dom:1",
 				kind: "dom",
 				selector: "link[href*='/wp-content/plugins/mycred/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "nacex",
@@ -5346,13 +5575,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "NACEX is an express courier company in Spain, Andorra and Portugal.",
 		icon: "NACEX.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "nacex:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bNACEX\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "narvar",
@@ -5361,43 +5593,49 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Narvar is a customer experience platform that helps retailers inspire long-term customer loyalty, at all steps of the post-purchase journey.",
 		icon: "Narvar.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "narvar:dom:0",
 				kind: "dom",
 				selector: "a[href*='.narvar.com/'], img[src*='.narvar.com/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "narvar:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "narvar:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "NARVARJS_URL",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "narvar:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "narvar:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "narvar",
 				confidence: 1,
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "narvar:responseHeader:3",
-				kind: "responseHeader",
+				id: "narvar:header:3",
+				kind: "header",
 				key: "Content-Security-Policy",
-				valuePattern: new RegExp("\\.narvar\\.com"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("\\.narvar\\.com", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "narvar:header:4",
+				kind: "header",
+				key: "content-security-policy",
+				valuePattern: new RegExp("\\.narvar\\.com", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "nexive",
@@ -5406,13 +5644,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Nexive is a postal operator in Italy.",
 		icon: "Nexive.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "nexive:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bNexive\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "nift",
@@ -5421,29 +5662,28 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Nift is a marketing program for pools of local businesses. Businesses give Nift gift cards to thank and reward their customers for taking actions, like signing up for a newsletter, referring a friend, or making a purchase.",
 		icon: "Nift.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "nift:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "nift:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "NiftAnalytics",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "nift:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "nift:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "NiftJS",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "octane",
@@ -5452,20 +5692,19 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Octane is a financing solution for motorcycles, ATVs, mowers, and other power sports and outdoor equipment.",
 		icon: "Octane.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "octane:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("widget\\.octane\\.co"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "omise",
@@ -5474,35 +5713,64 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Omise is a payment gateway for Thailand, Japan and Singapore. Providing both online and offline payment solutions to merchants.",
 		icon: "Omise.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "omise:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.omise\\.co"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "omise:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "omise:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Omise",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "omise:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "omise:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "OmiseCard",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
+	},
+	{
+		id: "omniwallet",
+		name: "OmniWallet",
+		website: "https://omniwallet.net",
+		description: "OmniWallet is an omnichannel loyalty SaaS platform that centralizes customer identification, incentive management, and behavioral tracking across online and offline channels.",
+		icon: "OmniWallet.svg",
+		categories: [
+			"commerce-operations",
+		],
+		rules: [
+			{
+				id: "omniwallet:jsGlobal:0",
+				kind: "jsGlobal",
+				property: "Omniwallet.ADMIN_API",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "omniwallet:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "OmniwalletPlugin",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"mid",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "oney",
@@ -5511,41 +5779,39 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Oney is an app that gives consumers back the power over their spending and makes split payments universal.",
 		icon: "Oney.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "oney:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/modules/oney(?:/)?/views/js/front\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/modules\\/oney(?:\\/)?\\/views\\/js\\/front\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "oney:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "oney:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "OneyMarketplace",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "oney:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "oney:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "isOneyActive",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "oney:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "oney:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "openOneyLayer",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "openpay",
@@ -5554,20 +5820,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Openpay is an innovative online and in-store payment solution enabling you to purchase now and pay later, with no interest.",
 		icon: "openpay.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "openpay:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("openpay\\.com.\\au"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "optimonk",
@@ -5577,31 +5839,30 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "OptiMonk.svg",
 		categories: [
 			"commerce-operations",
-			"advertising-paid-media"
+			"advertising-paid-media",
 		],
 		rules: [
 			{
 				id: "optimonk:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.optimonk\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.optimonk\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "optimonk:dom:1",
 				kind: "dom",
 				selector: "link[href*='.optimonk.com']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"freemium",
 				"low",
 				"recurring",
-				"freemium"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "ordergroove",
@@ -5610,31 +5871,29 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Ordergroove provides a SaaS (Software as a Service) based subscription and membership commerce platform.",
 		icon: "ordergroove.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "ordergroove:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.ordergroove\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.ordergroove\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "ordergroove:responseHeader:1",
-				kind: "responseHeader",
+				id: "ordergroove:header:1",
+				kind: "header",
 				key: "content-security-policy",
-				valuePattern: new RegExp("\\.ordergroove\\.com"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("\\.ordergroove\\.com", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
+				"mid",
 				"recurring",
-				"mid"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "osterreichische-post",
@@ -5643,13 +5902,28 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Österreichische Post is an Austrian logistics and postal services provider.",
 		icon: "Post AG.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "osterreichische-post:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bpost\\.at\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+			{
+				id: "osterreichische-post:text:1",
+				kind: "text",
+				pattern: new RegExp("\\bPost AG\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+			{
+				id: "osterreichische-post:text:2",
+				kind: "text",
+				pattern: new RegExp("\\b[ÖO]sterreichische Post\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "pace",
@@ -5658,44 +5932,43 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "PacePay offers a BNPL (Buy now pay later) solution for merchants.",
 		icon: "Pace.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "pace:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("pay\\.pacenow\\.co"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "pace:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "pace:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "pacePay",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "pace:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "pace:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "rely_month_installment",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "pace:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "pace:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "rely_shop_currency",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "pace:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "pace:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "rely_shop_money_format",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "paddle",
@@ -5704,36 +5977,35 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Paddle is a billing and payment gateway for B2B SaaS companies.",
 		icon: "Paddle.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "paddle:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.paddle\\.com/paddle/paddle\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn\\.paddle\\.com\\/paddle\\/paddle\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "paddle:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "paddle:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Paddle.Checkout",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "paddle:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "paddle:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "PaddleScriptLocation",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "pagar-me",
@@ -5742,35 +6014,34 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Pagar.me is a Portuguese-language online payments solution for businesses in Brazil.",
 		icon: "Pagar.me.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "pagar-me:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("assets\\.pagar\\.me/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("assets\\.pagar\\.me\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "pagar-me:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "pagar-me:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "PagarMeCheckout",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "pagar-me:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "pagar-me:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "pagarme.balance",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "pagolight",
@@ -5779,44 +6050,43 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Pagolight is a BNPL system allowing instalment payments for online purchases.",
 		icon: "Pagolight.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "pagolight:dom:0",
 				kind: "dom",
 				selector: "div#heidipay-container, div[data-heidipay], div#pagolight-pro-dialog, iframe#heidipay-iframe-product-description-pagolight",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "pagolight:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "pagolight:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "closePagodilModal",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "pagolight:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "pagolight:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "openPagodilModal",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "pagolight:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "pagolight:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "pagodilLang",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "pagolight:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "pagolight:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "pagodilSprintf",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "pagseguro",
@@ -5825,72 +6095,70 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "PagSeguro is an online or mobile payment-based ecommerce service for commercial operations.",
 		icon: "PagSeguro.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "pagseguro:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.pagseguro\\.uol\\.com\\.br/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.pagseguro\\.uol\\.com\\.br\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "pagseguro:dom:1",
 				kind: "dom",
 				selector: "form[action*='pagseguro.uol.com.br'][target='pagseguro']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "pagseguro:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "pagseguro:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "PagSeguroDirectPayment",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "pagseguro:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "pagseguro:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "_PagSeguroDirectPayment",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "paidy",
 		name: "Paidy",
 		website: "https://paidy.com",
 		description: "Paidy is basically a two-sided payments service, acting as a middleman between consumers and merchants in Japan.",
-		icon: "Paidy.svg",
+		icon: "Paidy.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "paidy:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("apps\\.paidy\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "paidy:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "paidy:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Constants.paidy",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "parcelforce",
@@ -5899,13 +6167,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Parcelforce is a courier and logistics service in the United Kingdom.",
 		icon: "Parcelforce.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "parcelforce:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bParcelforce\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "parcelpanel",
@@ -5914,92 +6185,92 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "ParcelPanel is a solution for tracking shipments and managing returns for ecommerce businesses.",
 		icon: "ParcelPanel.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "parcelpanel:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("api\\.parcelpanel\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"payg",
 				"recurring",
-				"payg"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "partial-ly",
 		name: "Partial.ly",
 		website: "https://partial.ly/",
 		description: "Partial.ly payment plan software lets businesses offer customizable payment plans to their customers.",
-		icon: "Partially.svg",
+		icon: "Partially.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "partial-ly:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("partial\\.ly"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "partial-ly:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "partial-ly:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "PartiallyButton",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "pay-it-later",
 		name: "Pay It Later",
 		website: "https://www.payitlater.com.au",
 		description: "Pay It Later collect payments in weekly instalments from you when you make a purchase online, so you can buy now and pay it later.",
-		icon: "Pay It Later.svg",
+		icon: "Pay It Later.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "pay-it-later:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/wp-content/plugins/payitlater-gateway-for-woocommerce/(?:.+\\?ver=([\\d\\.]+))?"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/wp-content\\/plugins\\/payitlater-gateway-for-woocommerce\\/(?:.+\\?ver=([\\d\\.]+))?"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "pay-it-later:dom:1",
 				kind: "dom",
 				selector: "a[href*='.payitlater.com.au'][target='_blank'], img[src*='PayItLater'][alt='PayItLater']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "pay-it-later:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "pay-it-later:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "payitlater",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "pay",
@@ -6008,63 +6279,58 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Pay. is an all-in-one payment provider offering integrated solutions for processing online and in-store transactions.",
 		icon: "PayNL.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "pay:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "pay:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "PaynlLabel",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "pay:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "pay:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "paynl_gateways",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "paybright",
 		name: "PayBright",
 		website: "https://paybright.com",
 		description: "PayBright is a Canadian fintech company that offers short-term interest-free installment loans for online shopping to consumers at checkout.",
-		icon: "PayBright.svg",
+		icon: "PayBright.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "paybright:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.paybright\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "paybright:dom:1",
 				kind: "dom",
 				selector: "link[href*='app.paybright.com']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "paybright:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "paybright:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "_paybright_config",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "paycove",
@@ -6073,23 +6339,22 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Paycove is a revenue operations platform that unifies payments, billing, and reporting in a single system to streamline financial workflows and provide centralized visibility into transactions.",
 		icon: "Paycove.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "paycove:scriptContent:0",
 				kind: "scriptContent",
-				pattern: new RegExp("paycove\\.io/js/"),
-				description: "Script content contains a bounded technology signature."
-			}
+				pattern: new RegExp("paycove\\.io\\/js\\/"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "paydock",
@@ -6098,26 +6363,25 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Paydock is a tool for managing payments and transactions across multiple platforms.",
 		icon: "Paydock.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "paydock:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.paydock\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "paydock:dom:1",
 				kind: "dom",
 				selector: "link[href*='app-sandbox.paydock.com']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "payfast",
@@ -6126,48 +6390,43 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "PayFast is a payments processing service for South Africans & South African websites.",
 		icon: "Payfast.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "payfast:dom:0",
 				kind: "dom",
 				selector: "[aria-labelledby='pi-payfast_instant_eft']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "payflex",
 		name: "Payflex",
 		website: "https://payflex.co.za/",
 		description: "Payflex offers an online payment gateway solution to South African merchants that allows shoppers to pay over 6 weeks, interest-free.",
-		icon: "Payflex.svg",
+		icon: "Payflex.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "payflex:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("partpayassets\\.blob\\.core\\.windows\\.net"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "payflex:dom:1",
 				kind: "dom",
 				selector: "[aria-labelledby='pi-payflex']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "paygreen",
@@ -6176,25 +6435,23 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "PayGreen is a French payment processor.",
 		icon: "PayGreen.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "paygreen:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "paygreen:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "paygreenjs",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
-				"payg",
 				"low",
-				"recurring"
-			]
-		}
+				"payg",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "payhere",
@@ -6203,32 +6460,31 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "PayHere is a platform that provides payment links to facilitate online payment collection.",
 		icon: "PayHere.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "payhere:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.payhere\\.co"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
 				id: "payhere:cookie:1",
 				kind: "cookie",
-				key: "_pay_here_session",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^_pay_here_session$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "payjustnow",
@@ -6237,23 +6493,22 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "PayJustNow is a buy now, pay later checkout option for ecommerce sites.",
 		icon: "PayJustNow.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "payjustnow:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.payjustnow\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.payjustnow\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "payl8r",
@@ -6262,20 +6517,19 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "PayL8r.com offers repayment plans and online finance which allow you to purchase products online.",
 		icon: "Payl8r.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "payl8r:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("payl8r\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "paymattic",
@@ -6284,28 +6538,27 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Paymattic is a WordPress payment plugin that offers built-in donation capabilities and a no-code setup for handling online payments.",
 		icon: "Paymattic.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "paymattic:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.paymattic\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		requires: [
-			"wordpress"
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"onetime",
 				"recurring",
-				"onetime"
-			]
-		}
+			],
+		},
+		requires: [
+			"wordpress",
+		],
 	},
 	{
 		id: "paymentus",
@@ -6314,26 +6567,25 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Paymentus is a platform that provides a complete electronic billing and payment solution for businesses and organizations.",
 		icon: "Paymentus.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "paymentus:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.paymentus\\.com"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "paymentus:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "paymentus:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "PaymentusFeedback",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "payoneer",
@@ -6342,20 +6594,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Payoneer is an online payment processing platform tailored for digital businesses.",
 		icon: "Payoneer.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "payoneer:dom:0",
 				kind: "dom",
 				selector: "link[href*='/wp-content/plugins/wc-payoneer-payment-gateway/'], link#payoneer-plugn-css",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "paypal",
@@ -6364,93 +6612,116 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "PayPal is an online payments system that supports online money transfers and serves as an electronic alternative to traditional paper methods like checks and money orders.",
 		icon: "PayPal.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "paypal:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("paypalobjects\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "paypal:requestUrl:1",
 				kind: "requestUrl",
 				pattern: new RegExp("\\.paypal\\.com"),
-				description: "Observed request URL matches a known technology marker."
+				description: "Observed request URL matches a known technology marker.",
 			},
 			{
-				id: "paypal:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "paypal:dom:2",
+				kind: "dom",
+				selector: "button",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "paypal:text:3",
+				kind: "text",
+				pattern: new RegExp("PayPal"),
+				description: "Page text contains a known technology marker.",
+			},
+			{
+				id: "paypal:dom:4",
+				kind: "dom",
+				selector: "iframe[src*='paypal.com'], img[src*='paypal.com'], img[src*='paypalobjects.com'], [aria-labelledby='pi-paypal'], [data-paypal-v4='true'], img[alt*='PayPal' i]",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "paypal:jsGlobal:5",
+				kind: "jsGlobal",
 				property: "PAYPAL",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "paypal:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "paypal:jsGlobal:6",
+				kind: "jsGlobal",
 				property: "__paypal_global__",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "paypal:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "paypal:jsGlobal:7",
+				kind: "jsGlobal",
 				property: "checkout.enabledpayments.paypal",
 				valuePattern: new RegExp("^true$"),
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "paypal:pageGlobal:6",
-				kind: "pageGlobal",
+				id: "paypal:jsGlobal:8",
+				kind: "jsGlobal",
 				property: "enablePaypal",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "paypal:pageGlobal:7",
-				kind: "pageGlobal",
+				id: "paypal:jsGlobal:9",
+				kind: "jsGlobal",
 				property: "paypal",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "paypal:pageGlobal:8",
-				kind: "pageGlobal",
+				id: "paypal:jsGlobal:10",
+				kind: "jsGlobal",
 				property: "paypalClientId",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "paypal:pageGlobal:9",
-				kind: "pageGlobal",
+				id: "paypal:jsGlobal:11",
+				kind: "jsGlobal",
 				property: "paypalJs",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "paypal:pageGlobal:10",
-				kind: "pageGlobal",
+				id: "paypal:jsGlobal:12",
+				kind: "jsGlobal",
 				property: "wc_ga_pro.available_gateways.paypal",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "paypal:responseHeader:11",
-				kind: "responseHeader",
+				id: "paypal:header:13",
+				kind: "header",
 				key: "content-security-policy",
-				valuePattern: new RegExp("\\.paypal\\.com"),
-				description: "Response header matches a known technology marker."
+				valuePattern: new RegExp("\\.paypal\\.com", "i"),
+				description: "Response header matches a known technology marker.",
 			},
 			{
-				id: "paypal:meta:12",
+				id: "paypal:meta:14",
 				kind: "meta",
 				key: "id",
-				valuePattern: new RegExp("in-context-paypal-metadata"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("in-context-paypal-metadata", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "paypal:dom:15",
+				kind: "dom",
+				selector: "iframe[src*='paypal.com'], img[src*='paypal.com'], img[src*='paypalobjects.com'], [aria-labelledby='pi-paypal'], [data-paypal-v4], [data-paypal-commerce-button], [data-paypal-smart-button-version], img[alt*='PayPal']",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
+				"payg",
 			],
-			cpe: "cpe:2.3:a:paypal:paypal:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:paypal:paypal:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "paypal-credit",
@@ -6459,42 +6730,41 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "PayPal Credit is a reusable line of credit that lets you pay for online purchases over time.",
 		icon: "PayPal.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "paypal-credit:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.paypalobjects\\.com/.+/smart-credit-message@([\\d\\.]+)\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.paypalobjects\\.com\\/.+\\/smart-credit-message@([\\d\\.]+)\\.js"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "paypal-credit:dom:1",
 				kind: "dom",
 				selector: "img[alt*='PayPal Credit'], a[title*='PayPal Credit']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "paypal-credit:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "paypal-credit:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "PaypalOffersObject",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "paypal-credit:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "paypal-credit:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "payPalCreditPopover",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		implies: [
-			"paypal"
+			"paypal",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "payplug",
@@ -6503,36 +6773,34 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Payplug is a French omnichannel payment solution dedicated to merchants.",
 		icon: "Payplug.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "payplug:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "payplug:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "PAYPLUG_DOMAIN",
 				valuePattern: new RegExp("\\.payplug\\.com"),
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "payplug:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "payplug:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "payplug.card",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "payplug:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "payplug:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "payplug_ajax_url",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "payrexx",
@@ -6541,24 +6809,23 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Payrexx is an online payment solution facilitating receipt of payments across various platforms.",
 		icon: "Payrexx.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "payrexx:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.payrexx\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.payrexx\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "paysafe",
@@ -6567,44 +6834,40 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Paysafe is a payment platform that enables businesses and consumers to connect and transact by payment processing, digital wallet, and online cash solutions.",
 		icon: "paysafe.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "paysafe:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/hosted\\.paysafe\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/hosted\\.paysafe\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "paysafe:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "paysafe:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "paysafe",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "paysafe:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "paysafe:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "paysafe.checkout",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "paysafe:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "paysafe:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "paysafe.fields",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "paysafe:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "paysafe:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "paysafe.threedsecure",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "paysera",
@@ -6613,20 +6876,19 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Paysera is a platform that provides money transfer and payment services.",
 		icon: "Paysera.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "paysera:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.paysera\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.paysera\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "paytr",
@@ -6635,20 +6897,19 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "PAYTR is a platform that enables secure remote management of all payment transactions.",
 		icon: "PAYTR.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "paytr:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("www\\.paytr\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "payu-payment",
@@ -6657,38 +6918,37 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "PayU is a provider of financial solutions for ecommerce, facilitating online payments and related transaction services.",
 		icon: "PayU.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "payu-payment:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.payu\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "payu-payment:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.payu\\.com"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "payu-payment:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "payu-payment:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "OpenPayU",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "payu-payment:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "payu-payment:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "PayU",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "payva",
@@ -6697,52 +6957,49 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Payva is a Buy Now, Pay Later platform designed for creators, offering structured payment options tailored to creative work.",
 		icon: "Payva.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "payva:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("checkout-sdk\\.payva\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "payva:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "payva:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Payva",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "paywhirl",
 		name: "PayWhirl",
 		website: "https://app.paywhirl.com/",
 		description: "PayWhirl provides widgets and tools to handle recurring payments.",
-		icon: "paywhirl.svg",
+		icon: "paywhirl.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "paywhirl:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "paywhirl:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "paywhirlForShopifySettings",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
 				"payg",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "pci-proxy",
@@ -6751,31 +7008,30 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "PCI Proxy is a tokenization platform that enables organisations worldwide to embrace a modern approach to payment flexibility and data security.",
 		icon: "PCI Proxy.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "pci-proxy:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.datatrans\\.com"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "pci-proxy:responseHeader:1",
-				kind: "responseHeader",
+				id: "pci-proxy:header:1",
+				kind: "header",
 				key: "content-security-policy",
-				valuePattern: new RegExp("\\.datatrans\\.(?:com|biz)"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("\\.datatrans\\.(?:com|biz)", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "pelcro",
@@ -6784,32 +7040,31 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Pelcro is a subscription and membership management software.",
 		icon: "Pelcro.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "pelcro:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("js\\.pelcro\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "pelcro:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "pelcro:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Pelcro.adblock",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "pelcro:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "pelcro:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "PelcroEventsAlreadyFired",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "pesapal",
@@ -6818,26 +7073,22 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Pesapal is an online payment platform catering to various online businesses, including ecommerce, subscription services, online platforms, and marketplaces.",
 		icon: "Pesapal.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "pesapal:dom:0",
 				kind: "dom",
 				selector: "div#payment-options > a[href*='www.pesapal.com']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "pesapal:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "pesapal:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "pesapalIframe",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "pickrr",
@@ -6846,23 +7097,22 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Pickrr is a logistics and shipping solution that manages and optimizes order fulfillment for ecommerce businesses.",
 		icon: "Pickrr.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "pickrr:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("widget\\.pickrr\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "piggy",
@@ -6871,54 +7121,48 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Piggy is a loyalty program management platform.",
 		icon: "Piggy.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "piggy:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.piggy\\.eu/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.piggy\\.eu\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "piggy:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "piggy:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "PiggyWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "pin-payments",
 		name: "Pin Payments",
 		website: "https://www.pinpayments.com/",
 		description: "Pin Payments is an all-in-one online payment system. It offers merchants a simple JSON API, secure credit card storage, multi-currency capabilities, bank account compatibility, onsite payment processing and automatic fund transfer to specified bank accounts.",
-		icon: "pinpayments.svg",
+		icon: "pinpayments.png",
 		categories: [
 			"commerce-operations",
-			"api-pattern"
 		],
 		rules: [
 			{
 				id: "pin-payments:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("api\\.pinpayments\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "plaid",
@@ -6928,39 +7172,40 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "Plaid.svg",
 		categories: [
 			"commerce-operations",
-			"widgets-misc"
+			"widgets-misc",
 		],
 		rules: [
 			{
 				id: "plaid:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.plaid\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.plaid\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "plaid:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "plaid:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Plaid.version",
 				valuePattern: new RegExp("([\\.\\d]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "plaid:responseHeader:2",
-				kind: "responseHeader",
+				id: "plaid:header:2",
+				kind: "header",
 				key: "content-security-policy",
-				valuePattern: new RegExp("cdn\\.plaid\\.com/"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("cdn\\.plaid\\.com\\/", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
 				"payg",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "planzer",
@@ -6969,23 +7214,22 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Planzer is a provider of transport and warehouse logistics services, specializing in efficient and reliable solutions for supply chain management across various industries.",
 		icon: "Planzer.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "planzer:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/wp-content/plugins/planzer-jobs/"),
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		requires: [
-			"wordpress"
+				pattern: new RegExp("\\/wp-content\\/plugins\\/planzer-jobs\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
+		requires: [
+			"wordpress",
+		],
 	},
 	{
 		id: "plenigo",
@@ -6994,32 +7238,31 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Plenigo is a subscription management platform designed for modern reader financing.",
 		icon: "Plenigo.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "plenigo:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("static\\.plenigo\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "plenigo:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "plenigo:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "plenigo.Checkout",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "plenigo:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "plenigo:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "plenigoStartCheckout",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "pobuca",
@@ -7028,32 +7271,58 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Pobuca is a cloud-based software platform for managing customer loyalty programs and engagement initiatives.",
 		icon: "Pobuca.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "pobuca:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.loyalty\\.pobuca\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "pobuca:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.loyalty\\.pobuca\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
+	},
+	{
+		id: "pointat",
+		name: "Pointat",
+		website: "https://pointat.app",
+		description: "Pointat is a loyalty system designed to help retail businesses increase store sales by up to three times through structured customer engagement and rewards management.",
+		icon: "Pointat.svg",
+		categories: [
+			"commerce-operations",
+		],
+		rules: [
+			{
+				id: "pointat:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("my\\.pointat\\.app"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "pointat:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "pointatData.customer",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+		},
 	},
 	{
 		id: "poli-payment",
@@ -7062,23 +7331,22 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "POLi Payment(formerly known as Centricom) is an online payment service in Australia and New Zealand.",
 		icon: "POLi Payment.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "poli-payment:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "poli-payment:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "wc_ga_pro.available_gateways.poli",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "poste-italiane",
@@ -7087,13 +7355,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Poste Italiane is the Italian postal service provider.",
 		icon: "Poste Italiane.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "poste-italiane:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bPoste Italiane\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "postnl",
@@ -7103,20 +7374,21 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "PostNL.svg",
 		categories: [
 			"commerce-operations",
-			"bundler"
 		],
 		rules: [
+			{
+				id: "postnl:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bPostNL\\b"),
+				description: "Page text contains a known technology marker.",
+			},
 			{
 				id: "postnl:dom:1",
 				kind: "dom",
 				selector: "img[alt*='postnl' i], img[src*='postnl' i]",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "postpay",
@@ -7125,45 +7397,47 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Postpay is a payment solution that allows you to split your purchase amount into instalments.",
 		icon: "Postpay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "postpay:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.postpay\\.io/(?:.+\\?ver=([\\d\\.]+))?"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn\\.postpay\\.io\\/(?:.+\\?ver=([\\d\\.]+))?"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "postpay:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "postpay:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "PostpayJsConfig",
 				confidence: 50,
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "postpay:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "postpay:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "postpay",
 				confidence: 25,
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "postpay:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "postpay:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "wc_postpay_init_params",
 				confidence: 25,
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "powerpay",
@@ -7172,20 +7446,19 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "PowerPay is a financing and loan provider offering lower-than-average interest rates.",
 		icon: "PowerPay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "powerpay:dom:0",
 				kind: "dom",
 				selector: "iframe[src*='getpowerpay.com']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "prive",
@@ -7194,37 +7467,36 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Prive is a subscription service that enables users to register for multiple services.",
 		icon: "Prive.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "prive:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.tryprive\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "prive:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "prive:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "PRIVE_SHOPPER_PORTAL_WIDGET",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "prive:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "prive:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "PRIVE_WIDGET",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "processout",
@@ -7233,26 +7505,25 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "ProcessOut is a payment infrastructure platform that provides payment analytics to analyze and report on an entire payment ecosystem.",
 		icon: "ProcessOut.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "processout:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("js\\.processout\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "processout:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "processout:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ProcessOut.ActionFlow",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "prommt",
@@ -7261,26 +7532,25 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Prommt is a payment request service that helps businesses collect payments from customers through card and bank transfer.",
 		icon: "Prommt.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "prommt:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.prommt\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("app\\.prommt\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "prommt:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "prommt:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Prommt",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "prospa",
@@ -7289,20 +7559,19 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Prospa is a platform that enables small businesses to pay for purchases over time with an interest-free repayment solution.",
 		icon: "Prospa.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "prospa:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.prospa\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.prospa\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "punchtab",
@@ -7311,20 +7580,19 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "PunchTab is a SaaS-based Consumer Management Platform (CMP) for brands to build and optimize direct consumer relationships.",
 		icon: "PunchTab.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "punchtab:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("static\\.punchtab\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "pushowl-web-push-notifications",
@@ -7334,31 +7602,30 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "PushOwl.svg",
 		categories: [
 			"commerce-operations",
-			"ecommerce-extensions"
+			"ecommerce-extensions",
 		],
 		rules: [
 			{
 				id: "pushowl-web-push-notifications:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/sdks/pushowl-shopify\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		implies: [
-			"pushowl"
-		],
-		requires: [
-			"shopify"
+				pattern: new RegExp("\\/sdks\\/pushowl-shopify\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"low",
 				"freemium",
-				"recurring"
-			]
-		}
+				"low",
+				"recurring",
+			],
+		},
+		implies: [
+			"pushowl",
+		],
+		requires: [
+			"shopify",
+		],
 	},
 	{
 		id: "razorpay",
@@ -7367,55 +7634,55 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Razorpay is a provider of an online payment gateway that allows businesses to accept, process, and disburse payments.",
 		icon: "Razorpay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "razorpay:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("checkout\\.razorpay\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "razorpay:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "razorpay:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Razorpay",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "recapture",
 		name: "Recapture",
 		website: "https://recapture.io",
 		description: "Recapture is an abandoned cart recovery and email marketing solution.",
-		icon: "Recapture.svg",
+		icon: "Recapture.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "recapture:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.recapture\\.io/.+\\?v=\\d+(?:&ver=([\\d\\.]+)?)?"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("cdn\\.recapture\\.io\\/.+\\?v=\\d+(?:&ver=([\\d\\.]+)?)?"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "recart",
@@ -7424,32 +7691,28 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Recart is a tool to engage users who abandoned their shopping cart via Facebook Messenger.",
 		icon: "Recart.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "recart:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("api\\.recart\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "recart:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "recart:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "__recart",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "recart:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "recart:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "recart",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "recharge",
@@ -7458,82 +7721,80 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Recharge is the a subscription payments platform designed for merchants to set up and manage dynamic recurring billing across web and mobile.",
 		icon: "Recharge.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "recharge:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("rechargeassets-bootstrapheroes-rechargeapps\\.netdna-ssl\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "recharge:scriptSrc:1",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.rechargecdn\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.rechargecdn\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "recharge:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "recharge:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "ReChargeWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"cart-functionality"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"recurring",
+				"mid",
 				"payg",
-				"mid"
-			]
-		}
+				"recurring",
+			],
+		},
+		implies: [
+			"cart-functionality",
+		],
 	},
 	{
 		id: "recurly",
 		name: "Recurly",
 		website: "https://recurly.com",
 		description: "Recurly provides enterprise-class subscription billing and recurring payment management for thousands of businesses worldwide.",
-		icon: "Recurly.svg",
+		icon: "Recurly.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "recurly:html:0",
-				kind: "html",
-				pattern: new RegExp("<input[^>]+data-recurly"),
-				description: "HTML contains a known technology marker."
-			},
-			{
-				id: "recurly:scriptSrc:1",
+				id: "recurly:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("js\\.recurly\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "recurly:dom:2",
-				kind: "dom",
-				selector: "input[data-recurly]",
-				description: "DOM selector matches a known technology marker."
+				id: "recurly:html:1",
+				kind: "html",
+				pattern: new RegExp("<input[^>]+data-recurly"),
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "recurly:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "recurly:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "recurly.version",
 				valuePattern: new RegExp("^(.+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "recurly:dom:3",
+				kind: "dom",
+				selector: "input[data-recurly]",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "red-je-pakketje",
@@ -7542,13 +7803,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Red je Pakketje is a Dutch company specialised in same-day-delivery.",
 		icon: "Red je Pakketje.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "red-je-pakketje:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bRed je Pakketje\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "redonner",
@@ -7557,67 +7821,64 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "This company promotes the collection and recycling of textiles by rewarding each donation of clothing made on its website with 'Re' points, allowing you to benefit from advantages and discounts at more than 70 partner brands.",
 		icon: "Redonner.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "redonner:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.redonner\\.fr/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.redonner\\.fr\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "refundid",
 		name: "Refundid",
 		website: "https://refundid.com",
 		description: "Refundid provides ecommerce customers instant refunds for their online returns.",
-		icon: "Refundid.svg",
+		icon: "Refundid.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "refundid:dom:0",
 				kind: "dom",
 				selector: "a[href*='.refundid.com/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "refundid:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "refundid:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "launchRefundidPopup",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "relais-colis",
 		name: "Relais Colis",
 		website: "https://www.relaiscolis.com",
 		description: "Relais Colis is a French parcel delivery network.",
-		icon: "Relais Colis.svg",
+		icon: "Relais Colis.png",
 		categories: [
 			"commerce-operations",
-			"bundler"
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "relais-colis:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bRelais Colis\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "reshop",
@@ -7626,23 +7887,22 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Reshop is a returns platform that integrates with Shopify to streamline and manage product return processes.",
 		icon: "Reshop.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "reshop:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("(?:https?:)?//[^\"']*/widgets/reshop-tooltip(?:\\.min)?\\.js(?:\\?[^\"']*)?"),
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		requires: [
-			"shopify"
+				pattern: new RegExp("(?:https?:)?\\/\\/[^\"']*\\/widgets\\/reshop-tooltip(?:\\.min)?\\.js(?:\\?[^\"']*)?"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
+		requires: [
+			"shopify",
+		],
 	},
 	{
 		id: "resolvepay",
@@ -7651,20 +7911,19 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Resolve Pay is a platform that provides 30 to 60 day net terms financing for B2B merchants and buyers.",
 		icon: "ResolvePay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "resolvepay:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "resolvepay:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "as_resolveEnvironmentURL",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "returnflows",
@@ -7673,20 +7932,19 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Returnflows is a platform that supports businesses in managing product returns and reducing revenue loss associated with refunds.",
 		icon: "Returnflows.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "returnflows:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("static\\.returnflows\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "returngo",
@@ -7695,36 +7953,35 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "ReturnGO's AI-driven returns management platform significantly improves customer lifetime value and post-purchase experience.",
 		icon: "ReturnGO.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "returngo:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.returngo\\.ai/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.returngo\\.ai\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "returngo:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "returngo:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "returnGoCanBeRun",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "returngo:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "returngo:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "returnGoIntegrationData",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "returnly",
@@ -7733,36 +7990,35 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Returnly is the provider of digital return experiences for direct-to-consumer brands.",
 		icon: "Returnly.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "returnly:dom:0",
 				kind: "dom",
 				selector: "a[href*='.returnly.com/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "returnly:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "returnly:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Returnly.ContainerSwitcher",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "returnly:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "returnly:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "Returnly.InternalEventTracker",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "revcent",
@@ -7771,23 +8027,22 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "RevCent is a payment processing solution designed to manage and facilitate online transactions for businesses across various platforms.",
 		icon: "RevCent.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "revcent:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.revcent\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "rise-ai",
@@ -7797,87 +8052,136 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "Rise.ai.svg",
 		categories: [
 			"commerce-operations",
-			"marketing-automation"
+			"marketing-automation",
 		],
 		rules: [
 			{
 				id: "rise-ai:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("strn\\.rise-ai\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("strn\\.rise-ai\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "rise-ai:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "rise-ai:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Rise.shop",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "rise-ai:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "rise-ai:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "RiseStoreFront",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		requires: [
-			"shopify"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"payg",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		requires: [
+			"shopify",
+		],
+	},
+	{
+		id: "rivo",
+		name: "Rivo",
+		website: "https://www.rivo.io",
+		description: "Rivo is a Shopify loyalty and referrals platform.",
+		icon: "Rivo.png",
+		categories: [
+			"commerce-operations",
+		],
+		rules: [
+			{
+				id: "rivo:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("cdn\\.shopify\\.com\\/extensions\\/[^/]+\\/rivo-loyalty-rewards-referrals-\\d+\\/assets\\/rivo-app-embed\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+		},
+		requires: [
+			"shopify",
+		],
 	},
 	{
 		id: "route",
 		name: "Route",
-		website: "https://route.com",
-		description: "Route is a delivery and shipping tracking app",
-		icon: "route.svg",
+		website: "https://route.com/",
+		description: "Route is a delivery and shipping tracking app.",
+		icon: "route.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "route:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.routeapp\\.io/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/\\/cdn.routeapp.io\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "route:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "route:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Routeapp",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "route:scriptSrc:2",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\.routeapp\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "route:scriptSrc:3",
+				kind: "scriptSrc",
+				pattern: new RegExp("cdn\\.routeapp\\.io"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "route:scriptSrc:4",
+				kind: "scriptSrc",
+				pattern: new RegExp("shopify-widget\\.route\\.com"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "route:jsGlobal:5",
+				kind: "jsGlobal",
+				property: "routeWidgetInitialized",
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "royal-mail",
 		name: "Royal Mail",
 		website: "https://www.royalmail.com",
 		description: "Royal Mail is a British multinational postal service and courier company.",
-		icon: "Royal Mail.svg",
+		icon: "Royal Mail.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "royal-mail:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bRoyal Mail\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "scalapay",
@@ -7886,20 +8190,19 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Scalapay is a payment method for e-commerce merchants in Europe that allows customers to buy now and pay later (BNPL).",
 		icon: "Scalapay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "scalapay:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.scalapay\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "seel",
@@ -7908,26 +8211,25 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Seel is a solution for online merchants and marketplaces that enables revenue protection by reducing losses from refunds and returns.",
 		icon: "Seel.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "seel:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.seel\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "seel:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "seel:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "SeelSDK",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "seko-omnireturns",
@@ -7936,29 +8238,28 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Seko OmniReturns is an online portal used on ecommerce websites for customers to create returns and shipping labels globally. Seko is a global logistics company offering both the technology and reverse logistics.",
 		icon: "Seko OmniReturns.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "seko-omnireturns:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("//cdn\\.omniparcelreturns\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		implies: [
-			"mysql",
-			"php"
+				pattern: new RegExp("\\/\\/cdn\\.omniparcelreturns\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"recurring",
+				"payg",
 				"poa",
-				"payg"
-			]
-		}
+				"recurring",
+			],
+		},
+		implies: [
+			"mysql",
+			"php",
+		],
 	},
 	{
 		id: "sendowl",
@@ -7967,24 +8268,23 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "SendOwl is a platform that provides payment links and sales page tools needed to sell products online.",
 		icon: "SendOwl.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "sendowl:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("transactions\\.sendowl\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "sequra",
@@ -7993,41 +8293,40 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "SeQura is a FinTech company based in Barcelona, providing digital flexible payment solutions, with a geographical focus on Southern Europe and Latin America.",
 		icon: "SeQura.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "sequra:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("live\\.sequracdn\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("live\\.sequracdn\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "sequra:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "sequra:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Sequra",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "sequra:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "sequra:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "SequraConfiguration",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "sequra:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "sequra:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "sequraProducts",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "service-provider-pro",
@@ -8037,64 +8336,63 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "Service Provider Pro.svg",
 		categories: [
 			"commerce-operations",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "service-provider-pro:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("js/spp_clients\\.js"),
+				pattern: new RegExp("js\\/spp_clients\\.js"),
 				confidence: 50,
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "service-provider-pro:scriptSrc:1",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.spp\\.io/js/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.spp\\.io\\/js\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "service-provider-pro:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "service-provider-pro:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "sppOrderform",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "service-provider-pro:cookie:3",
 				kind: "cookie",
-				key: "spp_csrf",
+				keyPattern: new RegExp("^spp_csrf$", "i"),
 				confidence: 25,
-				description: "Cookie name matches a known technology marker."
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "service-provider-pro:cookie:4",
 				kind: "cookie",
-				key: "spp_orderform",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^spp_orderform$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "service-provider-pro:cookie:5",
 				kind: "cookie",
-				key: "spp_session",
+				keyPattern: new RegExp("^spp_session$", "i"),
 				confidence: 25,
-				description: "Cookie name matches a known technology marker."
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
 				id: "service-provider-pro:meta:6",
 				kind: "meta",
 				key: "server",
-				valuePattern: new RegExp("app.spp.co"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("app.spp.co", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "sessionly",
@@ -8103,28 +8401,27 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Sessionly is a loyalty and referral program for Shopware and Shopify merchants, focusing on customer retention and acquisition through rewards and detailed analytics.",
 		icon: "Sessionly.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "sessionly:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("//sessionly\\.io/"),
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		requires: [
-			"shopware",
-			"shopify"
+				pattern: new RegExp("\\/\\/sessionly\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		requires: [
+			"shopify",
+			"shopware",
+		],
 	},
 	{
 		id: "seur",
@@ -8133,13 +8430,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "SEUR is a Spanish shipments and express transport company.",
 		icon: "DPD.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "seur:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bSEUR\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "sezzle",
@@ -8148,44 +8448,37 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Sezzle offers a buy-now-pay-later solution.",
 		icon: "Sezzle.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "sezzle:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("widget\\.sezzle\\.(?:in|com)"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "sezzle:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "sezzle:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "AwesomeSezzle",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "sezzle:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "sezzle:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "renderSezzleIframe",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "sezzle:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "sezzle:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "sezzle_footer_images",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
-			{
-				id: "sezzle:meta:4",
-				kind: "meta",
-				key: "sezzle_cid",
-				description: "Meta tag matches a known technology marker."
-			}
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "sherpa",
@@ -8194,52 +8487,50 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Sherpa is a platform that provides on-demand courier services in Australia, enabling delivery of goods from various locations.",
 		icon: "Sherpa.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "sherpa:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("plugin-app\\.sherpa\\.net\\.au"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "shippypro",
 		name: "ShippyPro",
 		website: "https://www.shippypro.com",
 		description: "ShippyPro is the complete shipping software for ecommerce that helps worldwide merchants to ship, track, and manage returns for their orders.",
-		icon: "ShippyPro.svg",
+		icon: "ShippyPro.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "shippypro:dom:0",
 				kind: "dom",
 				selector: "a[href*='.shippypro.com/return-form.html']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "shippypro:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "shippypro:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ShippyProReturnForm",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"payg",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "shipstation",
@@ -8248,30 +8539,29 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "ShipStation is a web-based shipping software designed to help ecommerce businesses streamline their shipping processes. It allows businesses to import, manage, and ship their orders from multiple sales channels, including marketplaces, shopping carts, and ecommerce platforms.",
 		icon: "ShipStation.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "shipstation:url:0",
 				kind: "url",
 				pattern: new RegExp("track\\.shipstation\\.com"),
-				description: "Page URL matches a known technology marker."
+				description: "Page URL matches a known technology marker.",
 			},
 			{
 				id: "shipstation:dom:1",
 				kind: "dom",
 				selector: "a[href*='//track.shipstation.com/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"payg",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "shipup",
@@ -8280,74 +8570,93 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Shipup is a system that enables users to track shipping packages, providing real-time updates on delivery status and location.",
 		icon: "Shipup.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "shipup:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.shipup\\.co/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.shipup\\.co\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "shipup:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("shipup\\.co"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "shipup:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "shipup:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "ShipupETA",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "shop-pay",
 		name: "Shop Pay",
 		website: "https://shop.app",
-		description: "Shop Pay is an accelerated checkout that lets customers save their email address, credit card, and shipping and billing information so they can complete their transaction faster the next time they are directed to the Shopify checkout.",
+		description: "Shop Pay is an accelerated checkout that allows customers to save their email address, credit card, and shipping and billing information so they can complete their transaction faster the next time they are directed to the Shopify checkout.",
 		icon: "Shop Pay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "shop-pay:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.shopify\\.com/shopifycloud/shopify_pay/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn\\.shopify\\.com\\/shopifycloud\\/shopify_pay\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "shop-pay:pageGlobal:2",
-				kind: "pageGlobal",
-				property: "ShopPay",
-				description: "Page-owned global matches a known technology marker."
+				id: "shop-pay:dom:1",
+				kind: "dom",
+				selector: "[aria-labelledby='pi-shopify_pay']",
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "shop-pay:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "shop-pay:dom:2",
+				kind: "dom",
+				selector: "ul[data-shopify-buttoncontainer] li",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "shop-pay:text:3",
+				kind: "text",
+				pattern: new RegExp("ShopPay"),
+				description: "Page text contains a known technology marker.",
+			},
+			{
+				id: "shop-pay:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "ShopifyPay.apiHost",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "shop-pay:jsGlobal:5",
+				kind: "jsGlobal",
+				property: "ShopPay",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "shop-pay:scriptSrc:6",
+				kind: "scriptSrc",
+				pattern: new RegExp("cdn\\.shopify\\.com\\/shopifycloud\\/shopify-js\\/shop-pay-payment-request\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		requires: [
-			"shopify"
+			"shopify",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "shop-pay-installments",
@@ -8356,27 +8665,23 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Shop Pay Installments allows customers to pay for orders between 50 USD and 3,000 USD in 4 interest-free installments.",
 		icon: "Shop Pay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "shop-pay-installments:dom:0",
 				kind: "dom",
 				selector: ".shopify-installments__learn-more, .shopify-installments, #shopify-installments-cta",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		implies: [
 			"affirm",
-			"shop-pay"
+			"shop-pay",
 		],
 		requires: [
-			"shopify"
+			"shopify",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "shopflo",
@@ -8385,23 +8690,22 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Shopflo is a platform that enables easy checkout experience for ecommerce brands.",
 		icon: "Shopflo.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "shopflo:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "shopflo:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Shopflo",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "shophub",
@@ -8410,32 +8714,31 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "ShopHub is a platform that helps Shopify store owners grow their businesses by providing loyalty programs, coupons, and email capture services.",
 		icon: "ShopHub.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "shophub:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.tryshophub\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("app\\.tryshophub\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "shophub:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "shophub:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "toggleShopHubWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		requires: [
-			"shopify"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"freemium"
-			]
-		}
+				"freemium",
+			],
+		},
+		requires: [
+			"shopify",
+		],
 	},
 	{
 		id: "shoppable",
@@ -8444,32 +8747,31 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Shoppable is a multi-retailer checkout technology.",
 		icon: "Shoppable.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "shoppable:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("api\\.shoppable\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("api\\.shoppable\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "shoppable:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "shoppable:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ShoppableApi",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"high",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "shoprunner",
@@ -8478,45 +8780,47 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "ShopRunner is a service offering consumers free two-day shipping and returns on online orders placed with certain retailers.",
 		icon: "Shoprunner.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "shoprunner:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/shoprunner/shoprunner_init\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/shoprunner\\/shoprunner_init\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "shoprunner:dom:1",
 				kind: "dom",
 				selector: "link[href*='content.shoprunner.com']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "shoprunner:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "shoprunner:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "_shoprunner_com",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "shoprunner:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "shoprunner:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "_shoprunner_com.version",
 				valuePattern: new RegExp("([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "simpl",
@@ -8525,20 +8829,19 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Simpl is a fintech company that offers a cardless payment network with multiple solutions for merchants and consumers.",
 		icon: "Simpl.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "simpl:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "simpl:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "simplSettings",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "skyverge",
@@ -8547,34 +8850,36 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "SkyVerge  is a company which develop extension tools for WooCommerce stores.",
 		icon: "SkyVerge.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "skyverge:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("sv-wc-payment-gateway-payment-form\\.js(?:\\?ver=([\\d.]+))?"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "skyverge:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "skyverge:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "sv_wc_payment_gateway_payment_form_param",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"woocommerce"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		implies: [
+			"woocommerce",
+		],
 	},
 	{
 		id: "smile",
@@ -8583,31 +8888,30 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Smile is a provider of ecommerce loyalty programs.",
 		icon: "Smile.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "smile:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.(?:smile|sweettooth)\\.io/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.(?:smile|sweettooth)\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "smile:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "smile:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Smile.channel_key",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "sogecommerce",
@@ -8616,20 +8920,19 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Sogecommerce is an online payment system provided by Societe Generale for processing digital transactions securely.",
 		icon: "Sogecommerce.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "sogecommerce:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/wp-content/plugins/woo-sogecommerce-payment/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\/wp-content\\/plugins\\/woo-sogecommerce-payment\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "soisy",
@@ -8638,23 +8941,22 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Soisy is a buy now, pay later solution provider.",
 		icon: "Soisy.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "soisy:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.soisy\\.it/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("cdn\\.soisy\\.it\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "sorted-return",
@@ -8663,35 +8965,34 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Sorted is a global SaaS company that provides data-driven software for checkouts, warehouses, and shipping.",
 		icon: "Sorted.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "sorted-return:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("return\\.clicksit\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("return\\.clicksit\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "sorted-return:dom:1",
 				kind: "dom",
 				selector: "a[href*='return.clicksit.com/shop/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "sorted-return:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "sorted-return:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "clicksit_window_on_load",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "splitit",
@@ -8700,60 +9001,58 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "SplitIt is a payment solution that divides a purchase into smaller monthly installments.",
 		icon: "SplitIt.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "splitit:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.production\\.splitit\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.production\\.splitit\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "splitit:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "splitit:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Splitit",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "splitit:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "splitit:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "wc_ga_pro.available_gateways.splitit",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "splittypay",
 		name: "SplittyPay",
 		website: "https://www.splittypay.com",
 		description: "SplittyPay is an alternative payment platform designed for group reservations and purchases.",
-		icon: "SplittyPay.svg",
+		icon: "SplittyPay.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "splittypay:dom:0",
 				kind: "dom",
 				selector: "img[src*='splittypay']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "spotii",
@@ -8762,26 +9061,25 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Spotii is a tech-enabled payments platform where anyone can Shop Now and Pay Later with absolutely zero interest or cost.",
 		icon: "Spotii.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "spotii:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("widget\\.spotii\\.me"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "spotii:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "spotii:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "spotiiConfig",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "spoton",
@@ -8790,25 +9088,24 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "SpotOn is a provider of point-of-sale systems and payment processing software tailored to fit your workflow.",
 		icon: "SpotOn.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "spoton:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.cdn\\.spoton\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "spurit-abandoned-cart-reminder",
@@ -8818,34 +9115,33 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "SpurIT.svg",
 		categories: [
 			"commerce-operations",
-			"ecommerce-extensions"
+			"ecommerce-extensions",
 		],
 		rules: [
 			{
 				id: "spurit-abandoned-cart-reminder:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn-spurit\\.com/shopify-apps/abandoned-cart-reminder/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn-spurit\\.com\\/shopify-apps\\/abandoned-cart-reminder\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "spurit-abandoned-cart-reminder:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "spurit-abandoned-cart-reminder:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ACR_SPURIT_Params.folderCss",
-				valuePattern: new RegExp("cdn-spurit\\.com/shopify-apps/abandoned-cart-reminder/"),
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"shopify"
+				valuePattern: new RegExp("cdn-spurit\\.com\\/shopify-apps\\/abandoned-cart-reminder\\/"),
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		implies: [
+			"shopify",
+		],
 	},
 	{
 		id: "spurit-loyalty-app",
@@ -8856,33 +9152,32 @@ export const commerceOperationsTechnologyDefinitions = [
 		categories: [
 			"commerce-operations",
 			"marketing-automation",
-			"ecommerce-extensions"
+			"ecommerce-extensions",
 		],
 		rules: [
 			{
 				id: "spurit-loyalty-app:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn-spurit\\.com/shopify-apps/loyaltypoints/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn-spurit\\.com\\/shopify-apps\\/loyaltypoints\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "spurit-loyalty-app:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "spurit-loyalty-app:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Spurit.Loyaltypoints",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"shopify"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		implies: [
+			"shopify",
+		],
 	},
 	{
 		id: "spurit-partial-payments-app",
@@ -8892,27 +9187,26 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "SpurIT.svg",
 		categories: [
 			"commerce-operations",
-			"ecommerce-extensions"
+			"ecommerce-extensions",
 		],
 		rules: [
 			{
 				id: "spurit-partial-payments-app:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn-spurit\\.com/shopify-apps/split-payments/"),
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		implies: [
-			"shopify"
+				pattern: new RegExp("cdn-spurit\\.com\\/shopify-apps\\/split-payments\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		implies: [
+			"shopify",
+		],
 	},
 	{
 		id: "spurit-recurring-payments-app",
@@ -8922,33 +9216,32 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "SpurIT.svg",
 		categories: [
 			"commerce-operations",
-			"ecommerce-extensions"
+			"ecommerce-extensions",
 		],
 		rules: [
 			{
 				id: "spurit-recurring-payments-app:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn-spurit\\.com/shopify-apps/recurring-invoices/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn-spurit\\.com\\/shopify-apps\\/recurring-invoices\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "spurit-recurring-payments-app:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "spurit-recurring-payments-app:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Spurit.recurringInvoices",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"shopify"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		implies: [
+			"shopify",
+		],
 	},
 	{
 		id: "square",
@@ -8957,47 +9250,46 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Square is a mobile payment company that offers business software, payment hardware products and small business services.",
 		icon: "Square.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "square:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("js\\.squareup\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "square:requestUrl:1",
 				kind: "requestUrl",
 				pattern: new RegExp("\\.squareup\\.com"),
-				description: "Observed request URL matches a known technology marker."
+				description: "Observed request URL matches a known technology marker.",
 			},
 			{
-				id: "square:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "square:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "SqPaymentForm",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "square:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "square:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "Square.Analytics",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "square:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "square:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "__BOOTSTRAP_STATE__.storeInfo.square_application_id",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "stage-try",
@@ -9006,36 +9298,35 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Stage Try is an end-to-end ecommerce platform amplifying AOV and conversions of online stores.",
 		icon: "Stage Try.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "stage-try:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.stagetry\\.io/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.stagetry\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "stage-try:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "stage-try:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "stage_cart_change_events",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "stage-try:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "stage-try:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "stage_cart_total_price",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"payg",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "stax",
@@ -9044,31 +9335,30 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Stax is a subscription-based platform offering integrated payment technology.",
 		icon: "Stax.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "stax:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("staxjs\\.staxpayments\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("staxjs\\.staxpayments\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "stax:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "stax:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "StaxJs",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "stripe",
@@ -9077,94 +9367,108 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Stripe offers online payment processing for internet businesses as well as fraud prevention, invoicing and subscription management.",
 		icon: "Stripe.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "stripe:html:0",
-				kind: "html",
-				pattern: new RegExp("<input[^>]+data-stripe"),
-				description: "HTML contains a known technology marker."
-			},
-			{
-				id: "stripe:scriptSrc:1",
+				id: "stripe:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("js\\.stripe\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "stripe:dom:2",
-				kind: "dom",
-				selector: "a[href*='billing.stripe.com']",
-				description: "DOM selector matches a known technology marker."
+				id: "stripe:html:1",
+				kind: "html",
+				pattern: new RegExp("<input[^>]+data-stripe"),
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "stripe:dom:3",
-				kind: "dom",
-				selector: "a[href*='checkout.stripe.com']",
-				description: "DOM selector matches a known technology marker."
-			},
-			{
-				id: "stripe:dom:4",
-				kind: "dom",
-				selector: "input[data-stripe]",
-				description: "DOM selector matches a known technology marker."
-			},
-			{
-				id: "stripe:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "stripe:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "Stripe.version",
 				valuePattern: new RegExp("^(.+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "stripe:pageGlobal:6",
-				kind: "pageGlobal",
+				id: "stripe:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "__NEXT_DATA__.props.pageProps.appSettings.STRIPE_API_PUBLIC_KEY",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "stripe:pageGlobal:7",
-				kind: "pageGlobal",
+				id: "stripe:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "checkout.enabledpayments.stripe",
 				valuePattern: new RegExp("^true$"),
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "stripe:pageGlobal:8",
-				kind: "pageGlobal",
-				property: "stripePublicKey",
-				description: "Page-owned global matches a known technology marker."
-			},
-			{
-				id: "stripe:cookie:9",
+				id: "stripe:cookie:5",
 				kind: "cookie",
-				key: "__stripe_mid",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^__stripe_mid$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
-				id: "stripe:cookie:10",
+				id: "stripe:cookie:6",
 				kind: "cookie",
-				key: "__stripe_sid",
-				description: "Cookie name matches a known technology marker."
+				keyPattern: new RegExp("^__stripe_sid$", "i"),
+				description: "Cookie name matches a known technology marker.",
 			},
 			{
-				id: "stripe:dns:11",
+				id: "stripe:dns:7",
 				kind: "dns",
-				valuePattern: new RegExp("stripe-verification="),
+				valuePattern: new RegExp("stripe-verification=", "i"),
 				recordType: "TXT",
 				description: "DNS record matches a known technology marker.",
-			}
+			},
+			{
+				id: "stripe:dom:8",
+				kind: "dom",
+				selector: "a[href*='billing.stripe.com']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "stripe:dom:9",
+				kind: "dom",
+				selector: "a[href*='checkout.stripe.com']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "stripe:dom:10",
+				kind: "dom",
+				selector: "input[data-stripe]",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "stripe:jsGlobal:11",
+				kind: "jsGlobal",
+				property: "stripePublicKey",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "stripe:dom:12",
+				kind: "dom",
+				selector: "a[href*='billing.stripe.com'][target='_blank']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "stripe:dom:13",
+				kind: "dom",
+				selector: "a[href*='billing.stripe.com'],a[href*='checkout.stripe.com'], input[data-stripe]",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
+				"payg",
 			],
-			cpe: "cpe:2.3:a:stripe:stripe:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:stripe:stripe:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "sumup",
@@ -9173,30 +9477,29 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "SumUp is a provider of payment acceptance solutions.",
 		icon: "SumUp.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "sumup:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "sumup:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "SumUpCard.debug",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "sumup:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "sumup:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "SumUpPayment.debug",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "sweethelp",
@@ -9205,28 +9508,27 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "SweetHelp is a messaging solution that recovers abandoned carts by sending texts via Whatsapp and SMS.",
 		icon: "SweetHelp.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "sweethelp:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "sweethelp:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "sweetHelpBtnLoad",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		requires: [
-			"shopify"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		requires: [
+			"shopify",
+		],
 	},
 	{
 		id: "t1-envios",
@@ -9235,24 +9537,30 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "T1 Envios is a delivery solution, allows the business to select the best courier to send their packages.",
 		icon: "T1 Envios.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "t1-envios:meta:0",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^T1ENVIOS$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^T1ENVIOS$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "t1-envios:meta:1",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^t1envios$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "t1-pagos",
@@ -9261,24 +9569,30 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "T1 Pagos is a payment processing platform.",
 		icon: "T1 Pagos.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "t1-pagos:meta:0",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^T1PAGOS$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^T1PAGOS$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "t1-pagos:meta:1",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^t1pagos$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "tabby",
@@ -9287,60 +9601,31 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Tabby is a Buy now pay later solution from Middle East.",
 		icon: "Tabby.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "tabby:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("checkout\\.tabby\\.ai"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "tabby:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "tabby:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Tabby",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "tabby:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "tabby:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "TabbyPromo",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
-	},
-	{
-		id: "tamago",
-		name: "Tamago",
-		website: "https://tamago.temonalab.com",
-		description: "Tamago is a Japanese subscription management platform by Temonalab for optimizing recurring billing services.",
-		icon: "Tamago.svg",
-		categories: [
-			"commerce-operations"
-		],
-		rules: [
-			{
-				id: "tamago:html:0",
-				kind: "html",
-				pattern: new RegExp("<link [^>]*href=\"http://tamago\\.temonalab\\.com"),
-				description: "HTML contains a known technology marker."
-			},
-			{
-				id: "tamago:dom:1",
-				kind: "dom",
-				selector: "link[href*='tamago.temonalab.com']",
-				description: "DOM selector matches a known technology marker."
-			}
-		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "tamara",
@@ -9349,26 +9634,25 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Tamara ia a BNPL (Buy now pay later) provider in Saudi Arabia.",
 		icon: "Tamara.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "tamara:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.tamara\\.co"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "tamara:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "tamara:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "TamaraProductWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "tap-payments",
@@ -9377,23 +9661,22 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Tap Payments is a company based in KSA provides payment services to merchants.",
 		icon: "Tap Payments.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "tap-payments:dom:0",
 				kind: "dom",
 				selector: "iframe[src*='checkout.payments.tap.company/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "tapmango",
@@ -9402,26 +9685,25 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "TapMango is a customizable customer loyalty program and online ordering platform designed to enhance customer engagement and streamline ordering processes.",
 		icon: "TapMango.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "tapmango:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("shopify\\.tapmango\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		requires: [
-			"shopify"
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
+		requires: [
+			"shopify",
+		],
 	},
 	{
 		id: "thanx",
@@ -9430,23 +9712,22 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Thanx is a platform that captures insights, retains loyal fans, sends highly-targeted campaigns, and measures results in real revenue.",
 		icon: "Thanx.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "thanx:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.thanx\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.thanx\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "tipsa",
@@ -9456,35 +9737,33 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "Tipsa.svg",
 		categories: [
 			"commerce-operations",
-			"bundler"
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "tipsa:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bTipsa\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "tns-payments",
 		name: "TNS Payments",
 		website: "https://tnsi.com/products/payments/",
 		description: "TNS Payments, is designed to deliver payment transaction information to banks, merchants, processors and other payment institutions.",
-		icon: "tnsi.svg",
+		icon: "tnsi.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "tns-payments:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("secure\\.ap\\.tnspayments\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "transmart",
@@ -9492,13 +9771,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		website: "https://transmartshipping.com",
 		description: "Transmart is a shipping company in Turkey.",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "transmart:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bTransmart\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "trunkrs",
@@ -9508,13 +9790,15 @@ export const commerceOperationsTechnologyDefinitions = [
 		icon: "Trunkrs.svg",
 		categories: [
 			"commerce-operations",
-			"bundler"
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "trunkrs:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bTrunkrs\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "trynow",
@@ -9523,36 +9807,38 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "TryNow is an ecommerce platform designed to offer a try before you buy experience for shoppers.",
 		icon: "TryNow.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "trynow:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.trynow\\.net/shopify/([\\d\\.]+)/"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.trynow\\.net\\/shopify\\/([\\d\\.]+)\\/"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "trynow:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "trynow:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "TryNowConfig",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "trynow:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "trynow:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "tryNowCheckout",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "uk-mail",
@@ -9561,13 +9847,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "UK Mail is a postal service company operating in the United Kingdom.",
 		icon: "UK Mail.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "uk-mail:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bUK Mail\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "ups",
@@ -9576,13 +9865,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "UPS is an American multinational shipping & receiving and supply chain management company.",
 		icon: "UPS.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "ups:text:0",
+				kind: "text",
+				pattern: new RegExp("\\b(?<!-)UPS\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "upsellit",
@@ -9591,52 +9883,51 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "UpSellit is a performance based lead and cart abandonment recovery solutions.",
 		icon: "UpSellit.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "upsellit:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("www\\.upsellit\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("www\\.upsellit\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "upsellit:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "upsellit:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "usi_analytics",
 				confidence: 25,
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "upsellit:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "upsellit:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "usi_app",
 				confidence: 25,
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "upsellit:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "upsellit:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "usi_commons",
 				confidence: 25,
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "upsellit:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "upsellit:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "usi_cookies",
 				confidence: 25,
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"mid",
 				"poa",
-				"mid"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "uptain",
@@ -9645,30 +9936,29 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Uptain is a software solution designed to reduce shopping cart abandonment in ecommerce by utilizing AI-based tools like exit-intent popups and trigger emails.",
 		icon: "Uptain.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "uptain:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.uptain\\.de/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.uptain\\.de\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "uptain:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "uptain:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "uptainUpdateUrl",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"payg",
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "usps",
@@ -9677,13 +9967,22 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "The United States Postal Service (USPS) is an independent agency of the executive branch of the United States federal government responsible for providing postal service in the United States.",
 		icon: "USPS.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "usps:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bUSPS\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+			{
+				id: "usps:text:1",
+				kind: "text",
+				pattern: new RegExp("\\bUnited States Postal Service\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "venmo",
@@ -9692,20 +9991,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Venmo is a mobile payment service owned by PayPal. Venmo account holders can transfer funds to others via a mobile phone app.",
 		icon: "Venmo.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "venmo:dom:0",
 				kind: "dom",
 				selector: "[aria-labelledby='pi-venmo'], [data-venmo-supported='true']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "veracore",
@@ -9714,32 +10009,32 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "VeraCore is an order fulfillment software platform that supports inventory management, warehousing, order processing, and shipping operations.",
 		icon: "VeraCore.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "veracore:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("www\\.veracore\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "veracore:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.veracore\\.com"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "veracore:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "veracore:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "VeraCore.API",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+			cpe: "cpe:2.3:a:advantive:veracore:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "verifone-2checkout",
@@ -9748,60 +10043,76 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Verifone is an American multinational corporation headquartered in Coral Springs, Florida, that provides technology for electronic payment transactions and value-added services at the point-of-sale.",
 		icon: "Verifone.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "verifone-2checkout:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("2checkout\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
+			{
+				id: "verifone-2checkout:dom:1",
+				kind: "dom",
+				selector: "#order__processedby",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "verifone-2checkout:text:2",
+				kind: "text",
+				pattern: new RegExp("2Checkout"),
+				description: "Page text contains a known technology marker.",
+			},
+			{
+				id: "verifone-2checkout:dom:3",
+				kind: "dom",
+				selector: "link[href*='.2checkout.com']",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "viabill",
 		name: "ViaBill",
 		website: "https://viabill.com",
 		description: "ViaBill is a cloud-based payment management solution designed to help small to midsize retailers and webshops.",
-		icon: "ViaBill.svg",
+		icon: "ViaBill.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "viabill:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.viabill\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.viabill\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "viabill:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "viabill:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "viabillOptions.state.subscriptions",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "viabill:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "viabill:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "viabillPricetagInternal.conf.productsByLocale",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "visa",
@@ -9809,38 +10120,34 @@ export const commerceOperationsTechnologyDefinitions = [
 		website: "https://www.visa.com",
 		icon: "Visa.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "visa:dom:0",
 				kind: "dom",
 				selector: "[aria-labelledby='pi-visa']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "visa:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "visa:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "visaApi",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "visa:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "visa:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "visaImage",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "visa:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "visa:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "visaSrc",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "visa-checkout",
@@ -9849,20 +10156,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Visa facilitates electronic funds transfers throughout the world, most commonly through Visa-branded credit cards, debit cards and prepaid cards.",
 		icon: "Visa.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "visa-checkout:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("secure\\.checkout\\.visa\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "voltage",
@@ -9871,26 +10174,25 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Voltage is a payments platform that enables users to send bitcoin globally through a secure network.",
 		icon: "Voltage.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "voltage:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("btcpay0\\.voltageapp\\.io"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "voucherify",
@@ -9899,25 +10201,24 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Voucherify is an incentive optimization engine designed for high-frequency commerce.",
 		icon: "Voucherify.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "voucherify:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.voucherify\\.io/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.voucherify\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "vyper",
@@ -9926,24 +10227,23 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Vyper is a system for creating and managing giveaways or viral contests to increase engagement and reach.",
 		icon: "Vyper.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "vyper:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("vyper\\.io"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "waaship",
@@ -9952,24 +10252,23 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Waaship is an all-in-one fulfillment software designed to manage orders, inventory, picking, packing, and shipping.",
 		icon: "Waaship.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "waaship:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("platform-app\\.waaship\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "wallkit",
@@ -9978,33 +10277,35 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Wallkit is a plug-and-play subscription management system.",
 		icon: "Wallkit.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "wallkit:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.wallkit\\.net/js/integration/latest/wallkit-integration-library\\.min\\.js\\?ver=([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.wallkit\\.net\\/js\\/integration\\/latest\\/wallkit-integration-library\\.min\\.js\\?ver=([\\d\\.]+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "wallkit:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "wallkit:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "WALLKIT_CDN_URL",
 				valuePattern: new RegExp("\\.wallkit\\.net"),
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"high",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "warply",
@@ -10013,20 +10314,19 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Warply is a customer loyalty platform that enables businesses to manage rewards, track engagement, and enhance customer retention through targeted campaigns.",
 		icon: "Warply.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "warply:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("static\\.warp\\.ly"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "wayforpay",
@@ -10035,26 +10335,22 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "WayForPay is a payment processing service provider based in Europe.",
 		icon: "WayForPay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "wayforpay:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("secure\\.wayforpay\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "wayforpay:dom:1",
 				kind: "dom",
 				selector: "form[action*='secure.wayforpay.com']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "webxpay",
@@ -10063,24 +10359,23 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "WEBXPAY is a specialised online payment gateway that expedites buying and selling in a highly secured environment.",
 		icon: "WEBXPAY.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "webxpay:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "webxpay:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "WEBXPAY",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"payg",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "wepay",
@@ -10089,32 +10384,31 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Wepay is a provider of integrated payments processing solutions tailored for platforms, facilitating transaction management across diverse service offerings.",
 		icon: "WePay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "wepay:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.wepay\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.wepay\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "wepay:dom:1",
 				kind: "dom",
 				selector: "link[href*='.wepay.com']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "wepay:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "wepay:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "WePay",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "whistl",
@@ -10123,13 +10417,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Whistl is a postal delivery company operating in the United Kingdom.",
 		icon: "Whistl.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "whistl:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bWhistl\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "wirecard",
@@ -10138,35 +10435,34 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Wirecard is a defunct German payment processor and financial services provider.",
 		icon: "Wirecard.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "wirecard:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.wirecard\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.wirecard\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "wirecard:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "wirecard:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "WirecardHPP",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "wirecard:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "wirecard:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "WirecardPaymentPage",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "with-reach",
@@ -10175,55 +10471,56 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "With Reach is a fintech/payments service provider that helps retailers connect with customers around the world.",
 		icon: "With Reach.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "with-reach:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.rch\\.io/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.rch\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "with-reach:scriptSrc:1",
 				kind: "scriptSrc",
 				pattern: new RegExp("checkout\\.gointerpay\\.net"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "wizpay",
 		name: "Wizpay",
 		website: "https://www.wizpay.com.au",
 		description: "Wizpay is a buy now pay later solution.",
-		icon: "Wizpay.svg",
+		icon: "Wizpay.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "wizpay:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("wp-content/plugins/creditcorp-wizardpay/.+\\?ver=([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("wp-content\\/plugins\\/creditcorp-wizardpay\\/.+\\?ver=([\\d\\.]+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "worldpay",
@@ -10232,46 +10529,44 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "WorldPay is a merchant services and payment processing provider offering a payment gateway for online transactions.",
 		icon: "WorldPay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "worldpay:dom:0",
 				kind: "dom",
 				selector: "img[src*='secure.worldpay.com'], img[alt='Powered by WorldPay'], a[href*='worldpay.com'][target='_blank']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "worldshopping",
 		name: "WorldShopping",
 		website: "https://www.worldshopping.global/",
 		description: "WorldShopping makes online purchases in Japan easier for international visitors.",
-		icon: "worldshopping.svg",
+		icon: "worldshopping.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "worldshopping:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("checkout-api\\.worldshopping\\.jp/(v\\d+)?"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("checkout-api\\.worldshopping\\.jp\\/(v\\d+)?"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "wyre",
@@ -10280,45 +10575,79 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Wyre is a financial technology platform that enables cryptocurrency companies to connect digital assets with traditional fiat payment systems.",
 		icon: "Wyre.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "wyre:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("verify\\.sendwyre\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("verify\\.sendwyre\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
+	},
+	{
+		id: "xendit",
+		name: "Xendit",
+		website: "https://www.xendit.co",
+		description: "Xendit is a payment gateway in Indonesia and Southeast Asia.",
+		icon: "Xendit.svg",
+		categories: [
+			"commerce-operations",
+		],
+		rules: [
+			{
+				id: "xendit:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("js\\.xendit\\.co\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "xendit:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "Xendit.card",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"payg",
+			],
+		},
 	},
 	{
 		id: "xpresslane",
 		name: "Xpresslane",
 		website: "https://www.xpresslane.in",
 		description: "Xpresslane is a checkout platform for ecommerce that focuses on increasing conversion during the checkout process.",
-		icon: "Xpresslane.svg",
+		icon: "Xpresslane.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "xpresslane:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("apps\\.xpresslane\\.in/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("apps\\.xpresslane\\.in\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "xpresslane:dom:1",
+				kind: "dom",
+				selector: "link[href*='/assets/xpresslane.css']",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "xsolla",
@@ -10327,20 +10656,19 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Xsolla is a video game business system offering payment solutions and store management.",
 		icon: "Xsolla.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "xsolla:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.xsolla\\.(com|net)"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "yampi-checkout",
@@ -10349,23 +10677,22 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Yampi Checkout is an payment processor from Brazil.",
 		icon: "Yampi.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "yampi-checkout:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "yampi-checkout:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "yampiCheckoutUrl",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "yever",
@@ -10374,36 +10701,35 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Yever is a digital payment and checkout platform that enables secure online transactions for businesses and customers.",
 		icon: "Yever.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "yever:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("api\\.yever\\.com\\.br"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "yever:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "yever:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "currentUrlYever",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "yever:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "yever:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "getUtmsUrlYever",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "yodel",
@@ -10411,13 +10737,16 @@ export const commerceOperationsTechnologyDefinitions = [
 		website: "https://www.yodel.co.uk/",
 		description: "Yodel is a delivery company for B2B and B2C orders in the United Kingdom.",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "yodel:text:0",
+				kind: "text",
+				pattern: new RegExp("\\bYodel\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "yoomoney",
@@ -10426,36 +10755,42 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "YooMoney is an IT company working with electronic payments on the Internet, creating and supporting financial services for individuals and businesses.",
 		icon: "YooMoney.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "yoomoney:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.yoomoney\\.ru/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.yoomoney\\.ru\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "yoomoney:dom:1",
 				kind: "dom",
 				selector: "a[href*='yoomoney.ru'][target='_blank'], iframe[src*='yoomoney.ru'], img[src*='yoomoney.ru']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "yoomoney:responseHeader:2",
-				kind: "responseHeader",
+				id: "yoomoney:header:2",
+				kind: "header",
 				key: "Content-Security-Policy",
-				valuePattern: new RegExp("\\.yoomoney\\.ru"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("\\.yoomoney\\.ru", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "yoomoney:header:3",
+				kind: "header",
+				key: "content-security-policy",
+				valuePattern: new RegExp("\\.yoomoney\\.ru", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "yotpo-loyalty-and-referrals",
@@ -10464,37 +10799,42 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Yotpo is a user-generated content marketing platform.",
 		icon: "Yotpo.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "yotpo-loyalty-and-referrals:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn(?:-loyalty)?\\.(?:swellrewards|yotpo)\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn\\.swellrewards\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "yotpo-loyalty-and-referrals:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "yotpo-loyalty-and-referrals:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "SwellConfig",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "yotpo-loyalty-and-referrals:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "yotpo-loyalty-and-referrals:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "swellAPI",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "yotpo-loyalty-and-referrals:scriptSrc:3",
+				kind: "scriptSrc",
+				pattern: new RegExp("cdn(?:-loyalty)?\\.(?:swellrewards|yotpo)\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "youcan-pay",
@@ -10503,23 +10843,22 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "YouCan Pay is a developed electronic payment platform that provides effective solutions for the payment gatways issue in ecommerce in Morocco.",
 		icon: "YouCan Pay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "youcan-pay:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "youcan-pay:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "YCPay",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "yuno",
@@ -10528,26 +10867,25 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Yuno is a global payment orchestrator used by checkout platforms to optimize payment processing and enhance transaction performance.",
 		icon: "Yuno.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "yuno:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("sdk-web\\.y\\.uno"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "yuno:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "yuno:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Yuno.threeDSecure",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "zeleris",
@@ -10555,137 +10893,142 @@ export const commerceOperationsTechnologyDefinitions = [
 		website: "https://www.zeleris.com",
 		description: "Zeleris provides door to door shipment delivery to Ireland, UK and the EU.",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
-		rules: [],
-		metadata: {
-			saas: false,
-			oss: false
-		}
+		rules: [
+			{
+				id: "zeleris:text:0",
+				kind: "text",
+				pattern: new RegExp("\\Zeleris\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+			{
+				id: "zeleris:text:1",
+				kind: "text",
+				pattern: new RegExp("\\bZeleris\\b"),
+				description: "Page text contains a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "zestmoney",
 		name: "ZestMoney",
 		website: "https://www.zestmoney.in",
 		description: "ZestMoney is a fintech company that uses digital EMI without the need for a credit card or a credit score.",
-		icon: "ZestMoney.svg",
+		icon: "ZestMoney.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "zestmoney:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "zestmoney:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "ZestMoneyWidget",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "zestmoney:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "zestmoney:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "zestBind",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "zestmoney:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "zestmoney:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "zestMerchant",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"freemium"
-			]
-		}
+				"freemium",
+			],
+		},
 	},
 	{
 		id: "zinrelo",
 		name: "Zinrelo",
 		website: "https://www.zinrelo.com",
 		description: "Zinrelo is an enterprise-grade, loyalty rewards platform.",
-		icon: "Zinrelo.svg",
+		icon: "Zinrelo.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "zinrelo:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "zinrelo:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "zrl_mi",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "zip",
 		name: "Zip",
 		website: "https://www.zip.co/",
-		description: "Zip is a payment service that lets you receive your purchase now and spread the total cost over a interest-free payment schedule.",
+		description: "Zip is a payment service that lets you receive your purchase now and spread the total cost over an interest-free payment schedule.",
 		icon: "zip_pay.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "zip:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("quadpay\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "zip:scriptSrc:1",
 				kind: "scriptSrc",
 				pattern: new RegExp("static\\.zipmoney\\.com\\.au"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "zip:scriptSrc:2",
 				kind: "scriptSrc",
 				pattern: new RegExp("zip\\.co"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "zip:dom:3",
 				kind: "dom",
 				selector: "link[href*='widgets.quadpay.com/'], div[data-quadpay-src*='.quadpay.com/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "zip:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "zip:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "QuadPayShopify",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "zip:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "zip:jsGlobal:5",
+				kind: "jsGlobal",
 				property: "checkout.enabledpayments.zip",
 				valuePattern: new RegExp("^true$"),
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "zip:pageGlobal:6",
-				kind: "pageGlobal",
+				id: "zip:jsGlobal:6",
+				kind: "jsGlobal",
 				property: "quadpayID",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "zonos",
@@ -10694,73 +11037,74 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Zonos is a cross-border ecommerce software and app solution for companies with international business.",
 		icon: "Zonos.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "zonos:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.zonos\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.zonos\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "zonos:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "zonos:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Zonos",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "zonos:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "zonos:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "zonos",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "zonos:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "zonos:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "zonosCheckout",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "zoodpay",
 		name: "ZoodPay",
 		website: "https://www.zoodpay.com",
 		description: "ZoodPay is a financial technology company that provides payment and financing solutions, including buy-now-pay-later (BNPL) services and point-of-sale financing, to facilitate transactions for consumers and businesses.",
-		icon: "ZoodPay.svg",
+		icon: "ZoodPay.png",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "zoodpay:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("wp-content/plugins/zoodpay/(?:.+\\?ver=([\\d\\.]+))?"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("wp-content\\/plugins\\/zoodpay\\/(?:.+\\?ver=([\\d\\.]+))?"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "zoodpay:dom:1",
 				kind: "dom",
 				selector: "img[src*='zoodpay']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "zuora",
@@ -10769,22 +11113,21 @@ export const commerceOperationsTechnologyDefinitions = [
 		description: "Zuora is a platform that offers subscription billing management software.",
 		icon: "Zuora.svg",
 		categories: [
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
 				id: "zuora:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.zuora\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.zuora\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
-	}
+				"poa",
+			],
+		},
+	},
 ] as const satisfies readonly TechnologyDefinition[];

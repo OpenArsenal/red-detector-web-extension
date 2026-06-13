@@ -10,13 +10,92 @@ export const animationTechnologyDefinitions = [
 		categories: [
 			"animation",
 			"component-library",
-			"styling-library"
 		],
-		rules: [],
+		rules: [
+			{
+				id: "animate-css:dom:0",
+				kind: "dom",
+				selector: ".animate__animated",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "animate-css:dom:1",
+				kind: "dom",
+				selector: "link[href*='animate']",
+				description: "DOM selector matches a known technology marker.",
+			},
+		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+	},
+	{
+		id: "anime-js",
+		name: "anime.js",
+		website: "https://animejs.com/",
+		description: "Anime.js (/ˈæn.ə.meɪ/) is a lightweight JavaScript animation library with a simple, yet powerful API.It works with CSS properties, SVG, DOM attributes and JavaScript Objects.",
+		icon: "anime.js.svg",
+		categories: [
+			"animation",
+			"graphics-visualization",
+		],
+		rules: [
+			{
+				id: "anime-js:jsGlobal:0",
+				kind: "jsGlobal",
+				property: "anime.version",
+				valuePattern: new RegExp("^([\\d\\.]+)$"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "anime-js:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "AnimeJS",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "anime-js:header:2",
+				kind: "header",
+				key: "Access-Control-Allow-Origin",
+				valuePattern: new RegExp("animejs\\.com", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "anime-js:resourceUrl:modern:0",
+				kind: "resourceUrl",
+				pattern: new RegExp("animejs[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "anime-js:resourceUrl:modern:1",
+				kind: "resourceUrl",
+				pattern: new RegExp("anime\\.min\\.js"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "anime-js:resourceUrl:modern:2",
+				kind: "resourceUrl",
+				pattern: new RegExp("anime\\.es\\.js"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "anime-js:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("\"animejs\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+		],
+		metadata: {
+			oss: true,
+		},
 	},
 	{
 		id: "aos",
@@ -26,453 +105,465 @@ export const animationTechnologyDefinitions = [
 		icon: "AOS.svg",
 		categories: [
 			"animation",
-			"developer-tooling"
+			"widgets-misc",
 		],
 		rules: [
 			{
 				id: "aos:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("unpkg\\.com/aos@([\\d\\.]+)/dist/aos\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("unpkg\\.com\\/aos@([\\d\\.]+)\\/dist\\/aos\\.js"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "aos:scriptSrc:1",
 				kind: "scriptSrc",
-				pattern: new RegExp("/typo3conf/ext/udem_vendor/Resources/Public/aos-([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/typo3conf\\/ext\\/udem_vendor\\/Resources\\/Public\\/aos-([\\d\\.]+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "aos:dom:2",
 				kind: "dom",
 				selector: " body[data-aos-easing]",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "aos:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "aos:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "AOS.init",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "aos:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "aos:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "AOS.refresh",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "aos:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "aos:jsGlobal:5",
+				kind: "jsGlobal",
 				property: "AOS.refreshHard",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "aos:responseHeader:6",
-				kind: "responseHeader",
+				id: "aos:header:6",
+				kind: "header",
 				key: "X-Powered-By",
-				valuePattern: new RegExp("^AdministerAOS"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("^AdministerAOS", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "aos:scriptSrc:7",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\/typo3conf\\/ext\\/udem_vendor\\/resources\\/public\\/aos-([\\d\\.]+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
-		id: "easy-pie-chart",
-		name: "Easy Pie Chart",
-		website: "https://rendro.github.io/easy-pie-chart/",
-		description: "Lightweight jQuery plugin to render and animate nice pie charts with the HTML5 canvas element.",
+		id: "framer-motion",
+		name: "Framer Motion",
+		website: "https://motion.dev",
+		description: "Framer Motion is a modern animation library for JavaScript, React, and Vue.",
+		icon: "FramerMotion.svg",
 		categories: [
 			"animation",
-			"developer-tooling"
+			"widgets-misc",
 		],
 		rules: [
 			{
-				id: "easy-pie-chart:scriptSrc:0",
-				kind: "scriptSrc",
-				pattern: new RegExp("[Ee]asy-?[Pp]ie-?[Cc]hart(?:\\.min)?\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
+				id: "framer-motion:jsGlobal:0",
+				kind: "jsGlobal",
+				property: "MotionIsMounted",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "framer-motion:resourceUrl:modern:0",
+				kind: "resourceUrl",
+				pattern: new RegExp("framer-motion[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "framer-motion:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("\"framer-motion\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "framer-motion:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("\"data-framer-portal-id\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "framer-motion:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("\"framerAppearId\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "framer-motion:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("\"motionComponentSymbol\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "framer-motion:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("\"projectionUpdate\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "framer-motion:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("\"projectionFrame\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+			pricing: [
+				"freemium",
+			],
+		},
 	},
 	{
 		id: "gsap",
 		name: "GSAP",
 		website: "https://greensock.com/gsap",
 		description: "GSAP is an animation library that allows you to create animations with JavaScript.",
-		icon: "GSAP.svg",
+		icon: "TweenMax.png",
 		categories: [
 			"animation",
 			"ui-library",
-			"framework"
 		],
 		rules: [
 			{
 				id: "gsap:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("TweenMax(?:\\.min)?\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "gsap:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "gsap:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "TweenLite.version",
 				valuePattern: new RegExp("([\\d.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "gsap:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "gsap:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "TweenMax.version",
 				valuePattern: new RegExp("([\\d.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "gsap:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "gsap:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "gsap.version",
 				valuePattern: new RegExp("([\\d.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "gsap:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "gsap:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "gsapVersions",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "gsap:scriptSrc:5",
+				kind: "scriptSrc",
+				pattern: new RegExp("tweenmax(?:\\.min)?\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "gsap:resourceUrl:modern:0",
+				kind: "resourceUrl",
+				pattern: new RegExp("gsap[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "gsap:resourceUrl:modern:1",
+				kind: "resourceUrl",
+				pattern: new RegExp("greensock"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "gsap:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("GreenSock"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "gsap:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("GreenSockGlobals"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "gsap:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("registerPlugin"),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "gsap:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("\"scrollTrigger\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "gsap:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("\"autoAlpha\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
-		id: "jquery",
-		name: "jQuery",
-		website: "https://jquery.com",
-		description: "jQuery is a JavaScript library which is a free, open-source software designed to simplify HTML DOM tree traversal and manipulation, as well as event handling, CSS animation, and Ajax.",
-		icon: "jQuery.svg",
+		id: "autoanimate",
+		name: "AutoAnimate",
+		website: "https://auto-animate.formkit.com/",
+		description: "Add motion to your apps with a single line of code",
 		categories: [
 			"animation",
-			"developer-tooling"
 		],
 		rules: [
 			{
-				id: "jquery:scriptSrc:0",
-				kind: "scriptSrc",
-				pattern: new RegExp("jquery"),
-				description: "Script source URL matches a known technology marker."
+				id: "autoanimate:resourceUrl:modern:0",
+				kind: "resourceUrl",
+				pattern: new RegExp("@formkit\\/auto-animate[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
 			},
 			{
-				id: "jquery:scriptSrc:1",
-				kind: "scriptSrc",
-				pattern: new RegExp("/jquery(?:-(\\d+\\.\\d+\\.\\d+))[/.-]"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				id: "autoanimate:resourceUrl:modern:1",
+				kind: "resourceUrl",
+				pattern: new RegExp("auto-animate"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
 			},
 			{
-				id: "jquery:scriptSrc:2",
-				kind: "scriptSrc",
-				pattern: new RegExp("/(\\d+\\.\\d+\\.\\d+)/jquery(?!\\.popupoverlay\\.js|(?:\\.[\\w-]*)*fancybox)[/.-][^u]"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				id: "autoanimate:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("\"@formkit\\/auto-animate\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
 			},
 			{
-				id: "jquery:pageGlobal:3",
-				kind: "pageGlobal",
-				property: "$.fn.jquery",
-				valuePattern: new RegExp("([\\d.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				id: "autoanimate:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("\"autoAnimate\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
 			},
-			{
-				id: "jquery:pageGlobal:4",
-				kind: "pageGlobal",
-				property: "jQuery.fn.jquery",
-				valuePattern: new RegExp("([\\d.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			},
-			{
-				id: "jquery:pageGlobal:5",
-				kind: "pageGlobal",
-				property: "jQuery.prototype.jquery",
-				valuePattern: new RegExp("([\\d.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
 		],
-		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:jquery:jquery:*:*:*:*:*:*:*:*"
-		}
 	},
 	{
-		id: "moofx",
-		name: "Moofx",
-		website: "https://github.com/kamicane/moofx",
-		description: "Moofx is a CSS3-enabled JavaScript animation library for creating and managing lightweight, hardware-accelerated animations.",
+		id: "lottie",
+		name: "Lottie",
+		website: "https://airbnb.io/lottie/",
+		description: "A library for rendering After Effects animations natively",
 		categories: [
 			"animation",
-			"developer-tooling"
 		],
 		rules: [
 			{
-				id: "moofx:pageGlobal:0",
-				kind: "pageGlobal",
-				property: "moofx.parse",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		metadata: {
-			saas: false,
-			oss: true
-		}
-	},
-	{
-		id: "morphext",
-		name: "Morphext",
-		website: "https://morphext.fyianlai.com/",
-		description: "Morphext is a lightweight jQuery plugin that rotates text using Animate.css transitions for smooth, dynamic visual effects.",
-		icon: "Morphext.svg",
-		categories: [
-			"animation",
-			"developer-tooling"
-		],
-		rules: [
-			{
-				id: "morphext:scriptSrc:0",
-				kind: "scriptSrc",
-				pattern: new RegExp("morphext(?:\\.min)?\\.js(?:\\?ver=((?:\\d+\\.)+\\d+))?"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		metadata: {
-			saas: false,
-			oss: true
-		}
-	},
-	{
-		id: "popmotion",
-		name: "Popmotion",
-		website: "https://popmotion.io",
-		description: "Popmotion is a collection of low-level JavaScript animation functions and utils for advanced animators.",
-		icon: "Popmotion.svg",
-		categories: [
-			"animation",
-			"developer-tooling"
-		],
-		rules: [
-			{
-				id: "popmotion:scriptSrc:0",
-				kind: "scriptSrc",
-				pattern: new RegExp("popmotion\\.global\\.min\\.js(?:\\?ver=\\d+\\.\\d+)?"),
-				description: "Script source URL matches a known technology marker."
+				id: "lottie:resourceUrl:modern:0",
+				kind: "resourceUrl",
+				pattern: new RegExp("lottie-web[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
 			},
 			{
-				id: "popmotion:pageGlobal:1",
-				kind: "pageGlobal",
-				property: "popmotion",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		metadata: {
-			saas: false,
-			oss: true
-		}
-	},
-	{
-		id: "rive",
-		name: "Rive",
-		website: "https://rive.app",
-		description: "Rive is a real-time interactive design and animation tool.",
-		icon: "Rive.svg",
-		categories: [
-			"animation",
-			"graphics-visualization"
-		],
-		rules: [
-			{
-				id: "rive:dom:0",
-				kind: "dom",
-				selector: "link[href*='rive.app/'][rel='canonical']",
-				description: "DOM selector matches a known technology marker."
+				id: "lottie:resourceUrl:modern:1",
+				kind: "resourceUrl",
+				pattern: new RegExp("lottie-player[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
 			},
 			{
-				id: "rive:pageGlobal:1",
-				kind: "pageGlobal",
-				property: "rive.Rive",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		metadata: {
-			saas: true,
-			oss: false,
-			pricing: [
-				"freemium",
-				"payg",
-				"recurring"
-			]
-		}
-	},
-	{
-		id: "snabbt",
-		name: "Snabbt",
-		website: "https://daniel-lundin.github.io/snabbt.js/",
-		description: "Minimalistic animation library in javascript Snabbt.js.",
-		categories: [
-			"animation",
-			"developer-tooling"
-		],
-		rules: [
-			{
-				id: "snabbt:scriptSrc:0",
-				kind: "scriptSrc",
-				pattern: new RegExp("(?:((?:\\d+\\.)+\\d+)\\/)?snabbt(?:[\\.-]min)?\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				id: "lottie:resourceUrl:modern:2",
+				kind: "resourceUrl",
+				pattern: new RegExp("@lottiefiles\\/"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
 			},
 			{
-				id: "snabbt:scriptSrc:1",
-				kind: "scriptSrc",
-				pattern: new RegExp("snabbt(?:[\\.-]min)?\\.js(?:\\?v(?:er)?=((?:\\d+\\.)+\\d+))?"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		metadata: {
-			saas: false,
-			oss: true
-		}
-	},
-	{
-		id: "tdesign",
-		name: "TDesign",
-		website: "https://tdesign.tencent.com",
-		description: "TDesign launched by Tencent contains rich and reusable design component resources, such as color system, text system, motion design, etc.",
-		icon: "TDesign.svg",
-		categories: [
-			"animation",
-			"component-library",
-			"styling-library"
-		],
-		rules: [
-			{
-				id: "tdesign:scriptSrc:0",
-				kind: "scriptSrc",
-				pattern: new RegExp("tdesign\\.gtimg\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				id: "lottie:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("\"bodymovin\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
 			},
 			{
-				id: "tdesign:dom:1",
-				kind: "dom",
-				selector: ".t-button__text, .t-layout",
-				description: "DOM selector matches a known technology marker."
-			}
-		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
-	},
-	{
-		id: "tempus",
-		name: "Tempus",
-		website: "https://github.com/darkroomengineering/tempus",
-		description: "Tempus is a lightweight animation frame manager for JavaScript applications, designed to optimize timing and control of visual updates.",
-		icon: "Tempus.svg",
-		categories: [
-			"animation",
-			"developer-tooling"
-		],
-		rules: [
-			{
-				id: "tempus:pageGlobal:0",
-				kind: "pageGlobal",
-				property: "tempusVersion",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		metadata: {
-			saas: false,
-			oss: true
-		}
-	},
-	{
-		id: "theatre-js",
-		name: "Theatre.js",
-		website: "https://www.theatrejs.com",
-		description: "Theatre.js is a javascript animation library with a professional motion design toolset.",
-		icon: "Theatre.js.svg",
-		categories: [
-			"animation",
-			"graphics-visualization"
-		],
-		rules: [
-			{
-				id: "theatre-js:pageGlobal:0",
-				kind: "pageGlobal",
-				property: "__TheatreJS_CoreBundle",
-				description: "Page-owned global matches a known technology marker."
+				id: "lottie:html:modern:4",
+				kind: "html",
+				pattern: new RegExp("<lottie-player"),
+				confidence: 65,
+				description: "Document HTML matches a modern tooling marker.",
 			},
 			{
-				id: "theatre-js:pageGlobal:1",
-				kind: "pageGlobal",
-				property: "__TheatreJS_CoreBundle.version",
-				valuePattern: new RegExp("((?:\\d+\\.)+\\d+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				id: "lottie:html:modern:5",
+				kind: "html",
+				pattern: new RegExp("<dotlottie-player"),
+				confidence: 65,
+				description: "Document HTML matches a modern tooling marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: true
-		}
 	},
 	{
-		id: "wow",
-		name: "WOW",
-		website: "https://www.delac.io/WOW",
-		description: "Reveal CSS animation as you scroll down a page.",
+		id: "motion-one",
+		name: "Motion One",
+		website: "https://motion.dev/",
+		description: "A new animation library built on the Web Animations API",
 		categories: [
 			"animation",
-			"ui-library",
-			"framework",
-			"graphics-visualization"
 		],
 		rules: [
 			{
-				id: "wow:scriptSrc:0",
-				kind: "scriptSrc",
-				pattern: new RegExp("wow(?:\\.min)?\\.js(?:\\?ver=((?:\\d+\\.)+\\d+))?"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			}
+				id: "motion-one:resourceUrl:modern:0",
+				kind: "resourceUrl",
+				pattern: new RegExp("@motionone\\/"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "motion-one:resourceUrl:modern:1",
+				kind: "resourceUrl",
+				pattern: new RegExp("motion-one"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "motion-one:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("\"@motionone\\/dom\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "motion-one:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("\"@motionone\\/animation\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "motion-one:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("\"@motionone\\/utils\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: true,
-			pricing: [
-				"low",
-				"onetime"
-			]
-		}
-	}
+	},
+	{
+		id: "react-spring",
+		name: "React Spring",
+		website: "https://www.react-spring.dev/",
+		description: "A spring-physics based animation library for React",
+		categories: [
+			"animation",
+		],
+		rules: [
+			{
+				id: "react-spring:resourceUrl:modern:0",
+				kind: "resourceUrl",
+				pattern: new RegExp("react-spring[.\\-@/]"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "react-spring:resourceUrl:modern:1",
+				kind: "resourceUrl",
+				pattern: new RegExp("@react-spring\\/"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "react-spring:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("\"react-spring\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-spring:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("\"@react-spring\\/web\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-spring:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("\"@react-spring\\/core\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-spring:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("\"SpringValue\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-spring:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("\"SpringRef\""),
+				confidence: 65,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+		],
+	},
 ] as const satisfies readonly TechnologyDefinition[];

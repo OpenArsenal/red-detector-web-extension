@@ -4,56 +4,52 @@ export const translationsTechnologyDefinitions = [
 	{
 		id: "bablic",
 		name: "Bablic",
-		website: "https://www.bablic.com",
+		website: "https://www.bablic.com/",
 		description: "Bablic is a localisation solution to translate your website.",
-		icon: "bablic.svg",
+		icon: "bablic.png",
 		categories: [
 			"translations",
-			"content-publishing"
 		],
 		rules: [
 			{
-				id: "bablic:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "bablic:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "bablic",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "conveythis",
 		name: "ConveyThis",
 		website: "https://www.conveythis.com/",
 		description: "ConveyThis is a website translation service.",
-		icon: "ConveyThis.svg",
+		icon: "ConveyThis.png",
 		categories: [
 			"translations",
-			"content-publishing"
 		],
 		rules: [
 			{
 				id: "conveythis:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.conveythis\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "conword",
@@ -63,20 +59,18 @@ export const translationsTechnologyDefinitions = [
 		icon: "Conword.svg",
 		categories: [
 			"translations",
-			"content-publishing"
 		],
 		rules: [
 			{
 				id: "conword:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("static\\.conword\\.io"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "crowdin",
@@ -86,25 +80,23 @@ export const translationsTechnologyDefinitions = [
 		icon: "Crowdin.svg",
 		categories: [
 			"translations",
-			"content-publishing"
 		],
 		rules: [
 			{
 				id: "crowdin:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.app\\.crowdin\\.net"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "easyling",
@@ -114,66 +106,65 @@ export const translationsTechnologyDefinitions = [
 		icon: "Easyling.svg",
 		categories: [
 			"translations",
-			"content-publishing"
 		],
 		rules: [
 			{
 				id: "easyling:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.easyling\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "langify",
 		name: "langify",
 		website: "https://langify-app.com",
 		description: "langify translate your shop into multiple languages. langify comes with a visual configurator that allows you to add language switchers that integrate seamlessly into your existing design.",
-		icon: "langify.svg",
+		icon: "langify.png",
 		categories: [
 			"translations",
-			"content-publishing"
 		],
 		rules: [
 			{
-				id: "langify:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "langify:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Langify",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "langify:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "langify:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "langify",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "langify:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "langify:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "langify.settings.switcher.version",
 				valuePattern: new RegExp("([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "linguise",
@@ -183,59 +174,40 @@ export const translationsTechnologyDefinitions = [
 		icon: "Linguise.svg",
 		categories: [
 			"translations",
-			"content-publishing"
 		],
 		rules: [
 			{
 				id: "linguise:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/modules/mod_linguise/assets/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/modules\\/mod_linguise\\/assets\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "linguise:dom:1",
 				kind: "dom",
 				selector: "script[type='linguise/json']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "linguise:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "linguise:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "linguise_configs",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "linguise:dom:3",
+				kind: "dom",
+				selector: "script[type='linguise/json]",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
-	},
-	{
-		id: "paraglide-js",
-		name: "Paraglide JS",
-		website: "https://inlang.com/m/gerre34r/library-inlang-paraglideJs",
-		description: "Paraglide JS is a compiler-based i18n library that emits tree-shakable message functions for optimized localization workflows.",
-		icon: "ParaglideJS.svg",
-		categories: [
-			"translations",
-			"developer-tooling"
-		],
-		rules: [
-			{
-				id: "paraglide-js:pageGlobal:0",
-				kind: "pageGlobal",
-				property: "__paraglide",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		metadata: {
-			saas: false,
-			oss: true
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "pluglin",
@@ -245,25 +217,23 @@ export const translationsTechnologyDefinitions = [
 		icon: "Pluglin.svg",
 		categories: [
 			"translations",
-			"content-publishing"
 		],
 		rules: [
 			{
 				id: "pluglin:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.pluglin\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "smartling",
@@ -273,100 +243,69 @@ export const translationsTechnologyDefinitions = [
 		icon: "Smartling.svg",
 		categories: [
 			"translations",
-			"content-publishing"
 		],
 		rules: [
 			{
 				id: "smartling:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.smartling\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.smartling\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "smartling:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "smartling:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "populateSmartlingDdl",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "transcy",
 		name: "Transcy",
 		website: "https://transcy.io",
 		description: "Transcy is a Shopify translation app. Transcy allows you to translate your whole store content into target languages to reach different nation shoppers.",
-		icon: "Transcy.svg",
+		icon: "Transcy.png",
 		categories: [
 			"translations",
-			"content-publishing",
-			"ecommerce-extensions"
+			"ecommerce-extensions",
 		],
 		rules: [
 			{
-				id: "transcy:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "transcy:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "_transcy",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "transcy:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "transcy:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "transcy_apiURI",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "transcy:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "transcy:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "transcy_shopifyLocales",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"shopify"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
-	},
-	{
-		id: "transifex",
-		name: "Transifex",
-		website: "https://www.transifex.com",
-		description: "Transifex is a cloud-based platform for managing the translation and localization of digital content.",
-		icon: "transifex.svg",
-		categories: [
-			"translations",
-			"ui-library",
-			"framework"
+				"recurring",
+			],
+		},
+		implies: [
+			"shopify",
 		],
-		rules: [
-			{
-				id: "transifex:pageGlobal:0",
-				kind: "pageGlobal",
-				property: "Transifex.live.lib_version",
-				valuePattern: new RegExp("(.+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:transifex:transifex:*:*:*:*:*:*:*:*"
-		}
 	},
 	{
 		id: "weblate",
@@ -376,65 +315,506 @@ export const translationsTechnologyDefinitions = [
 		icon: "Weblate.svg",
 		categories: [
 			"translations",
-			"content-publishing"
 		],
 		rules: [
 			{
-				id: "weblate:responseHeader:0",
-				kind: "responseHeader",
+				id: "weblate:header:0",
+				kind: "header",
 				key: "Content-Security-Policy",
-				valuePattern: new RegExp("\\.weblate\\.org"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("\\.weblate\\.org", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "weblate:header:1",
+				kind: "header",
+				key: "content-security-policy",
+				valuePattern: new RegExp("\\.weblate\\.org", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+			cpe: "cpe:2.3:a:weblate:weblate:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "weglot",
 		name: "Weglot",
 		website: "https://www.weglot.com",
 		description: "Weglot is a website translation solution facilitating automatic and manual multilingual content management for website owners and developers.",
-		icon: "Weglot.svg",
+		icon: "Weglot.png",
 		categories: [
 			"translations",
-			"content-publishing"
 		],
 		rules: [
 			{
 				id: "weglot:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.weglot\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "weglot:scriptSrc:1",
 				kind: "scriptSrc",
-				pattern: new RegExp("wp-content/plugins/weglot"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("wp-content\\/plugins\\/weglot"),
+				description: "Script source URL matches a known technology marker.",
 			},
-			{
-				id: "weglot:responseHeader:2",
-				kind: "responseHeader",
-				key: "Weglot-Translated",
-				description: "Response header matches a known technology marker."
-			}
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
+				"low",
 				"recurring",
-				"low"
-			]
-		}
-	}
+			],
+		},
+	},
+	{
+		id: "i18next",
+		name: "i18next",
+		website: "https://i18next.com/",
+		description: "i18next is a server-side and browser-side JavaScript library that makes it easy to do internationalization in your apps.",
+		categories: [
+			"translations",
+		],
+		rules: [
+			{
+				id: "i18next:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("defaultNS:\\s*\\[\"translation\"\\]"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "i18next:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("pluralSeparator:\\s*[\"']_[\"']"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "i18next:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("isInitialized:\\s*!0,\\s*isInitializing:\\s*!0"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "i18next:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("maxParallelReads:\\d+,\\s*maxRetries:\\d+,\\s*retryTimeout:\\d+"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "i18next:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("isInitialized\\s*\\?\\s*n\\s*\\(\\s*\\)\\s*:\\s*this\\.on\\([\"']initialized[\"']"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "i18next:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("this\\.options\\.pluralSeparator\\s*\\|\\|\\s*[\"']_[\"']"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "i18next:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("ordinal:\\s*!1,\\s*offset:\\s*\\d+"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "i18next:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("this\\.modules\\.i18nFormat.*this\\.modules\\.external"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "i18next:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("backend\\.init\\s*\\(\\s*services\\s*,\\s*options\\.backend\\s*,\\s*options\\)"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "i18next:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("resourceStore\\s*=\\s*new\\s+ResourceStore\\s*\\(\\s*this\\.data\\s*,\\s*this\\.options\\)"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "i18next:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("addResourceBundle\\s*\\([^)]*skipCopy:\\s*!1"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "i18next:scriptContent:modern:11",
+				kind: "scriptContent",
+				pattern: new RegExp("loadResources\\s*\\(\\s*\\w+\\s*,\\s*this\\.options\\.ns\\s*,"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "i18next:scriptContent:modern:12",
+				kind: "scriptContent",
+				pattern: new RegExp("pluralResolver\\s*=\\s*new\\s+PluralResolver\\s*\\(\\s*\\w+\\s*,\\s*\\{\\s*prepend:\\s*this\\.options\\.pluralSeparator"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "i18next:scriptContent:modern:13",
+				kind: "scriptContent",
+				pattern: new RegExp("getSuffix\\s*\\([^)]*\\)\\s*\\{[^}]*this\\.getRule\\s*\\([^)]*\\)\\.select\\s*\\("),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "i18next:scriptContent:modern:14",
+				kind: "scriptContent",
+				pattern: new RegExp("resolvedOptions\\(\\)\\.pluralCategories\\.sort\\s*\\(\\s*\\([^)]*\\)\\s*=>\\s*\\$\\[\\w+\\]\\s*-\\s*\\$\\[\\w+\\]\\s*\\)"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "i18next:scriptContent:modern:15",
+				kind: "scriptContent",
+				pattern: new RegExp("type:\\s*[\"']messageFormatPattern[\"'],\\s*elements:\\s*\\["),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "i18next:scriptContent:modern:16",
+				kind: "scriptContent",
+				pattern: new RegExp("type:\\s*[\"']pluralFormat[\"'],\\s*ordinal:\\s*(?:true|false)"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "i18next:scriptContent:modern:17",
+				kind: "scriptContent",
+				pattern: new RegExp("type:\\s*[\"']selectFormat[\"'],\\s*options:\\s*\\{"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "i18next:scriptContent:modern:18",
+				kind: "scriptContent",
+				pattern: new RegExp("formatter\\.init\\s*\\(\\s*services\\s*,\\s*options\\)"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "i18next:scriptContent:modern:19",
+				kind: "scriptContent",
+				pattern: new RegExp("compileMessage\\s*\\(\\s*\\w+\\s*\\)\\s*\\{[^}]*messageFormatPattern"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "i18next:scriptContent:modern:20",
+				kind: "scriptContent",
+				pattern: new RegExp("registerMessageResolver.*registerMessageCompiler"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+		],
+	},
+	{
+		id: "react-i18next",
+		name: "React-i18next",
+		website: "https://react.i18next.com/",
+		description: "React-i18next is an internationalization-framework written in and for JavaScript. But it's much more than that.",
+		categories: [
+			"translations",
+		],
+		rules: [
+			{
+				id: "react-i18next:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("react-i18next::"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-i18next:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("pass in an i18next instance by using initReactI18next"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-i18next:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("It seems you are still using the old wait option, you may migrate to the new useSuspense behaviour"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-i18next:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("displayName=`withI18nextTranslation\\("),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-i18next:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("reportNamespaces\\s*=\\s*new\\s*[A-Za-z]+\\(\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-i18next:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("useTranslation:\\s*{[^}]*ns:.*defaultNS:.*i18n:"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-i18next:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("addUsedNamespaces\\(\\s*\\w+\\s*\\.\\s*forEach"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-i18next:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("transSupportBasicHtmlNodes.*transWrapTextNodes.*transKeepBasicHtmlNodesFor"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-i18next:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("initialI18nStore:\\s*{\\s*[^}]*getResourceBundle\\("),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-i18next:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("getInitialProps.*getUsedNamespaces.*initialI18nStore"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-i18next:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("reportNamespaces\\.getUsedNamespaces\\(\\).*initialI18nStore"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+		],
+	},
+	{
+		id: "react-intl-formatjs",
+		name: "React-Intl (formatjs)",
+		website: "https://www.i18next.com/",
+		description: "Library for internationalization in React applications, providing components and an API to format dates, numbers, and strings, including pluralization and handling translations.",
+		categories: [
+			"translations",
+		],
+		rules: [
+			{
+				id: "react-intl-formatjs:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("\\[React Intl\\] Could not find required `intl` object\\. <IntlProvider> needs to exist in the component ancestry"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-intl-formatjs:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("\\.displayName\\s*=\\s*[\"']IntlProvider[\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-intl-formatjs:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("\\[@formatjs\\/intl Error"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-intl-formatjs:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("TypeError\\([\"']IntlMessageFormat\\.__parse must be set to process `message` of type `string`[\"']\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-intl-formatjs:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("Intl\\.PluralRules is not available in this environment\\.\\nTry polyfilling it using \"@formatjs\\/intl-pluralrules\""),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-intl-formatjs:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("\\.MISSING_INTL_API\\s*=\\s*[\"']MISSING_INTL_API[\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-intl-formatjs:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("'The intl string context variable [\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-intl-formatjs:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("\\.getPluralRules\\(\\s*\\w+\\s*,\\s*\\{\\s*type:\\s*\\w+\\.pluralType\\s*\\}\\)\\.select\\(\\s*\\w+\\s*-\\s*\\(\\s*\\w+\\.offset\\s*\\|\\|\\s*0\\s*\\)\\s*\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-intl-formatjs:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("const\\s+intl\\s*=\\s*useIntl\\(\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-intl-formatjs:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("ReactIntlMixin.*getMessageFormat.*getDateTimeFormat.*getNumberFormat"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-intl-formatjs:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("FormattedHTMLMessage.*FormattedNumber.*FormattedRelative"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-intl-formatjs:scriptContent:modern:11",
+				kind: "scriptContent",
+				pattern: new RegExp("propTypes:\\s*\\{\\s*tagName:\\s*React\\.PropTypes\\.string,\\s*message:\\s*React\\.PropTypes\\.string\\.isRequired\\}"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-intl-formatjs:scriptContent:modern:12",
+				kind: "scriptContent",
+				pattern: new RegExp("formatOptions:\\s*\\[[\"']localeMatcher[\"'],\\s*[\"']timeZone[\"'],\\s*[\"']hour12[\"']"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "react-intl-formatjs:scriptContent:modern:13",
+				kind: "scriptContent",
+				pattern: new RegExp("Could not find Intl message:\\s*"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+		],
+	},
+	{
+		id: "vue-i18n",
+		name: "Vue I18n",
+		website: "https://vue-i18n.intlify.dev/",
+		description: "Vue I18n is an internationalization-framework written in and for JavaScript. But it's much more than that.",
+		categories: [
+			"translations",
+		],
+		rules: [
+			{
+				id: "vue-i18n:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("__VUE_I18N_FULL_INSTALL__"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vue-i18n:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("__VUE_I18N_LEGACY_API__"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vue-i18n:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("__INTLIFY_DROP_MESSAGE_COMPILER__"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vue-i18n:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("name:\\s*[\"']i18n-(?:t|n|d)[\"']"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vue-i18n:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("Symbol\\([\"']__translateVNode[\"']\\)"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vue-i18n:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("Symbol\\([\"']__datetimeParts[\"']\\)"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vue-i18n:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("Symbol\\([\"']__numberParts[\"']\\)"),
+				confidence: 55,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vue-i18n:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("[\"']@intlify\\/vue-devtools[\"']"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vue-i18n:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("[\"']@intlify\\/core-base[\"']"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vue-i18n:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("CANNOT_SETUP_VUE_DEVTOOLS_PLUGIN:\\s*30"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vue-i18n:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("NOT_AVAILABLE_COMPOSITION_IN_LEGACY:\\s*34"),
+				confidence: 45,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+		],
+	},
 ] as const satisfies readonly TechnologyDefinition[];

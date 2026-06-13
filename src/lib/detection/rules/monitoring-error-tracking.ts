@@ -2,6 +2,34 @@ import type { TechnologyDefinition } from '../types';
 
 export const monitoringErrorTrackingTechnologyDefinitions = [
 	{
+		id: "aispeed",
+		name: "AiSpeed",
+		website: "https://apps.shopify.com/aispeed",
+		description: "AiSpeed is a shopify app focused on improving site speed.",
+		icon: "AiSpeed.png",
+		categories: [
+			"monitoring-error-tracking",
+			"ecommerce-extensions",
+		],
+		rules: [
+			{
+				id: "aispeed:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("aispeed\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "aispeed:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "aispeed_init",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		implies: [
+			"shopify",
+		],
+	},
+	{
 		id: "akamai-mpulse",
 		name: "Akamai mPulse",
 		website: "https://developer.akamai.com/akamai-mpulse-real-user-monitoring-solution",
@@ -9,44 +37,54 @@ export const monitoringErrorTrackingTechnologyDefinitions = [
 		icon: "Akamai.svg",
 		categories: [
 			"monitoring-error-tracking",
-			"analytics"
 		],
 		rules: [
 			{
 				id: "akamai-mpulse:html:0",
 				kind: "html",
-				pattern: new RegExp("<script>[\\s\\S]*?go-mpulse\\.net\\/boomerang[\\s\\S]*?</script>"),
-				description: "HTML contains a known technology marker."
+				pattern: new RegExp("<script>[\\s\\S]*?go-mpulse\\.net\\/boomerang[\\s\\S]*?<\\/script>"),
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "akamai-mpulse:dom:1",
+				id: "akamai-mpulse:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "BOOMR_API_key",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "akamai-mpulse:cookie:2",
+				kind: "cookie",
+				keyPattern: new RegExp("^akaas_AB\\-Testing$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "akamai-mpulse:dom:3",
 				kind: "dom",
 				selector: "script#boomr-if-as, script#boomr-scr-as, link[href*='s.go-mpulse.net/boomerang/'][rel='preload']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "akamai-mpulse:pageGlobal:2",
-				kind: "pageGlobal",
-				property: "BOOMR_API_key",
-				description: "Page-owned global matches a known technology marker."
+				id: "akamai-mpulse:html:4",
+				kind: "html",
+				pattern: new RegExp("<script>[\\s\\s]*?go-mpulse\\.net\\/boomerang[\\s\\s]*?<\\/script>"),
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "akamai-mpulse:cookie:3",
+				id: "akamai-mpulse:cookie:5",
 				kind: "cookie",
-				key: "akaas_AB-Testing",
-				description: "Cookie name matches a known technology marker."
-			}
-		],
-		implies: [
-			"boomerang"
+				keyPattern: new RegExp("^akaas_ab\\-testing$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
+		implies: [
+			"boomerang",
+		],
 	},
 	{
 		id: "amazon-cloudwatch-rum",
@@ -56,43 +94,44 @@ export const monitoringErrorTrackingTechnologyDefinitions = [
 		icon: "Amazon CloudWatch.svg",
 		categories: [
 			"monitoring-error-tracking",
-			"analytics"
 		],
 		rules: [
 			{
-				id: "amazon-cloudwatch-rum:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "amazon-cloudwatch-rum:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "AwsRum",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "amazon-cloudwatch-rum:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "amazon-cloudwatch-rum:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "AwsRumClient",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "amazon-cloudwatch-rum:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "amazon-cloudwatch-rum:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "AwsRumClient.v",
 				valuePattern: new RegExp("([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "amazon-cloudwatch-rum:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "amazon-cloudwatch-rum:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "AwsRumConfig",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "atatus",
@@ -102,32 +141,359 @@ export const monitoringErrorTrackingTechnologyDefinitions = [
 		icon: "Atatus.svg",
 		categories: [
 			"monitoring-error-tracking",
-			"analytics",
-			"developer-tooling"
+			"developer-tooling",
 		],
 		rules: [
 			{
 				id: "atatus:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/atatus\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/atatus\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "atatus:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "atatus:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "atatus.VERSION",
 				valuePattern: new RegExp("([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "atatus:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.log\\(['\"']Atatus Reset User['\"'], [a-zA-Z_$][a-zA-Z0-9_$]*\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "atatus:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.log\\(['\"']Atatus Set User: Invalid JSON object in LocalStorage['\"'], [a-zA-Z_$][a-zA-Z0-9_$]*\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "atatus:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.log\\(['\"']Atatus: Caught unhandled promise rejection:['\"'], [a-zA-Z_$][a-zA-Z0-9_$]*\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "atatus:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.log\\(['\"']Atatus API key has not been configured, make sure you call atatus\\.config\\(yourApiKey\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "atatus:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("['\"']atatusjs=['\"']\\s*\\+\\s*[a-zA-Z_$][a-zA-Z0-9_$]*\\s*\\+\\s*['\"']=['\"']\\s*\\+\\s*[a-zA-Z_$][a-zA-Z0-9_$]*\\.getRandomInt\\(\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "atatus:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.endsWith\\([a-zA-Z_$][a-zA-Z0-9_$]*\\.url, ['\"']\\/atatus\\.js['\"']\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "atatus:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("['\"']&callback=atatus\\._setFeatures&['\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "atatus:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.atatus\\s*=\\s*[a-zA-Z_$][a-zA-Z0-9_$]*"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "atatus:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.postMessage\\(['\"']RUM_EPISODES:done['\"'], [a-zA-Z_$][a-zA-Z0-9_$]*\\.targetOrigin\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "atatus:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.indexOf\\([a-zA-Z_$][a-zA-Z0-9_$]*\\.atatusHost\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "atatus:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("distributedTracingHeaderName:\\s*['\"']atatus-apm-traceparent['\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "atatus:resourceUrl:modern:11",
+				kind: "resourceUrl",
+				pattern: new RegExp("atatus\\.js"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "atatus:resourceUrl:modern:12",
+				kind: "resourceUrl",
+				pattern: new RegExp("atatus\\.com"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
+	},
+	{
+		id: "berqwp",
+		name: "BerqWP",
+		website: "https://berqwp.com/",
+		description: "BerqWP is a speed optimization plugin designed to help websites pass the core web vitals assessment and improve overall speed scores for better performance.",
+		icon: "BerqWP.svg",
+		categories: [
+			"monitoring-error-tracking",
+			"wordpress-ecosystem",
+		],
+		rules: [
+			{
+				id: "berqwp:jsGlobal:0",
+				kind: "jsGlobal",
+				property: "BerqWPcacheResource",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "berqwp:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "berqwp_add_assets_browser_cache",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "berqwp:jsGlobal:2",
+				kind: "jsGlobal",
+				property: "berqwp_readyState",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "berqwp:dom:3",
+				kind: "dom",
+				selector: "html.berqwp-premium",
+				description: "DOM selector matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"low",
+				"recurring",
+			],
+			cpe: "cpe:2.3:a:berqier:berqwp:*:*:*:*:*:wordpress:*:*",
+		},
+		requires: [
+			"wordpress",
+		],
+	},
+	{
+		id: "blitz",
+		name: "Blitz",
+		website: "https://putyourlightson.com/plugins/blitz",
+		description: "Blitz provides intelligent static page caching for creating lightning-fast sites with Craft CMS.",
+		icon: "Blitz.svg",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "blitz:html:0",
+				kind: "html",
+				pattern: new RegExp("<!-- Cached by Blitz on"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "blitz:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "Blitz",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "blitz:jsGlobal:2",
+				kind: "jsGlobal",
+				property: "blitzReplace",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "blitz:header:3",
+				kind: "header",
+				key: "X-Powered-By",
+				valuePattern: new RegExp("^Blitz$", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "blitz:html:4",
+				kind: "html",
+				pattern: new RegExp("<!-- cached by blitz on"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "blitz:header:5",
+				kind: "header",
+				key: "x-powered-by",
+				valuePattern: new RegExp("^blitz$", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+		],
+		metadata: {
+			pricing: [
+				"low",
+				"onetime",
+			],
+		},
+		implies: [
+			"craft-cms",
+		],
+	},
+	{
+		id: "bugsnag",
+		name: "BugSnag",
+		website: "https://bugsnag.com",
+		description: "Bugsnag is a cross-platform error monitoring, reporting, and resolution software.",
+		icon: "BugSnag.png",
+		categories: [
+			"monitoring-error-tracking",
+			"analytics",
+			"developer-tooling",
+		],
+		rules: [
+			{
+				id: "bugsnag:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\/bugsnag.*\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "bugsnag:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "Bugsnag",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "bugsnag:jsGlobal:2",
+				kind: "jsGlobal",
+				property: "bugsnag",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "bugsnag:jsGlobal:3",
+				kind: "jsGlobal",
+				property: "bugsnagClient",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"freemium",
+				"payg",
+				"recurring",
+			],
+		},
+	},
+	{
+		id: "cloudflare-rocket-loader",
+		name: "Cloudflare Rocket Loader",
+		website: "https://support.cloudflare.com/hc/en-us/articles/200168056-Understanding-Rocket-Loader",
+		description: "Cloudflare Rocket Loader is responsible for prioritising over website's content by delaying the loading of Javascript until rendering.",
+		icon: "CloudFlare.svg",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "cloudflare-rocket-loader:jsGlobal:0",
+				kind: "jsGlobal",
+				property: "__cfQR.done",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "cloudflare-rocket-loader:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "__cfRLUnblockHandlers",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+	},
+	{
+		id: "cloudflare-zaraz",
+		name: "Cloudflare Zaraz",
+		website: "https://www.cloudflare.com/products/zaraz/",
+		description: "Cloudflare Zaraz gives you complete control over third-party tools and services for your website, and allows you to offload them to Cloudflare’s edge, improving the speed and security of your website.",
+		icon: "CloudFlare.svg",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "cloudflare-zaraz:jsGlobal:0",
+				kind: "jsGlobal",
+				property: "zaraz",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "cloudflare-zaraz:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "zarazData",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"freemium",
+				"poa",
+			],
+		},
+	},
+	{
+		id: "cronitor",
+		name: "Cronitor",
+		website: "https://cronitor.io",
+		description: "Cronitor is a monitoring tool for developers that tracks status, performance, and uptime of cron jobs, websites, APIs, and other services.",
+		icon: "Cronitor.svg",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "cronitor:jsGlobal:0",
+				kind: "jsGlobal",
+				property: "cronitor.q",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"freemium",
+				"low",
+				"poa",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "datadog",
@@ -137,40 +503,123 @@ export const monitoringErrorTrackingTechnologyDefinitions = [
 		icon: "Datadog.svg",
 		categories: [
 			"monitoring-error-tracking",
-			"analytics"
+			"analytics",
 		],
 		rules: [
 			{
 				id: "datadog:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("www\\.datadoghq-browser-agent\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "datadog:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "datadog:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "DD_LOGS",
 				confidence: 1,
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "datadog:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "datadog:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "DD_RUM",
 				confidence: 99,
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "datadog:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("['\"']\\/real_user_monitoring\\/browser\\/troubleshooting['\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "datadog:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("['\"']Datadog Browser SDK:['\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "datadog:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\(\\)\\.DatadogEventBridge"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "datadog:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("String\\([a-zA-Z_$][a-zA-Z0-9_$]*\\.dd_fingerprint\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "datadog:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.warn\\(['\"']PCI compliance for Logs is only available for Datadog organizations in the US1 site\\. Default intake will be used\\.['\"']\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "datadog:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\(['\"']DD_RUM['\"'], [a-zA-Z_$][a-zA-Z0-9_$]*\\);"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "datadog:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("['\"']x-datadog-origin['\"']\\s*:\\s*['\"']rum['\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "datadog:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\([a-zA-Z_$][a-zA-Z0-9_$]*, ['\"']Datadog Session Replay"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "datadog:resourceUrl:modern:8",
+				kind: "resourceUrl",
+				pattern: new RegExp("datad0g\\.com"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "datadog:resourceUrl:modern:9",
+				kind: "resourceUrl",
+				pattern: new RegExp("dd0g-gov\\.com"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "datadog:resourceUrl:modern:10",
+				kind: "resourceUrl",
+				pattern: new RegExp("datadoghq\\.com"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "datadog:resourceUrl:modern:11",
+				kind: "resourceUrl",
+				pattern: new RegExp("browser-intake-datadoghq\\.com"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"freemium",
 				"low",
 				"payg",
 				"recurring",
-				"freemium"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "dynatrace-rum",
@@ -180,27 +629,43 @@ export const monitoringErrorTrackingTechnologyDefinitions = [
 		icon: "Dynatrace.svg",
 		categories: [
 			"monitoring-error-tracking",
-			"analytics"
 		],
 		rules: [
 			{
 				id: "dynatrace-rum:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/ruxitagentjs_(?:.+)_(?:.+)\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		implies: [
-			"dynatrace"
+				pattern: new RegExp("\\/ruxitagentjs_(?:.+)_(?:.+)\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"low",
 				"recurring",
-				"low"
-			]
-		}
+			],
+		},
+		implies: [
+			"dynatrace",
+		],
+	},
+	{
+		id: "edgemesh",
+		name: "Edgemesh",
+		website: "https://edgemesh.com/",
+		description: "Edgemesh is web acceleration platform for e-commerce brands",
+		icon: "Edgemesh.png",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "edgemesh:jsGlobal:0",
+				kind: "jsGlobal",
+				property: "edgemesh",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "eggplant",
@@ -210,31 +675,339 @@ export const monitoringErrorTrackingTechnologyDefinitions = [
 		icon: "Eggplant.svg",
 		categories: [
 			"monitoring-error-tracking",
-			"analytics"
 		],
 		rules: [
 			{
 				id: "eggplant:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.eggplant\\.cloud/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.eggplant\\.cloud\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "eggplant:responseHeader:1",
-				kind: "responseHeader",
+				id: "eggplant:header:1",
+				kind: "header",
 				key: "content-security-policy",
-				valuePattern: new RegExp("\\.eggplant\\.cloud"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("\\.eggplant\\.cloud", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"high",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+	},
+	{
+		id: "fasterize",
+		name: "Fasterize",
+		website: "https://www.fasterize.com/",
+		description: "Fasterize is a website accelerator service.",
+		icon: "Fasterize.svg",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "fasterize:jsGlobal:0",
+				kind: "jsGlobal",
+				property: "fstrz",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+	},
+	{
+		id: "google-cloud-trace",
+		name: "Google Cloud Trace",
+		website: "https://cloud.google.com/trace",
+		description: "Google Cloud Trace is a distributed tracing system that collects latency data from applications and displays it in the Google Cloud Console.",
+		icon: "google-cloud-trace.svg",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [],
+		implies: [
+			"google-cloud",
+		],
+	},
+	{
+		id: "gumlet",
+		name: "Gumlet",
+		website: "https://www.gumlet.com/",
+		description: "Gumlet is a solution to optimize images.",
+		icon: "Gumlet.png",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "gumlet:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("cdn\\.gumlet\\.com"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "gumlet:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "gumlet",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+		},
+	},
+	{
+		id: "hyperspeed",
+		name: "Hyperspeed",
+		website: "https://www.hyperspeed.me",
+		description: "Hyperspeed is the most advanced speed booster for Shopify.",
+		icon: "Hyperspeed.png",
+		categories: [
+			"monitoring-error-tracking",
+			"ecommerce-extensions",
+		],
+		rules: [
+			{
+				id: "hyperspeed:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("cdn\\.shopify\\.com\\/.+\\/assets\\/hs-(?:instantload|lazysizes)\\.min\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "hyperspeed:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "hyperscripts",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"low",
+				"recurring",
+			],
+		},
+		implies: [
+			"instant-page",
+			"shopify",
+		],
+	},
+	{
+		id: "intersection-observer",
+		name: "Intersection Observer",
+		website: "https://www.w3.org/TR/intersection-observer",
+		description: "Intersection Observer is a browser API that provides a way to observe the visibility and position of a DOM element relative to the containing root element or viewport.",
+		icon: "W3C.png",
+		categories: [
+			"monitoring-error-tracking",
+			"widgets-misc",
+		],
+		rules: [
+			{
+				id: "intersection-observer:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("cdn\\.jsdelivr\\.net\\/npm\\/intersection-observer@([\\d\\.]+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "intersection-observer:scriptSrc:1",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\/assets\\/(?:.+)?intersection-observer\\.[\\d\\w\\.]+\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
+		],
+	},
+	{
+		id: "jumbo",
+		name: "Jumbo",
+		website: "https://www.tryjumbo.com/",
+		description: "Jumbo is a page speed optimizer app for Shopify based sites.",
+		icon: "Jumbo.png",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "jumbo:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("mt\\.tryjumbo\\.com"),
+				description: "Script source URL matches a known technology marker.",
+			},
+		],
+		implies: [
+			"shopify",
+		],
+	},
+	{
+		id: "loadify",
+		name: "Loadify",
+		website: "https://apps.shopify.com/loadify",
+		description: "Loadify is a shopify app which helps merchants deploy performance techniques like loading screen, transitions & lazy Load.",
+		icon: "Loadify.png",
+		categories: [
+			"monitoring-error-tracking",
+			"ecommerce-extensions",
+		],
+		rules: [
+			{
+				id: "loadify:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\.loadifyapp\\.ninety9\\.dev"),
+				description: "Script source URL matches a known technology marker.",
+			},
+		],
+		implies: [
+			"shopify",
+		],
+	},
+	{
+		id: "logrocket",
+		name: "LogRocket",
+		website: "https://logrocket.com/",
+		description: "LogRocket is a logging and session replay platform that helps developers identify and troubleshoot issues in web applications by recording and replaying user sessions, along with capturing logs and user interactions in real-time.",
+		icon: "LogRocket.svg",
+		categories: [
+			"monitoring-error-tracking",
+			"analytics",
+		],
+		rules: [
+			{
+				id: "logrocket:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("cdn\\.logrocket\\.(com|io)"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "logrocket:scriptSrc:1",
+				kind: "scriptSrc",
+				pattern: new RegExp("cdn\\.lr-ingest\\.io"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "logrocket:scriptSrc:2",
+				kind: "scriptSrc",
+				pattern: new RegExp("cdn\\.(?:lr-ingest|logrocket)\\.(?:com|io)"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "logrocket:jsGlobal:3",
+				kind: "jsGlobal",
+				property: "LogRocket._buffer",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "logrocket:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("\\bLogrocket\\b|\\blogRocket\\b|\\bLR\\b", "i"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "logrocket:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("LogRocket truncating to first 1000 characters"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "logrocket:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("LogRocket skipped consuming an event-stream body"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "logrocket:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("LogRocket error reading body"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "logrocket:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("LogRocket: Error accessing response"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "logrocket:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("Keep data under 4MB to prevent truncation"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "logrocket:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("https:\\/\\/docs\\.logrocket\\.com\\/reference\\/network"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "logrocket:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("LogRocket\\.init\\("),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "logrocket:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("LogRocket\\.identify\\("),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "logrocket:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("_LRLogger"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "logrocket:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("\\[['\"]LogRocket['\"]\\]"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "logrocket:scriptContent:modern:11",
+				kind: "scriptContent",
+				pattern: new RegExp("registerLogger\\(['\"]logrocket['\"]", "i"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "logrocket:scriptContent:modern:12",
+				kind: "scriptContent",
+				pattern: new RegExp("LogRocket\\.min\\.js", "i"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "logrocket:resourceUrl:modern:13",
+				kind: "resourceUrl",
+				pattern: new RegExp("cdn\\.logrocket\\.(?:com|io)"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"freemium",
+				"mid",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "microsoft-application-insights",
@@ -244,36 +1017,58 @@ export const monitoringErrorTrackingTechnologyDefinitions = [
 		icon: "Microsoft.svg",
 		categories: [
 			"monitoring-error-tracking",
-			"analytics"
 		],
 		rules: [
 			{
-				id: "microsoft-application-insights:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "microsoft-application-insights:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "appInsights.SeverityLevel",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "microsoft-application-insights:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "microsoft-application-insights:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "appInsights.addTelemetryInitializer",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "microsoft-application-insights:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "microsoft-application-insights:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "appInsightsSDK",
 				valuePattern: new RegExp("appInsights"),
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
+	},
+	{
+		id: "naver-rua",
+		name: "Naver RUA",
+		website: "https://analytics.naver.com",
+		description: "Naver RUA (Real User Analytics) collects performance data from real users to analyze the speed of your website by country, operating system, and browser.",
+		icon: "Naver.svg",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "naver-rua:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("rua-api\\.ncloud\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"payg",
+			],
+		},
 	},
 	{
 		id: "new-relic",
@@ -283,39 +1078,439 @@ export const monitoringErrorTrackingTechnologyDefinitions = [
 		icon: "New Relic.svg",
 		categories: [
 			"monitoring-error-tracking",
-			"analytics"
 		],
 		rules: [
 			{
 				id: "new-relic:dom:0",
 				kind: "dom",
 				selector: "link[href*='.newrelic.com']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "new-relic:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "new-relic:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "NREUM",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "new-relic:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "new-relic:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "newrelic",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "new-relic:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("require\\(\"\\.\\/lib\\/agent\"\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "new-relic:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("newrelic\\/security-agent"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "new-relic:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("require\\.cache\\.__NR_cache"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "new-relic:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("\\b[a-zA-Z_$][\\w$]*.recordSupportability"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "new-relic:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("New\\s+Relic\\s+for\\s+Node\\.js"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "new-relic:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("\\b[a-zA-Z_$][\\w$]*.recordFeatureFlagMetrics"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "new-relic:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("\\b[a-zA-Z_$][\\w$]*.recordSourceMapMetric"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "new-relic:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("set\\s+app_name\\s+in\\s+your\\s+newrelic"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "new-relic:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("newrelic\\.com\\/.*\\/agent"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "new-relic:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("newrelic.*agent.*\\.js"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "new-relic:resourceUrl:modern:10",
+				kind: "resourceUrl",
+				pattern: new RegExp("js\\.agent\\.newrelic\\.com"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "new-relic:resourceUrl:modern:11",
+				kind: "resourceUrl",
+				pattern: new RegExp("bam\\.nr-data\\.net"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "new-relic:resourceUrl:modern:12",
+				kind: "resourceUrl",
+				pattern: new RegExp("js-agent\\.newrelic\\.com\\/nr-.+\\.js"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "new-relic:resourceUrl:modern:13",
+				kind: "resourceUrl",
+				pattern: new RegExp("cdn\\.newrelic\\.com"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "new-relic:resourceUrl:modern:14",
+				kind: "resourceUrl",
+				pattern: new RegExp("newrelic\\/browser-agent"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "new-relic:resourceUrl:modern:15",
+				kind: "resourceUrl",
+				pattern: new RegExp("newrelic.*\\.js"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
+			pricing: [
+				"freemium",
+				"low",
+				"mid",
+				"payg",
+				"recurring",
+			],
+		},
+	},
+	{
+		id: "nostra",
+		name: "Nostra",
+		website: "https://www.nostra.ai/",
+		description: "Nostra is a web performance optimisation solution.",
+		icon: "Nostra.png",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "nostra:jsGlobal:0",
+				kind: "jsGlobal",
+				property: "Nostra",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "nostra:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "NostraEventManager",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+	},
+	{
+		id: "opentelemetry",
+		name: "opentelemetry",
+		website: "https://opentelemetry.io",
+		description: "OpenTelemetry is a framework for observability, providing standardized APIs, libraries, and agents to collect telemetry data.",
+		icon: "opentelemetry.svg",
+		categories: [
+			"monitoring-error-tracking",
+			"analytics",
+		],
+		rules: [
+			{
+				id: "opentelemetry:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("opentelemetry.*\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "opentelemetry:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "otel",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "opentelemetry:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("OTEL_EXPORTER_OTLP_(?:TRACES_|METRICS_|LOGS_)?ENDPOINT:\\s*['\"']([^'\"']*)['\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "opentelemetry:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("OTEL_SERVICE_NAME:"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "opentelemetry:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("OTEL_PROPAGATORS:"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "opentelemetry:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("OTEL_EXPORTER_OTLP_"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "opentelemetry:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("OTEL_EXPORTER_ZIPKIN_ENDPOINT:"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "opentelemetry:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("OTEL_EXPORTER_JAEGER_"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "opentelemetry:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("OTEL_(?:BSP|BLRP)_SCHEDULE_DELAY:"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "opentelemetry:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("Error\\(['\"']@opentelemetry\\/api: Attempted duplicate registration of API: ['\"']\\s*\\+\\s*[a-zA-Z_$][a-zA-Z0-9_$]*\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "opentelemetry:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("Error\\(['\"']@opentelemetry\\/api: Registration of version v"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "opentelemetry:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("['\"']@opentelemetry\\/api: Registered a global for"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "opentelemetry:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("['\"']@opentelemetry\\/api: Unregistering a global for"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "opentelemetry:scriptContent:modern:11",
+				kind: "scriptContent",
+				pattern: new RegExp("Error\\(['\"']Cannot use diag as the logger for itself\\. Please use a DiagLogger implementation like ConsoleDiagLogger or a custom implementation['\"']\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "opentelemetry:scriptContent:modern:12",
+				kind: "scriptContent",
+				pattern: new RegExp("Symbol\\.for\\(['\"']OpenTelemetry Context Key SPAN['\"']\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "opentelemetry:scriptContent:modern:13",
+				kind: "scriptContent",
+				pattern: new RegExp("this\\._provider\\.getDelegateTracer\\(this\\.name, this\\.version, this\\.options\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "opentelemetry:scriptContent:modern:14",
+				kind: "scriptContent",
+				pattern: new RegExp("\\[ATTR_TELEMETRY_SDK_NAME\\]:\\s*['\"']opentelemetry['\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "opentelemetry:scriptContent:modern:15",
+				kind: "scriptContent",
+				pattern: new RegExp("this\\._meterSharedState\\.observableRegistry"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "opentelemetry:scriptContent:modern:16",
+				kind: "scriptContent",
+				pattern: new RegExp("this\\._meterSharedState\\.registerAsyncMetricStorage"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "opentelemetry:scriptContent:modern:17",
+				kind: "scriptContent",
+				pattern: new RegExp("this\\._meterSharedState\\.observableRegistry\\.addBatchCallback"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "opentelemetry:scriptContent:modern:18",
+				kind: "scriptContent",
+				pattern: new RegExp("INT value type cannot accept a floating-point value for"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "opentelemetry:scriptContent:modern:19",
+				kind: "scriptContent",
+				pattern: new RegExp("this\\.metricStorageRegistry\\.findOrUpdateCompatibleCollectorStorage"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "opentelemetry:scriptContent:modern:20",
+				kind: "scriptContent",
+				pattern: new RegExp("Reflect\\.apply\\([a-zA-Z_$][a-zA-Z0-9_$]*\\.startActiveSpan, [a-zA-Z_$][a-zA-Z0-9_$]*, arguments\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "opentelemetry:resourceUrl:modern:21",
+				kind: "resourceUrl",
+				pattern: new RegExp("opentelemetry\\.js\\.api"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+		],
+		metadata: {
+			oss: true,
+		},
+	},
+	{
+		id: "partytown",
+		name: "Partytown",
+		website: "https://partytown.builder.io/",
+		description: "Partytown is a lazy-loaded library to help relocate resource intensive scripts into a web worker, and off of the main thread.",
+		icon: "Partytown.svg",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "partytown:dom:0",
+				kind: "dom",
+				selector: "script[type*='text/partytown']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "partytown:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "partytown",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			oss: true,
+		},
+	},
+	{
+		id: "piio",
+		name: "Piio",
+		website: "https://piio.co",
+		description: "Piio is a tool designed to optimise images for websites, enhancing loading speeds and user experience.",
+		icon: "Piio.svg",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "piio:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\.piiojs\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "piio:dom:1",
+				kind: "dom",
+				selector: "link[href*='.piiojs.com']",
+				description: "DOM selector matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
 			pricing: [
 				"freemium",
 				"payg",
-				"low",
-				"mid",
-				"recurring"
-			]
-		}
+				"poa",
+			],
+		},
+	},
+	{
+		id: "pingdom",
+		name: "Pingdom",
+		website: "https://www.pingdom.com",
+		description: "Pingdom is a Swedish website monitoring software as a service company.",
+		icon: "Pingdom.svg",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "pingdom:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\.pingdom\\.net"),
+				description: "Script source URL matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"payg",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "pingdom-rum",
@@ -325,30 +1520,70 @@ export const monitoringErrorTrackingTechnologyDefinitions = [
 		icon: "Pingdom.svg",
 		categories: [
 			"monitoring-error-tracking",
-			"analytics"
 		],
 		rules: [
 			{
 				id: "pingdom-rum:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("rum-static\\.pingdom\\.net"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "pingdom-rum:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "pingdom-rum:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "_prum",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"payg",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+	},
+	{
+		id: "priority-hints",
+		name: "Priority Hints",
+		website: "https://wicg.github.io/priority-hints/",
+		description: "Priority Hints exposes a mechanism for developers to signal a relative priority for browsers to consider when fetching resources.",
+		icon: "Priority Hints.svg",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "priority-hints:dom:0",
+				kind: "dom",
+				selector: "iframe[fetchpriority], img[fetchpriority], script[fetchpriority], link[fetchpriority]",
+				description: "DOM selector matches a known technology marker.",
+			},
+		],
+	},
+	{
+		id: "quadran",
+		name: "Quadran",
+		website: "https://www.quadran.eu",
+		description: "Quadran is a real-time end-user monitoring and performance analysis tool.",
+		icon: "Quadran.svg",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "quadran:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("tracker\\.quadran\\.eu"),
+				description: "Script source URL matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"poa",
+			],
+		},
 	},
 	{
 		id: "quanta",
@@ -358,42 +1593,164 @@ export const monitoringErrorTrackingTechnologyDefinitions = [
 		icon: "Quanta.svg",
 		categories: [
 			"monitoring-error-tracking",
-			"analytics"
+			"analytics",
 		],
 		rules: [
 			{
 				id: "quanta:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.quanta\\.io/(?:.+/quanta-rum-v([\\d\\.]+)\\.min\\.js)?"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.quanta\\.io\\/(?:.+\\/quanta-rum-v([\\d\\.]+)\\.min\\.js)?"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "quanta:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "quanta:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "QUANTA.app_id",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "quanta:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "quanta:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "QuantaTagRUMSpeedIndex",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "quanta:cookie:3",
 				kind: "cookie",
-				key: "_qta_rum",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^_qta_rum$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
+	},
+	{
+		id: "queue-it",
+		name: "Queue-it",
+		website: "https://queue-it.com",
+		description: "Queue-it is a virtual waiting room platform designed to protect your website and mobile app from slowdowns or crashes during end-user peaks.",
+		icon: "Queue-it.png",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "queue-it:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\.queue-it\\.net\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "queue-it:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "QueueIt.Javascript.Version",
+				valuePattern: new RegExp("([\\d\\.]+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "queue-it:jsGlobal:2",
+				kind: "jsGlobal",
+				property: "queueit_clientside_config",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"poa",
+			],
+		},
+	},
+	{
+		id: "quic-cloud",
+		name: "QUIC.cloud",
+		website: "https://www.quic.cloud",
+		description: "QUIC.cloud is a content delivery network (CDN) and optimisation service that uses the QUIC protocol, a next-generation internet transport protocol developed by Google, to deliver content faster and more securely over the internet.",
+		icon: "QUIC.cloud.svg",
+		categories: [
+			"monitoring-error-tracking",
+			"server-runtime-infra",
+			"infrastructure-hosting",
+		],
+		rules: [
+			{
+				id: "quic-cloud:dns:0",
+				kind: "dns",
+				valuePattern: new RegExp("\\.quicns\\.(?:net|com)", "i"),
+				recordType: "SOA",
+				description: "DNS record matches a known technology marker.",
+			},
+		],
+		metadata: {
+			pricing: [
+				"freemium",
+				"payg",
+			],
+		},
+	},
+	{
+		id: "quicksprout",
+		name: "Quicksprout",
+		website: "https://www.quicksprout.com",
+		description: "Quicksprout is a website optimization service focused on improving site performance and user engagement.",
+		icon: "Quicksprout.svg",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "quicksprout:scriptContent:0",
+				kind: "scriptContent",
+				pattern: new RegExp("cdn\\.quicksprout\\.com"),
+				description: "Script content contains a bounded technology signature.",
+			},
+			{
+				id: "quicksprout:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "_QS.CDN",
+				valuePattern: new RegExp("cdn\\.quicksprout\\.com"),
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+		},
+	},
+	{
+		id: "quicq",
+		name: "Quicq",
+		website: "https://afosto.com/apps/quicq",
+		description: "Quicq is an image optimisation tool by Afosto.",
+		icon: "Quicq.svg",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "quicq:dom:0",
+				kind: "dom",
+				selector: "img[src*='.qcqcdn.com/'], img[data-src*='.qcqcdn.com/'], img[src*='cdn.quicq.io/'], img[data-src*='cdn.quicq.io/']",
+				description: "DOM selector matches a known technology marker.",
+			},
+		],
+		metadata: {
+			pricing: [
+				"freemium",
+				"payg",
+			],
+		},
 	},
 	{
 		id: "raygun",
@@ -403,43 +1760,371 @@ export const monitoringErrorTrackingTechnologyDefinitions = [
 		icon: "Raygun.svg",
 		categories: [
 			"monitoring-error-tracking",
-			"analytics",
-			"developer-tooling"
+			"developer-tooling",
 		],
 		rules: [
 			{
 				id: "raygun:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.raygun\\.io"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "raygun:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "raygun:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Raygun",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "raygun:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "raygun:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "raygunEnabled",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "raygun:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "raygun:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "raygunFactory",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "raygun:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("this\\.DEFAULT_XHR_IGNORED_HOSTS\\s*=\\s*\\[\\s*['\"']raygun['\"']\\s*\\]"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "raygun:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\s*=\\s*['\"']raygun4js-userid['\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "raygun:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("Options\\._raygunApiUrl\\s*=\\s*['\"']https:\\/\\/api\\.raygun\\.io['\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "raygun:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("constructNewRaygun:"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "raygun:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.RaygunObject"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "raygun:resourceUrl:modern:5",
+				kind: "resourceUrl",
+				pattern: new RegExp("cdn\\.raygun\\.io"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "raygun:resourceUrl:modern:6",
+				kind: "resourceUrl",
+				pattern: new RegExp("api\\.raygun\\.io"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"payg",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+	},
+	{
+		id: "render-better",
+		name: "Render Better",
+		website: "https://www.renderbetter.com",
+		description: "Render Better is automated site speed and core web vital optimisation platform for Shopify.",
+		icon: "renderbetter.svg",
+		categories: [
+			"monitoring-error-tracking",
+			"ecommerce-extensions",
+		],
+		rules: [
+			{
+				id: "render-better:jsGlobal:0",
+				kind: "jsGlobal",
+				property: "renderbetter",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "render-better:dns:1",
+				kind: "dns",
+				valuePattern: new RegExp("\\.renderbetter\\.app", "i"),
+				recordType: "CNAME",
+				description: "DNS record matches a known technology marker.",
+			},
+		],
+		requires: [
+			"shopify",
+		],
+	},
+	{
+		id: "request-metrics",
+		name: "Request Metrics",
+		website: "https://requestmetrics.com",
+		description: "Request Metrics is a tool that tracks and analyzes website performance, measuring speed, uptime, and overall responsiveness.",
+		icon: "RequestMetrics.svg",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "request-metrics:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("cdn\\.requestmetrics\\.com"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "request-metrics:scriptContent:1",
+				kind: "scriptContent",
+				pattern: new RegExp("cdn\\.requestmetrics\\.com"),
+				description: "Script content contains a bounded technology signature.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"freemium",
+				"low",
+				"poa",
+				"recurring",
+			],
+		},
+	},
+	{
+		id: "rollbar",
+		name: "Rollbar",
+		website: "https://rollbar.com/",
+		description: "Real-time error monitoring and debugging tool with detailed error reporting.",
+		icon: "Rollbar.svg",
+		categories: [
+			"monitoring-error-tracking",
+			"developer-tooling",
+		],
+		rules: [
+			{
+				id: "rollbar:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("rollbar\\.js\\/([0-9.]+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "rollbar:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("rollbar\\.min\\.js"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("rollbar\\.js"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("window\\._rollbarConfig"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("\\bRollbar\\.error\\("),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("\\bRollbar\\.warning\\("),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("\\bRollbar\\.info\\("),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("\\bRollbar\\.debug\\("),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("\\bRollbar\\.critical\\("),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("\\bRollbar\\.configure\\("),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("\\bRollbar\\.log\\("),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("\\bnew\\s+Rollbar\\("),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:scriptContent:modern:11",
+				kind: "scriptContent",
+				pattern: new RegExp("rollbar\\.com\\/api\\/1\\/item"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:scriptContent:modern:12",
+				kind: "scriptContent",
+				pattern: new RegExp("rollbar\\.com\\/api\\/1\\/occurrences"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:scriptContent:modern:13",
+				kind: "scriptContent",
+				pattern: new RegExp("_rollbarConfig="),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:scriptContent:modern:14",
+				kind: "scriptContent",
+				pattern: new RegExp("_rollbarShims"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:scriptContent:modern:15",
+				kind: "scriptContent",
+				pattern: new RegExp("_rollbarOldOnError"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:scriptContent:modern:16",
+				kind: "scriptContent",
+				pattern: new RegExp("_rollbarWrappedError"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:scriptContent:modern:17",
+				kind: "scriptContent",
+				pattern: new RegExp("window\\._rollbarDidLoad"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:scriptContent:modern:18",
+				kind: "scriptContent",
+				pattern: new RegExp("setupShim\\(window,_rollbarConfig"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:scriptContent:modern:19",
+				kind: "scriptContent",
+				pattern: new RegExp("rollbarJsUrl"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:scriptContent:modern:20",
+				kind: "scriptContent",
+				pattern: new RegExp("r\\._rollbarWrappedError"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:scriptContent:modern:21",
+				kind: "scriptContent",
+				pattern: new RegExp("r\\._rollbarOldOnError"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:resourceUrl:modern:22",
+				kind: "resourceUrl",
+				pattern: new RegExp("cdnjs\\.cloudflare\\.com\\/ajax\\/libs\\/rollbar"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:resourceUrl:modern:23",
+				kind: "resourceUrl",
+				pattern: new RegExp("rollbar\\.com\\/api\\/"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:resourceUrl:modern:24",
+				kind: "resourceUrl",
+				pattern: new RegExp("cdn\\.rollbar\\.com\\/rollbarjs"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:resourceUrl:modern:25",
+				kind: "resourceUrl",
+				pattern: new RegExp("js\\.sentry-cdn\\.com\\/.*\\/rollbar"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:resourceUrl:modern:26",
+				kind: "resourceUrl",
+				pattern: new RegExp("rollbarjs\\/refs\\/tags\\/v[\\d\\.]+\\/rollbar(\\.min)?\\.js"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "rollbar:resourceUrl:modern:27",
+				kind: "resourceUrl",
+				pattern: new RegExp("rollbar\\.com\\/rollbarjs\\/"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+		],
 	},
 	{
 		id: "rumvision",
@@ -449,20 +2134,40 @@ export const monitoringErrorTrackingTechnologyDefinitions = [
 		icon: "Rumvision.png",
 		categories: [
 			"monitoring-error-tracking",
-			"analytics"
 		],
 		rules: [
 			{
-				id: "rumvision:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "rumvision:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "rumv_config",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+	},
+	{
+		id: "sections-design-shopify-app-optimization",
+		name: "Sections.design Shopify App Optimization",
+		website: "https://github.com/mirceapiturca/Sections/tree/master/App%20Optimization",
+		description: "Sections.design Shopify App Optimization is a Shopify section written in liquid for the purpose of improving performance of Shopify stores by optimizing how Shopify app loads.",
+		icon: "Sections-Design.png",
+		categories: [
+			"monitoring-error-tracking",
+			"ecommerce-extensions",
+		],
+		rules: [
+			{
+				id: "sections-design-shopify-app-optimization:dom:0",
+				kind: "dom",
+				selector: "div#shopify-section-app-optimization",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false
-		}
+			oss: true,
+		},
+		implies: [
+			"shopify",
+		],
 	},
 	{
 		id: "sematext-experience",
@@ -472,24 +2177,258 @@ export const monitoringErrorTrackingTechnologyDefinitions = [
 		icon: "Sematext.svg",
 		categories: [
 			"monitoring-error-tracking",
-			"analytics"
 		],
 		rules: [
 			{
 				id: "sematext-experience:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.sematext\\.com/experience\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.sematext\\.com\\/experience\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+	},
+	{
+		id: "sentry",
+		name: "Sentry",
+		website: "https://sentry.io/",
+		description: "Sentry is an open-source platform for workflow productivity, aggregating errors from across the stack in real time.",
+		icon: "Sentry.svg",
+		categories: [
+			"monitoring-error-tracking",
+			"developer-tooling",
+		],
+		rules: [
+			{
+				id: "sentry:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("browser\\.sentry\\-cdn\\.com\\/([0-9.]+)\\/bundle(?:\\.tracing)?(?:\\.min)?\\.js"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "sentry:html:1",
+				kind: "html",
+				pattern: new RegExp("<script[^>]*>\\s*Raven\\.config\\('[^']*', \\{\\s+release: '([0-9\\.]+)'"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "sentry:html:2",
+				kind: "html",
+				pattern: new RegExp("<script[^>]*src=\"[^\"]*browser\\.sentry\\-cdn\\.com\\/([0-9.]+)\\/bundle(?:\\.tracing)?(?:\\.min)?\\.js"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "sentry:jsGlobal:3",
+				kind: "jsGlobal",
+				property: "Raven.config",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "sentry:jsGlobal:4",
+				kind: "jsGlobal",
+				property: "Sentry",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "sentry:jsGlobal:5",
+				kind: "jsGlobal",
+				property: "Sentry.SDK_VERSION",
+				valuePattern: new RegExp("(.+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "sentry:jsGlobal:6",
+				kind: "jsGlobal",
+				property: "__SENTRY__",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "sentry:jsGlobal:7",
+				kind: "jsGlobal",
+				property: "ravenOptions.whitelistUrls",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "sentry:scriptSrc:8",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\.sentry-cdn\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "sentry:jsGlobal:9",
+				kind: "jsGlobal",
+				property: "SENTRY_SDK_SOURCE",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "sentry:html:10",
+				kind: "html",
+				pattern: new RegExp("<script[^>]*>\\s*raven\\.config\\('[^']*', \\{\\s+release: '([0-9\\.]+)'"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "sentry:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("Sentry responded with status code "),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sentry:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("\\[[\"']x-sentry-rate-limits[\"']\\]"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sentry:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("\\b[a-zA-Z_$][\\w$]*\\.headers\\.get\\([\"']X-Sentry-Rate-Limits[\"']\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sentry:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("\\b[a-zA-Z_$][\\w$]*\\.setAttribute\\([\"']sentry\\.idle_span_discarded_spans[\"'],\\s*[a-zA-Z_$][\\w$]*\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sentry:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("warn\\([\"']Invalid sentry-trace data\\. Cannot generate trace data[\"']\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sentry:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("\\b[a-zA-Z_$][\\w$]*\\[[\"']sentry\\.browser\\.measure_start_time[\"']\\]"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sentry:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("\\b[a-zA-Z_$][\\w$]*\\.setAttribute\\([\"']sentry\\.cancellation_reason[\"'],\\s*[\"']document\\.hidden[\"']\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sentry:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("\\b[a-zA-Z_$][\\w$]*\\.__sentry_own_request__"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sentry:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("\\b[a-zA-Z_$][\\w$]*\\.__sentry_xhr_span_id__"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sentry:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("\\b[a-zA-Z_$][\\w$]*\\.__SENTRY_INSTRUMENTED__"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sentry:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("\\b[a-zA-Z_$][\\w$]*\\.__SENTRY_LOADER__"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sentry:scriptContent:modern:11",
+				kind: "scriptContent",
+				pattern: new RegExp("Error\\(['\"']Sentry syntheticException['\"']\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sentry:scriptContent:modern:12",
+				kind: "scriptContent",
+				pattern: new RegExp("\\b[a-zA-Z_$][\\w$]*\\._sentryRewriteFramesAssetPrefixPath\\b"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sentry:scriptContent:modern:13",
+				kind: "scriptContent",
+				pattern: new RegExp("new\\s+Error\\([\"']Raven send failed \\(no additional details provided\\)[\"']\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sentry:scriptContent:modern:14",
+				kind: "scriptContent",
+				pattern: new RegExp("[\"']Raven dropped repeat event: [\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sentry:scriptContent:modern:15",
+				kind: "scriptContent",
+				pattern: new RegExp("sentry_client:[\"']raven-js\\/[\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "sentry:resourceUrl:modern:16",
+				kind: "resourceUrl",
+				pattern: new RegExp("browser\\.sentry-cdn\\.com"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "sentry:resourceUrl:modern:17",
+				kind: "resourceUrl",
+				pattern: new RegExp("js\\.sentry-cdn\\.com"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "sentry:resourceUrl:modern:18",
+				kind: "resourceUrl",
+				pattern: new RegExp("cdn\\.ravenjs\\.com"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+		],
+		metadata: {
+			cpe: "cpe:2.3:a:sentry:sentry:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "site24x7",
@@ -499,48 +2438,70 @@ export const monitoringErrorTrackingTechnologyDefinitions = [
 		icon: "Site24x7.png",
 		categories: [
 			"monitoring-error-tracking",
-			"analytics"
 		],
 		rules: [
 			{
 				id: "site24x7:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.site24x7rum\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "site24x7:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "site24x7:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "S247RumQueueImpl",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "site24x7:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "site24x7:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "s247RUM",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "site24x7:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "site24x7:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "site24x7RumError",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "site24x7:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "site24x7:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "site24x7rum",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+	},
+	{
+		id: "speed-kit",
+		name: "Speed Kit",
+		website: "https://www.speedkit.com",
+		description: "Speed Kit develops a performance add-on that uses caching algorithms to minimize loading times of ecommerce websites.",
+		icon: "Speed Kit.svg",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "speed-kit:jsGlobal:0",
+				kind: "jsGlobal",
+				property: "speedKit",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"poa",
+			],
+		},
 	},
 	{
 		id: "speedcurve",
@@ -550,48 +2511,137 @@ export const monitoringErrorTrackingTechnologyDefinitions = [
 		icon: "SpeedCurve.svg",
 		categories: [
 			"monitoring-error-tracking",
-			"analytics"
 		],
 		rules: [
 			{
 				id: "speedcurve:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.speedcurve\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "speedcurve:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "speedcurve:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "LUX.version",
 				valuePattern: new RegExp("([\\d.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "speedcurve:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "speedcurve:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "LUX_t_end",
 				valuePattern: new RegExp("\\d+"),
 				confidence: 50,
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "speedcurve:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "speedcurve:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "LUX_t_start",
 				valuePattern: new RegExp("\\d+"),
 				confidence: 50,
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+	},
+	{
+		id: "speedimize",
+		name: "Speedimize",
+		website: "https://speedimize.io",
+		description: "Speedimize is a Shopify agency that focuses on website speed optimisation and performance issues.",
+		icon: "Speedimize.svg",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "speedimize:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("cdn\\.shopify\\.com\\/.+\\/assets\\/speedimize\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"mid",
+				"recurring",
+			],
+		},
+	},
+	{
+		id: "speedof-me",
+		name: "SpeedOf.Me",
+		website: "https://speedof.me/api.html",
+		description: "SpeedOf. Me is a client-based bandwidth test API that measures internet speed without requiring plugins, using HTML5 and JavaScript for real-time results.",
+		icon: "SpeedOfMe.svg",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "speedof-me:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("speedof\\.me\\/api\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"low",
+				"poa",
+				"recurring",
+			],
+		},
+	},
+	{
+		id: "speedsize",
+		name: "SpeedSize",
+		website: "https://speedsize.com",
+		description: "SpeedSize is an AI-based media-compression technology that can auto-detect and compress all of a website's images and videos down to 99% of their original size without lowering the image quality.",
+		icon: "SpeedSize.svg",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "speedsize:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\/speedsize(?:-sw)?\\.js"),
+				confidence: 90,
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "speedsize:scriptSrc:1",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\.speedsize\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "speedsize:scriptContent:2",
+				kind: "scriptContent",
+				pattern: new RegExp("data-speedsize-(?:srcset|src|params)?"),
+				description: "Script content contains a bounded technology signature.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"poa",
+			],
+		},
 	},
 	{
 		id: "splunk-rum",
@@ -601,38 +2651,132 @@ export const monitoringErrorTrackingTechnologyDefinitions = [
 		icon: "Splunk.svg",
 		categories: [
 			"monitoring-error-tracking",
-			"analytics"
 		],
 		rules: [
 			{
 				id: "splunk-rum:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("browser\\.plumbr\\.io/pa(?:-early)?\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("browser\\.plumbr\\.io\\/pa(?:-early)?\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "splunk-rum:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "splunk-rum:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "PLUMBR._core.selfURL",
-				valuePattern: new RegExp("browser\\.plumbr\\.io/pa(?:-early)?\\.js"),
-				description: "Page-owned global matches a known technology marker."
+				valuePattern: new RegExp("browser\\.plumbr\\.io\\/pa(?:-early)?\\.js"),
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "splunk-rum:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "splunk-rum:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "PLUMBR._core.version",
 				valuePattern: new RegExp("^([\\d\\.]+).+$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
+	},
+	{
+		id: "statuscake",
+		name: "StatusCake",
+		website: "https://www.statuscake.com",
+		description: "StatusCake is a website monitoring service that sends alerts when a website goes down or experiences technical issues, such as slow loading times.",
+		icon: "StatusCake.svg",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "statuscake:scriptContent:0",
+				kind: "scriptContent",
+				pattern: new RegExp("app\\.statuscake\\.com"),
+				description: "Script content contains a bounded technology signature.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"freemium",
+				"low",
+				"recurring",
+			],
+		},
+	},
+	{
+		id: "superspeed",
+		name: "Superspeed",
+		website: "https://apps.shopify.com/superspeed-free-speed-boost",
+		description: "Superspeed is a page speed optimizer app for Shopify based sites.",
+		icon: "Superspeed.png",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "superspeed:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("superspeed\\.gadget-edge\\.com"),
+				description: "Script source URL matches a known technology marker.",
+			},
+		],
+		implies: [
+			"shopify",
+		],
+	},
+	{
+		id: "turbo",
+		name: "Turbo",
+		website: "https://turbo.hotwired.dev/",
+		description: "Turbo is a JavaScript framework for building fast web applications.",
+		icon: "Turbo.svg",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "turbo:jsGlobal:0",
+				kind: "jsGlobal",
+				property: "Turbo",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			oss: true,
+		},
+	},
+	{
+		id: "turbolinks",
+		name: "Turbolinks",
+		website: "https://github.com/turbolinks/turbolinks",
+		description: "Turbolinks is a Rails feature, available as a gem and enabled by default in new Rails apps. It is intended to speed up navigating between pages of your application.",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "turbolinks:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("turolinks\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "turbolinks:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "Turbolinks",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			oss: true,
+		},
 	},
 	{
 		id: "uptrends",
@@ -642,57 +2786,567 @@ export const monitoringErrorTrackingTechnologyDefinitions = [
 		icon: "Uptrends.svg",
 		categories: [
 			"monitoring-error-tracking",
-			"analytics",
-			"developer-tooling"
+			"developer-tooling",
 		],
 		rules: [
 			{
 				id: "uptrends:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.uptrendsdata\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.uptrendsdata\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "uptrends:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "uptrends:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "UTBOOMR.version",
 				valuePattern: new RegExp("([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
+	},
+	{
+		id: "vercel-speed-insights",
+		name: "Vercel Speed Insights",
+		website: "https://vercel.com/docs/speed-insights",
+		description: "Vercel Speed Insights provides you with a detailed view of your website's performance metrics, based on Core Web Vitals.",
+		icon: "vercel.svg",
+		categories: [
+			"monitoring-error-tracking",
+			"analytics",
+		],
+		rules: [
+			{
+				id: "vercel-speed-insights:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\/_vercel\\/speed-insights\\/script\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "vercel-speed-insights:dom:1",
+				kind: "dom",
+				selector: "script[data-sdkn='@vercel/speed-insights/next']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "vercel-speed-insights:jsGlobal:2",
+				kind: "jsGlobal",
+				property: "si",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "vercel-speed-insights:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("['\"']_vercel\\/speed-insights\\/vitals['\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vercel-speed-insights:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("vitals\\.vercel-insights\\.com\\/v2\\/vitals\\?dsn="),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vercel-speed-insights:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("['\"']\\[Vercel Speed Insights] Failed to load script"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "vercel-speed-insights:resourceUrl:modern:3",
+				kind: "resourceUrl",
+				pattern: new RegExp("_vercel_speed_insights\\.js"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "vercel-speed-insights:resourceUrl:modern:4",
+				kind: "resourceUrl",
+				pattern: new RegExp("vitals\\.vercel-insights\\.com"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "vercel-speed-insights:resourceUrl:modern:5",
+				kind: "resourceUrl",
+				pattern: new RegExp("v1\\/speed-insights"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+		],
+		requires: [
+			"vercel",
+		],
 	},
 	{
 		id: "wakav-performance-monitoring",
 		name: "Wakav Performance Monitoring",
 		website: "https://www.wakav.ir",
 		description: "Wakav Performance Monitoring is a real user monitoring (RUM), Web/App performance and availability test platform.",
-		icon: "Wakav Performance Monitoring.svg",
+		icon: "Wakav Performance Monitoring.png",
 		categories: [
 			"monitoring-error-tracking",
-			"analytics"
 		],
 		rules: [
 			{
 				id: "wakav-performance-monitoring:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("rum\\.wakav\\.ir/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("rum\\.wakav\\.ir\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
-	}
+				"payg",
+			],
+		},
+	},
+	{
+		id: "website-speedy",
+		name: "Website Speedy",
+		website: "https://websitespeedy.com/",
+		description: "Website Speedy is a tool that improves website speed by identifying and optimizing render-blocking elements, enabling asynchronous resource loading for better performance.",
+		icon: "WebsiteSpeedy.svg",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "website-speedy:scriptContent:0",
+				kind: "scriptContent",
+				pattern: new RegExp("websitespeedy\\.com"),
+				description: "Script content contains a bounded technology signature.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"mid",
+				"poa",
+				"recurring",
+			],
+		},
+	},
+	{
+		id: "airbrake",
+		name: "Airbrake",
+		website: "https://www.airbrake.io/",
+		description: "Frictionless error monitoring and performance insights for your entire app stack.",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "airbrake:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("console\\.error\\(['\"']airbrake: span=%s does not exist"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "airbrake:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("new Error\\(['\"']airbrake: unauthorized: project id or key are wrong['\"']\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "airbrake:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("new Error\\(['\"']airbrake: IP is rate limited['\"']\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "airbrake:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("throw new Error\\(['\"']airbrake: fetch: unexpected response: code="),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "airbrake:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("new Error\\(['\"']airbrake: request: response statusCode is"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "airbrake:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("['\"']airbrake-js\\/browser['\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "airbrake:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("\\{\\s*name:\\s*[a-zA-Z_$][a-zA-Z0-9_$]*\\s*,\\s*version:\\s*[a-zA-Z_$][a-zA-Z0-9_$]*\\s*,\\s*url:\\s*['\"']https:\\/\\/github\\.com\\/airbrake\\/airbrake-js\\/tree\\/master\\/packages\\/browser['\"']\\s*\\},"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "airbrake:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("new Error\\(['\"']airbrake: not sending this error, errorNotifications is disabled err="),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "airbrake:scriptContent:modern:8",
+				kind: "scriptContent",
+				pattern: new RegExp("new Error\\(['\"']airbrake: error is filtered['\"']\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "airbrake:scriptContent:modern:9",
+				kind: "scriptContent",
+				pattern: new RegExp("new Error\\(['\"']airbrake: notice exceeds max length and can't be truncated['\"']\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "airbrake:scriptContent:modern:10",
+				kind: "scriptContent",
+				pattern: new RegExp("console\\.warn\\(['\"']airbrake: options\\.reporter must be a function['\"']\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "airbrake:scriptContent:modern:11",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\._airbrake\\s*="),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "airbrake:resourceUrl:modern:12",
+				kind: "resourceUrl",
+				pattern: new RegExp("api\\.airbrake\\.io"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "airbrake:resourceUrl:modern:13",
+				kind: "resourceUrl",
+				pattern: new RegExp("notifier\\-configs\\.airbrake\\.io"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+		],
+	},
+	{
+		id: "appdynamics",
+		name: "AppDynamics",
+		website: "https://docs.appdynamics.com/",
+		description: "Application performance monitoring and analytics.",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "appdynamics:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.log\\(['\"']AppDynamics EUM cloud application key missing\\. Please specify window\\['adrum-app-key']\\['\"']\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "appdynamics:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.EventType\\.ADRUM_XHR"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "appdynamics:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\[[a-zA-Z_$][a-zA-Z0-9_$]*\\]\\.adrumArgs"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "appdynamics:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.userConf\\.adrumExtUrl(?:Http|Https)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "appdynamics:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.adrumExtUrl"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "appdynamics:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.userConf\\.disableAdrumHeader"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "appdynamics:resourceUrl:modern:6",
+				kind: "resourceUrl",
+				pattern: new RegExp("cdn\\.appdynamics\\.com"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "appdynamics:resourceUrl:modern:7",
+				kind: "resourceUrl",
+				pattern: new RegExp("col\\.eum-appdynamics\\.com"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+		],
+	},
+	{
+		id: "elastic-apm",
+		name: "Elastic APM",
+		website: "https://www.elastic.co/apm",
+		description: "Elastic APM is a distributed tracing and metrics collection system that helps you monitor and troubleshoot your applications.",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "elastic-apm:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("prefix:\\s*['\"']\\[Elastic APM] ['\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "elastic-apm:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.log\\(['\"']\\[Elastic APM] platform is not supported!['\"']\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "elastic-apm:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("distributedTracingHeaderName:['\"']elastic-apm-traceparent['\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "elastic-apm:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("getElasticScript:[a-zA-Z_$][a-zA-Z0-9_$]*"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "elastic-apm:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("this\\._configService\\.get\\(['\"']similarSpanThreshold['\"']\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+		],
+	},
+	{
+		id: "honeybadger",
+		name: "Honeybadger",
+		website: "https://www.honeybadger.io/",
+		description: "Ship better software faster with full-stack application monitoring that works like you think it should.",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "honeybadger:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("userFeedbackEndpoint:\\s*['\"']https:\\/\\/api\\.honeybadger\\.io\\/v2\\/feedback['\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "honeybadger:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.unshift\\(\\s*['\"']\\[Honeybadger]['\"']\\s*\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "honeybadger:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("this\\.logger\\.debug\\(['\"']skipping error report: honeybadger\\.js is disabled"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "honeybadger:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("this\\.logger\\.log\\(['\"']honeybadger\\.js is in development mode; the following error report will be sent in production\\."),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "honeybadger:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("this\\.addBreadcrumb\\(['\"']Honeybadger Notice"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "honeybadger:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.honeybadgerUserFeedbackOptions"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "honeybadger:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.___hb\\.___hb"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "honeybadger:scriptContent:modern:7",
+				kind: "scriptContent",
+				pattern: new RegExp("urlPrefix:\\s*['\"']https:\\/\\/app\\.honeybadger\\.io['\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "honeybadger:resourceUrl:modern:8",
+				kind: "resourceUrl",
+				pattern: new RegExp("eu\\-api\\.honeybadger\\.io"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+			{
+				id: "honeybadger:resourceUrl:modern:9",
+				kind: "resourceUrl",
+				pattern: new RegExp("api\\.honeybadger\\.io"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+		],
+	},
+	{
+		id: "instana",
+		name: "Instana",
+		website: "https://www.instana.com/",
+		description: "Harness the power of AI and automation to proactively solve issues across the application stack.",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "instana:html:modern:0",
+				kind: "html",
+				pattern: new RegExp("<meta\\s+name=[\"']instana[\"']\\s+content=[\"'][^\"']+[\"']\\s*\\/?>"),
+				confidence: 75,
+				description: "Document HTML matches a modern tooling marker.",
+			},
+			{
+				id: "instana:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("(?:import|require)\\s*\\(\\s*['\"]@instana\\/[^'\"]*['\"]\\s*\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "instana:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("\\{\\s*(?:ineum|instana|eum)(?:Key|Token|ApiKey):\\s*['\"][a-zA-Z0-9_-]+['\"]"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "instana:resourceUrl:modern:3",
+				kind: "resourceUrl",
+				pattern: new RegExp("instana\\.io"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+		],
+	},
+	{
+		id: "trackjs",
+		name: "TrackJS",
+		website: "https://trackjs.com/",
+		description: "TrackJS makes finding and fixing JavaScript errors simple. The library automatically detects and captures errors from your web application with a clear story of how it happened.",
+		categories: [
+			"monitoring-error-tracking",
+		],
+		rules: [
+			{
+				id: "trackjs:scriptContent:modern:0",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.__trackjs_state__"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "trackjs:scriptContent:modern:1",
+				kind: "scriptContent",
+				pattern: new RegExp("['\"']trackjs-correlation-id['\"']"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "trackjs:scriptContent:modern:2",
+				kind: "scriptContent",
+				pattern: new RegExp("this\\._trackJs\\.logId"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "trackjs:scriptContent:modern:3",
+				kind: "scriptContent",
+				pattern: new RegExp("this\\._trackJs\\.method"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "trackjs:scriptContent:modern:4",
+				kind: "scriptContent",
+				pattern: new RegExp("Error\\(['\"']TrackJS Caught: "),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "trackjs:scriptContent:modern:5",
+				kind: "scriptContent",
+				pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.__trackjs_element_text"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "trackjs:scriptContent:modern:6",
+				kind: "scriptContent",
+				pattern: new RegExp("console\\.warn\\(['\"']\\[TrackJS] invalid config['\"']\\)"),
+				confidence: 75,
+				description: "Bundled script content matches a modern tooling marker.",
+			},
+			{
+				id: "trackjs:resourceUrl:modern:7",
+				kind: "resourceUrl",
+				pattern: new RegExp("trackjs\\.com"),
+				confidence: 75,
+				description: "Resource filename or URL matches a modern tooling marker.",
+			},
+		],
+	},
 ] as const satisfies readonly TechnologyDefinition[];

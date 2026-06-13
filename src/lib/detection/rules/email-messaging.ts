@@ -9,37 +9,36 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "11Sight.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "11sight:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.11sight\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("app\\.11sight\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "11sight:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "11sight:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "elevensight",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "11sight:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "11sight:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "elevensightApp",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "42chat",
@@ -48,20 +47,19 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "42Chat is a provider of conversational AI solutions and text-based chatbots designed to connect clients with their communities.",
 		icon: "42Chat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "42chat:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("api\\.42chat\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "8x8",
@@ -70,29 +68,28 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "8x8 is a communication tool offering chat functionality for streamlined business communication.",
 		icon: "8x8.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "8x8:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "8x8:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Chat8x8",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "8x8:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "8x8:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "__8x8Chat",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "acquire-live-chat",
@@ -101,35 +98,34 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Acquire is a multi-channel customer support platform designed to provide real-time customer support to customers.",
 		icon: "Acquire.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "acquire-live-chat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.acquire\\.io/(?!cobrowse)"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.acquire\\.io\\/(?!cobrowse)"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "acquire-live-chat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "acquire-live-chat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "_acquire_init_config",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "acquire-live-chat:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "acquire-live-chat:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "acquire",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "activengage",
@@ -138,26 +134,25 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "ActivEngage is an automotive chat service that enables real-time website messaging between dealerships and customers.",
 		icon: "ActivEngage.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "activengage:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("pageview\\.activengage\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "activengage:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "activengage:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ActivEngage",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "ada",
@@ -166,35 +161,35 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Ada is an automated customer experience company that provides chat bots used in customer support.",
 		icon: "Ada.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "ada:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.ada\\.support"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "ada:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "ada:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "__AdaEmbedConstructor",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "ada:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "ada:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "adaEmbed",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+			cpe: "cpe:2.3:a:ada:ada:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "ainiro",
@@ -203,58 +198,62 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "AINIRO is a provider of AI chatbots, AI agents, and custom AI solutions designed for various applications.",
 		icon: "AINIRO.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "ainiro:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.ainiro\\.io"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "ainiro:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "ainiro:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ainiro.init",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "ainiro:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "ainiro:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "ainiro_faq_question",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "aircall",
 		name: "Aircall",
 		website: "https://aircall.io",
 		description: "Aircall is a cloud-based phone system for customer support and sales teams.",
-		icon: "Aircall.svg",
+		icon: "aircall.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "aircall:scriptSrc:0",
 				kind: "scriptSrc",
+				pattern: new RegExp("^https?:\\/\\/cdn\\.aircall\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "aircall:scriptSrc:1",
+				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.aircall\\.io"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "aivo",
@@ -264,32 +263,31 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Aivo.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
-				id: "aivo:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "aivo:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "$aivo",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "aivo:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "aivo:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "aivoStorage",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"mid",
 				"freemium",
+				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "akia",
@@ -298,23 +296,22 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Akia is a platform offering AI-powered communication tools designed to streamline messaging and guest interactions within the hospitality industry.",
 		icon: "Akia.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "akia:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("web\\.akia\\.ai"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "alive5",
@@ -323,31 +320,51 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Alive5 is a unified inbox for teams, handling SMS, web chat, and social conversations. It was formerly known as Website Alive.",
 		icon: "Alive5.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "alive5:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.websitealive\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.websitealive\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "alive5:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "alive5:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "alive5_environment",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
+	},
+	{
+		id: "alloincognito",
+		name: "AlloIncognito",
+		website: "https://www.alloincognito.ru",
+		description: "AlloIncognito is a platform that provides communication capabilities to and within Russia.",
+		icon: "AlloIncognito.svg",
+		categories: [
+			"email-messaging",
+		],
+		rules: [
+			{
+				id: "alloincognito:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("api\\.alloincognito\\.ru"),
+				description: "Script source URL matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+		},
 	},
 	{
 		id: "amazon-ses",
@@ -356,24 +373,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Amazon Simple Email Service (SES) is an email service that enables developers to send mail from within any application.",
 		icon: "Amazon SES.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "amazon-ses:dns:0",
 				kind: "dns",
-				valuePattern: new RegExp("amazonses\\.com"),
+				valuePattern: new RegExp("amazonses\\.com", "i"),
 				recordType: "TXT",
 				description: "DNS record matches a known technology marker.",
-			}
-		],
-		implies: [
-			"amazon-web-services"
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
+		implies: [
+			"amazon-web-services",
+		],
 	},
 	{
 		id: "animalchat",
@@ -382,20 +398,19 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "AnimalChat is a messaging platform that connects pet owners and professionals, providing a flexible alternative to traditional communication methods.",
 		icon: "AnimalChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "animalchat:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("widget\\.animalchat\\.net"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "anychat",
@@ -404,37 +419,36 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "AnyChat is a real-time conversation system designed to enable communication and message exchange between users.",
 		icon: "AnyChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "anychat:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("api\\.anychat\\.one"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "anychat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "anychat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "anychat.CHATBOX_FRAME",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "anychat:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "anychat:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "anychatWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "apexchat",
@@ -443,29 +457,28 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "ApexChat is a company that provides businesses with live chat software and services to facilitate real-time customer engagement, support, lead generation, and enhanced online interactions.",
 		icon: "ApexChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "apexchat:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "apexchat:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "ApexChat",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "apexchat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "apexchat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "apexchat_dompopup_chatwindow_client",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "apple-business-chat",
@@ -474,39 +487,44 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Apple Business Chat is a service from Apple that allows your organization to directly chat with your customers using the Messages app.",
 		icon: "Apple.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "apple-business-chat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/apple_business_chat_commerce/.+/apple_message_button_v([\\d\\.]+)\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/apple_business_chat_commerce\\/.+\\/apple_message_button_v([\\d\\.]+)\\.js"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "apple-business-chat:dom:1",
 				kind: "dom",
 				selector: "a[href*='bcrw.apple.com/business/api']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "apple-business-chat:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "apple-business-chat:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "appleBusinessChat.version",
 				valuePattern: new RegExp("^([\\d\\.]+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "apple-icloud-mail",
@@ -515,21 +533,31 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Apple iCloud Mail is a webmail service provided by Apple, Inc.",
 		icon: "Apple.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "apple-icloud-mail:dns:0",
 				kind: "dns",
-				valuePattern: new RegExp("mail\\.icloud\\.com"),
+				valuePattern: new RegExp("mail\\.icloud\\.com", "i"),
 				recordType: "MX",
 				description: "DNS record matches a known technology marker.",
-			}
+			},
+			{
+				id: "apple-icloud-mail:dns:1",
+				kind: "dns",
+				valuePattern: new RegExp("apple-domain", "i"),
+				recordType: "TXT",
+				description: "DNS record matches a known technology marker.",
+			},
+			{
+				id: "apple-icloud-mail:dns:2",
+				kind: "dns",
+				valuePattern: new RegExp("redirect=icloud\\.com", "i"),
+				recordType: "TXT",
+				description: "DNS record matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "arabot",
@@ -538,37 +566,36 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Arabot is a no-code chatbot platform designed to automate customer interactions and service fulfillment at scale.",
 		icon: "Arabot.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "arabot:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "arabot:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "arabotChatScript",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "arabot:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "arabot:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "arabotSelector",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "arabot:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "arabot:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "injectArabotScript",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "arrowchat",
@@ -577,25 +604,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "ArrowChat is a communication tool that enables users to send text messages and engage in video chats with one another.",
 		icon: "ArrowChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "arrowchat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/arrowchat/.*/jquery\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\/arrowchat\\/.*\\/jquery\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "artibot",
@@ -605,37 +631,36 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "ArtiBot.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
-				id: "artibot:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "artibot:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "ArtiBot",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "artibot:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "artibot:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "_artibotLauncherInitializer",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "artibot:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "artibot:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "artibotApi",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "asisteclick",
@@ -644,31 +669,30 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "AsisteClick is a customer service solution that uses chatbots and an omnichannel platform to streamline support across multiple communication channels.",
 		icon: "AsisteClick.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "asisteclick:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.asisteclick\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "asisteclick:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "asisteclick:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "loadAsisteClick",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "askspot",
@@ -677,30 +701,47 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "AskSpot is an AI chatbot platform tailored for marketing, digital, and web development agencies.",
 		icon: "AskSpot.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "askspot:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.askspot\\.ai"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "askspot:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "askspot:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "askspot.Chatbot",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "askspot:scriptSrc:2",
+				kind: "scriptSrc",
+				pattern: new RegExp("app\\.askspot\\.ai"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "askspot:scriptSrc:3",
+				kind: "scriptSrc",
+				pattern: new RegExp("chat\\.askspot\\.io\\/api\\/v1\\/integration\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "askspot:scriptContent:4",
+				kind: "scriptContent",
+				pattern: new RegExp("chat\\.askspot\\.io\\/api\\/v1\\/chat-widget\\/"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "atlasmic",
@@ -709,40 +750,74 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Atlasmic is a live chat and business messenger platform designed to support modern online businesses.",
 		icon: "Atlasmic.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "atlasmic:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.atlasmic\\.com"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "atlasmic:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "atlasmic:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "atlasmic",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "atlasmic:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "atlasmic:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "atlasmic.VERSION",
 				valuePattern: new RegExp("^([\\d\\.]+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
+	},
+	{
+		id: "audienceful",
+		name: "Audienceful",
+		website: "https://www.audienceful.com",
+		description: "Audienceful is an email marketing software platform used to create, manage, send, and analyze email campaigns.",
+		icon: "Audienceful.svg",
+		categories: [
+			"email-messaging",
+		],
+		rules: [
+			{
+				id: "audienceful:scriptContent:0",
+				kind: "scriptContent",
+				pattern: new RegExp("app\\.audienceful\\.com"),
+				description: "Script content contains a bounded technology signature.",
+			},
+			{
+				id: "audienceful:dom:1",
+				kind: "dom",
+				selector: "form[action*='app.audienceful.com/']",
+				description: "DOM selector matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"freemium",
+				"low",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "aument",
@@ -752,31 +827,37 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Aument.svg",
 		categories: [
 			"email-messaging",
-			"commerce-operations"
+			"commerce-operations",
 		],
 		rules: [
 			{
-				id: "aument:scriptSrc:0",
-				kind: "scriptSrc",
-				pattern: new RegExp("aumentstaticfiles\\.s3\\.amazonaws\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				id: "aument:dom:0",
+				kind: "dom",
+				selector: "div#aumentDiscountCode",
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "aument:dom:1",
+				id: "aument:scriptSrc:1",
+				kind: "scriptSrc",
+				pattern: new RegExp("aumentstaticfiles\\.s3\\.amazonaws\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "aument:dom:2",
 				kind: "dom",
 				selector: "div#aumentDiscountCode, link[href*='aumentstaticfiles.s3.amazonaws.com/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"high",
+				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "b2chat",
@@ -785,30 +866,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "B2Chat is an all-in-one multi-channel platform that unites WhatsApp, Facebook, Instagram, Telegram, and LiveChat in a single interface.",
 		icon: "B2Chat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "b2chat:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.b2chat\\.io"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "b2chat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "b2chat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "b2chat_livechat_setup",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "benchmark",
@@ -817,31 +897,30 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Benchmark is an email marketing tool used to create, send, and manage email campaigns, track performance metrics, and support audience communication through automated and scheduled messaging.",
 		icon: "Benchmark.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "benchmark:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.benchmarkemail\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.benchmarkemail\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "benchmark:scriptContent:1",
 				kind: "scriptContent",
-				pattern: new RegExp("\\.benchmarkemail\\.com/"),
-				description: "Script content contains a bounded technology signature."
-			}
+				pattern: new RegExp("\\.benchmarkemail\\.com\\/"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "bespokechat",
@@ -850,24 +929,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "BespokeChat is a Polish-developed chat solution designed to support real-time online communication.",
 		icon: "BespokeChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "bespokechat:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.bespokechat\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"high",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "betterbot",
@@ -876,23 +954,22 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "BetterBot is a conversational leasing tool tailored for real estate.",
 		icon: "BetterBot.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "betterbot:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("(?:dashboard\\.betterbot\\.ai|\\.betterbot\\.com)"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "biglist",
@@ -901,21 +978,27 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "BIGLIST is an opt-in email newsletter system designed to collect, manage, and distribute email updates to subscribers.",
 		icon: "BIGLIST.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "biglist:meta:0",
 				kind: "meta",
 				key: "author",
-				valuePattern: new RegExp("^BIGLIST Inc.$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^BIGLIST Inc.$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "biglist:meta:1",
+				kind: "meta",
+				key: "author",
+				valuePattern: new RegExp("^biglist inc.$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "birdseed",
@@ -925,31 +1008,30 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "BirdSeed.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "birdseed:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.birdseed\\.io/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.birdseed\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "birdseed:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "birdseed:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "birdseed_widget_controller",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "blinger",
@@ -959,37 +1041,36 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Blinger.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "blinger:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.blinger\\.io/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("app\\.blinger\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "blinger:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "blinger:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Blinger",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "blinger:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "blinger:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "blingerInit",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
+				"recurring",
 			],
-			cpe: "cpe:2.3:a:blinger:blinger:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:blinger:blinger:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "blip",
@@ -998,23 +1079,22 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Blip is an intelligent conversation platform designed to facilitate interactive communication.",
 		icon: "Blip.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "blip:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/santander-partner-blipchat\\.min\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\/santander-partner-blipchat\\.min\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "boatchat",
@@ -1023,23 +1103,22 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "BoatChat is a customer service tool that provides live chat support for inquiries and assistance related to boat dealerships.",
 		icon: "BoatChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "boatchat:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.boatchat\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "bold-chat",
@@ -1048,23 +1127,22 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "BoldChat is a live chat platform.",
 		icon: "BoldChat.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "bold-chat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("^https?://vmss\\.boldchat\\.com/aid/\\d{18}/bc\\.vms4/vms\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("^https?:\\/\\/vmss\\.boldchat\\.com\\/aid\\/\\d{18}\\/bc\\.vms4\\/vms\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "boost-ai",
@@ -1074,44 +1152,46 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "BoostAI.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "boost-ai:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.boost\\.ai/chatPanel/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.boost\\.ai\\/chatPanel\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "boost-ai:dom:1",
 				kind: "dom",
 				selector: "link[href*='.boost.ai']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "boost-ai:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "boost-ai:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "boost",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "boost-ai:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "boost-ai:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "boostChatPanel",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "boost-ai:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "boost-ai:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "boostInit",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "boost-ai:scriptSrc:5",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\.boost\\.ai\\/chatpanel\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "bot9",
@@ -1120,37 +1200,36 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Bot9 is an AI chatbot builder, tailored for customer support.",
 		icon: "Bot9.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "bot9:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "bot9:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "BOT9_DATA.bot9Id",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "bot9:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "bot9:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Bot9ChatbotInstance",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "bot9:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "bot9:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "bot9CopyCodeToClipboard",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "botbrains",
@@ -1159,37 +1238,63 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "botBrains is an AI-powered platform offering customer support chatbots that handle inquiries and improve response times.",
 		icon: "botBrains.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "botbrains:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("chat\\.botbrains\\.io"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "botbrains:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "botbrains:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "$botbrains",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "botbrains:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "botbrains:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "botbrainsCleanup",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
+	},
+	{
+		id: "botco-ai",
+		name: "Botco.ai",
+		website: "https://botco.ai",
+		description: "Botco.ai is a platform that provides generative AI chatbot solutions to support customer engagement, automate conversations, and deliver information across digital channels.",
+		icon: "Botco.svg",
+		categories: [
+			"email-messaging",
+		],
+		rules: [
+			{
+				id: "botco-ai:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\.botco\\.ai\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "botco-ai:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "BotcoWebchat.Events",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+		},
 	},
 	{
 		id: "botmind",
@@ -1198,30 +1303,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Botmind is a software that automates responses to frequently asked questions.",
 		icon: "Botmind.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "botmind:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.botmind\\.io/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.botmind\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "botmind:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "botmind:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "botmindWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "botpenguin",
@@ -1230,38 +1334,37 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "BotPenguin is an AI chatbot creator for websites, WhatsApp, Facebook, and Telegram.",
 		icon: "BotPenguin.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "botpenguin:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.botpenguin\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn\\.botpenguin\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "botpenguin:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "botpenguin:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "BotPenguin",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "botpenguin:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "botpenguin:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "BotPenguinWindow",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "botpress",
@@ -1270,26 +1373,25 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Botpress is a conversational AI platform that empowers individuals and teams of all sizes to design, build, and deploy AI-powered chatbots for various applications.",
 		icon: "Botpress.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "botpress:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "botpress:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "botpressWebChat.init",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "botsify",
@@ -1298,31 +1400,30 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Botsify is a platform that enables businesses to create chatbots without requiring any coding knowledge.",
 		icon: "Botsify.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "botsify:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "botsify:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "botsify.load",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "botsify:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "botsify:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "setbotsifyIcon",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "botsonic",
@@ -1331,42 +1432,41 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Botsonic is a no-code, custom AI chatbot builder that enables businesses to interact with their website visitors/users through natural language conversations.",
 		icon: "Botsonic.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "botsonic:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "botsonic:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Botsonic",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "botsonic:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "botsonic:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "botsonicConfig-Botsonic",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "botsonic:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "botsonic:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "botsonic_widget",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "botsonic:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "botsonic:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "loaded-Botsonic",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "botsplash",
@@ -1375,35 +1475,34 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Botsplash is a communication platform that manages conversations across SMS, web chat, email, voice, and AI in real time from a single interface.",
 		icon: "Botsplash.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "botsplash:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("chatcdn\\.botsplash\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("chatcdn\\.botsplash\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "botsplash:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "botsplash:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "$botsplash",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "botsplash:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "botsplash:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "BOTSPLASH_APP_ID",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "botstar",
@@ -1412,38 +1511,37 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "BotStar is a platform for creating chatbots for websites and messaging applications.",
 		icon: "BotStar.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "botstar:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "botstar:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "BotStar.appId",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "botstar:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "botstar:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "BotStarApi",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "botstar:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "botstar:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "BotStarUp",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
+				"payg",
 				"recurring",
-				"payg"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "botup",
@@ -1452,25 +1550,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "BotUp is a chatbot software that helps build your chatbot without coding.",
 		icon: "BotUp.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "botup:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "botup:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "_Botup",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "brevo",
@@ -1479,32 +1576,31 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Brevo is a live chat system designed for customer support and engagement on websites.",
 		icon: "Brevo.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "brevo:dom:0",
 				kind: "dom",
 				selector: "iframe[src*='meet.brevo.com']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "brevo:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "brevo:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "BrevoConversations",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "callbell",
@@ -1513,37 +1609,36 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Callbell is a web-based live chat solution designed to help businesses manage team collaboration via multiple communication channels.",
 		icon: "Callbell.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "callbell:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.callbell\\.eu/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.callbell\\.eu\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "callbell:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "callbell:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Callbell",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "callbell:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "callbell:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "callbellSettings",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"low",
 				"freemium",
-				"recurring"
-			]
-		}
+				"low",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "callgear",
@@ -1552,26 +1647,25 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Callgear is a business communication platform that enables centralized management of voice calls and text messaging across organizational communication channels.",
 		icon: "Callgear.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "callgear:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.callgear\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "callgear:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "callgear:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "CallGear.Captcha",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "capacity",
@@ -1580,24 +1674,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Capacity is a live chat system for ecommerce websites, formerly known as Needle.",
 		icon: "Capacity.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "capacity:scriptContent:0",
 				kind: "scriptContent",
-				pattern: new RegExp("\\.needle\\.com/"),
-				description: "Script content contains a bounded technology signature."
-			}
+				pattern: new RegExp("\\.needle\\.com\\/"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "carchat24",
@@ -1606,20 +1699,19 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "CarChat24 is a live chat solution built specifically for the automotive industry to facilitate real-time customer engagement and lead generation.",
 		icon: "CarChat24.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "carchat24:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("service11\\.carchat24\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "cemax",
@@ -1628,23 +1720,22 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "CEMax is a premium customer engagement platform.",
 		icon: "CEMax.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "cemax:dom:0",
 				kind: "dom",
 				selector: "div[data-chat-url*='.cemaxai.com/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "centribal",
@@ -1653,96 +1744,93 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Centribal is a conversational platform designed for creating, managing, and training chatbots.",
 		icon: "Centribal.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "centribal:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.centribal\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.centribal\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "centribal:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "centribal:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "centribot_services",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "channel-io",
 		name: "Channel.io",
 		website: "https://channel.io",
 		description: "Channel.io is an all-in-one business communication platform that helps businesses connect with customers.",
-		icon: "Channel.io.svg",
+		icon: "Channel.io.png",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
-				id: "channel-io:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "channel-io:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "ChannelIO",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "chaport",
 		name: "Chaport",
 		website: "https://www.chaport.com",
 		description: "Chaport is a multi-channel live chat and chatbot software for business.",
-		icon: "Chaport.svg",
+		icon: "Chaport.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "chaport:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.chaport\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "chaport:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "chaport:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "chaport",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "chaport:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "chaport:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "chaportConfig",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "chat-chasers",
@@ -1751,26 +1839,25 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Chat Chasers is a chat system designed for car dealers to streamline communication with customers.",
 		icon: "ChatChasers.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "chat-chasers:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.chatchasers\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.chatchasers\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "chat-chasers:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "chat-chasers:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "_FetchChatChasersApp",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "chat-robot",
@@ -1779,31 +1866,30 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Chat Robot is a live chat system.",
 		icon: "ChatRobot.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "chat-robot:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "chat-robot:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "CRChat",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "chat-robot:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "chat-robot:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "_crChat.browserInfo",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"high",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "chatbaby",
@@ -1812,30 +1898,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Chatbaby is a service for creating custom ChatGPT chatbots tailored to website content.",
 		icon: "Chatbaby.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "chatbaby:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.chatbaby\\.co/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.chatbaby\\.co\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "chatbaby:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "chatbaby:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "$$chatbaby",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "chatbase",
@@ -1844,43 +1929,42 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Chatbase is an AI chatbot builder, it trains ChatGPT on your data and lets you add a chat widget to your website.",
 		icon: "Chatbase.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "chatbase:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("www\\.chatbase\\.co"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "chatbase:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "chatbase:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "chatbaseConfig.chatbotId",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "chatbase:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "chatbase:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "embedChatbaseChatbot",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "chatbase:cookie:3",
 				kind: "cookie",
-				key: "chatbase_anon_id",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^chatbase_anon_id$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "chatbot",
@@ -1889,25 +1973,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "ChatBot is a framework for AI chatbots, enabling users to create chatbots for various web services.",
 		icon: "ChatBot.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "chatbot:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.chatbot\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("cdn\\.chatbot\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "chatbotbuilder",
@@ -1916,26 +1999,25 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "ChatBotBuilderAI is an AI chatbot development platform that enables deployment of custom GPT-powered chatbots.",
 		icon: "ChatBotBuilder.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "chatbotbuilder:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.chatgptbuilder\\.io/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("app\\.chatgptbuilder\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"onetime",
 				"freemium",
 				"mid",
-				"recurring"
-			]
-		}
+				"onetime",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "chatbullet",
@@ -1944,24 +2026,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "ChatBullet is a platform that integrates chatbots and AI tools to automate customer interactions.",
 		icon: "ChatBullet.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "chatbullet:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("widget\\.chatbullet\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "chatfood",
@@ -1970,29 +2051,28 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "ChatFood is a platform providing mobile ordering tailored for hospitality brands.",
 		icon: "ChatFood.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "chatfood:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "chatfood:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "ChatFoodWidget",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "chatfood:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "chatfood:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ChatFoodWidgetClient",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "chatgen",
@@ -2001,37 +2081,36 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "ChatGen is a hybrid chatbot platform designed to facilitate communication with prospects, customers, and internal employees, aiming to reduce turnaround time and improve productivity.",
 		icon: "ChatGen.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "chatgen:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.chatgen\\.ai/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.chatgen\\.ai\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "chatgen:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "chatgen:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ChatGen",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "chatgen:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "chatgen:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "loadChatgen",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "chatgo",
@@ -2040,25 +2119,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Chatgo is a messenger widget designed for integration with websites and e-shops, enabling communication and engagement.",
 		icon: "Chatgo.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "chatgo:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.chatgo\\.cz"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "chatify",
@@ -2067,26 +2145,25 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Chatify is a chat solution for websites seeking to enhance customer engagement.",
 		icon: "Chatify.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "chatify:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.chatify\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("cdn\\.chatify\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "chative",
@@ -2095,43 +2172,42 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Chative is a platform that provides live chat and chatbot solutions for real-time customer interactions.",
 		icon: "Chative.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "chative:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.chative\\.io/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.chative\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "chative:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "chative:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Chative.app_id",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "chative:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "chative:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "ChativeApi",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "chative:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "chative:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "ChativeEvents",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "chatlab",
@@ -2140,25 +2216,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "ChatLab is an AI-powered customer service agent that operates as a chatbot on websites to assist with user inquiries.",
 		icon: "ChatLab.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "chatlab:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("script\\.chatlab\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "chatlio",
@@ -2167,36 +2242,35 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Chatlio is a live chat solution that integrates with Slack, enabling real-time communication and customer support directly within the Slack platform.",
 		icon: "Chatlio.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "chatlio:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("w\\.chatlio\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("w\\.chatlio\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "chatlio:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "chatlio:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ChatlioReact",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "chatlio:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "chatlio:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "ChatlioReactDOM",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "chatlyn",
@@ -2206,24 +2280,23 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Chatlyn.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "chatlyn:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.chatlyn\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("app\\.chatlyn\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "chatnode",
@@ -2233,24 +2306,23 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "ChatNode.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "chatnode:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("embed\\.chatnode\\.ai/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("embed\\.chatnode\\.ai\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "chatplus",
@@ -2259,48 +2331,47 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "ChatPlus is a provider of chat and chatbot tool with (or without) AI in Japan and abroad.",
 		icon: "ChatPlus.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "chatplus:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "chatplus:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "ChatplusAction.addAgentTag",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "chatplus:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "chatplus:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ChatplusAppScript.getLead",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "chatplus:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "chatplus:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "ChatplusScript.focusPrompt",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "chatplus:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "chatplus:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "jpChatplusOnComplete",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "chatplus:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "chatplus:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "jp_chatplus_app_accessTime",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "chatra",
@@ -2309,43 +2380,42 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Chatra is a cloud-based live chat platform aimed at small businesses and ecommerce retailers.",
 		icon: "Chatra.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "chatra:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("call\\.chatra\\.io/chatra\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("call\\.chatra\\.io\\/chatra\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "chatra:requestUrl:1",
 				kind: "requestUrl",
-				pattern: new RegExp("chat\\.chatra\\.io/"),
-				description: "Observed request URL matches a known technology marker."
+				pattern: new RegExp("chat\\.chatra\\.io\\/"),
+				description: "Observed request URL matches a known technology marker.",
 			},
 			{
-				id: "chatra:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "chatra:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "ChatraID",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "chatra:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "chatra:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "ChatraSetup",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"payg",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "chatroll",
@@ -2354,25 +2424,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Chatroll is a chat platform designed for live events, enabling real-time audience engagement and interaction.",
 		icon: "Chatroll.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "chatroll:dom:0",
 				kind: "dom",
 				selector: "iframe[src*='chatroll.com/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "chatsimple",
@@ -2382,32 +2451,31 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Chatsimple.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "chatsimple:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.chatsimple\\.ai/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn\\.chatsimple\\.ai\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "chatsimple:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "chatsimple:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "chatsimpleCoPilot",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "chatstack",
@@ -2416,29 +2484,28 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "ChatStack is a self-hosted live chat software for websites.",
 		icon: "ChatStack.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "chatstack:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "chatstack:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Chatstack.chatState",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "chatstack:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "chatstack:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Chatstack.server",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"onetime"
-			]
-		}
+				"onetime",
+			],
+		},
 	},
 	{
 		id: "chatthing",
@@ -2447,30 +2514,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Chat Thing is a platform that provides tools to build AI agents trained on custom content.",
 		icon: "ChatThing.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "chatthing:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "chatthing:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "chatThing.chatFrame",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "chatthing:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "chatthing:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "chatThingConfig",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "chatway",
@@ -2479,31 +2545,30 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Chatway is a live chat tool for websites, designed to facilitate customer engagement through real-time conversations.",
 		icon: "Chatway.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "chatway:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.chatway\\.app/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn\\.chatway\\.app\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "chatway:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "chatway:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "$chatway",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "chatwee",
@@ -2512,26 +2577,25 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Chatwee is a live chat and instant messaging app designed to facilitate real-time communication on websites and online communities.",
 		icon: "Chatwee.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "chatwee:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\bchatwee(?:-api)?\\.com/.*\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\bchatwee(?:-api)?\\.com\\/.*\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "chatwing",
@@ -2540,36 +2604,35 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "ChatWING is a live website chat system designed to facilitate real-time communication between businesses and website visitors.",
 		icon: "ChatWING.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "chatwing:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.chatwing\\.com"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
 				id: "chatwing:dom:1",
 				kind: "dom",
 				selector: "iframe[src*='chatwing.com/chatbox/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "chatwing:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "chatwing:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "chatwing.browser",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "chatwith-io",
@@ -2578,30 +2641,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "ChatWith.io is a versatile platform enabling WhatsApp link management, statistics tracking, and specialised services like WhatsApp Business Dating and widgets for efficient customer engagement.",
 		icon: "ChatWith.io.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "chatwith-io:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("widget\\.tochat\\.be/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("widget\\.tochat\\.be\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "chatwith-io:dom:1",
 				kind: "dom",
 				selector: "a[href*='//chatwith.io/'][target='_self']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"low",
 				"onetime",
-				"low"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "chatwoot",
@@ -2610,32 +2672,31 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Chatwoot is a customer support tool for instant messaging channels.",
 		icon: "Chatwoot.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "chatwoot:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "chatwoot:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "$chatwoot",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "chatwoot:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "chatwoot:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "chatwootSDK",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
+				"recurring",
 			],
-			cpe: "cpe:2.3:a:chatwoot:chatwoot:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:chatwoot:chatwoot:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "chaty",
@@ -2644,37 +2705,36 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Chaty is a communication tool that enables customer engagement through messaging apps like WhatsApp and Messenger.",
 		icon: "Chaty.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "chaty:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.chaty\\.app/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn\\.chaty\\.app\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "chaty:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "chaty:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "close_chaty",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "chaty:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "chaty:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "launch_chaty",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "chekkit",
@@ -2683,24 +2743,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Chekkit is an all-in-one review, messaging, and lead inbox software.",
 		icon: "Chekkit.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "chekkit:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "chekkit:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "chekkitSettings.toggleChat",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "chord",
@@ -2710,39 +2769,41 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Chord.svg",
 		categories: [
 			"email-messaging",
-			"media-video"
+			"media-video",
 		],
 		rules: [
 			{
 				id: "chord:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("chord\\.us/embeddable/client-([\\d\\.]+)\\.min\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("chord\\.us\\/embeddable\\/client-([\\d\\.]+)\\.min\\.js"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "chord:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "chord:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "CHORDCONNECT",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "chord:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "chord:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "ChordConnect.__esModule",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "clearout",
@@ -2751,33 +2812,32 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Clearout is a bulk email validation service designed to clean email lists and improve deliverability.",
 		icon: "Clearout.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "clearout:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("api\\.clearout\\.io"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "clearout:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "clearout:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "clearout.$",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring",
+				"payg",
 				"poa",
-				"payg"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "clearstream",
@@ -2786,25 +2846,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Cloudstream is a communication platform that provides texting and email services for congregational outreach and engagement.",
 		icon: "Clearstream.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "clearstream:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.clearstream\\.io/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("app\\.clearstream\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"high",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "cleverreach",
@@ -2814,31 +2873,29 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "CleverReach.svg",
 		categories: [
 			"email-messaging",
-			"form-schema-library"
 		],
 		rules: [
 			{
 				id: "cleverreach:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.cleverreach\\.com"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
 				id: "cleverreach:dom:1",
 				kind: "dom",
 				selector: "form[action*='.cleverreach.com/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "clickchat",
@@ -2847,25 +2904,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Click Chat is a web-based solution that enables chat installation on any website, facilitating real-time communication and customer engagement.",
 		icon: "ClickChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "clickchat:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("script\\.click-chat\\.ru"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "clickdesk",
@@ -2874,37 +2930,36 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "ClickDesk is a live chat and online engagement software that enables real-time interaction with website visitors.",
 		icon: "ClickDesk.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "clickdesk:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "clickdesk:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "CLICKDESK_CHAT_WINDOW_UI",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "clickdesk:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "clickdesk:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "CLICKDESK_LIVECHAT",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "clickdesk:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "clickdesk:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "CLICKDESK_Live_Chat",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "cliengo",
@@ -2913,31 +2968,30 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Cliengo is a platform that automates website conversations using Artificial Intelligence to enhance customer engagement and drive sales.",
 		icon: "Cliengo.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "cliengo:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("s\\.cliengo\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("s\\.cliengo\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "cliengo:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "cliengo:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Cliengo.chatConfig",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "client-chat-live",
@@ -2946,29 +3000,28 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Client Chat Live is a tool that converts website visitors into clients through live chat functionality.",
 		icon: "ClientChatLive.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "client-chat-live:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.clientchatlive\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.clientchatlive\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "client-chat-live:dom:1",
 				kind: "dom",
 				selector: "link[href*='platform.clientchatlive.com/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "coax",
@@ -2977,42 +3030,41 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Coax is a communication platform that consolidates chat histories from multiple channels to improve business communication and customer service.",
 		icon: "Coax.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "coax:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.coax\\.com\\.au"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "coax:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "coax:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "coaxAppStorage",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "coax:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "coax:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "coaxCurrentWebDomain",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "coax:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "coax:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "openCoaxWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "cognigy",
@@ -3022,35 +3074,34 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Cognigy.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
-				id: "cognigy:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "cognigy:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "__COGNIGY_WEBCHAT",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "cognigy:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "cognigy:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "cognigyWebchatInputPlugins",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "cognigy:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "cognigy:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "cognigyWebchatMessagePlugins",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "collect-chat",
@@ -3059,36 +3110,35 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Collect.chat is an interactive chatbot that collects data from website visitors.",
 		icon: "CollectChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "collect-chat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("collectorcdn\\.com/launcher\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("collectorcdn\\.com\\/launcher\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "collect-chat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "collect-chat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "CollectAlwaysOpen",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "collect-chat:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "collect-chat:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "CollectChatLauncher",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "cometchat",
@@ -3097,27 +3147,26 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "CometChat is a SaaS solution that provides apps and websites with scalable text, voice, and video chat functionality.",
 		icon: "CometChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "cometchat:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("widget-js\\.cometchat\\.io"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
-				"recurring",
 				"payg",
-				"poa"
-			]
-		}
+				"poa",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "comm100",
@@ -3126,36 +3175,35 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Comm100 is a provider of customer service and communication products.",
 		icon: "Comm100.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "comm100:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "comm100:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Comm100API",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "comm100:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "comm100:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "comm100_chatButton",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "comm100:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "comm100:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "comm100_livechat_open_link",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"payg",
 				"recurring",
-				"payg"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "conferbot",
@@ -3164,31 +3212,30 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Conferbot is a platform designed to improve website engagement through customisable chatbots, catering to various business requirements.",
 		icon: "Conferbot.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "conferbot:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("conferbot\\.defaults.*\\.min\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "conferbot:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "conferbot:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ConferbotWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"freemium",
 				"low",
 				"recurring",
-				"freemium"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "convertobot",
@@ -3197,61 +3244,59 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "ConvertoBot is a chatbot and conversational marketing tool.",
 		icon: "ConvertoBot.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "convertobot:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.convertobot\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("app\\.convertobot\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "convertobot:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "convertobot:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "botUrl",
 				valuePattern: new RegExp("app\\.convertobot\\.com"),
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "copilot-live",
 		name: "Copilot.Live",
 		website: "https://www.copilot.live",
-		description: "Copilot.Live is an AI agent with human-level capabilities, enabling the creation of AI agents for customer support.",
+		description: "Copilot. Live is an AI agent with human-level capabilities, enabling the creation of AI agents for customer support.",
 		icon: "CopilotLive.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "copilot-live:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("script\\.copilot\\.live"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"onetime",
 				"freemium",
 				"low",
+				"onetime",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "corover",
@@ -3260,29 +3305,28 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "CoRover is a conversational AI chatbot platform with proprietary cognitive AI technology.",
 		icon: "CoRover.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "corover:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.corover\\.mobi/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.corover\\.mobi\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "corover:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "corover:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "CoRover_tag",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "crikle",
@@ -3291,29 +3335,28 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Crikle is a multichannel customer engagement software.",
 		icon: "Crikle.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "crikle:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "crikle:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "crikle.contactId",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "crikle:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "crikle:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "crikle.openConvertWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "crisp-live-chat",
@@ -3322,66 +3365,68 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Crisp Live Chat is a live chat solution with free and paid options.",
 		icon: "Crisp Live Chat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "crisp-live-chat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("client\\.crisp\\.chat/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("client\\.crisp\\.chat\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "crisp-live-chat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "crisp-live-chat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "$__CRISP_INCLUDED",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "crisp-live-chat:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "crisp-live-chat:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "$crisp",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "crisp-live-chat:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "crisp-live-chat:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "CRISP_WEBSITE_ID",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "crossbox",
 		name: "CrossBox",
 		website: "https://crossbox.io",
 		description: "CrossBox is a webmail client.",
-		icon: "CrossBox.svg",
+		icon: "CrossBox.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "crossbox:responseHeader:0",
-				kind: "responseHeader",
+				id: "crossbox:header:0",
+				kind: "header",
 				key: "server",
-				valuePattern: new RegExp("CBX-WS"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("CBX-WS", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "crossbox:header:1",
+				kind: "header",
+				key: "server",
+				valuePattern: new RegExp("cbx-ws", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "cu-chat",
@@ -3390,21 +3435,20 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "CU Chat is a custom AI chatbot designed to provide 24/7 support, tailored to the specific needs of members.",
 		icon: "CUChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "cu-chat:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "cu-chat:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "chatapp.api",
 				valuePattern: new RegExp("api\\.cu\\.chat"),
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "czater",
@@ -3413,36 +3457,35 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Czater is an live chat solution with extended CRM and videochat features.",
 		icon: "Czater.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "czater:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.czater\\.pl"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "czater:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "czater:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "$czater",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "czater:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "czater:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "$czaterMethods",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "deskpro-chat",
@@ -3451,24 +3494,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "DeskPro is multi channel helpdesk software for managing customer and citizen requests via email, forms, chat, social and voice.",
 		icon: "DeskPro.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "deskpro-chat:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "deskpro-chat:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "DESKPRO_WIDGET_OPTIONS.chat",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "desku",
@@ -3478,55 +3520,54 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Desku.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "desku:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("widget\\.desku\\.io/chat-widget\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("widget\\.desku\\.io\\/chat-widget\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "desku:scriptSrc:1",
 				kind: "scriptSrc",
-				pattern: new RegExp("livechat\\.desku\\.io/cdn/widget\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("livechat\\.desku\\.io\\/cdn\\/widget\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "desku:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "desku:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "Desku",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "desku:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "desku:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "isDeskuManagerRunning",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "desku:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "desku:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "isDeskuWidgetAuthSetup",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "desku:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "desku:jsGlobal:5",
+				kind: "jsGlobal",
 				property: "isdeskuManagerRunning",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "devrev",
@@ -3536,25 +3577,24 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "DevRev.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "devrev:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("plug-platform\\.devrev\\.ai/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("plug-platform\\.devrev\\.ai\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"payg",
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "dialogity",
@@ -3563,25 +3603,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Dialogity Chat is a customer service chatbot platform.",
 		icon: "Dialogity.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "dialogity:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("js\\.dialogity\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "dialogshift",
@@ -3590,30 +3629,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "DialogShift is a hotel AI solution for chat, email, and telephone communication.",
 		icon: "DialogShift.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "dialogshift:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("assets\\.dialogshift\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "dialogshift:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "dialogshift:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Dialogshift.instance",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "dina-kunder",
@@ -3622,24 +3660,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Dina Kunder is a provider of AI chatbots designed for automating customer support.",
 		icon: "DinaKunder.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "dina-kunder:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.dinakunder\\.se"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "docsbot",
@@ -3648,25 +3685,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "DocsBot is an AI-powered chatbot that helps automate customer support and improve team productivity.",
 		icon: "DocsBotAI.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "docsbot:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "docsbot:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "DocsBotAI.el",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "doppler",
@@ -3675,24 +3711,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Doppler is an email marketing and transactional email service.",
 		icon: "Doppler.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "doppler:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("//(?:hub|cdn)\\.fromdoppler\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\/\\/(?:hub|cdn)\\.fromdoppler\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"payg",
 				"recurring",
-				"payg"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "dotdigital-chat",
@@ -3701,27 +3736,26 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Dotdigital Chat is a smart, customisable widget that makes it easy for shoppers to communicate in real-time with members of your team.",
 		icon: "Dotdigital.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "dotdigital-chat:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "dotdigital-chat:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "_ddgChatConfig.urlBase",
 				valuePattern: new RegExp("\\.dotdigital\\.com"),
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"dotdigital"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
+		implies: [
+			"dotdigital",
+		],
 	},
 	{
 		id: "doubletick",
@@ -3731,63 +3765,60 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "DoubleTick.svg",
 		categories: [
 			"email-messaging",
-			"api-pattern"
 		],
 		rules: [
 			{
 				id: "doubletick:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("api\\.doubletick\\.io"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "doubletick:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "doubletick:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "dt.resetConfig",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "drift",
 		name: "Drift",
 		website: "https://www.drift.com/",
-		description: "Drift is a conversational marketing platform.",
+		description: "Drift is a conversational marketing and sales platform with chat, messaging, and meeting tools.",
 		icon: "Drift.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "drift:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "drift:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "drift",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "drift:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "drift:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "driftt",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"mid",
 				"poa",
-				"mid"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "droxy",
@@ -3796,24 +3827,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Droxy is a tool that transforms content into interactive AI chatbots for educational and business use, enabling more engaging knowledge sharing.",
 		icon: "Droxy.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "droxy:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.droxy\\.ai/chat"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("app\\.droxy\\.ai\\/chat"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "droz-bot",
@@ -3822,23 +3852,22 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Droz Bot is a multi-channel, customisable chatbot designed to help brands provide customer service across commonly used social apps.",
 		icon: "Droz.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "droz-bot:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("chat-app\\.meudroz\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("chat-app\\.meudroz\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "easichat",
@@ -3847,26 +3876,25 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Easichat is an online customer service platform that uses AI to automate and manage customer interactions.",
 		icon: "EasiChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "easichat:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("widget\\.easichat\\.co\\.uk"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "easichat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "easichat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "easiChat.widget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "easyliao",
@@ -3875,32 +3903,31 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "EasyLiao is a pre-sales customer agent system developed in China, designed to support businesses in handling customer inquiries and engagement before a sale.",
 		icon: "EasyLiao.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "easyliao:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.easyliao\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "easyliao:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "easyliao:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "easyliaoIsPC",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "easyliao:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "easyliao:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "easyliao_design_init",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "egain-conversation",
@@ -3909,26 +3936,25 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "eGain Conversation is a customer engagement platform that centralises and manages customer interactions across multiple channels, including chat, email, social media, and messaging apps.",
 		icon: "eGain.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "egain-conversation:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.analytics-egain\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.analytics-egain\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "egain-conversation:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "egain-conversation:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "egainDockChat",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "ekonsilio",
@@ -3937,23 +3963,22 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "eKonsilio is a conversational management platform that enables organizations to design, deploy, and manage automated and human-assisted conversations across digital communication channels.",
 		icon: "eKonsilio.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "ekonsilio:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("script\\.ekonsilio\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "element",
@@ -3962,25 +3987,31 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Element is a Matrix-based end-to-end encrypted messenger and secure collaboration app.",
 		icon: "elementio.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "element:meta:0",
 				kind: "meta",
 				key: "application-name",
-				valuePattern: new RegExp("^Element$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^Element$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "element:meta:1",
+				kind: "meta",
+				key: "application-name",
+				valuePattern: new RegExp("^element$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
+				"low",
 				"payg",
-				"low"
-			]
-		}
+			],
+			cpe: "cpe:2.3:a:matrix:element:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "eliseai",
@@ -3990,29 +4021,28 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "EliseAI.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "eliseai:dom:0",
 				kind: "dom",
 				selector: "div#meetelise-chat-launcher-container",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "eliseai:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "eliseai:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "eliseAi",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "emaileri",
@@ -4021,31 +4051,30 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Emaileri is a platform designed for email marketing and newsletter communications.",
 		icon: "Emaileri.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "emaileri:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("static\\.emaileri\\.fi"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
 				id: "emaileri:dom:1",
 				kind: "dom",
 				selector: "iframe[src*='static.emaileri.fi']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "emailjs",
@@ -4054,32 +4083,34 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "EmailJS is a cloud-based email delivery service that allows you to send emails directly from your client-side JavaScript code without the need for a server-side implementation.",
 		icon: "EmailJS.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "emailjs:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("([\\d\\.]+)?(?:/dist)?/email\\.min\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("([\\d\\.]+)?(?:\\/dist)?\\/email\\.min\\.js"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "emailjs:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "emailjs:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "emailjs.sendForm",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "engati",
@@ -4088,24 +4119,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Engati is a chatbot platform that allows users to build bots without requiring programming skills.",
 		icon: "Engati.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "engati:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.engati\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("app\\.engati\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "enterprise-bot",
@@ -4114,23 +4144,48 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Enterprise Bot specializes in developing and deploying complex conversational AI systems tailored for enterprise settings, leveraging natural language processing, machine learning, and automation to improve customer interactions and streamline operations.",
 		icon: "Enterprise Bot.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "enterprise-bot:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.enterprisebot\\.co/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.enterprisebot\\.co\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
+	},
+	{
+		id: "envialosimple",
+		name: "EnvialoSimple",
+		website: "https://envialosimple.com",
+		description: "EnvialoSimple is a marketing platform and newsletter management system used to create, send, and track email campaigns.",
+		icon: "EnvialoSimple.svg",
+		categories: [
+			"email-messaging",
+		],
+		rules: [
+			{
+				id: "envialosimple:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\.envialosimple\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"low",
+				"poa",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "envoke",
@@ -4139,25 +4194,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Envoke is a CASL-compliant email marketing software designed for communications professionals in business, education, and the public sector, with a focus on security and compliance.",
 		icon: "Envoke.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "envoke:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.envoke\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.envoke\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"payg",
 				"recurring",
-				"payg"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "envolve-tech",
@@ -4166,36 +4220,35 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Envolve Tech is a platform that provides virtual shopping assistants designed to guide customers through online purchases.",
 		icon: "EnvolveTech.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "envolve-tech:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.envolvetech\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "envolve-tech:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "envolve-tech:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "envolveChatInitialized",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "envolve-tech:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "envolve-tech:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "envolveJsonp",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "facebook-chat-plugin",
@@ -4204,26 +4257,28 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Facebook Chat Plugin is a website plugin that businesses with a Facebook Page can install on their website.",
 		icon: "Facebook.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "facebook-chat-plugin:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("connect\\.facebook\\.net/.+\\.customerchat\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("connect\\.facebook\\.net\\/.+\\.customerchat\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "facebook-chat-plugin:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "facebook-chat-plugin:dom:1",
+				kind: "dom",
+				selector: "iframe[src*='.facebook.com/']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "facebook-chat-plugin:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "facebookChatSettings",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "fastmind",
@@ -4232,25 +4287,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Fastmind is an AI-powered chatbot builder that enables customer engagement using live data retrieved directly from a search engine.",
 		icon: "Fastmind.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "fastmind:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.fastmind\\.ai/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("cdn\\.fastmind\\.ai\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "five9",
@@ -4259,43 +4313,42 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Five9 is a cloud-based contact center platform that enables businesses to manage customer interactions across multiple communication channels, including voice, email, chat, and social media.",
 		icon: "Five9.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "five9:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.five9\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "five9:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.five9\\.com"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "five9:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "five9:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "Five9.Api",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "five9:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "five9:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "Five9Modules",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "flashchat",
@@ -4304,20 +4357,19 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Flashchat is an automated messenger conversation tool.",
 		icon: "Flashchat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "flashchat:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("widget\\.flashchat\\.ai"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "floatbot",
@@ -4326,43 +4378,42 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Floatbot is a conversational AI Platform, facilitating the construction and deployment of voicebot, chatbot, and agent assist functionalities.",
 		icon: "Floatbot.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "floatbot:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.floatbot\\.ai/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.floatbot\\.ai\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "floatbot:dom:1",
 				kind: "dom",
 				selector: "#flb-widget-handle",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "floatbot:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "floatbot:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "flb.base_url",
-				valuePattern: new RegExp("\\.floatbot\\.ai/"),
-				description: "Page-owned global matches a known technology marker."
+				valuePattern: new RegExp("\\.floatbot\\.ai\\/"),
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "floatbot:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "floatbot:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "flb.botId ",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
-				"high"
-			]
-		}
+				"high",
+			],
+		},
 	},
 	{
 		id: "flyzoo",
@@ -4371,30 +4422,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Flyzoo is a platform that provides real-time chat functionality designed to support online communities.",
 		icon: "Flyzoo.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "flyzoo:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.flyzoo\\.co/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.flyzoo\\.co\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "flyzoo:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "flyzoo:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Flyzoo.AT",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "forethought-ai",
@@ -4404,29 +4454,28 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "ForethoughtAI.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "forethought-ai:dom:0",
 				kind: "dom",
 				selector: "iframe#forethought-chat",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "forethought-ai:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "forethought-ai:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Forethought",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "freshchat",
@@ -4435,30 +4484,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Freshchat is a cloud-hosted live messaging and engagement application.",
 		icon: "Freshchat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "freshchat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("wchat\\.freshchat\\.com/js/widget\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("wchat\\.freshchat\\.com\\/js\\/widget\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "freshchat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "freshchat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Freshbots",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "frisbie",
@@ -4467,25 +4515,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Frisbie is a Russian chat widget designed for online communication.",
 		icon: "Frisbie.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "frisbie:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "frisbie:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Frisbie.app",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "froged",
@@ -4494,36 +4541,35 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Froged is an all-in-one omnichannel communication platform designed to streamline messaging across multiple channels.",
 		icon: "Froged.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "froged:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("sdk\\.froged\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "froged:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "froged:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Froged",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "froged:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "froged:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "frogedAutoClick",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "front-ai",
@@ -4532,29 +4578,28 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Front AI is a platform that offers services for Conversational AI, Virtual Agents, and Service Bots to support automated customer interactions.",
 		icon: "FrontAI.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "front-ai:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.front\\.ai/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.front\\.ai\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "front-ai:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "front-ai:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "FrontCFcreateCookie",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "front-chat",
@@ -4563,30 +4608,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Front Chat is the live website chat solution that you can manage straight from your inbox.",
 		icon: "Front Chat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "front-chat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("//chat-assets\\.frontapp\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/\\/chat-assets\\.frontapp\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "front-chat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "front-chat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "FrontChat",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "genesys-chat",
@@ -4595,23 +4639,22 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Genesys Chat is a customer engagement platform that facilitates real-time communication between businesses and their customers through web messaging and live chat functionalities.",
 		icon: "Genesys Cloud.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "genesys-chat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.boldchat\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.boldchat\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "geniee-chat",
@@ -4620,30 +4663,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Geniee Chat is a chat-based web customer service platform.",
 		icon: "GenieeChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "geniee-chat:scriptContent:0",
 				kind: "scriptContent",
-				pattern: new RegExp("\\.chamo-chat\\.com/"),
-				description: "Script content contains a bounded technology signature."
+				pattern: new RegExp("\\.chamo-chat\\.com\\/"),
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "geniee-chat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "geniee-chat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "GenooCSS.add",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "getchat",
@@ -4652,25 +4694,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "GetChat is a platform enabling communication with website visitors via preferred messaging applications.",
 		icon: "GetChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "getchat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("getchat\\.app/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("getchat\\.app\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "giosg",
@@ -4679,29 +4720,28 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Giosg is a live chat solution designed to support ecommerce platforms by enabling real-time customer communication and engagement.",
 		icon: "Giosg.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "giosg:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("service\\.giosg\\.com"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "giosg:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "giosg:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "giosgWebpackJsonp",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "gist",
@@ -4710,34 +4750,41 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Gist is email marketing automation, live chat, and helpdesk software.",
 		icon: "gist_live_chat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "gist:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.getgist\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "gist:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "gist:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "gist.options.versionNumber",
 				valuePattern: new RegExp("^(.+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "gist:jsGlobal:2",
+				kind: "jsGlobal",
+				property: "gist.setAppId ",
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "gista",
@@ -4746,26 +4793,25 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Gista is an AI conversion agent that helps websites turn visitors into leads and customers through automated engagement.",
 		icon: "Gista.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "gista:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "gista:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "$gista.config",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "gitter",
@@ -4774,49 +4820,47 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Gitter is a chat and networking platform that helps to manage, grow and connect communities through messaging.",
 		icon: "Gitter.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "gitter:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "gitter:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "gitter.chat",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "gladly",
 		name: "Gladly",
 		website: "https://www.gladly.com",
 		description: "Gladly is a customer service platform.",
-		icon: "Gladly.svg",
+		icon: "Gladly.png",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "gladly:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.gladly\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "gladly:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "gladly:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Gladly",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "glassix",
@@ -4824,23 +4868,22 @@ export const emailMessagingTechnologyDefinitions = [
 		website: "https://glassix.co.il",
 		description: "Glassix is an omnichannel messaging platform for service, sales, and support centers.",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "glassix:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "glassix:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "GlassixWidgetClient",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "gleap",
@@ -4849,24 +4892,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Gleap is an all-in-one customer feedback platform offering features like in-app bug reporting, live chat, AI support bots, product roadmaps, customer surveys, and marketing automation to enhance customer service and product development.",
 		icon: "Gleap.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "gleap:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "gleap:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Gleap",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"mid",
 				"recurring",
-				"mid"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "gleen",
@@ -4875,30 +4917,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Gleen is a generative AI chatbot designed to provide customers with trustworthy answers, automate actions, and integrate unified knowledge.",
 		icon: "Gleen.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "gleen:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.gleen\\.ai/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("app\\.gleen\\.ai\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "gleen:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "gleen:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "gleenWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "glia",
@@ -4907,23 +4948,22 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Glia is a chat and digital assistant utilised across various industries.",
 		icon: "Glia.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "glia:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("api\\.glia\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("api\\.glia\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "gobot",
@@ -4932,32 +4972,31 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Gobot is a tool that increases website leads, sales, and engagement through a conversational bot.",
 		icon: "Gobot.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "gobot:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.getgobot\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.getgobot\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "gobot:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "gobot:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "gobot",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "gobot:cookie:2",
 				kind: "cookie",
-				key: "_gobot",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^_gobot$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "goftino",
@@ -4966,49 +5005,48 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Goftino is an online chat service for web users.",
 		icon: "Goftino.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "goftino:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.goftino\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.goftino\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "goftino:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "goftino:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Goftino.setWidget",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "goftino:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "goftino:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "goftinoRemoveLoad",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "goftino:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "goftino:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "goftino_1",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "goftino:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "goftino:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "goftino_getUrl",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "goodbits",
@@ -5017,24 +5055,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Goodbits is email newsletter creation software designed to help collect and curate content for sending newsletters.",
 		icon: "Goodbits.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "goodbits:cookie:0",
 				kind: "cookie",
-				key: "_goodbits_session",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^_goodbits_session$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "google-workspace",
@@ -5043,47 +5080,49 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Google Workspace, formerly G Suite, is a collection of cloud computing, productivity and collaboration tools.",
 		icon: "Google.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "google-workspace:dns:0",
 				kind: "dns",
-				valuePattern: new RegExp("aspmx\\.l\\.google\\.com"),
+				valuePattern: new RegExp("aspmx\\.l\\.google\\.com", "i"),
 				recordType: "MX",
 				description: "DNS record matches a known technology marker.",
-			}
+			},
+			{
+				id: "google-workspace:dns:1",
+				kind: "dns",
+				valuePattern: new RegExp("googlemail\\.com", "i"),
+				recordType: "MX",
+				description: "DNS record matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "gorgias",
 		name: "Gorgias",
 		website: "https://www.gorgias.com/",
 		description: "Gorgias is a helpdesk and chat solution designed for ecommerce stores.",
-		icon: "Gorgias.svg",
+		icon: "Gorgias.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "gorgias:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "gorgias:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "gorgiasChat",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"mid",
 				"recurring",
-				"mid"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "grasp",
@@ -5092,36 +5131,35 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Grasp is a customer support software company that offers a cloud-based helpdesk and live chat solution for businesses of all sizes.",
 		icon: "Grasp.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "grasp:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "grasp:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "CASENGO.widget",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "grasp:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "grasp:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "CASENGO_INLINE_COOKIE",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "grasp:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "grasp:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "casengoUpdateWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "gravity",
@@ -5130,45 +5168,47 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Gravity is a live chat solution designed to facilitate real-time communication for businesses.",
 		icon: "Gravity.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "gravity:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.gravi\\.org/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.gravi\\.org\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "gravity:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "gravity:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "gravi_api.chatMode",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "gravity:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "gravity:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "gravi_init",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "gravity:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "gravity:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "gravi_version",
 				valuePattern: new RegExp("^([\\d\\.]+[a-z]?)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "groove",
@@ -5178,36 +5218,56 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Groove.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "groove:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.groovehq\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.groovehq\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "groove:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "groove:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Groove",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "groove:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "groove:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "GrooveWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+	},
+	{
+		id: "gubagoo",
+		name: "Gubagoo",
+		website: "https://www.gubagoo.com",
+		description: "Gubagoo is a website chat software platform that provides messaging and engagement tools designed to interact with visitors and support conversion of web traffic.",
+		icon: "Gubagoo.svg",
+		categories: [
+			"email-messaging",
+		],
+		rules: [
+			{
+				id: "gubagoo:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("cdn\\.gubagoo\\.io"),
+				description: "Script source URL matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+		},
 	},
 	{
 		id: "happyfox-live-chat",
@@ -5216,74 +5276,72 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "HappyFox is a help desk ticketing system that is hosted on cloud, supporting multiple customer support channels like email, voice and live chat.",
 		icon: "HappyFox.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "happyfox-live-chat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.happyfoxchat\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.happyfoxchat\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "happyfox-live-chat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "happyfox-live-chat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "HappyFoxChatObject",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"low",
 				"recurring",
-				"low"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "haptik",
 		name: "Haptik",
 		website: "https://www.haptik.ai",
 		description: "Haptik is an Indian enterprise conversational AI platform founded in August 2013, and acquired by Reliance Industries Limited in 2019.",
-		icon: "Haptik.svg",
+		icon: "Haptik.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "haptik:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.haptikapi\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.haptikapi\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "haptik:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "haptik:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "HaptikSDK",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "haptik:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "haptik:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "haptik",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "haptik:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "haptik:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "haptikInitSettings",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"high",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "helpcrunch",
@@ -5292,32 +5350,31 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "HelpCrunch is a customer service software platform designed to support core business communication and customer support needs across organizations.",
 		icon: "HelpCrunch.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "helpcrunch:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.helpcrunch\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.helpcrunch\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "helpcrunch:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "helpcrunch:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "HelpCrunch",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "helpcrunch:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "helpcrunch:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "helpcrunchDebug",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "helponclick",
@@ -5326,37 +5383,36 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "HelpOnClick is a live chat and customer tracking platform designed to support real-time communication and monitor visitor interactions on websites.",
 		icon: "HelpOnClick.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "helponclick:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.helponclick\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "helponclick:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "helponclick:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "HelpOnClickLogoRoundMask",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "helponclick:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "helponclick:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "HelpOnClick_ChatPrinter_Button",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "hoiio",
@@ -5365,20 +5421,25 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Hoiio is a cloud communications platform that simplifies the setup of messaging, voice, and other communication services.",
 		icon: "Hoiio.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "hoiio:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("hoiio\\.notifyEmpty"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
+			{
+				id: "hoiio:scriptContent:1",
+				kind: "scriptContent",
+				pattern: new RegExp("hoiio\\.notifyempty"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "hoory",
@@ -5387,36 +5448,35 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Hoory is a Conversational AI platform that automates customer support.",
 		icon: "Hoory.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "hoory:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "hoory:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "$hoory",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "hoory:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "hoory:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "hoorySDK.reRun",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "hoory:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "hoory:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "hoorySettings",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "hubspot-chat",
@@ -5425,29 +5485,28 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "HubSpot Chat is a tool where you can view, manage, and reply to incoming messages from multiple channels.",
 		icon: "HubSpot.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "hubspot-chat:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("js\\.usemessages\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "hubspot-chat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "hubspot-chat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "HubSpotConversations",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"freemium"
-			]
-		}
+				"freemium",
+			],
+		},
 	},
 	{
 		id: "huggy",
@@ -5456,32 +5515,31 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Huggy is a service automation platform that centralizes operations and integrates chatbots capable of responding at any time.",
 		icon: "Huggy.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "huggy:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.huggy\\.io/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.huggy\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "huggy:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "huggy:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Huggy.closeBox",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring",
 				"payg",
-				"poa"
-			]
-		}
+				"poa",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "iadvize",
@@ -5490,29 +5548,28 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "iAdvize is a conversational marketing platform that connects customers in need of advice with experts who are available 24/7 via messaging.",
 		icon: "iAdvize.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "iadvize:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.iadvize\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.iadvize\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "iadvize:dom:1",
 				kind: "dom",
 				selector: "link[href*='.iadvize.com']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "ideta",
@@ -5521,30 +5578,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Ideta is a platform that provides chatbots and callbots to streamline company operations through AI and automation.",
 		icon: "Ideta.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "ideta:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("ideta-prod\\.appspot\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "ideta:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "ideta:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "webpackChunkideta_platoon",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "ientry",
@@ -5553,20 +5609,19 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "iEntry is a full-service email marketing platform offering campaign management, list building, analytics, and targeted messaging for businesses.",
 		icon: "iEntry.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "ientry:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("www\\.ientry\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "ikeono",
@@ -5575,30 +5630,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Ikeono is an all-in-one communication tool that provides business text messaging solutions for independent retailers.",
 		icon: "Ikeono.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "ikeono:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("widget\\.ikeono\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "ikeono:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "ikeono:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ikeono",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "imber",
@@ -5607,37 +5661,36 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Imber is an all-in-one marketing automation platform built for customer support (live chat), sales, and marketing.",
 		icon: "Imber.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "imber:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "imber:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "$imber.getVisitor",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "imber:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "imber:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "IMBER_ID",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "imber:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "imber:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "IMBER_SOCKET",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "imbox",
@@ -5646,47 +5699,46 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Imbox is a live chat platform that includes co-browsing features.",
 		icon: "Imbox.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "imbox:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "imbox:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "__IMBOX_GLOBAL__",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "imbox:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "imbox:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "__IMBOX_INITIALIZED__",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "imbox:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "imbox:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "_imbox",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "imbox:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "imbox:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "imboxBuilt",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "imbox:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "imbox:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "imboxManager",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "inbox",
@@ -5695,33 +5747,32 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "INBOX is an email marketing system designed to create, manage, and track email campaigns for communication, promotions, or newsletters.",
 		icon: "UseInbox.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "inbox:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.useinbox\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("app\\.useinbox\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "inbox:dom:1",
 				kind: "dom",
 				selector: "form[action*='app.useinbox.com/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring",
 				"payg",
-				"poa"
-			]
-		}
+				"poa",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "inforumobile",
@@ -5729,23 +5780,22 @@ export const emailMessagingTechnologyDefinitions = [
 		website: "https://www.inforu.co.il",
 		description: "InforUMobile is a multi-channel system that enables digital communication with customers, offering various channels for interacting and engaging with users, developed by the Shamir Systems Group.",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "inforumobile:dom:0",
 				kind: "dom",
 				selector: "iframe[src*='bot.frontcld.com/bot/chat']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "infoset",
@@ -5755,55 +5805,53 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Infoset.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
-				id: "infoset:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "infoset:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "InfosetChat",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "infoset:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "infoset:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "InfosetRoot",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"low",
 				"recurring",
-				"low"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "insyncai",
 		name: "InSyncai",
 		website: "https://www.insyncai.com",
 		description: "InSyncai offers a conversational platform for enterprises to design and build chatbots having applications in customer support and services.",
-		icon: "InSyncai.svg",
+		icon: "InSyncai.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "insyncai:dom:0",
 				kind: "dom",
 				selector: "iframe[src*='insync_iframe_webchat_js_prod'], iframe#insync-iframe",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "intaker",
@@ -5812,20 +5860,25 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Intaker is a service that enables law firms to send and receive text messages with clients, including automated follow-up messages.",
 		icon: "Intaker.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "intaker:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "intaker:dom:0",
+				kind: "dom",
+				selector: "link[href*='chat-api.intaker.com/api/']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "intaker:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Intaker",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "interakt",
@@ -5834,25 +5887,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Interakt is a messaging platform tailored for business communication, offering features such as secure messaging, file sharing, and customer support functionalities.",
 		icon: "Interakt.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "interakt:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.interakt\\.ai/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("app\\.interakt\\.ai\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "intercom",
@@ -5862,48 +5914,47 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Intercom.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "intercom:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("(?:api\\.intercom\\.io/api|static\\.intercomcdn\\.com/intercom\\.v1)"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("(?:api\\.intercom\\.io\\/api|static\\.intercomcdn\\.com\\/intercom\\.v1)"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "intercom:dom:1",
 				kind: "dom",
 				selector: "link[href^='https://widget.intercom.io']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
 				id: "intercom:dom:2",
 				kind: "dom",
 				selector: "div.live-chat-loader-placeholder",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
 				id: "intercom:dom:3",
 				kind: "dom",
 				selector: "iframe#intercom-frame",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "intercom:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "intercom:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "Intercom",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "isina-chat",
@@ -5912,23 +5963,22 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "iSina Chat is a live chat service that provides online support and FAQ for customers.",
 		icon: "iSina Chat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "isina-chat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("chat\\.isina\\.agency/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("chat\\.isina\\.agency\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "jenny",
@@ -5937,94 +5987,94 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Jenny is a customer service chatbot platform.",
 		icon: "Jenny.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "jenny:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.getjenny\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.getjenny\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "jenny:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "jenny:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "webpackJsonpget-jenny",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "jitsi",
 		name: "Jitsi",
 		website: "https://jitsi.org",
 		description: "Jitsi is a free and open-source multiplatform voice (VoIP), videoconferencing and instant messaging applications for the web platform.",
-		icon: "Jitsi.svg",
+		icon: "Jitsi.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "jitsi:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("lib-jitsi-meet.*\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:jitsi:jitsi:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:jitsi:jitsi:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "jivochat",
 		name: "JivoChat",
 		website: "https://www.jivosite.com",
 		description: "JivoChat is a live chat solution for websites offering customizable web and mobile chat widgets.",
-		icon: "JivoChat.svg",
+		icon: "JivoChat.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "jivochat:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.jivosite\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "jivochat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "jivochat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "jivo_api",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "jivochat:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "jivochat:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "jivo_version",
 				valuePattern: new RegExp("([\\d.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
+				"payg",
 				"recurring",
-				"payg"
 			],
-			cpe: "cpe:2.3:a:jivochat:jivochat:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:jivochat:jivochat:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "joinchat",
@@ -6033,30 +6083,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Joinchat is a tool that enables businesses to convert customer conversations into sales or leads through integrated communication features.",
 		icon: "Joinchat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "joinchat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/js/joinchat\\.min\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/js\\/joinchat\\.min\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "joinchat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "joinchat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "joinchat_obj",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "joonbot",
@@ -6065,72 +6114,73 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Joonbot is a chatbot builder that enables users to create automated conversational flows without programming knowledge.",
 		icon: "Joonbot.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "joonbot:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "joonbot:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "JOONBOT_WIDGET_ID",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "joonbot:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "joonbot:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "joonbot.hide",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "kapture-crm",
 		name: "Kapture CRM",
 		website: "https://www.kapturecrm.com",
 		description: "Kapture CRM is an enterprise-grade SaaS-based customer support automation platform.",
-		icon: "Kapture CRM.svg",
+		icon: "Kapture CRM.png",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "kapture-crm:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.kapturecrm\\.com/.+\\?ver=([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.kapturecrm\\.com\\/.+\\?ver=([\\d\\.]+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "kapture-crm:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "kapture-crm:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Kapchat",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "kapture-crm:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "kapture-crm:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "kap_chat_js",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"payg",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "karoo-chat",
@@ -6138,26 +6188,25 @@ export const emailMessagingTechnologyDefinitions = [
 		website: "https://karoo.com.br",
 		description: "Karoo Chat is a platform that combines human and automated customer service, offering online live chat for customer support.",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "karoo-chat:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "karoo-chat:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "_kwp.host",
 				valuePattern: new RegExp("widget\\.karoo\\.com\\.br"),
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "kauz",
@@ -6166,25 +6215,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Kauz is a self-service platform for businesses to manage and train AI assistants across different operational needs.",
 		icon: "Kauz.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "kauz:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.kauz\\.ai"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "keyreply",
@@ -6193,24 +6241,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "KeyReply is a mobile-friendly chat widget that enables websites to provide real-time messaging and user support across devices.",
 		icon: "KeyReply.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "keyreply:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("keyreply\\.com/chat/widget\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("keyreply\\.com\\/chat\\/widget\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "keyreply:scriptSrc:1",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\keyreply\\.com\\/chat\\/widget\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "klara",
@@ -6220,26 +6273,25 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Klara.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "klara:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.klara\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.klara\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "klara:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "klara:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "klaraWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "knak",
@@ -6248,24 +6300,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Knak is a platform that provides customisable email and landing page templates to simplify the creation of visually appealing marketing campaigns.",
 		icon: "Knak.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "knak:dom:0",
 				kind: "dom",
 				selector: "img[src*='.knak.io/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"poa",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "knock-knock-app",
@@ -6274,37 +6325,36 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Knock Knock App is a video call solution for instant communication with website visitors, designed to optimize inbound inquiries and increase sales from website and landing page traffic.",
 		icon: "KnockKnockApp.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "knock-knock-app:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("api\\.knock-knockapp\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "knock-knock-app:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "knock-knock-app:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Knock_knock_user",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "knock-knock-app:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "knock-knock-app:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "knock_widget_init",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "krible",
@@ -6313,30 +6363,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Krible is a live chat management platform designed to facilitate real-time customer interactions and support.",
 		icon: "Krible.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "krible:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.krible\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "krible:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.krible\\.ru"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "kustomer",
@@ -6346,26 +6395,22 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Kustomer.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "kustomer:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.kustomerapp\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "kustomer:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "kustomer:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Kustomer",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "landbot",
@@ -6374,37 +6419,35 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Landbot is a no code conversational chatbots, conversational landing pages and website, interactive survey and lead generation bot.",
 		icon: "landbot.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "landbot:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.landbot\\.io/.*-([\\d\\.]+)\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.landbot\\.io\\/.*-([\\d\\.]+)\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "landbot:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "landbot:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "LandbotLivechat",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "landbot:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "landbot:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "initLandbot",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
 			pricing: [
-				"recurring",
 				"freemium",
-				"mid"
-			]
-		}
+				"mid",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "lead-finity-webchat",
@@ -6413,24 +6456,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Lead-Finity Webchat is a platform that converts website visitors into leads and facilitates sales conversations.",
 		icon: "LeadFinity.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "lead-finity-webchat:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.lead-finity\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "leadster",
@@ -6439,37 +6481,36 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Leadster is a conversation marketing plataform based on chatbot.",
 		icon: "Leadster.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "leadster:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "leadster:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "neurolead.convoScript",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "leadster:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "leadster:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "neurolead.elChatbot",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "leadster:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "leadster:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "neuroleadLanguage",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "leadtex",
@@ -6478,24 +6519,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Leadtex is a software solution focused on the development of chatbots.",
 		icon: "Leadteh.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "leadtex:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.leadteh\\.ru/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("app\\.leadteh\\.ru\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "let-s-connect",
@@ -6504,26 +6544,25 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Let's Connect is a digital tool for businesses to manage customer interactions and communications.",
 		icon: "LetsConnect.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "let-s-connect:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.letsconnect\\.at/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("app\\.letsconnect\\.at\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "lime-talk",
@@ -6532,57 +6571,55 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Lime Talk is a real-time customer messaging platform designed for businesses to engage with website visitors and customers through live chat functionality.",
 		icon: "LimeTalk.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "lime-talk:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.limetalk\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.limetalk\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "lime-talk:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "lime-talk:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "limetalk",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "lime-talk:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "lime-talk:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "limetalkLoader",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "limechat",
 		name: "LimeChat",
 		website: "https://www.limechat.ai",
 		description: "LimeChat is India's first level-3 AI chatbot company.",
-		icon: "LimeChat.svg",
+		icon: "LimeChat.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "limechat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.limechat\\.ai/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.limechat\\.ai\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "lindy",
@@ -6591,26 +6628,25 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Lindy is an AI assistant that helps complete tasks using custom AI, with no coding required.",
 		icon: "Lindy.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "lindy:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("api\\.lindy\\.ai"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "listagram",
@@ -6619,63 +6655,61 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Listagram is a list building tool which increases conversions by turning newsletter signups into a game.",
 		icon: "Listagram.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "listagram:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("www\\.listagram\\.com"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "listagram:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "listagram:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "LISTAGRAM.config",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "listagram:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "listagram:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "LISTAGRAM_CFG.base_api",
 				valuePattern: new RegExp("www\\.listagram\\.com"),
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "liveagent",
 		name: "LiveAgent",
 		website: "https://www.liveagent.com",
 		description: "LiveAgent is an online live chat platform. The software provides a ticket management system.",
-		icon: "LiveAgent.svg",
+		icon: "LiveAgent.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "liveagent:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "liveagent:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "LiveAgent",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "livechat",
@@ -6684,55 +6718,53 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "LiveChat is an online customer service software with online chat, help desk software, and web analytics capabilities.",
 		icon: "LiveChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "livechat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.livechatinc\\.com/.*tracking\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn\\.livechatinc\\.com\\/.*tracking\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "livechat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "livechat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "LiveChatWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "livehelp",
 		name: "LiveHelp",
 		website: "https://www.livehelp.it",
 		description: "LiveHelp is an online chat tool.",
-		icon: "LiveHelp.svg",
+		icon: "LiveHelp.png",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
-				id: "livehelp:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "livehelp:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "LHready",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"low"
-			]
-		}
+				"low",
+			],
+		},
 	},
 	{
 		id: "liveintent",
@@ -6742,69 +6774,67 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "LiveIntent.svg",
 		categories: [
 			"email-messaging",
-			"advertising-paid-media"
+			"advertising-paid-media",
 		],
 		rules: [
 			{
 				id: "liveintent:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.liadm\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "liveintent:requestUrl:1",
 				kind: "requestUrl",
 				pattern: new RegExp("\\.liadm\\.com"),
-				description: "Observed request URL matches a known technology marker."
+				description: "Observed request URL matches a known technology marker.",
 			},
 			{
-				id: "liveintent:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "liveintent:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "LI.advertiserId",
 				valuePattern: new RegExp("\\d+"),
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "liveperson",
 		name: "LivePerson",
 		website: "https://www.liveperson.com",
 		description: "LivePerson is a tool for conversational chatbots and messaging.",
-		icon: "LivePerson.svg",
+		icon: "LivePerson.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "liveperson:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.(?:liveperson|contactatonce)?\\.(?:com|net|co\\.uk)/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.(?:liveperson|contactatonce)?\\.(?:com|net|co\\.uk)\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "liveperson:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "liveperson:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "lpTag.Chronos",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"payg",
 				"recurring",
-				"payg"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "livetex",
@@ -6813,38 +6843,37 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "LiveTex is a universal chat platform that provides digital communication solutions, allowing businesses to interact with clients across various digital channels.",
 		icon: "LiveTex.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "livetex:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "livetex:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "liveTex",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "livetex:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "livetex:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "liveTexID",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "livetex:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "livetex:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "liveTex_object",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "livezilla",
@@ -6853,44 +6882,43 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "LiveZilla is a web-based live support platform.",
 		icon: "LiveZilla.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "livezilla:dom:0",
 				kind: "dom",
 				selector: "#lz_overlay_chat",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "livezilla:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "livezilla:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "lz_chat_execute",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "livezilla:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "livezilla:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "lz_code_id",
 				valuePattern: new RegExp("(?:[\\w\\d]+)"),
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "livezilla:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "livezilla:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "lz_tracking_set_widget_visibility",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: false,
-			oss: false,
 			pricing: [
+				"mid",
 				"onetime",
-				"mid"
 			],
-			cpe: "cpe:2.3:a:livezilla:livezilla:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:livezilla:livezilla:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "lovi",
@@ -6899,32 +6927,31 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Lovi is a tool that enables the creation of customized ChatGPT instances for customer support, delivering automated, and personalized customer service.",
 		icon: "Lovi.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "lovi:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("widget\\.lovi\\.ai/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("widget\\.lovi\\.ai\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "lovi:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "lovi:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "__loviMsgHandler",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "lovi:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "lovi:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "__loviWidgetClicksBound",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "magemail",
@@ -6933,35 +6960,34 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "MageMail is a triggered email application for Magento that helps online retailers enhance customer engagement and increase revenue.",
 		icon: "MageMail.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "magemail:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "magemail:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Mage.Cookies",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "magemail:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "magemail:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "MageMailData.capture_email",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "magemail:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "magemail:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "MageRewards",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		requires: [
-			"magento"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
+		requires: [
+			"magento",
+		],
 	},
 	{
 		id: "mailercloud",
@@ -6971,65 +6997,24 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Mailercloud.svg",
 		categories: [
 			"email-messaging",
-			"marketing-automation"
+			"marketing-automation",
 		],
 		rules: [
 			{
 				id: "mailercloud:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.mailercloud\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.mailercloud\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"payg",
-				"recurring"
-			]
-		}
-	},
-	{
-		id: "mailerlite",
-		name: "MailerLite",
-		website: "https://www.mailerlite.com",
-		description: "MailerLite is an email marketing tool and website builder for businesses of all shapes and sizes.",
-		icon: "MailerLite.svg",
-		categories: [
-			"email-messaging",
-			"marketing-automation"
-		],
-		rules: [
-			{
-				id: "mailerlite:scriptSrc:0",
-				kind: "scriptSrc",
-				pattern: new RegExp("\\.mailerlite\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			},
-			{
-				id: "mailerlite:dom:1",
-				kind: "dom",
-				selector: "link[href*='.mailerlite.com']",
-				description: "DOM selector matches a known technology marker."
-			},
-			{
-				id: "mailerlite:pageGlobal:2",
-				kind: "pageGlobal",
-				property: "MailerLiteObject",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		metadata: {
-			saas: true,
-			oss: false,
-			pricing: [
-				"freemium",
-				"payg",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "mailgun",
@@ -7039,21 +7024,16 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Mailgun.svg",
 		categories: [
 			"email-messaging",
-			"api-pattern"
 		],
 		rules: [
 			{
 				id: "mailgun:dns:0",
 				kind: "dns",
-				valuePattern: new RegExp("mailgun\\.org"),
+				valuePattern: new RegExp("mailgun\\.org", "i"),
 				recordType: "TXT",
 				description: "DNS record matches a known technology marker.",
-			}
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "mailjet",
@@ -7062,21 +7042,17 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Mailjet is an email delivery service for marketing and developer teams.",
 		icon: "Mailjet.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "mailjet:dns:0",
 				kind: "dns",
-				valuePattern: new RegExp("mailjet\\.com"),
+				valuePattern: new RegExp("mailjet\\.com", "i"),
 				recordType: "TXT",
 				description: "DNS record matches a known technology marker.",
-			}
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "mailman",
@@ -7085,30 +7061,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Mailman is free software for managing electronic mail discussion and e-newsletter lists. Mailman is integrated with the web, making it easy for users to manage their accounts and for list owners to administer their lists. Mailman supports built-in archiving, automatic bounce processing, content filtering, digest delivery, spam filters, and more.",
 		icon: "Mailman.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "mailman:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/mailman\\d+/static/.+\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/mailman\\d+\\/static\\/.+\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "mailman:scriptSrc:1",
 				kind: "scriptSrc",
-				pattern: new RegExp("/static/(?:hyperkitty|django-mailman3)/.+\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		implies: [
-			"python"
+				pattern: new RegExp("\\/static\\/(?:hyperkitty|django-mailman3)\\/.+\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:gnu:mailman:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:gnu:mailman:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"python",
+		],
 	},
 	{
 		id: "mailmunch",
@@ -7118,31 +7093,30 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Mailmunch.svg",
 		categories: [
 			"email-messaging",
-			"marketing-automation"
+			"marketing-automation",
 		],
 		rules: [
 			{
-				id: "mailmunch:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "mailmunch:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "MailMunchWidgets",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "mailmunch:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "mailmunch:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "mailmunch",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"freemium",
 				"low",
 				"recurring",
-				"freemium"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "mainstay",
@@ -7152,20 +7126,19 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Mainstay.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "mainstay:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("webbot\\.mainstay\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("webbot\\.mainstay\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "maisie",
@@ -7174,37 +7147,36 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Maisie is an AI-powered conversational assistant that provides automated sales and customer support by handling queries around the clock.",
 		icon: "Maisie.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "maisie:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.mymaisie\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "maisie:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "maisie:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "maisieChatBotContext",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "maisie:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "maisie:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "maisieWebpackJsonpFunction",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "mava",
@@ -7213,32 +7185,31 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Mava is an AI-driven customer support platform that scales customer support and success by connecting to private, group, and community channels.",
 		icon: "Mava.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "mava:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "mava:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Mava.identify",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "mava:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "mava:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "MavaWebChatToggle",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "medchat",
@@ -7247,32 +7218,31 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Medchat is a HIPAA-compliant platform that provides patient chat services powered by AI agents.",
 		icon: "Medchat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "medchat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("widget-ui\\.medchatapp\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("widget-ui\\.medchatapp\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "medchat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "medchat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "MedChat",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "medchat:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "medchat:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "MedChatApp",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "melibo",
@@ -7281,29 +7251,28 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Melibo is an AI platform focused on enhancing customer service and advancing chatbot technology.",
 		icon: "Melibo.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "melibo:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.melibo\\.de/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.melibo\\.de\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "melibo:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "melibo:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "melibo.openWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "merlin",
@@ -7312,30 +7281,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Merlin is a platform that builds bots for interactive visitor, lead, and customer engagement, integrating with tools and databases to automate processes and improve lead conversion without requiring a developer.",
 		icon: "Merlin.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "merlin:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("scripts\\.gomerlin\\.com\\.br"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "merlin:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "merlin:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Merlin.Chat",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "messagemedia",
@@ -7344,24 +7312,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "MessageMedia is a software service provider that helps businesses communicate with their customers and other contacts using SMS messages.",
 		icon: "MessageMedia.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "messagemedia:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("chatwidget\\.messagemedia\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("chatwidget\\.messagemedia\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "microsoft-365",
@@ -7370,21 +7337,17 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Microsoft 365 is a line of subscription services offered by Microsoft as part of the Microsoft Office product line.",
 		icon: "Microsoft 365.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "microsoft-365:dns:0",
 				kind: "dns",
-				valuePattern: new RegExp("outlook\\.com"),
+				valuePattern: new RegExp("outlook\\.com", "i"),
 				recordType: "MX",
 				description: "DNS record matches a known technology marker.",
-			}
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "mioot",
@@ -7393,36 +7356,35 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Mioot is a live chat software that facilitates real-time communication between service agents and customers on digital platforms.",
 		icon: "Mioot.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "mioot:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.mioot\\.com"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "mioot:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "mioot:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "miootChat.addTicket",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "mioot:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "mioot:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "miootFunctions",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "moinai",
@@ -7431,49 +7393,48 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "MoinAI is an AI platform for digital customer communication, enabling businesses to automate interactions.",
 		icon: "MoinAI.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "moinai:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.moin\\.ai"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "moinai:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.moin\\.ai"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "moinai:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "moinai:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "___moinloader",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "moinai:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "moinai:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "__moinrpc",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "moinai:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "moinai:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "moin.addContext",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"high",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "mottle",
@@ -7482,55 +7443,53 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Mottle is a custom chatbot creation tool that allows users to build expressive ChatGPT-like chatbots using their own data.",
 		icon: "Mottle.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "mottle:dom:0",
 				kind: "dom",
 				selector: "link[href*='embed.mottle.com/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "mottle:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "mottle:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Mottle",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "moveo-ai",
 		name: "Moveo.AI",
 		website: "https://moveo.ai",
-		description: "Moveo.AI is a no-code platform that allows businesses to create, manage and deploy AI virtual agents (chatbots).",
+		description: "Moveo. AI is a no-code platform that allows businesses to create, manage and deploy AI virtual agents (chatbots).",
 		icon: "Moveo.AI.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "moveo-ai:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "moveo-ai:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "MoveoAI",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "muchat",
@@ -7539,65 +7498,66 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Muchat is a customer support tool that uses artificial intelligence to deliver personalized conversations by leveraging customer data.",
 		icon: "Muchat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "muchat:dom:0",
 				kind: "dom",
 				selector: "div[class^='muchat-chatbox'], style[data-emotion*='muchat-chatbox-bubble']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "muchat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "muchat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Muchat",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "mylivechat",
 		name: "MyLiveChat",
 		website: "https://mylivechat.com",
 		description: "MyLiveChat is a live chat developed by CuteSoft.",
-		icon: "MyLiveChat.svg",
+		icon: "MyLiveChat.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "mylivechat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("mylivechat\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("mylivechat\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "mylivechat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "mylivechat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "MyLiveChat.Version",
 				valuePattern: new RegExp("(.+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "myma",
@@ -7606,23 +7566,22 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Myma is an AI-powered multi-channel chatbot designed for hotels, enabling automated guest interactions across various communication platforms.",
 		icon: "Myma.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "myma:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("messenger\\.myma\\.ai/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("messenger\\.myma\\.ai\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "neexa",
@@ -7631,25 +7590,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Neexa is an AI-powered inquiry and sales agent designed to handle customer queries.",
 		icon: "NeexaAI.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "neexa:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "neexa:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "neexa_xgmx_cc_wpq_ms",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "neoasist",
@@ -7658,26 +7616,25 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "NeoAssist is an omnichannel customer service platform from Brazil focused on improving brand visibility across search engines and AI-driven platforms such as Google and GPT-based systems.",
 		icon: "NeoAssist.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "neoasist:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.neoassist\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "neoasist:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "neoasist:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "NeoAssistTag",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "netrox",
@@ -7686,26 +7643,25 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Netrox SC is a Russian online consultant technology platform that provides live chat and customer support tools for websites.",
 		icon: "NetroxSC.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "netrox:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.netroxsc\\.ru"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "netrox:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.netroxsc\\.ru"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "newo",
@@ -7714,25 +7670,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Newo is an AI platform offering automated solutions for sales, reception, and concierge services across various industries.",
 		icon: "Newo.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "newo:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("static\\.newo\\.ai"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "ngage-live-chat",
@@ -7741,32 +7696,31 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Ngage Live Chat is an industry-specific live chat solution that converts website visitors into clients.",
 		icon: "NgageLiveChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "ngage-live-chat:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("messenger\\.ngageics\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "ngage-live-chat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "ngage-live-chat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "NgageKillScript",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "ngage-live-chat:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "ngage-live-chat:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "StartNgageChat",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "ninchat",
@@ -7775,38 +7729,37 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Ninchat is a secure messaging platform designed for organizations to facilitate encrypted communication and collaboration.",
 		icon: "Ninchat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "ninchat:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("api\\.ninchat\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "ninchat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "ninchat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Ninchat.ERROR",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "ninchat:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "ninchat:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "NinchatAntics",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "ninchat:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "ninchat:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "NinchatAsyncInit",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "norby",
@@ -7815,115 +7768,115 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Norby is an AI-powered chat solution catering to ecommerce, healthcare, crypto, and fintech industries.",
 		icon: "NorbyAI.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "norby:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("chat\\.norby\\.io/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("chat\\.norby\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "norby:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "norby:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "norbyChat",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
-				"recurring",
 				"payg",
-				"poa"
-			]
-		}
+				"poa",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "oct8ne",
 		name: "Oct8ne",
 		website: "https://oct8ne.com",
 		description: "Oct8ne is a visual customer service software.",
-		icon: "Oct8ne.svg",
+		icon: "Oct8ne.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "oct8ne:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.oct8ne\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.oct8ne\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "oct8ne:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "oct8ne:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "oct8ne.agentsAvailable",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "oct8ne:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "oct8ne:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "oct8neApi",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "oct8ne:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "oct8ne:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "oct8neVars.pluginVersion",
 				valuePattern: new RegExp("([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "olark",
 		name: "Olark",
-		website: "https://www.olark.com",
+		website: "https://www.olark.com/",
 		description: "Olark is a cloud-based live chat solution.",
-		icon: "Olark.svg",
+		icon: "Olark.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "olark:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.olark\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.olark\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "olark:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "olark:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "olark",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "olark:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "olark:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "olarkUserData",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "ometrics",
@@ -7932,37 +7885,36 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Ometrics is an AI chatbot solution that engages website visitors by understanding queries and delivering helpful responses.",
 		icon: "Ometrics.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "ometrics:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("www\\.ometrics\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "ometrics:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "ometrics:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Ometrics.Animation",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "ometrics:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "ometrics:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "OmetricsBody",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "onchat",
@@ -7971,32 +7923,31 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "OnChat is a platform that uses an AI chatbot to handle customer support interactions while assisting with sales-related inquiries and customer communication.",
 		icon: "OnChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "onchat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("onchat\\.ai/onchat\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("onchat\\.ai\\/onchat\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "onchat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "onchat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "extractOnchatClickFromHref",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "onchat:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "onchat:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "getOnchatClickFromURL",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "ondestek",
@@ -8005,30 +7956,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Ondestek is a live chat software that enables real-time customer communication through websites.",
 		icon: "Ondestek.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "ondestek:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("panel\\.ondestek\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("panel\\.ondestek\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "ondestek:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "ondestek:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "$ondestek",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "onicon",
@@ -8037,24 +7987,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Onicon is a Russian-based live chat software developed by Megagroup.",
 		icon: "Onicon.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "onicon:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.onicon\\.ru"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "onlim",
@@ -8064,32 +8013,31 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Onlim.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "onlim:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.onlim\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("app\\.onlim\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "onlim:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "onlim:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Onlim",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "onlim:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "onlim:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "OnlimChatbot",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "online-chat-centers",
@@ -8098,31 +8046,30 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Online Chat Centers is a live chat software platform designed to integrate with websites, enabling real-time customer communication and support across different online environments.",
 		icon: "OCC.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "online-chat-centers:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("www\\.onlinechatcenters\\.com"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "online-chat-centers:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "online-chat-centers:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "occEmbedClick",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "onsip",
@@ -8131,30 +8078,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "OnSip is a hosted VoIP solution that includes website chat functionality for business communication.",
 		icon: "OnSip.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "onsip:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("js\\.onsip\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "onsip:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "onsip:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Onsip",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "onsite-support",
@@ -8163,24 +8109,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Onsite Support is a platform that uses AI-enhanced helpdesk tools to reduce operational costs, minimize product returns, and accelerate customer service response times.",
 		icon: "OnSiteSupport.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "onsite-support:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("static\\.onsitesupport\\.io"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "open-xchange-app-suite",
@@ -8189,33 +8134,32 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Open-Xchange is a web-based communication, collaboration and office productivity software suite.",
 		icon: "openxchange.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "open-xchange-app-suite:dom:0",
 				kind: "dom",
 				selector: "#io-ox-core, form > input[value='open-xchange-appsuite']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "open-xchange-app-suite:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "open-xchange-app-suite:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ox.version",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"java"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
+				"poa",
 			],
-			cpe: "cpe:2.3:a:open-xchange:app_suite:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:open-xchange:app_suite:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"java",
+		],
 	},
 	{
 		id: "openchat",
@@ -8224,20 +8168,19 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "OpenChat is a community-owned chat application designed to prioritize privacy, security, and anonymity.",
 		icon: "OpenChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "openchat:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cloud\\.openchat\\.so"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "outlook-web-app",
@@ -8246,51 +8189,66 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Outlook on the web is an information manager web app. It includes a web-based email client, a calendar tool, a contact manager, and a task manager.",
 		icon: "Outlook.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "outlook-web-app:html:0",
 				kind: "html",
-				pattern: new RegExp("<link[^>]+/owa/auth/([\\d\\.]+)/themes/resources"),
-				version: { source: "match", group: 1 },
-				description: "HTML contains a known technology marker."
+				pattern: new RegExp("<link[^>]+\\/owa\\/auth\\/([\\d\\.]+)\\/themes\\/resources"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "outlook-web-app:url:1",
 				kind: "url",
-				pattern: new RegExp("/owa/auth/log(?:on|off)\\.aspx"),
-				description: "Page URL matches a known technology marker."
+				pattern: new RegExp("\\/owa\\/auth\\/log(?:on|off)\\.aspx"),
+				description: "Page URL matches a known technology marker.",
 			},
 			{
-				id: "outlook-web-app:dom:2",
+				id: "outlook-web-app:jsGlobal:2",
+				kind: "jsGlobal",
+				property: "IsOwaPremiumBrowser",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "outlook-web-app:header:3",
+				kind: "header",
+				key: "X-OWA-Version",
+				valuePattern: new RegExp("([\\d\\.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "outlook-web-app:dom:4",
 				kind: "dom",
 				selector: "link[href*='/owa/auth/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "outlook-web-app:pageGlobal:3",
-				kind: "pageGlobal",
-				property: "IsOwaPremiumBrowser",
-				description: "Page-owned global matches a known technology marker."
+				id: "outlook-web-app:header:5",
+				kind: "header",
+				key: "x-owa-version",
+				valuePattern: new RegExp("([\\d\\.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Response header matches a known technology marker.",
 			},
-			{
-				id: "outlook-web-app:responseHeader:4",
-				kind: "responseHeader",
-				key: "X-OWA-Version",
-				valuePattern: new RegExp("([\\d\\.]+)?"),
-				version: { source: "match", group: 1 },
-				description: "Response header matches a known technology marker."
-			}
-		],
-		implies: [
-			"microsoft-asp-net"
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:microsoft:outlook_web_access:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:microsoft:outlook_web_access:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"microsoft-asp-net",
+		],
 	},
 	{
 		id: "p3chat",
@@ -8299,24 +8257,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "P3chat is a live chat platform integrated into websites to enable real-time communication with visitors.",
 		icon: "P3chat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "p3chat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("//p3chat\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\/\\/p3chat\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "pancake",
@@ -8326,30 +8283,28 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Pancake.svg",
 		categories: [
 			"email-messaging",
-			"router"
 		],
 		rules: [
 			{
 				id: "pancake:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("analytics\\.pancake\\.vn"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "pancake:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "pancake:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "PancakeAnalytics",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "phonon",
@@ -8358,20 +8313,19 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Phonon is a communication automation platform that supports voice, chat, SMS, and email channels.",
 		icon: "Phonon.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "phonon:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("c4c\\.phonon\\.in"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "ping-parrot",
@@ -8380,25 +8334,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Ping Parrot is an AI powered chatbot that allows any website to create a bot that is trained on their data.",
 		icon: "PingParrot.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "ping-parrot:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.pingparrot\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("cdn\\.pingparrot\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"freemium",
 				"low",
 				"recurring",
-				"freemium"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "pipedrive",
@@ -8408,23 +8361,22 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Pipedrive.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
-				id: "pipedrive:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "pipedrive:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "LeadBooster",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"low"
-			]
-		}
+				"low",
+			],
+		},
 	},
 	{
 		id: "plivo",
@@ -8433,24 +8385,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Plivo is a global platform that provides SMS and voice call services for businesses of all sizes to connect with customers worldwide.",
 		icon: "Plivo.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "plivo:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.plivo\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("cdn\\.plivo\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"payg",
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "posh",
@@ -8459,32 +8410,31 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Posh is a conversational AI platform that enables machines to understand, process, and respond to human language in real time.",
 		icon: "Posh.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "posh:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("js\\.poshdevelopment\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "posh:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "posh:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "posh.close",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "posh:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "posh:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "poshie.close",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "poster",
@@ -8494,24 +8444,23 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Poster.svg",
 		categories: [
 			"email-messaging",
-			"marketing-automation"
+			"experimentation-optimization",
 		],
 		rules: [
 			{
 				id: "poster:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.poster\\.ooo"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "prosperous-ai",
@@ -8520,24 +8469,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Prosperous AI is a messaging platform that uses artificial intelligence to help local businesses automate customer communication, manage inquiries, and respond across digital channels.",
 		icon: "ProsperousAI.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "prosperous-ai:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.prosperousai\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "proton-mail",
@@ -8546,21 +8494,27 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Proton Mail is the world’s largest secure email service with over 70 million users. Available on Web, iOS, Android, and desktop. Protected by Swiss privacy law.",
 		icon: "Proton Mail.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "proton-mail:dns:0",
 				kind: "dns",
-				valuePattern: new RegExp("\\.protonmail\\.ch"),
+				valuePattern: new RegExp("\\.protonmail\\.ch", "i"),
 				recordType: "MX",
 				description: "DNS record matches a known technology marker.",
-			}
+			},
+			{
+				id: "proton-mail:dns:1",
+				kind: "dns",
+				valuePattern: new RegExp("protonmail-verification=", "i"),
+				recordType: "TXT",
+				description: "DNS record matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "provide-support",
@@ -8569,25 +8523,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Provide Support is a SaaS for customer service that includes live chat, real-time website monitoring, chat statistics.",
 		icon: "Provide Support.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "provide-support:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.providesupport\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"payg",
 				"recurring",
-				"payg"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "pubble",
@@ -8596,44 +8549,43 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Pubble is a messaging platform that simplifies how teams interact with their customers.",
 		icon: "Pubble.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "pubble:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.pubble\\.io/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn\\.pubble\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "pubble:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "pubble:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Pubble.Pubble",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "pubble:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "pubble:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "pubble_proActiveChat",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "pubble:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "pubble:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "pubblebot",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "pure-chat",
@@ -8642,36 +8594,36 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Pure Chat is a live chat solution for small to mid-sized teams.",
 		icon: "Pure Chat.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "pure-chat:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.purechat\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "pure-chat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "pure-chat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "PCWidget",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "pure-chat:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "pure-chat:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "purechatApi",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+			cpe: "cpe:2.3:a:purechat:pure_chat:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "pusher",
@@ -8680,26 +8632,25 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Pusher is a platform that enables real-time experiences for mobile and web applications through scalable messaging and data synchronization.",
 		icon: "Pusher.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "pusher:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "pusher:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "PUSHER_APP_ID",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "pusher:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "pusher:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Pusher.Runtime",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "qiscus",
@@ -8709,38 +8660,39 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Qiscus.svg",
 		categories: [
 			"email-messaging",
-			"api-pattern"
 		],
 		rules: [
 			{
 				id: "qiscus:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.qiscus\\.com/js/qiscus-sdk\\.([\\d\\.]+)\\.js\\?v=([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.qiscus\\.com\\/js\\/qiscus-sdk\\.([\\d\\.]+)\\.js\\?v=([\\d\\.]+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "qiscus:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "qiscus:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "QiscusSDK",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "qiscus:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "qiscus:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "qiscusWidgetshowBadge",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "qpien",
@@ -8749,30 +8701,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Qpien is a SaaS platform that provides multi-channel customer communication management with AI reply automation, smart inbox, call center integration, and workflow orchestration.",
 		icon: "Qpien.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "qpien:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "qpien:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "QpienWidget",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "qpien:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "qpien:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "qpienIframeAction",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "qualified",
@@ -8782,37 +8733,36 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Qualified.svg",
 		categories: [
 			"email-messaging",
-			"marketing-automation"
+			"marketing-automation",
 		],
 		rules: [
 			{
 				id: "qualified:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.qualified\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.qualified\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "qualified:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "qualified:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "QualifiedObject",
 				valuePattern: new RegExp("^qualified$"),
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "qualified:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "qualified:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "qualified",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"high",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "quality-unit-help-desk",
@@ -8821,24 +8771,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Quality Unit Help Desk is a customer support and help desk software designed to manage and streamline customer service operations.",
 		icon: "QualityUnitHelpDesk.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "quality-unit-help-desk:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.qualityunit\\.liveagent"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "qualva",
@@ -8847,26 +8796,25 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Qualva is a chatbot platform designed to deliver consistent, user-focused interaction and support across various applications.",
 		icon: "Qualva.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "qualva:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("form\\.qualva\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "qualva:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "qualva:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "qualva.Widget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "querlo",
@@ -8876,25 +8824,24 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Querlo.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "querlo:dom:0",
 				kind: "dom",
 				selector: "#querloEmbd",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"low",
 				"freemium",
-				"poa"
-			]
-		}
+				"low",
+				"poa",
+			],
+		},
 	},
 	{
 		id: "quickcep",
@@ -8903,32 +8850,31 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "QuickCEP is an AI-powered chatbot solution to improve business conversions, sales, and customer satisfaction through automated interactions.",
 		icon: "QuickCEP.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "quickcep:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.quickcep\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.quickcep\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "quickcep:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.quickcep\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "quickchat-ai",
@@ -8937,38 +8883,37 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Quickchat AI is a no-code platform that lets you create custom AI Assistants for your business.",
 		icon: "QuickchatAI.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "quickchat-ai:dom:0",
 				kind: "dom",
 				selector: "link[href*='/quickchat-files/appquickchat/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "quickchat-ai:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "quickchat-ai:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "quickchat",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "quickchat-ai:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "quickchat-ai:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "quickchat_busy",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "quicktext",
@@ -8977,24 +8922,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Quicktext is an AI-powered hotel chatbot and instant communication platform designed to increase direct bookings for hotels.",
 		icon: "Quicktext.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "quicktext:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.quicktext\\.im/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("cdn\\.quicktext\\.im\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "quiq-messaging",
@@ -9003,40 +8947,42 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Quiq Messaging is a business messaging solution designed to facilitate customer communication across multiple channels.",
 		icon: "QuiqMessaging.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "quiq-messaging:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.goquiq\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "quiq-messaging:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "quiq-messaging:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Quiq",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "quiq-messaging:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "quiq-messaging:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "QuiqUtils",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "quiq-messaging:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "quiq-messaging:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "QuiqUtils._.VERSION",
 				valuePattern: new RegExp("([\\d.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "quixchat",
@@ -9045,98 +8991,123 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Quixchat is a chat support widget for websites, facilitating real-time communication with visitors via WhatsApp, Facebook Messenger, Telegram, Viber, or Line.",
 		icon: "Quixchat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "quixchat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("api\\.quixchat\\.com/assets/js/quixchat\\.js\\?ver=(\\d+\\.\\d+)(?:\\.\\d+)*"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("api\\.quixchat\\.com\\/assets\\/js\\/quixchat\\.js\\?ver=(\\d+\\.\\d+)(?:\\.\\d+)*"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "quixchat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "quixchat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "QuixChatClearChat",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "rainloop",
 		name: "RainLoop",
 		website: "https://www.rainloop.net/",
 		description: "RainLoop is a web-based email client.",
-		icon: "RainLoop.svg",
+		icon: "RainLoop.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "rainloop:html:0",
-				kind: "html",
-				pattern: new RegExp("<link[^>]href=\"rainloop/v/([0-9.]+)/static/apple-touch-icon\\.png/>"),
-				version: { source: "match", group: 1 },
-				description: "HTML contains a known technology marker."
-			},
-			{
-				id: "rainloop:scriptSrc:1",
+				id: "rainloop:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("^rainloop/v/([0-9.]+)/"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("^rainloop\\/v\\/([0-9.]+)\\/"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "rainloop:dom:2",
-				kind: "dom",
-				selector: "link[href*='rainloop/v/']",
-				description: "DOM selector matches a known technology marker."
+				id: "rainloop:html:1",
+				kind: "html",
+				pattern: new RegExp("<link[^>]href=\"rainloop\\/v\\/([0-9.]+)\\/static\\/apple-touch-icon\\.png\\/>"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "rainloop:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "rainloop:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "rainloop",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "rainloop:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "rainloop:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "rainloopI18N",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "rainloop:responseHeader:5",
-				kind: "responseHeader",
+				id: "rainloop:header:4",
+				kind: "header",
 				key: "Server",
-				valuePattern: new RegExp("^RainLoop"),
-				description: "Response header matches a known technology marker."
+				valuePattern: new RegExp("^RainLoop", "i"),
+				description: "Response header matches a known technology marker.",
 			},
 			{
-				id: "rainloop:meta:6",
+				id: "rainloop:meta:5",
 				kind: "meta",
 				key: "rlAppVersion",
-				valuePattern: new RegExp("^([0-9.]+)$"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^([0-9.]+)$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "rainloop:dom:6",
+				kind: "dom",
+				selector: "link[href*='rainloop/v/']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "rainloop:header:7",
+				kind: "header",
+				key: "server",
+				valuePattern: new RegExp("^rainloop", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "rainloop:meta:8",
+				kind: "meta",
+				key: "rlappversion",
+				valuePattern: new RegExp("^([0-9.]+)$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		implies: [
-			"php"
+			"php",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "rake",
@@ -9145,87 +9116,84 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Rake is a messaging platform and conversion optimization solution designed for communication between customers, visitors, and co-workers.",
 		icon: "Rake.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "rake:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("widget\\.rake\\.ai/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("widget\\.rake\\.ai\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "raychat",
 		name: "Raychat",
 		website: "https://raychat.io",
 		description: "Raychat is a free customer messaging platform.",
-		icon: "raychat.svg",
+		icon: "raychat.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "raychat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.raychat\\.io/scripts/js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("app\\.raychat\\.io\\/scripts\\/js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "raychat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "raychat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Raychat",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "re-amaze",
 		name: "Re:amaze",
 		website: "https://www.reamaze.com",
 		description: "Re:amaze is a multi-brand customer service, live chat, and help desk solution.",
-		icon: "Re-amaze.svg",
+		icon: "Re-amaze.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "re-amaze:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.reamaze\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.reamaze\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "re-amaze:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "re-amaze:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "reamaze.version",
 				valuePattern: new RegExp("^([\\d\\.]+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"payg",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "re-plain",
@@ -9234,31 +9202,30 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Re:plain is a live chat integration for WhatsApp, Facebook Messenger, and Telegram, allowing you to connect live chat to your website.",
 		icon: "Replain.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "re-plain:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.replain\\.cc/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.replain\\.cc\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "re-plain:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "re-plain:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "replainInitialized",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "rei-chat",
@@ -9267,24 +9234,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "REI Chat is an AI-powered chatbot designed to understand and communicate within the real estate domain.",
 		icon: "REIChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "rei-chat:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("my\\.reichat\\.ai"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "replyco",
@@ -9293,31 +9259,30 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Replyco is a helpdesk software designed for ecommerce sellers to manage and centralise inbox messages across various marketplaces.",
 		icon: "Replyco.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "replyco:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.replyco\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("app\\.replyco\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "replyco:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "replyco:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "replycoChat",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "respond-io",
@@ -9326,37 +9291,36 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Respond.io is an AI-powered customer conversation management software.",
 		icon: "RespondIO.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "respond-io:dom:0",
 				kind: "dom",
 				selector: "script#respondio__growth_tool",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "respond-io:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "respond-io:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "$__respond",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "respond-io:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "respond-io:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "$respond",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "responsa",
@@ -9365,24 +9329,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Responsa is a conversational AI platform designed to increase sales and reduce operational costs by automating customer interactions and streamlining communication processes.",
 		icon: "Responsa.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "responsa:scriptContent:0",
 				kind: "scriptContent",
-				pattern: new RegExp("//goresponsa\\.com/"),
-				description: "Script content contains a bounded technology signature."
-			}
+				pattern: new RegExp("\\/\\/goresponsa\\.com\\/"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "retain",
@@ -9390,20 +9353,19 @@ export const emailMessagingTechnologyDefinitions = [
 		website: "https://retain.ir",
 		description: "Retain is an online conversation system developed in Iran designed to facilitate digital communication.",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "retain:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.retain\\.ir/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.retain\\.ir\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "reve-chat",
@@ -9412,31 +9374,30 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "REVE Chat is an AI-powered platform that automates and enhances customer service interactions through chatbots and live chat support.",
 		icon: "REVEChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "reve-chat:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("static\\.revechat\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "reve-chat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "reve-chat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "$REVECHAT_MEDIA_GALLERY",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "rispose",
@@ -9445,31 +9406,30 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Rispose is a platform for building and embedding AI agents across websites and applications to automate support, sales, and user engagement through AI-powered assistants.",
 		icon: "Rispose.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "rispose:scriptContent:0",
 				kind: "scriptContent",
-				pattern: new RegExp("rispose\\.com/cdn/"),
-				description: "Script content contains a bounded technology signature."
+				pattern: new RegExp("rispose\\.com\\/cdn\\/"),
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "rispose:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "rispose:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "__risposeAgent",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "robofy",
@@ -9478,24 +9438,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Robofy is a platform providing AI chatbots for websites, enabling the creation of custom ChatGPT models trained on user-specific content.",
 		icon: "Robofy.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "robofy:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.robofy\\.ai/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.robofy\\.ai\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "roboreception",
@@ -9504,61 +9463,59 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "RoboReception is a digital assistant that manages patient inquiries, reduces queues, and tracks new leads to ease the workload on reception staff.",
 		icon: "RoboReception.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "roboreception:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.bot\\.roboreception\\.co\\.uk"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "roboreception:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.bot\\.roboreception\\.co\\.uk"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "rocket-chat",
 		name: "Rocket.Chat",
 		website: "https://rocket.chat",
-		description: "Rocket.Chat is a communication hub that facilitates team collaboration and organizes conversations.",
+		description: "Rocket. Chat is a communication hub that facilitates team collaboration and organizes conversations.",
 		icon: "Rocket.Chat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "rocket-chat:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "rocket-chat:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "RocketChat.livechat",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "rocket-chat:meta:1",
 				kind: "meta",
 				key: "application-name",
-				valuePattern: new RegExp("^Rocket.Chat$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^Rocket.Chat$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
+				"recurring",
 			],
-			cpe: "cpe:2.3:a:rocket.chat:rocket.chat:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:rocket.chat:rocket.chat:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "rotic",
@@ -9567,62 +9524,66 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Rotic is a conversion chatbot that answers questions, captures contacts, and books meetings.",
 		icon: "Rotic.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "rotic:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "rotic:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Rotic.setting",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "roundcube",
 		name: "RoundCube",
 		website: "https://roundcube.net",
 		description: "RoundCube is free and open-source web-based IMAP email client.",
-		icon: "RoundCube.svg",
+		icon: "RoundCube.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "roundcube:html:0",
 				kind: "html",
 				pattern: new RegExp("<title>RoundCube"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "roundcube:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "roundcube:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "rcmail",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "roundcube:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "roundcube:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "roundcube",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "roundcube:html:3",
+				kind: "html",
+				pattern: new RegExp("<title>roundcube"),
+				description: "HTML contains a known technology signature.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:roundcube:webmail:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:roundcube:webmail:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "ruby-chat",
@@ -9631,30 +9592,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Ruby Chat is a service offering live virtual receptionists and live chat to assist businesses in managing customer interactions and inquiries in real-time.",
 		icon: "RubyChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "ruby-chat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("chatwidget\\.ruby\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("chatwidget\\.ruby\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "ruby-chat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "ruby-chat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "rubyChatLoading",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "salesforce-marketing-cloud-email-studio",
@@ -9663,31 +9623,30 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Salesforce Marketing Cloud Email Studio is a powerful tool that allows you to build and send personalised emails.",
 		icon: "Salesforce.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "salesforce-marketing-cloud-email-studio:dom:0",
 				kind: "dom",
 				selector: "a[href*='.exacttarget.com/'][target='_blank']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "salesforce-marketing-cloud-email-studio:responseHeader:1",
-				kind: "responseHeader",
+				id: "salesforce-marketing-cloud-email-studio:header:1",
+				kind: "header",
 				key: "content-security-policy",
-				valuePattern: new RegExp("\\.exacttarget\\.com/"),
-				description: "Response header matches a known technology marker."
-			}
+				valuePattern: new RegExp("\\.exacttarget\\.com\\/", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "salesforce-service-cloud",
@@ -9697,32 +9656,31 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Salesforce.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "salesforce-service-cloud:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("service\\.force\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "salesforce-service-cloud:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "salesforce-service-cloud:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "embedded_svc",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"salesforce"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"low"
-			]
-		}
+				"low",
+			],
+		},
+		implies: [
+			"salesforce",
+		],
 	},
 	{
 		id: "sameday",
@@ -9731,25 +9689,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Sameday is an AI-powered platform that provides automated phone answering and communication services for home service businesses.",
 		icon: "Sameday.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "sameday:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("api\\.sameday\\.ai"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"high",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "schedule-engine",
@@ -9758,20 +9715,16 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Schedule Engine is a customer support solution built for contractors.",
 		icon: "Schedule Engine.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "schedule-engine:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("webchat.scheduleengine.net"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "screets",
@@ -9780,23 +9733,22 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Screets is a chat widget compatible with WordPress, HTML, and PHP websites.",
 		icon: "Screets.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "screets:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "screets:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "screetsxi.appid",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"onetime"
-			]
-		}
+				"onetime",
+			],
+		},
 	},
 	{
 		id: "segmate",
@@ -9805,25 +9757,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "SegMate is a platform that allows businesses to create and manage Facebook Messenger bots for marketing and customer engagement.",
 		icon: "SegMateApp.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "segmate:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.segmate\\.io/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.segmate\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "selzy",
@@ -9832,26 +9783,25 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Selzy is an email marketing platform for sending bulk emails, tracking statistics, conducting A/B tests, and automating campaigns.",
 		icon: "Selzy.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "selzy:dom:0",
 				kind: "dom",
 				selector: "form[action*='.selzy.com/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "sendgrid",
@@ -9860,21 +9810,17 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "SendGrid is a cloud-based email delivery platform for transactional and marketing emails.",
 		icon: "SendGrid.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "sendgrid:dns:0",
 				kind: "dns",
-				valuePattern: new RegExp("sendgrid\\.net"),
+				valuePattern: new RegExp("sendgrid\\.net", "i"),
 				recordType: "TXT",
 				description: "DNS record matches a known technology marker.",
-			}
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "sendloop",
@@ -9883,25 +9829,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Sendloop is a platform that offers custom-built email marketing solutions designed to meet specific business needs.",
 		icon: "Sendloop.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "sendloop:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("api\\.sendloop\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "sendtex",
@@ -9910,25 +9855,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Sendtex is an email marketing platform designed to facilitate the creation, management, and distribution of email campaigns.",
 		icon: "Sendpad.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "sendtex:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("api\\.sendpad\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "sharpen",
@@ -9937,20 +9881,19 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Sharpen is a platform focused on developing AI-empowered human agents to enhance communication.",
 		icon: "Sharpen.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "sharpen:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("chat\\.sharpen\\.cx"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "shopify-chat",
@@ -9960,23 +9903,25 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Shopify.svg",
 		categories: [
 			"email-messaging",
-			"ecommerce-extensions"
+			"ecommerce-extensions",
 		],
 		rules: [
 			{
 				id: "shopify-chat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.shopify\\.com/shopifycloud/shopify_chat/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("cdn\\.shopify\\.com\\/shopifycloud\\/shopify_chat\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "shopify-chat:dom:1",
+				kind: "dom",
+				selector: "div#shopify-chat",
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		implies: [
-			"shopify"
+			"shopify",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "signalzen",
@@ -9985,30 +9930,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "SignalZen is a customer support platform that enables teams to manage AI-powered conversations directly from Slack or Microsoft Teams.",
 		icon: "SignalZen.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "signalzen:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.signalzen\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "signalzen:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("cdn\\.signalzen\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "simla",
@@ -10018,24 +9962,23 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Simla.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "simla:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.retailcrm\\.tech/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.retailcrm\\.tech\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "sitegpt",
@@ -10044,37 +9987,36 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "SiteGPT is an AI-powered chatbot that delivers personalized customer support by generating responses grounded in a site’s existing content.",
 		icon: "SiteGPT.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "sitegpt:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("//sitegpt\\.ai/widget/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/\\/sitegpt\\.ai\\/widget\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "sitegpt:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "sitegpt:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "$sitegpt.push",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "sitegpt:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "sitegpt:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "$sitegpt_widget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "sitehood",
@@ -10083,20 +10025,19 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Sitehood is a live chat tool for websites that enables instant support for site visitors.",
 		icon: "Sitehood.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "sitehood:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("vtrack\\.sitehood\\.co\\.il"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "slaask",
@@ -10105,36 +10046,35 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Slaask is a customer messaging app designed for all Slack users to streamline customer service communication within the Slack interface.",
 		icon: "Slaask.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "slaask:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.slaask\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn\\.slaask\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "slaask:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "slaask:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "_slaaskLoader",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "slaask:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "slaask:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "_slaaskSettings",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "smallchat",
@@ -10143,25 +10083,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Smallchat is a tool that allows users to engage with website visitors directly within Slack.",
 		icon: "Smallchat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "smallchat:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "smallchat:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Smallchat",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "smartemailing",
@@ -10170,25 +10109,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "SmartEmailing is a Czech-based marketing solution that provides email marketing tools for creating, managing, and analyzing email campaigns to support customer communication and engagement.",
 		icon: "SmartEmailing.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "smartemailing:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.smartemailing\\.cz"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "smartsupp",
@@ -10197,38 +10135,40 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Smartsupp is a live chat tool that offers visitor recording feature.",
 		icon: "Smartsupp.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "smartsupp:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("\\.smartsuppchat\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "smartsupp:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "smartsupp:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "$smartsupp.options.widgetVersion",
 				valuePattern: new RegExp("([\\d.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "smartsupp:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "smartsupp:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "smartsupp",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "smilee",
@@ -10237,25 +10177,63 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Smilee is a professionally managed chat solution designed to facilitate customer communication.",
 		icon: "Smilee.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "smilee:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("saas\\.smilee\\.io"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
+	},
+	{
+		id: "smith-ai",
+		name: "Smith.ai",
+		website: "https://smith.ai",
+		description: "Smith.ai is a receptionist service combining AI and human call handling to manage business communications across various scenarios.",
+		icon: "SmithAI.svg",
+		categories: [
+			"email-messaging",
+			"business-tools",
+		],
+		rules: [
+			{
+				id: "smith-ai:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("app\\.smith\\.ai"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "smith-ai:dom:1",
+				kind: "dom",
+				selector: "link[href*='app.smith.ai']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "smith-ai:jsGlobal:2",
+				kind: "jsGlobal",
+				property: "SMITH.chat",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"mid",
+				"poa",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "smtpjs",
@@ -10264,21 +10242,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "SmtpJS is a free library you can use for sending emails from JavaScript.",
 		icon: "default.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "smtpjs:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/smtpjs\\.com/(?:v([\\d\\.]+)/)?smtp\\.js"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\/smtpjs\\.com\\/(?:v([\\d\\.]+)\\/)?smtp\\.js"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "snapcall",
@@ -10287,36 +10267,35 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "SnapCall is a Video AI solution designed to enhance customer support by providing real-time video interactions.",
 		icon: "SnapCall.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "snapcall:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("api\\.snapcall\\.io"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "snapcall:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "snapcall:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "sc_api",
 				valuePattern: new RegExp("api\\.snapcall\\.io"),
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "snapcall:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "snapcall:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "snapcallAPI",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "snapengage",
@@ -10325,41 +10304,46 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "SnapEngage is a live chat solution that caters to businesses across various industries.",
 		icon: "SnapEngage.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "snapengage:html:0",
 				kind: "html",
 				pattern: new RegExp("<!-- begin SnapEngage"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "snapengage:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "snapengage:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "SnapEngage",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "snapengage:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "snapengage:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "SnapEngageChat",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "snapengage:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "snapengage:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "snapengage_mobile",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "snapengage:html:4",
+				kind: "html",
+				pattern: new RegExp("<!-- begin snapengage"),
+				description: "HTML contains a known technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "snatchbot",
@@ -10368,30 +10352,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "SnatchBot is a cloud-based AI chatbot platform.",
 		icon: "SnatchBot.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "snatchbot:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("account\\.snatchbot\\.me"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "snatchbot:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("account\\.snatchbot\\.me"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "sobot-live-chat",
@@ -10400,30 +10383,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Sobot Live Chat is a platform for instant customer engagement, enabling real-time communication on a single interface.",
 		icon: "Sobot.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "sobot-live-chat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.sobot\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.sobot\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "sobot-live-chat:scriptContent:1",
 				kind: "scriptContent",
-				pattern: new RegExp("\\.sobot\\.com/"),
-				description: "Script content contains a bounded technology signature."
-			}
+				pattern: new RegExp("\\.sobot\\.com\\/"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "solvemate",
@@ -10432,42 +10414,41 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Solvemate is a customer service automation platform that enables brands to deliver quality customer service through meaningful conversations via chatbots.",
 		icon: "Solvemate.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "solvemate:dom:0",
 				kind: "dom",
 				selector: "link[href*='.solvemate.com']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "solvemate:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "solvemate:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "solvemate.config.solvemateCDN",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "solvemate:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "solvemate:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "solvemateCli",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "solvemate:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "solvemate:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "solvemateConfig",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"high",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "solvvy",
@@ -10476,30 +10457,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Solvvy provides live chat and chatbot services.",
 		icon: "solvvy.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "solvvy:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.solvvy\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("cdn\\.solvvy\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "solvvy:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "solvvy:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Solvvy",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "sonetel-chat",
@@ -10508,30 +10488,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Sonetel is a website chat system that enables online communication between businesses and their website visitors.",
 		icon: "Sonetel.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "sonetel-chat:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("widget\\.sonetel\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "sonetel-chat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "sonetel-chat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "SonetelWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "sparkpost",
@@ -10540,21 +10519,17 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "SparkPost is an email infrastructure provider.",
 		icon: "SparkPost.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "sparkpost:dns:0",
 				kind: "dns",
-				valuePattern: new RegExp("sparkpostmail\\.com"),
+				valuePattern: new RegExp("sparkpostmail\\.com", "i"),
 				recordType: "TXT",
 				description: "DNS record matches a known technology marker.",
-			}
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "spatialchat",
@@ -10563,53 +10538,50 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "SpatialChat is a platform for interactive video meetings, designed to host events such as all-hands meetings, keynotes, and online classes.",
 		icon: "SpatialChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "spatialchat:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.spatial\\.chat"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "spatie-support-bubble",
 		name: "Spatie Support Bubble",
 		website: "https://github.com/spatie/laravel-support-bubble",
 		description: "Spatie Support Bubble is a non-intrusive support form.",
-		icon: "Spatie.svg",
+		icon: "Spatie.png",
 		categories: [
 			"email-messaging",
-			"form-schema-library"
 		],
 		rules: [
 			{
 				id: "spatie-support-bubble:dom:0",
 				kind: "dom",
 				selector: "div.spatie-support-bubble",
-				description: "DOM selector matches a known technology marker."
-			}
-		],
-		implies: [
-			"laravel",
-			"tailwind-css"
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"laravel",
+			"tailwind-css",
+		],
 	},
 	{
 		id: "speakpipe",
@@ -10618,38 +10590,37 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "SpeakPipe is a tool that lets websites receive voice messages from visitors, making it easier for users to leave feedback, testimonials, or contact the site owner directly.",
 		icon: "SpeakPipe.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "speakpipe:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "speakpipe:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "_speakpipe_dialog_loaded",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "speakpipe:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "speakpipe:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "_speakpipe_open_reply_dialog",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "speakpipe:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "speakpipe:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "_speakpipe_open_reply_dialog_by_token",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "speakpipe:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "speakpipe:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "_speakpipe_open_widget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "spikmi",
@@ -10658,20 +10629,19 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Spikmi is a messenger communication button for websites that enables convenient customer support access from anywhere in the world.",
 		icon: "Spikmi.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "spikmi:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("//spikmi\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\/\\/spikmi\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "splutter-ai",
@@ -10680,27 +10650,26 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Splutter AI is a platform that enables the creation of AI chatbots for websites.",
 		icon: "SplutterAI.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "splutter-ai:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "splutter-ai:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "embeddedChatbotConfig.domain",
-				valuePattern: new RegExp("//splutter\\.ai"),
-				description: "Page-owned global matches a known technology marker."
-			}
+				valuePattern: new RegExp("\\/\\/splutter\\.ai"),
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"high",
+				"payg",
 				"recurring",
-				"payg"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "squirrelmail",
@@ -10709,37 +10678,48 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "SquirrelMail is an open-source web-mail package that is based on PHP language. It provides a web-based-email client and a proxy server for IMAP protocol.",
 		icon: "SquirrelMail.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "squirrelmail:html:0",
 				kind: "html",
 				pattern: new RegExp("<small>SquirrelMail version ([.\\d]+)[^<]*<br "),
-				version: { source: "match", group: 1 },
-				description: "HTML contains a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "squirrelmail:url:1",
 				kind: "url",
-				pattern: new RegExp("/src/webmail\\.php(?:$|\\?)"),
-				description: "Page URL matches a known technology marker."
+				pattern: new RegExp("\\/src\\/webmail\\.php(?:$|\\?)"),
+				description: "Page URL matches a known technology marker.",
 			},
 			{
-				id: "squirrelmail:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "squirrelmail:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "squirrelmail_loginpage_onload",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"php"
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "squirrelmail:html:3",
+				kind: "html",
+				pattern: new RegExp("<small>squirrelmail version ([.\\d]+)[^<]*<br "),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "HTML contains a known technology signature.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:squirrelmail:squirrelmail:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:squirrelmail:squirrelmail:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"php",
+		],
 	},
 	{
 		id: "subiz",
@@ -10748,31 +10728,30 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Subiz is a live chat solution that consolidates all customer messages into a single screen for communication on websites.",
 		icon: "Subiz.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "subiz:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.subiz\\.com"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "subiz:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "subiz:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "subiz",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "sugester",
@@ -10782,60 +10761,58 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Sugester.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "sugester:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.sugester\\.pl/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.sugester\\.pl\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "sugester:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "sugester:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "SUGESTER.ACCOUNT_ID",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "sugester:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "sugester:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "sugesterChatOptions",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "suiteshare",
 		name: "Suiteshare",
 		website: "https://suiteshare.com/",
 		description: "Suiteshare powers conversational shopping experiences.",
-		icon: "Suiteshare.svg",
+		icon: "Suiteshare.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "suiteshare:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("static\\.suiteshare\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "superchat",
@@ -10845,31 +10822,67 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Superchat.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "superchat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.superchat\\.de/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.superchat\\.de\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "superchat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "superchat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Superchat.init",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+	},
+	{
+		id: "supportbox",
+		name: "SupportBox",
+		website: "https://supportbox.cz",
+		description: "SupportBox is a customer support platform that uses AI to deliver intelligent assistance for handling user inquiries and support interactions.",
+		icon: "SupportBox.svg",
+		categories: [
+			"email-messaging",
+		],
+		rules: [
+			{
+				id: "supportbox:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("chat\\.supportbox\\.cz\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "supportbox:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "supportBoxApi",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "supportbox:jsGlobal:2",
+				kind: "jsGlobal",
+				property: "supportBoxChatConfig",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"low",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "swell-cx",
@@ -10878,62 +10891,73 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Swell CX is an online reviews and website visitor chat system.",
 		icon: "SwellCX.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "swell-cx:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("platform\\.swellcx\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("platform\\.swellcx\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "swell-cx:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("platform\\.swellcx\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "sympa",
 		name: "Sympa",
 		website: "https://www.sympa.org/",
 		description: "Sympa is an open-source mailing list management (MLM) software.",
-		icon: "sympa.svg",
+		icon: "sympa.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "sympa:html:0",
 				kind: "html",
-				pattern: new RegExp("<a href=\"https?://www\\.sympa\\.org\">\\s*Powered by Sympa\\s*</a>"),
-				description: "HTML contains a known technology marker."
+				pattern: new RegExp("<a href=\"https?:\\/\\/www\\.sympa\\.org\">\\s*Powered by Sympa\\s*<\\/a>"),
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "sympa:meta:1",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^Sympa$"),
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"perl"
+				valuePattern: new RegExp("^Sympa$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "sympa:html:2",
+				kind: "html",
+				pattern: new RegExp("<a href=\"https?:\\/\\/www\\.sympa\\.org\">\\s*powered by sympa\\s*<\\/a>"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "sympa:meta:3",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^sympa$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:sympa:sympa:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:sympa:sympa:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"perl",
+		],
 	},
 	{
 		id: "tactful",
@@ -10942,26 +10966,25 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Tactful is an AI-driven platform that enables seamless customer service across multiple communication channels.",
 		icon: "Tactful.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "tactful:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("webchat\\.tactful\\.ai"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "tactful:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "tactful:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Tactful.TACTFUL_CLIENT_ID",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "talk-me",
@@ -10970,43 +10993,42 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Talk-Me is a chat system designed to enhance sales growth by facilitating customer communication, offering a range of tools to help businesses find new clients through their websites.",
 		icon: "TalkMe.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "talk-me:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "talk-me:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "MeTalk",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "talk-me:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "talk-me:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "TalkMe",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "talk-me:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "talk-me:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "TalkMeIsInitialized",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "talk-me:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "talk-me:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "TalkMeSetup",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "talkdesk",
@@ -11016,36 +11038,35 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Talkdesk.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "talkdesk:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.talkdeskapp\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.talkdeskapp\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "talkdesk:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "talkdesk:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "TalkdeskChatSDK",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "talkdesk:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "talkdesk:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "webpackChunkTalkdeskChatSDK",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "talkjs",
@@ -11054,33 +11075,35 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "TalkJS is a platform that enables user-to-user messaging within marketplaces or platforms.",
 		icon: "TalkJS.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "talkjs:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "talkjs:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Talk.v",
 				valuePattern: new RegExp("^(.+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "talkjs:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "talkjs:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "_talkjs_locales",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "tallentor-widget",
@@ -11089,24 +11112,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Tallentor is a subscription-based software website analytics, heatmap, channel chat intergration.",
 		icon: "Tallentor.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "tallentor-widget:cookie:0",
 				kind: "cookie",
-				key: "tallentor_widget",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^tallentor_widget$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "tars",
@@ -11115,32 +11137,31 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Tars is a platform for creating chatbots without programming knowledge.",
 		icon: "Tars.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "tars:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("api\\.hellotars\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("api\\.hellotars\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "tars:dom:1",
 				kind: "dom",
 				selector: "link[href*='api.hellotars.com/']",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "tars:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "tars:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "tarsWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "tawk-to",
@@ -11149,30 +11170,72 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Tawk.to is a free messaging app to monitor and chat with the visitors to a website, mobile app.",
 		icon: "TawkTo.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "tawk-to:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("//embed\\.tawk\\.to"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/\\/embed\\.tawk\\.to"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "tawk-to:cookie:1",
 				kind: "cookie",
-				key: "TawkConnectionTime",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^TawkConnectionTime$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "tawk-to:cookie:2",
+				kind: "cookie",
+				keyPattern: new RegExp("^tawkconnectiontime$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
+	},
+	{
+		id: "teletype-app",
+		name: "Teletype App",
+		website: "https://teletype.app",
+		description: "Teletype App is a messenger platform that enables real-time text-based communication between users across connected devices.",
+		icon: "TeletypeApp.svg",
+		categories: [
+			"email-messaging",
+		],
+		rules: [
+			{
+				id: "teletype-app:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("widget\\.teletype\\.app"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "teletype-app:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "_teletypeWidget",
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "teletype-app:jsGlobal:2",
+				kind: "jsGlobal",
+				property: "teletypeExternalId",
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"low",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "tencent-qq",
@@ -11181,20 +11244,16 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Tencent QQ also known as QQ, is an instant messaging software service and web portal developed by the Chinese tech giant Tencent.",
 		icon: "Tencent QQ.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "tencent-qq:dom:0",
 				kind: "dom",
 				selector: "a[href*='tencent://message/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "text-in-church",
@@ -11203,20 +11262,16 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Text In Church is a communication platform that enables churches to send text messages and manage member interactions.",
 		icon: "TextInChurch.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "text-in-church:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.textinchurch\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("app\\.textinchurch\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "thebotforge",
@@ -11225,25 +11280,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "TheBotForge is an AI chatbot creation platform.",
 		icon: "TheBotForge.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "thebotforge:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.thebotforge\\.ai/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("app\\.thebotforge\\.ai\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "thinking-chat",
@@ -11252,24 +11306,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Thinking Chat is an automated lead capture and chat solution.",
 		icon: "ThinkingChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "thinking-chat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.thinkingchat\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.thinkingchat\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "tidio",
@@ -11278,67 +11331,65 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Tidio is a customer communication product. It provides multi-channel support so users can communicate with customers on the go. Live chat, messenger, or email are all supported.",
 		icon: "Tidio.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "tidio:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("code\\.tidio\\.co"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "tidio:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "tidio:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "tidioChatApi",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"low",
 				"freemium",
-				"recurring"
-			]
-		}
+				"low",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "tiledesk",
 		name: "Tiledesk",
 		website: "https://tiledesk.com",
-		description: "Tiledesk is the full-stack open-source Live Chat with built-in Chatbots, written in Node.js and Angular.",
-		icon: "Tiledesk.svg",
+		description: "Tiledesk is a multi-channel agentic AI platform for customer service, combining human handover, self-learning, and no-code visual automations.”",
+		icon: "Tiledesk.png",
 		categories: [
 			"email-messaging",
-			"ui-library"
 		],
 		rules: [
 			{
-				id: "tiledesk:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "tiledesk:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Tiledesk",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "tiledesk:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "tiledesk:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "tileDeskAsyncInit",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "tiledesk:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "tiledesk:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "tiledesk",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "tiledesk:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "tiledesk:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "tiledeskSettings",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
@@ -11346,10 +11397,10 @@ export const emailMessagingTechnologyDefinitions = [
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "tolk",
@@ -11358,26 +11409,25 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Tolk is a platform that provides AI-powered live chat and chatbot solutions designed to enhance customer relations and support interactions.",
 		icon: "Tolk.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "tolk:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("script\\.tolk\\.ai"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "tolk:scriptContent:1",
 				kind: "scriptContent",
 				pattern: new RegExp("script\\.tolk\\.ai"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "tooltip",
@@ -11386,25 +11436,24 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Tooltip is a web-based in-app messaging suite designed to enhance user engagement and communication within applications.",
 		icon: "Tooltip.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "tooltip:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.tooltip\\.io/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("cdn\\.tooltip\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "trengo",
@@ -11413,30 +11462,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Trengo is an omnichannel communication platform that unifies all messaging channels into one single view.",
 		icon: "Trengo.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "trengo:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.widget\\.trengo\\.eu/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.widget\\.trengo\\.eu\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "trengo:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "trengo:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Trengo.eventBus",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "tuotempo",
@@ -11445,20 +11493,19 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "TuoTempo is a patient CRM designed to manage appointments, patient communications, and care workflows for medical centers.",
 		icon: "TuoTempo.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "tuotempo:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("app\\.tuotempo\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "uhchat",
@@ -11467,35 +11514,34 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "uhChat is a tool that enables the creation of an embedded chat box on websites for real-time communication.",
 		icon: "uhChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "uhchat:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "uhchat:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "getuhchatCookie",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "uhchat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "uhchat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "uhchatClick",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "uhchat:cookie:2",
 				kind: "cookie",
-				key: "uhchatrelock",
-				description: "Cookie name matches a known technology marker."
-			}
+				keyPattern: new RegExp("^uhchatrelock$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "ultimate",
@@ -11505,29 +11551,28 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Ultimate.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
-				id: "ultimate:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "ultimate:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "ultimateAiLogin",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "ultimate:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "ultimate:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ultimateAiUpdateUser",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "umni",
@@ -11536,20 +11581,19 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Umni is a platform that provides an AI chatbot designed to automate and improve customer service, sales interactions, and marketing processes.",
 		icon: "Umni.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "umni:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("widget\\.umni\\.bg"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "unblu-virtual-agent",
@@ -11558,20 +11602,19 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Unblu Virtual Agent is a platform that provides customers with 24/7 access to intelligent, automated conversations designed to feel human.",
 		icon: "Unblu.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "unblu-virtual-agent:scriptContent:0",
 				kind: "scriptContent",
-				pattern: new RegExp("\\.unblu\\.com/"),
-				description: "Script content contains a bounded technology signature."
-			}
+				pattern: new RegExp("\\.unblu\\.com\\/"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "upscribe",
@@ -11580,24 +11623,49 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Upscribe is a platform offering tools to create newsletter signup forms.",
 		icon: "Upscribe.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "upscribe:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "upscribe:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Upscribe.c",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+	},
+	{
+		id: "useresponse",
+		name: "UseResponse",
+		website: "https://www.useresponse.com",
+		description: "UseResponse is a multi-channel customer support software suite that provides tools for managing customer inquiries, reducing response times, and supporting improved service workflows across communication channels.",
+		icon: "UseResponse.svg",
+		categories: [
+			"email-messaging",
+		],
+		rules: [
+			{
+				id: "useresponse:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("static\\.useresponse\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
+		],
+		metadata: {
+			saas: true,
+			pricing: [
+				"low",
+				"poa",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "userlike",
@@ -11606,60 +11674,59 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Userlike is a cloud-based live chat solution that can be integrated with existing websites.",
 		icon: "UserLike.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "userlike:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("userlike\\.min\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "userlike:scriptSrc:1",
 				kind: "scriptSrc",
 				pattern: new RegExp("userlikelib\\.min\\.js"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "userlike:scriptSrc:2",
 				kind: "scriptSrc",
-				pattern: new RegExp("//userlike-cdn-widgets\\."),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/\\/userlike-cdn-widgets\\."),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "userlike:scriptSrc:3",
 				kind: "scriptSrc",
 				pattern: new RegExp("api\\.userlike\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "userlike:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "userlike:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "__USERLIKE_MOUNT_GUARD__",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "userlike:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "userlike:jsGlobal:5",
+				kind: "jsGlobal",
 				property: "userlike",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "userlike:pageGlobal:6",
-				kind: "pageGlobal",
+				id: "userlike:jsGlobal:6",
+				kind: "jsGlobal",
 				property: "userlikeInit",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "userlink",
@@ -11668,36 +11735,35 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Userlink is a platform that integrates AI chatbots into webshops to improve customer experience and boost sales.",
 		icon: "Userlink.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "userlink:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("files\\.userlink\\.ai"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "userlink:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "userlink:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "setUserlinkChatVisible",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "userlink:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "userlink:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "userlinkIsInAvailableTimePeriod",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "vchat",
@@ -11706,26 +11772,25 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "vChat is a chat solution in Vietnam.",
 		icon: "vChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "vchat:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "vchat:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "__vnpDefault.url",
 				valuePattern: new RegExp("core\\.vchat\\.vn"),
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "velaro",
@@ -11734,32 +11799,31 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Velaro is a live chat platform designed to engage website visitors and customers, enhancing online sales conversions.",
 		icon: "Velaro.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "velaro:scriptContent:0",
 				kind: "scriptContent",
-				pattern: new RegExp("/velaroscripts/"),
-				description: "Script content contains a bounded technology signature."
+				pattern: new RegExp("\\/velaroscripts\\/"),
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "velaro:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "velaro:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Velaro.Call",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "velaro:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "velaro:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "isVelaroChatClicked",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "venyoo",
@@ -11768,30 +11832,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Venyoo is a live and robot chat widget designed to facilitate communication.",
 		icon: "Venyoo.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "venyoo:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.venyoo\\.ru/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.venyoo\\.ru\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "venyoo:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "venyoo:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "venyooProxyScript",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "vergic",
@@ -11800,49 +11863,65 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Vergic is a platform facilitating real-time online engagement between site owners, customer service agents, and individual customers, prospects, or visitors.",
 		icon: "Vergic.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "vergic:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("us-content\\.vergic\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("us-content\\.vergic\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "verloop",
 		name: "Verloop",
 		website: "https://verloop.io/",
 		description: "Verloop is a customer support and engagement platform that focuses on automating interactions with customers through AI-powered chatbots and conversational interfaces.",
-		icon: "Verloop.svg",
+		icon: "Verloop.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "verloop:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "verloop:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Verloop",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
+	},
+	{
+		id: "vertaflow-chat",
+		name: "VertaFlow Chat",
+		website: "https://vertaflow.io",
+		description: "VertaFlow Chat is a lightweight embeddable chat widget that routes messages to VertaFlow CRM tickets.",
+		icon: "VertaFlow.svg",
+		categories: [
+			"email-messaging",
+		],
+		rules: [
+			{
+				id: "vertaflow-chat:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("vertaflow\\.io\\/v1\\/chat\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
+		],
 	},
 	{
 		id: "viasay",
@@ -11852,20 +11931,19 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "ViaSay.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
-				id: "viasay:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "viasay:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "mindsayJsonP",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "virtual-chat",
@@ -11874,58 +11952,56 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Virtual Chat is a live-chat service for web sites.",
 		icon: "Virtual Chat.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "virtual-chat:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("virtual-chat\\.co\\.il/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("virtual-chat\\.co\\.il\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "virtualspirits",
 		name: "VirtualSpirits",
 		website: "https://www.virtualspirits.com",
 		description: "VirtualSpirits is a chatbot and live-chat service for websites.",
-		icon: "VirtualSpirits.svg",
+		icon: "VirtualSpirits.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "virtualspirits:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "virtualspirits:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "vspiritbutton",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "virtualspirits:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "virtualspirits:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "vspirits_chat_client",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "virtualspirits:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "virtualspirits:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "vspiritsizeheight",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "visitor-chat",
@@ -11934,38 +12010,37 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Visitor Chat is a service that provides businesses with managed automotive live chat solutions to improve customer relationships.",
 		icon: "VisitorChat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "visitor-chat:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "visitor-chat:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "VisitorChatInit",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "visitor-chat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "visitor-chat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "VisitorChat_Close",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "visitor-chat:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "visitor-chat:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "VisitorChat_Init",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "visitor-chat:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "visitor-chat:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "VisitorChat_clearStore",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "voizee",
@@ -11974,24 +12049,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Voizee is an AI-powered platform that enables businesses to manage automated and human-assisted text messaging and voice calling for customer communication and operational workflows.",
 		icon: "Voizee.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "voizee:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("widget\\.voizee\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("widget\\.voizee\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "warm-welcome",
@@ -12000,24 +12074,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Warm Welcome is a tool that provides interactive video bubbles and video email features for personalized communication.",
 		icon: "WarmWelcome.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "warm-welcome:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.warmwelcome\\.com"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "webbotify",
@@ -12026,24 +12099,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Webbotify is a chatbot platform that uses AI trained specifically on a website's content to provide automated responses.",
 		icon: "Webbotify.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "webbotify:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("api\\.webbotify\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("api\\.webbotify\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "webim",
@@ -12052,39 +12124,41 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Webim is a platform offering live chat service for website visitors, facilitating real-time communication between businesses and their online audience.",
 		icon: "Webim.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "webim:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.webim\\.ru/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.webim\\.ru\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "webim:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "webim:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "webim",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "webim:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "webim:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "webim.version",
 				valuePattern: new RegExp("^(.+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "webotit",
@@ -12093,23 +12167,22 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Webotit is a business tool that provides chatbot, callbot, and mailbot solutions powered by generative AI.",
 		icon: "Webotit.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "webotit:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.webotit\\.ai"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "webqna",
@@ -12119,24 +12192,23 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "WebQnA.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
-				id: "webqna:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "webqna:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "webqna",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "weply",
@@ -12145,29 +12217,28 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Weply is a Nordic lead generation chat system designed to enhance lead generation from existing website traffic.",
 		icon: "Weply.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "weply:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.weply\\.chat/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("app\\.weply\\.chat\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "weply:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "weply:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "$$weply",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "whatsapp-business-chat",
@@ -12176,26 +12247,28 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "WhatsApp Business is a free to download app available on Android and iPhone using which businesses can connect with their customers.",
 		icon: "WhatsApp.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "whatsapp-business-chat:scriptSrc:0",
-				kind: "scriptSrc",
-				pattern: new RegExp("/plugins/creame-whatsapp-me.*joinchat\\.min\\.js"),
-				description: "Script source URL matches a known technology marker."
+				id: "whatsapp-business-chat:dom:0",
+				kind: "dom",
+				selector: "a[href*='api.whatsapp.com/send'], a[href*='web.whatsapp.com/send'], a[href*='wa.me/'], div[class*='wptwa-container'], a[href*='wa.link'][target='_blank']",
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "whatsapp-business-chat:dom:1",
+				id: "whatsapp-business-chat:scriptSrc:1",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\/plugins\\/creame-whatsapp-me.*joinchat\\.min\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "whatsapp-business-chat:dom:2",
 				kind: "dom",
 				selector: "a[href*='api.whatsapp.com/send'], a[href*='web.whatsapp.com/send'], div[class*='wptwa-container'], a[href*='wa.link'][target='_blank'], link[href*='plugins/creame-whatsapp-me']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "whelp",
@@ -12204,38 +12277,37 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Whelp is an AI-based omnichannel customer support platform that provides automated chatbot-driven assistance across multiple communication channels.",
 		icon: "Whelp.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "whelp:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("widget\\.getwhelp\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "whelp:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "whelp:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Whelp.Init",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "whelp:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "whelp:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "WhelpConfig",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "whoson",
@@ -12244,69 +12316,67 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "WhosOn is a secure live chat and AI platform for managing and automating customer communications.",
 		icon: "WhosOn.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "whoson:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.whoson\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.whoson\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "whoson:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "whoson:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "whoson_global",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "whoson:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "whoson:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "whoson_init",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "widgetwhats",
 		name: "WidgetWhats",
 		website: "https://widgetwhats.com",
 		description: "WidgetWhats is a fully customizable chat widget with appearance, text, color, button style and position.",
-		icon: "WidgetWhats.svg",
+		icon: "WidgetWhats.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "widgetwhats:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.widgetwhats\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.widgetwhats\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "widgetwhats:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "widgetwhats:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "wwwa_loaded",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "wikit-live-chat",
@@ -12315,23 +12385,22 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Wikit Live Chat is a platform that enables the creation of intelligent chatbots, leveraging the capabilities of generative AI to enhance user interactions.",
 		icon: "Wikit.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "wikit-live-chat:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("webchat\\.wikit\\.ai"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "wix-answers",
@@ -12340,30 +12409,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Wix Answers is a cloud-based help desk software.",
 		icon: "Wix Answers.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "wix-answers:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.wixanswers\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.wixanswers\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "wix-answers:dom:1",
 				kind: "dom",
 				selector: "iframe[src*='.wixanswers.com/']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"payg",
 				"recurring",
-				"payg"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "wotnot",
@@ -12372,31 +12440,30 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "WotNot is a no-code chatbot platform enabling users to create and deploy chatbots without programming skills.",
 		icon: "WotNot.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "wotnot:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("app\\.wotnot\\.io/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("app\\.wotnot\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "wotnot:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "wotnot:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "WotNot.GetChatWindow",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "xenioo",
@@ -12405,29 +12472,28 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Xenioo is an omnichannel chatbot platform designed to create, manage, and deploy conversational agents across multiple messaging channels.",
 		icon: "Xenioo.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "xenioo:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("static\\.xenioo\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "xenioo:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "xenioo:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Xenioo",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "xeno-chat",
@@ -12436,37 +12502,36 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Xeno Chat is a messaging app that enables live responses to support customer attraction, conversion, and retention.",
 		icon: "Xeno.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "xeno-chat:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.xeno\\.app"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "xeno-chat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "xeno-chat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "_xeno._Utils",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "xeno-chat:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "xeno-chat:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "_xenoLoader",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "xverify",
@@ -12475,29 +12540,28 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Xverify is an intelligent email verification system that helps marketers eliminate hard bounces, reduce spam complaints, and minimize fraud to improve inbox deliverability.",
 		icon: "Xverify.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "xverify:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("www\\.xverify\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "xverify:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "xverify:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "user_xverify_my_domain",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "yellow-ai",
@@ -12506,29 +12570,28 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "yellow.ai provides chatbot and automation services.",
 		icon: "yellow.ai.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "yellow-ai:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("cdn\\.yellowmessenger\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "yellow-ai:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "yellow-ai:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ymConfig",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "yomdel",
@@ -12537,26 +12600,25 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Yomdel is a fully managed live chat service that handles website conversations and delivers qualified sales leads directly to businesses.",
 		icon: "Yomdel.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "yomdel:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("clients\\.yomdel\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("clients\\.yomdel\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "yomdel:scriptContent:1",
 				kind: "scriptContent",
-				pattern: new RegExp("clients\\.yomdel\\.com/"),
-				description: "Script content contains a bounded technology signature."
-			}
+				pattern: new RegExp("clients\\.yomdel\\.com\\/"),
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "yonder",
@@ -12566,37 +12628,36 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Yonder.svg",
 		categories: [
 			"email-messaging",
-			"booking-scheduling"
+			"booking-scheduling",
 		],
 		rules: [
 			{
 				id: "yonder:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.yonderhq\\.com/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\.yonderhq\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "yonder:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "yonder:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "YONDER_APP_LOADED",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "yonder:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "yonder:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "toggleYonderChat",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "zadarma",
@@ -12605,51 +12666,49 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Zadarma is a VoIP service that provides cloud-based voice communications for businesses, supporting internet calling, virtual phone numbers, and call management features.",
 		icon: "Zadarma.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "zadarma:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("my\\.zadarma\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "zendesk-chat",
 		name: "Zendesk Chat",
 		website: "https://www.zendesk.com/service/messaging/live-chat-software/",
 		description: "Zendesk Chat is a live chat and communication widget.",
-		icon: "Zendesk.svg",
+		icon: "Zendesk Chat.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "zendesk-chat:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("v2\\.zopim\\.com"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
-				"payg"
-			]
-		}
+				"payg",
+			],
+		},
 	},
 	{
 		id: "zendesk-sunshine-conversations",
@@ -12659,27 +12718,25 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Zendesk.svg",
 		categories: [
 			"email-messaging",
-			"api-pattern"
 		],
 		rules: [
 			{
 				id: "zendesk-sunshine-conversations:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("cdn\\.smooch\\.io/"),
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		implies: [
-			"zendesk"
+				pattern: new RegExp("cdn\\.smooch\\.io\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
+		implies: [
+			"zendesk",
+		],
 	},
 	{
 		id: "zenvia",
@@ -12688,58 +12745,62 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Zenvia is a customer engagement platform that enables businesses to communicate with clients through multiple digital channels.",
 		icon: "Zenvia.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "zenvia:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("static\\.zenvia\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "zenvia:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "zenvia:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ZenviaChat",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"high",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "zimbra",
 		name: "Zimbra",
 		website: "https://www.zimbra.com/",
 		description: "Zimbra is a provider of open-source email and collaboration software, offering solutions for email, calendar, contacts, and collaboration for both individual and enterprise use.",
-		icon: "Zimbra.svg",
+		icon: "Zimbra.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "zimbra:cookie:0",
 				kind: "cookie",
-				key: "ZM_TEST",
-				description: "Cookie name matches a known technology marker."
-			}
-		],
-		implies: [
-			"java"
+				keyPattern: new RegExp("^ZM_TEST$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
+			{
+				id: "zimbra:cookie:1",
+				kind: "cookie",
+				keyPattern: new RegExp("^zm_test$", "i"),
+				description: "Cookie name matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
 			oss: true,
-			cpe: "cpe:2.3:a:zimbra:zimbra:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:zimbra:zimbra:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"java",
+		],
 	},
 	{
 		id: "zipchat",
@@ -12748,30 +12809,29 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Zipchat is an AI chatbot for ecommerce, designed to boost sales by automating customer interactions and assisting with purchasing decisions.",
 		icon: "Zipchat.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "zipchat:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("app\\.zipchat\\.ai"),
-				description: "Script content contains a bounded technology signature."
+				description: "Script content contains a bounded technology signature.",
 			},
 			{
-				id: "zipchat:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "zipchat:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "zipchatWidgetLoaded",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "zipteams",
@@ -12780,24 +12840,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Zipteams is a live chat solution.",
 		icon: "Zipteams.png",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
-				id: "zipteams:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "zipteams:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "ZipteamsWidget",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "zoho-mail",
@@ -12806,24 +12865,20 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Zoho Mail is an email hosting service for businesses.",
 		icon: "Zoho.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "zoho-mail:dns:0",
 				kind: "dns",
-				valuePattern: new RegExp("transmail\\.net"),
+				valuePattern: new RegExp("transmail\\.net", "i"),
 				recordType: "TXT",
 				description: "DNS record matches a known technology marker.",
-			}
+			},
 		],
 		implies: [
-			"zoho"
+			"zoho",
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "zoho-salesiq",
@@ -12832,68 +12887,65 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Zoho SalesIQ is a digital customer engagement platform that provides marketing, sales, and support teams with tools to interact with site visitors at every stage of the customer lifecycle.",
 		icon: "Zoho.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "zoho-salesiq:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("salesiq\\.zohopublic\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "zoho-salesiq:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "zoho-salesiq:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "$zoho.salesiq",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "zoko",
 		name: "Zoko",
 		website: "https://www.zoko.io/",
 		description: "Zoko is an all-in-one system that leverages the WhatsApp API to help you do business, on WhatsApp",
-		icon: "Zoko.svg",
+		icon: "Zoko.png",
 		categories: [
 			"email-messaging",
-			"api-pattern"
 		],
 		rules: [
 			{
 				id: "zoko:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("zoko-shopify-prod\\.web\\.app"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "zoko:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "zoko:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "__zoko_app_version",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"whatsapp-business-chat"
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"recurring",
+				"mid",
 				"payg",
-				"mid"
-			]
-		}
+				"recurring",
+			],
+		},
+		implies: [
+			"whatsapp-business-chat",
+		],
 	},
 	{
 		id: "zoominfo-chat",
@@ -12902,20 +12954,19 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "ZoomInfo chat is a live chat solution.",
 		icon: "Zoominfo.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "zoominfo-chat:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("madstreetden\\.widget\\.insent\\.ai"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "zowie",
@@ -12925,35 +12976,34 @@ export const emailMessagingTechnologyDefinitions = [
 		icon: "Zowie.svg",
 		categories: [
 			"email-messaging",
-			"business-tools"
+			"business-tools",
 		],
 		rules: [
 			{
 				id: "zowie:dom:0",
 				kind: "dom",
 				selector: "div#zowieChatbotWrapper",
-				description: "DOM selector matches a known technology marker."
+				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "zowie:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "zowie:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "Zowie",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "zowie:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "zowie:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "zowieJsonp",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"poa"
-			]
-		}
+				"poa",
+			],
+		},
 	},
 	{
 		id: "zulip",
@@ -12962,23 +13012,23 @@ export const emailMessagingTechnologyDefinitions = [
 		description: "Zulip is a team chat platform that organizes conversations into topic-based threads to support asynchronous communication for distributed teams.",
 		icon: "Zulip.svg",
 		categories: [
-			"email-messaging"
+			"email-messaging",
 		],
 		rules: [
 			{
 				id: "zulip:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("zulip\\.futo\\.org"),
-				description: "Script source URL matches a known technology marker."
-			}
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
+				"freemium",
 				"recurring",
-				"freemium"
-			]
-		}
-	}
+			],
+			cpe: "cpe:2.3:a:zulip:zulip:*:*:*:*:*:*:*:*",
+		},
+	},
 ] as const satisfies readonly TechnologyDefinition[];

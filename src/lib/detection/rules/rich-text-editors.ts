@@ -8,34 +8,36 @@ export const richTextEditorsTechnologyDefinitions = [
 		description: "Ace is an embeddable code editor written in JavaScript.",
 		icon: "Ace.png",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
-				id: "ace:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "ace:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "ace.EditSession",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "ace:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "ace:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "ace.Editor",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "ace:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "ace:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "ace.version",
 				valuePattern: new RegExp("([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "adobe-golive",
@@ -44,23 +46,35 @@ export const richTextEditorsTechnologyDefinitions = [
 		description: "Adobe GoLive is a WYSIWYG HTML editor and web site management application.",
 		icon: "Adobe GoLive.png",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
 				id: "adobe-golive:meta:0",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("Adobe GoLive(?:\\s([\\d.]+))?"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("Adobe GoLive(?:\\s([\\d.]+))?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "adobe-golive:meta:1",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("adobe golive(?:\\s([\\d.]+))?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:adobe:golive:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:adobe:golive:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "amaya",
@@ -69,22 +83,35 @@ export const richTextEditorsTechnologyDefinitions = [
 		description: "Amaya is an open-source web browser editor to create and update documents on the web.",
 		icon: "Amaya.png",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
 				id: "amaya:meta:0",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("Amaya(?: V?([\\d.]+[a-z]))?"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("Amaya(?: V?([\\d.]+[a-z]))?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "amaya:meta:1",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("amaya(?: v?([\\d.]+[a-z]))?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "bannerboo",
@@ -93,25 +120,24 @@ export const richTextEditorsTechnologyDefinitions = [
 		description: "BannerBoo is a graphic design software that enables users to create display banners in various sizes.",
 		icon: "BannerBoo.svg",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
 				id: "bannerboo:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.bannerboo\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.bannerboo\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "blockly",
@@ -120,26 +146,25 @@ export const richTextEditorsTechnologyDefinitions = [
 		description: "Blockly is a visual programming editor by Google that enables drag-and-drop block-based coding and serves as the underlying engine for many widely used coding education platforms.",
 		icon: "Blockly.svg",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
-				id: "blockly:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "blockly:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Blockly.Block",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "blockly:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "blockly:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "BlocklyStorage",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false
-		}
+		},
 	},
 	{
 		id: "bluefish",
@@ -148,136 +173,155 @@ export const richTextEditorsTechnologyDefinitions = [
 		description: "Bluefish is a free software text editor with a variety of tools for programming in general and the development of websites.",
 		icon: "Bluefish.png",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
 				id: "bluefish:meta:0",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("Bluefish(?:\\s([\\d.]+))?"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("Bluefish(?:\\s([\\d.]+))?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "bluefish:meta:1",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("bluefish(?:\\s([\\d.]+))?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "ckeditor",
 		name: "CKEditor",
 		website: "https://ckeditor.com",
 		description: "CKEditor is a WYSIWYG rich text editor which enables writing content directly inside of web pages or online applications. Its core code is written in JavaScript and it is developed by CKSource. CKEditor is available under open-source and commercial licenses.",
-		icon: "CKEditor.svg",
+		icon: "CKEditor.png",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
-				id: "ckeditor:dom:0",
-				kind: "dom",
-				selector: "style[data-cke]",
-				description: "DOM selector matches a known technology marker."
-			},
-			{
-				id: "ckeditor:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "ckeditor:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "CKEDITOR",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "ckeditor:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "ckeditor:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "CKEDITOR.version",
 				valuePattern: new RegExp("^([\\d\\.])$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "ckeditor:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "ckeditor:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "CKEDITOR_BASEPATH",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "ckeditor:pageGlobal:4",
-				kind: "pageGlobal",
-				property: "CKEDITOR_VERSION",
-				valuePattern: new RegExp("^([\\d\\.])$"),
-				version: { source: "match", template: "5-$1" },
-				description: "Page-owned global matches a known technology marker."
-			},
-			{
-				id: "ckeditor:pageGlobal:5",
-				kind: "pageGlobal",
+				id: "ckeditor:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "apex.libVersions.ckeditor5",
 				valuePattern: new RegExp("^([\\d\\.])$"),
-				version: { source: "match", template: "5-$1" },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "ckeditor:dom:4",
+				kind: "dom",
+				selector: "style[data-cke]",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "ckeditor:jsGlobal:5",
+				kind: "jsGlobal",
+				property: "CKEDITOR_VERSION",
+				valuePattern: new RegExp("^([\\d\\.])$"),
+				version: {
+					source: "match",
+					template: "5-$1",
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:ckeditor:ckeditor:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:ckeditor:ckeditor:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "codemirror",
 		name: "CodeMirror",
 		website: "https://codemirror.net",
 		description: "CodeMirror is a JavaScript component that provides a code editor in the browser.",
-		icon: "CodeMirror.svg",
+		icon: "CodeMirror.png",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
-				id: "codemirror:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "codemirror:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "CodeMirror",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "codemirror:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "codemirror:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "CodeMirror.version",
 				valuePattern: new RegExp("^(.+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:codemirror:codemirror:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:codemirror:codemirror:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "draft-js",
 		name: "Draft.js",
 		website: "https://draftjs.org/",
 		description: "Draft.js is a JavaScript rich text editor framework, built for React.",
-		icon: "draftjs.svg",
+		icon: "draftjs.png",
 		categories: [
 			"rich-text-editors",
-			"ui-library"
 		],
 		rules: [
 			{
 				id: "draft-js:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("draft-js(@|/)([\\d.]+)"),
-				version: { source: "match", group: 2 },
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("draft-js(@|\\/)([\\d.]+)"),
+				version: {
+					source: "match",
+					group: 2,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "dreamweaver",
@@ -286,53 +330,70 @@ export const richTextEditorsTechnologyDefinitions = [
 		description: "Dreamweaver is a development tool for creating, publishing, and managing websites and mobile content.",
 		icon: "DreamWeaver.png",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
 				id: "dreamweaver:html:0",
 				kind: "html",
 				pattern: new RegExp("<!--[^>]*(?:InstanceBeginEditable|Dreamweaver([^>]+)target|DWLayoutDefaultTable)"),
-				version: { source: "match", group: 1 },
-				description: "HTML contains a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "HTML contains a known technology signature.",
 			},
 			{
 				id: "dreamweaver:html:1",
 				kind: "html",
 				pattern: new RegExp("<!-- #BeginTemplate\\s\"[\\d_\\w/]+\\.dwt"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "dreamweaver:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "dreamweaver:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "MM_preloadImages",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "dreamweaver:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "dreamweaver:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "MM_showHideLayers",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "dreamweaver:pageGlobal:4",
-				kind: "pageGlobal",
+				id: "dreamweaver:jsGlobal:4",
+				kind: "jsGlobal",
 				property: "MM_showMenu",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
 				id: "dreamweaver:meta:5",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^Adobe dreamweaver$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^Adobe dreamweaver$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "dreamweaver:html:6",
+				kind: "html",
+				pattern: new RegExp("<!-- #begintemplate\\s\"[\\d_\\w/]+\\.dwt"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "dreamweaver:html:7",
+				kind: "html",
+				pattern: new RegExp("<!--[^>]*(?:instancebegineditable|dreamweaver([^>]+)target|dwlayoutdefaulttable)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "HTML contains a known technology signature.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:adobe:dreamweaver:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:adobe:dreamweaver:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "edit-in-place",
@@ -340,48 +401,46 @@ export const richTextEditorsTechnologyDefinitions = [
 		website: "https://24ways.org/2005/edit-in-place-with-ajax",
 		description: "Edit-in-Place is a tool that enables text editing directly on the page using AJAX-style updates without requiring a full page reload.",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
 				id: "edit-in-place:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/jquery\\.editinplace\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		requires: [
-			"jquery"
+				pattern: new RegExp("\\/jquery\\.editinplace\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"freemium"
-			]
-		}
+				"freemium",
+			],
+		},
+		requires: [
+			"jquery",
+		],
 	},
 	{
 		id: "editor-js",
 		name: "Editor.js",
 		website: "https://editorjs.io",
 		description: "Editor.js is a Javascript library which allows developers to implement a block base text editor with plugins on their page.",
-		icon: "Editor.js.svg",
+		icon: "Editor.js.png",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
-				id: "editor-js:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "editor-js:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "EditorJS",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "editplus",
@@ -390,69 +449,80 @@ export const richTextEditorsTechnologyDefinitions = [
 		description: "EditPlus is a text, HTML, PHP, and Java editor with a Hex Viewer for Windows, offering Notepad replacement capabilities along with features for web authors and programmers.",
 		icon: "EditPlus.svg",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
 				id: "editplus:meta:0",
 				kind: "meta",
 				key: "Generator",
-				valuePattern: new RegExp("^EditPlus$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^EditPlus$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "editplus:meta:1",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^editplus$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"onetime"
-			]
-		}
+				"onetime",
+			],
+		},
 	},
 	{
 		id: "etherpad",
 		name: "Etherpad",
 		website: "https://etherpad.org",
 		description: "Etherpad is an open-source, web-based collaborative real-time editor, allowing authors to simultaneously edit a text document, and see all of the participants' edits in real-time, with the ability to display each author's text in their own colour.",
-		icon: "etherpad.svg",
+		icon: "etherpad.png",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
 				id: "etherpad:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/ep_etherpad-lite/"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/ep_etherpad-lite\\/"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "etherpad:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "etherpad:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "padeditbar",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "etherpad:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "etherpad:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "padimpexp",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "etherpad:responseHeader:3",
-				kind: "responseHeader",
+				id: "etherpad:header:3",
+				kind: "header",
 				key: "Server",
-				valuePattern: new RegExp("^Etherpad"),
-				description: "Response header matches a known technology marker."
-			}
-		],
-		implies: [
-			"node-js"
+				valuePattern: new RegExp("^Etherpad", "i"),
+				description: "Response header matches a known technology marker.",
+			},
+			{
+				id: "etherpad:header:4",
+				kind: "header",
+				key: "server",
+				valuePattern: new RegExp("^etherpad", "i"),
+				description: "Response header matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:etherpad:etherpad:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:etherpad:etherpad:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"node-js",
+		],
 	},
 	{
 		id: "freetextbox",
@@ -461,37 +531,48 @@ export const richTextEditorsTechnologyDefinitions = [
 		description: "FreeTextBox is a free open-source HTML Editor.",
 		icon: "FreeTextBox.png",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
 				id: "freetextbox:html:0",
 				kind: "html",
 				pattern: new RegExp("<!-- \\* FreeTextBox v\\d \\((\\d+\\.\\d+\\.\\d+)"),
-				version: { source: "match", group: 1 },
-				description: "HTML contains a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "freetextbox:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "freetextbox:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "FTB_API",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "freetextbox:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "freetextbox:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "FTB_AddEvent",
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"microsoft-asp-net"
+				description: "Page-owned global matches a known technology marker.",
+			},
+			{
+				id: "freetextbox:html:3",
+				kind: "html",
+				pattern: new RegExp("<!-- \\* freetextbox v\\d \\((\\d+\\.\\d+\\.\\d+)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "HTML contains a known technology signature.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:freetextbox:freetextbox:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:freetextbox:freetextbox:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"microsoft-asp-net",
+		],
 	},
 	{
 		id: "froala-editor",
@@ -500,26 +581,40 @@ export const richTextEditorsTechnologyDefinitions = [
 		description: "Froala Editor is a WYSIWYG HTML Editor written in Javascript that enables rich text editing capabilities for applications.",
 		icon: "Froala.svg",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
-				id: "froala-editor:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "froala-editor:dom:0",
+				kind: "dom",
+				selector: ".fr-view, .fr-box, .fr-popup",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "froala-editor:dom:1",
+				kind: "dom",
+				selector: ".froala-box",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "froala-editor:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "FroalaEditor.VERSION",
 				valuePattern: new RegExp("([\\d\\.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
-		],
-		implies: [
-			"jquery",
-			"font-awesome"
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false
-		}
+			cpe: "cpe:2.3:a:froala:froala_editor:*:*:*:*:*:*:*:*",
+		},
+		implies: [
+			"font-awesome",
+			"jquery",
+		],
 	},
 	{
 		id: "frontpage",
@@ -528,54 +623,83 @@ export const richTextEditorsTechnologyDefinitions = [
 		description: "FrontPage is a program for developing and maintaining websites.",
 		icon: "FrontPage.png",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
 				id: "frontpage:meta:0",
 				kind: "meta",
 				key: "ProgId",
-				valuePattern: new RegExp("^FrontPage\\."),
-				description: "Meta tag matches a known technology marker."
+				valuePattern: new RegExp("^FrontPage\\.", "i"),
+				description: "Meta tag matches a known technology marker.",
 			},
 			{
 				id: "frontpage:meta:1",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("Microsoft FrontPage(?:\\s((?:Express )?[\\d.]+))?"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("Microsoft FrontPage(?:\\s((?:Express )?[\\d.]+))?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "frontpage:meta:2",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("microsoft frontpage(?:\\s((?:express )?[\\d.]+))?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "frontpage:meta:3",
+				kind: "meta",
+				key: "progid",
+				valuePattern: new RegExp("^frontpage\\.", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:microsoft:frontpage:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:microsoft:frontpage:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "iweb",
 		name: "iWeb",
 		website: "https://www.apple.com/welcomescreen/ilife/iweb-3/",
 		description: "iWeb is a web site creation tool.",
-		icon: "Apple.svg",
+		icon: "iWeb.png",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
 				id: "iweb:meta:0",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^iWeb( [\\d.]+)?"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^iWeb( [\\d.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "iweb:meta:1",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^iweb( [\\d.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "microsoft-excel",
@@ -584,42 +708,67 @@ export const richTextEditorsTechnologyDefinitions = [
 		description: "Microsoft Excel is an electronic spreadsheet program used for storing, organizing, and manipulating data.",
 		icon: "Microsoft Excel.svg",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
 				id: "microsoft-excel:html:0",
 				kind: "html",
 				pattern: new RegExp("(?:<html [^>]*xmlns:w=\"urn:schemas-microsoft-com:office:excel\"|<!--\\s*(?:START|END) OF OUTPUT FROM EXCEL PUBLISH AS WEB PAGE WIZARD\\s*-->|<div [^>]*x:publishsource=\"?Excel\"?)"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "microsoft-excel:dom:1",
-				kind: "dom",
-				selector: "html[xmlns\\:w='urn:schemas-microsoft-com:office:excel'], div[x\\:publishsource='Excel']",
-				description: "DOM selector matches a known technology marker."
+				id: "microsoft-excel:meta:1",
+				kind: "meta",
+				key: "ProgId",
+				valuePattern: new RegExp("^Excel\\.", "i"),
+				description: "Meta tag matches a known technology marker.",
 			},
 			{
 				id: "microsoft-excel:meta:2",
 				kind: "meta",
-				key: "ProgId",
-				valuePattern: new RegExp("^Excel\\."),
-				description: "Meta tag matches a known technology marker."
+				key: "generator",
+				valuePattern: new RegExp("Microsoft Excel( [\\d.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
 			},
 			{
-				id: "microsoft-excel:meta:3",
+				id: "microsoft-excel:dom:3",
+				kind: "dom",
+				selector: "html[xmlns\\:w='urn:schemas-microsoft-com:office:excel'], div[x\\:publishsource='Excel']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "microsoft-excel:html:4",
+				kind: "html",
+				pattern: new RegExp("(?:<html [^>]*xmlns:w=\"urn:schemas-microsoft-com:office:excel\"|<!--\\s*(?:start|end) of output from excel publish as web page wizard\\s*-->|<div [^>]*x:publishsource=\"?excel\"?)"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "microsoft-excel:meta:5",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("Microsoft Excel( [\\d.]+)?"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("microsoft excel( [\\d.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "microsoft-excel:meta:6",
+				kind: "meta",
+				key: "progid",
+				valuePattern: new RegExp("^excel\\.", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:microsoft:excel:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:microsoft:excel:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "microsoft-powerpoint",
@@ -628,43 +777,75 @@ export const richTextEditorsTechnologyDefinitions = [
 		description: "Microsoft PowerPoint is a tool to create presentations using simple drag and drop tools.",
 		icon: "Microsoft PowerPoint.svg",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
 				id: "microsoft-powerpoint:html:0",
 				kind: "html",
-				pattern: new RegExp("(?:<html [^>]*xmlns:w=\"urn:schemas-microsoft-com:office:powerpoint\"|<link rel=\"?Presentation-XML\"? href=\"?[^\"]+\\.xml\"?>|<o:PresentationFormat>[^<]+</o:PresentationFormat>[^!]+<o:Slides>\\d+</o:Slides>(?:[^!]+<o:Version>([\\d.]+)</o:Version>)?)"),
-				version: { source: "match", group: 1 },
-				description: "HTML contains a known technology marker."
+				pattern: new RegExp("(?:<html [^>]*xmlns:w=\"urn:schemas-microsoft-com:office:powerpoint\"|<link rel=\"?Presentation-XML\"? href=\"?[^\"]+\\.xml\"?>|<o:PresentationFormat>[^<]+<\\/o:PresentationFormat>[^!]+<o:Slides>\\d+<\\/o:Slides>(?:[^!]+<o:Version>([\\d.]+)<\\/o:Version>)?)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "microsoft-powerpoint:dom:1",
-				kind: "dom",
-				selector: "html[xmlns\\:w='urn:schemas-microsoft-com:office:powerpoint'], link[rel='Presentation-XML'][href*='.xml']",
-				description: "DOM selector matches a known technology marker."
+				id: "microsoft-powerpoint:meta:1",
+				kind: "meta",
+				key: "ProgId",
+				valuePattern: new RegExp("^PowerPoint\\.", "i"),
+				description: "Meta tag matches a known technology marker.",
 			},
 			{
 				id: "microsoft-powerpoint:meta:2",
 				kind: "meta",
-				key: "ProgId",
-				valuePattern: new RegExp("^PowerPoint\\."),
-				description: "Meta tag matches a known technology marker."
+				key: "generator",
+				valuePattern: new RegExp("Microsoft PowerPoint ( [\\d.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
 			},
 			{
-				id: "microsoft-powerpoint:meta:3",
+				id: "microsoft-powerpoint:dom:3",
+				kind: "dom",
+				selector: "html[xmlns\\:w='urn:schemas-microsoft-com:office:powerpoint'], link[rel='Presentation-XML'][href*='.xml']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "microsoft-powerpoint:html:4",
+				kind: "html",
+				pattern: new RegExp("(?:<html [^>]*xmlns:w=\"urn:schemas-microsoft-com:office:powerpoint\"|<link rel=\"?presentation-xml\"? href=\"?[^\"]+\\.xml\"?>|<o:presentationformat>[^<]+<\\/o:presentationformat>[^!]+<o:slides>\\d+<\\/o:slides>(?:[^!]+<o:version>([\\d.]+)<\\/o:version>)?)"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "microsoft-powerpoint:meta:5",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("Microsoft PowerPoint ( [\\d.]+)?"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("microsoft powerpoint ( [\\d.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "microsoft-powerpoint:meta:6",
+				kind: "meta",
+				key: "progid",
+				valuePattern: new RegExp("^powerpoint\\.", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:microsoft:powerpoint:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:microsoft:powerpoint:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "microsoft-publisher",
@@ -673,42 +854,61 @@ export const richTextEditorsTechnologyDefinitions = [
 		description: "Microsoft Publisher is an application that allows you to create professional documents such as newsletters, postcards, flyers, invitations, brochures.",
 		icon: "Microsoft Publisher.svg",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
 				id: "microsoft-publisher:html:0",
 				kind: "html",
 				pattern: new RegExp("(?:<html [^>]*xmlns:w=\"urn:schemas-microsoft-com:office:publisher\"|<!--[if pub]><xml>)"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "microsoft-publisher:dom:1",
-				kind: "dom",
-				selector: "html[xmlns\\:w='urn:schemas-microsoft-com:office:publisher']",
-				description: "DOM selector matches a known technology marker."
+				id: "microsoft-publisher:meta:1",
+				kind: "meta",
+				key: "ProgId",
+				valuePattern: new RegExp("^Publisher\\.", "i"),
+				description: "Meta tag matches a known technology marker.",
 			},
 			{
 				id: "microsoft-publisher:meta:2",
 				kind: "meta",
-				key: "ProgId",
-				valuePattern: new RegExp("^Publisher\\."),
-				description: "Meta tag matches a known technology marker."
+				key: "generator",
+				valuePattern: new RegExp("Microsoft Publisher( [\\d.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
 			},
 			{
-				id: "microsoft-publisher:meta:3",
+				id: "microsoft-publisher:dom:3",
+				kind: "dom",
+				selector: "html[xmlns\\:w='urn:schemas-microsoft-com:office:publisher']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "microsoft-publisher:meta:4",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("Microsoft Publisher( [\\d.]+)?"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("microsoft publisher( [\\d.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "microsoft-publisher:meta:5",
+				kind: "meta",
+				key: "progid",
+				valuePattern: new RegExp("^publisher\\.", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:microsoft:publisher:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:microsoft:publisher:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "microsoft-word",
@@ -717,42 +917,67 @@ export const richTextEditorsTechnologyDefinitions = [
 		description: "MS Word is a word-processing program used primarily for creating documents.",
 		icon: "Microsoft Word.svg",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
 				id: "microsoft-word:html:0",
 				kind: "html",
 				pattern: new RegExp("(?:<html [^>]*xmlns:w=\"urn:schemas-microsoft-com:office:word\"|<w:WordDocument>|<div [^>]*class=\"?WordSection1[\" >]|<style[^>]*>[^>]*@page WordSection1)"),
-				description: "HTML contains a known technology marker."
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "microsoft-word:dom:1",
-				kind: "dom",
-				selector: "html[xmlns\\:w='urn:schemas-microsoft-com:office:word'], div[class*='WordSection1']",
-				description: "DOM selector matches a known technology marker."
+				id: "microsoft-word:meta:1",
+				kind: "meta",
+				key: "ProgId",
+				valuePattern: new RegExp("^Word\\.", "i"),
+				description: "Meta tag matches a known technology marker.",
 			},
 			{
 				id: "microsoft-word:meta:2",
 				kind: "meta",
-				key: "ProgId",
-				valuePattern: new RegExp("^Word\\."),
-				description: "Meta tag matches a known technology marker."
+				key: "generator",
+				valuePattern: new RegExp("Microsoft Word( [\\d.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
 			},
 			{
-				id: "microsoft-word:meta:3",
+				id: "microsoft-word:dom:3",
+				kind: "dom",
+				selector: "html[xmlns\\:w='urn:schemas-microsoft-com:office:word'], div[class*='WordSection1']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "microsoft-word:html:4",
+				kind: "html",
+				pattern: new RegExp("(?:<html [^>]*xmlns:w=\"urn:schemas-microsoft-com:office:word\"|<w:worddocument>|<div [^>]*class=\"?wordsection1[\" >]|<style[^>]*>[^>]*@page wordsection1)"),
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "microsoft-word:meta:5",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("Microsoft Word( [\\d.]+)?"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("microsoft word( [\\d.]+)?", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "microsoft-word:meta:6",
+				kind: "meta",
+				key: "progid",
+				valuePattern: new RegExp("^word\\.", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:microsoft:word:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:microsoft:word:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "monaco-editor",
@@ -761,7 +986,7 @@ export const richTextEditorsTechnologyDefinitions = [
 		description: "Monaco Editor is the code editor that powers VS Code. Monaco Editor is a tool in the text editor category of a tech stack.",
 		icon: "Microsoft.svg",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
@@ -771,30 +996,32 @@ export const richTextEditorsTechnologyDefinitions = [
 				description: "Stylesheet content contains a bounded technology signature.",
 			},
 			{
-				id: "monaco-editor:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "monaco-editor:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "MonacoEnvironment",
-				description: "Page-owned global matches a known technology marker."
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "monaco-editor:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "monaco-editor:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "apex.libVersions.monacoEditor",
 				valuePattern: new RegExp("^([\\d\\.]+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "monaco-editor:pageGlobal:3",
-				kind: "pageGlobal",
+				id: "monaco-editor:jsGlobal:3",
+				kind: "jsGlobal",
 				property: "monaco.editor",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "n1ed",
@@ -804,27 +1031,24 @@ export const richTextEditorsTechnologyDefinitions = [
 		icon: "N1ED.svg",
 		categories: [
 			"rich-text-editors",
-			"styling-library",
-			"component-library"
 		],
 		rules: [
 			{
 				id: "n1ed:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("\\.public\\.n1ed\\.com/"),
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\.public\\.n1ed\\.com\\/"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"mid",
+				"poa",
 				"recurring",
-				"poa"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "powtoon",
@@ -834,30 +1058,28 @@ export const richTextEditorsTechnologyDefinitions = [
 		icon: "Powtoon.svg",
 		categories: [
 			"rich-text-editors",
-			"animation"
 		],
 		rules: [
 			{
 				id: "powtoon:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("static\\.powtoon\\.co"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "powtoon:dom:1",
 				kind: "dom",
 				selector: "iframe[src*='www.powtoon.com']",
-				description: "DOM selector matches a known technology marker."
-			}
+				description: "DOM selector matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"mid",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "pspad",
@@ -866,24 +1088,30 @@ export const richTextEditorsTechnologyDefinitions = [
 		description: "PSPad is a feature-rich text editor designed for developers and professionals working with text, offering tools for coding, syntax highlighting, and project management.",
 		icon: "PSPad.svg",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
 				id: "pspad:meta:0",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^PSPad editor, www.pspad.com$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^PSPad editor, www.pspad.com$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "pspad:meta:1",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^pspad editor, www.pspad.com$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
-				"freemium"
-			]
-		}
+				"freemium",
+			],
+		},
 	},
 	{
 		id: "quill",
@@ -892,20 +1120,54 @@ export const richTextEditorsTechnologyDefinitions = [
 		description: "Quill is a free open-source WYSIWYG editor.",
 		icon: "Quill.svg",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
-				id: "quill:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "quill:dom:0",
+				kind: "dom",
+				selector: "div[class*='ql-editor'], div[class*='quill']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "quill:dom:1",
+				kind: "dom",
+				selector: "link[href*='cdn.quilljs.com/']",
+				description: "DOM selector matches a known technology marker.",
+			},
+			{
+				id: "quill:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "Quill",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
+		],
+	},
+	{
+		id: "smarteditor2",
+		name: "SmartEditor2",
+		website: "https://github.com/naver/smarteditor2",
+		description: "SmartEditor2 is an open-source JavaScript WYSIWYG HTML editor from NAVER.",
+		categories: [
+			"rich-text-editors",
+		],
+		rules: [
+			{
+				id: "smarteditor2:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\/(?:smarteditor2|se2)\\/.*HuskyEZCreator\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "smarteditor2:jsGlobal:1",
+				kind: "jsGlobal",
+				property: "nhn.husky.EZCreator",
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false
-		}
+			oss: true,
+		},
 	},
 	{
 		id: "summernote",
@@ -914,27 +1176,36 @@ export const richTextEditorsTechnologyDefinitions = [
 		description: "Summernote is an open-source JavaScript library that offers a feature-rich WYSIWYG editor for web applications, allowing users to create and edit formatted content in a familiar word processor-like interface.",
 		icon: "Summernote.svg",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
 				id: "summernote:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/(?:S|s)ummernote(?:\\.min)?\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/(?:S|s)ummernote(?:\\.min)?\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
 				id: "summernote:scriptSrc:1",
 				kind: "scriptSrc",
-				pattern: new RegExp("/summernote(?:@|-)([\\d\\.]+)/"),
-				version: { source: "match", group: 1 },
-				description: "Script source URL matches a known technology marker."
-			}
+				pattern: new RegExp("\\/summernote(?:@|-)([\\d\\.]+)\\/"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Script source URL matches a known technology marker.",
+			},
+			{
+				id: "summernote:scriptSrc:2",
+				kind: "scriptSrc",
+				pattern: new RegExp("\\/(?:s|s)ummernote(?:\\.min)?\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+			cpe: "cpe:2.3:a:summernote:summernote:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "tinymce",
@@ -944,35 +1215,35 @@ export const richTextEditorsTechnologyDefinitions = [
 		icon: "TinyMCE.svg",
 		categories: [
 			"rich-text-editors",
-			"ui-library"
 		],
 		rules: [
 			{
 				id: "tinymce:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/tiny_?mce(?:\\.min)?\\.js"),
-				description: "Script source URL matches a known technology marker."
+				pattern: new RegExp("\\/tiny_?mce(?:\\.min)?\\.js"),
+				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "tinymce:pageGlobal:1",
-				kind: "pageGlobal",
+				id: "tinymce:jsGlobal:1",
+				kind: "jsGlobal",
 				property: "tinyMCE.majorVersion",
 				valuePattern: new RegExp("([\\d.]+)"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
 			},
 			{
-				id: "tinymce:pageGlobal:2",
-				kind: "pageGlobal",
+				id: "tinymce:jsGlobal:2",
+				kind: "jsGlobal",
 				property: "tinymce",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false,
-			cpe: "cpe:2.3:a:tiny:tinymce:*:*:*:*:*:*:*:*"
-		}
+			cpe: "cpe:2.3:a:tiny:tinymce:*:*:*:*:*:*:*:*",
+		},
 	},
 	{
 		id: "tiptap",
@@ -981,25 +1252,25 @@ export const richTextEditorsTechnologyDefinitions = [
 		description: "Tiptap is a headless, open-source editor framework designed for flexible and customizable text editing.",
 		icon: "Tiptap.svg",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
 				id: "tiptap:scriptContent:0",
 				kind: "scriptContent",
 				pattern: new RegExp("\\.tiptap\\.dev"),
-				description: "Script content contains a bounded technology signature."
-			}
+				description: "Script content contains a bounded technology signature.",
+			},
 		],
 		metadata: {
 			saas: true,
 			oss: true,
 			pricing: [
+				"freemium",
 				"mid",
 				"recurring",
-				"freemium"
-			]
-		}
+			],
+		},
 	},
 	{
 		id: "tlooto",
@@ -1008,78 +1279,66 @@ export const richTextEditorsTechnologyDefinitions = [
 		description: "tlooto is an AI assistant designed to support academic writing, research tasks, and information synthesis for educational and scholarly use.",
 		icon: "tlooto.svg",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
-				id: "tlooto:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "tlooto:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "tlooto.copilot",
-				description: "Page-owned global matches a known technology marker."
-			}
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
 		metadata: {
 			saas: true,
-			oss: false,
 			pricing: [
 				"freemium",
 				"low",
-				"recurring"
-			]
-		}
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "trix",
 		name: "Trix",
 		website: "https://trix-editor.org",
 		description: "Trix is an open-source project from Basecamp, the creators of Ruby on Rails.",
-		icon: "trix.svg",
+		icon: "trix.png",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
-				id: "trix:pageGlobal:0",
-				kind: "pageGlobal",
+				id: "trix:jsGlobal:0",
+				kind: "jsGlobal",
 				property: "Trix.VERSION",
 				valuePattern: new RegExp("^(.+)$"),
-				version: { source: "match", group: 1 },
-				description: "Page-owned global matches a known technology marker."
-			}
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Page-owned global matches a known technology marker.",
+			},
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "unbounce",
 		name: "Unbounce",
 		website: "https://unbounce.com",
 		description: "Unbounce is a tool to build landing pages.",
-		icon: "Unbounce.svg",
+		icon: "Unbounce.png",
 		categories: [
 			"rich-text-editors",
-			"platform-cms-builder"
+			"platform-cms-builder",
 		],
 		rules: [
 			{
 				id: "unbounce:scriptSrc:0",
 				kind: "scriptSrc",
 				pattern: new RegExp("ubembed\\.com"),
-				description: "Script source URL matches a known technology marker."
+				description: "Script source URL matches a known technology marker.",
 			},
-			{
-				id: "unbounce:responseHeader:1",
-				kind: "responseHeader",
-				key: "X-Unbounce-PageId",
-				description: "Response header matches a known technology marker."
-			}
 		],
-		metadata: {
-			saas: false,
-			oss: false
-		}
 	},
 	{
 		id: "web-stories-for-wordpress",
@@ -1089,71 +1348,132 @@ export const richTextEditorsTechnologyDefinitions = [
 		icon: "Web-Stories.svg",
 		categories: [
 			"rich-text-editors",
-			"wordpress-ecosystem"
+			"wordpress-ecosystem",
 		],
 		rules: [
 			{
 				id: "web-stories-for-wordpress:meta:0",
 				kind: "meta",
 				key: "amp-story-generator-name",
-				valuePattern: new RegExp("^Web Stories for WordPress$"),
-				description: "Meta tag matches a known technology marker."
+				valuePattern: new RegExp("^Web Stories for WordPress$", "i"),
+				description: "Meta tag matches a known technology marker.",
 			},
 			{
 				id: "web-stories-for-wordpress:meta:1",
 				kind: "meta",
 				key: "amp-story-generator-version",
-				valuePattern: new RegExp("^(.+)$"),
-				version: { source: "match", group: 1 },
-				description: "Meta tag matches a known technology marker."
-			}
-		],
-		implies: [
-			"web-stories"
-		],
-		requires: [
-			"wordpress"
+				valuePattern: new RegExp("^(.+)$", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "web-stories-for-wordpress:meta:2",
+				kind: "meta",
+				key: "amp-story-generator-name",
+				valuePattern: new RegExp("^web stories for wordpress$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
+			oss: true,
+		},
+		implies: [
+			"web-stories",
+		],
+		requires: [
+			"wordpress",
+		],
 	},
 	{
 		id: "webdev",
 		name: "WEBDEV",
 		website: "https://www.windev.com/webdev/index.html",
 		description: "WEBDEV is a tool to develop internet and intranet sites and applications that support data and processes.",
-		icon: "webdev.svg",
+		icon: "webdev.png",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
 				id: "webdev:html:0",
 				kind: "html",
 				pattern: new RegExp("<!-- [a-zA-Z0-9_]+ [\\d/]+ [\\d:]+ WebDev \\d\\d ([\\d.]+) -->"),
-				version: { source: "match", group: 1 },
-				description: "HTML contains a known technology marker."
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "HTML contains a known technology signature.",
 			},
 			{
-				id: "webdev:responseHeader:1",
-				kind: "responseHeader",
-				key: "WebDevSrc",
-				description: "Response header matches a known technology marker."
-			},
-			{
-				id: "webdev:meta:2",
+				id: "webdev:meta:1",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^WEBDEV$"),
-				description: "Meta tag matches a known technology marker."
-			}
+				valuePattern: new RegExp("^WEBDEV$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "webdev:html:2",
+				kind: "html",
+				pattern: new RegExp("<!-- [a-za-z0-9_]+ [\\d/]+ [\\d:]+ webdev \\d\\d ([\\d.]+) -->"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "HTML contains a known technology signature.",
+			},
+			{
+				id: "webdev:meta:3",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("^webdev$", "i"),
+				description: "Meta tag matches a known technology marker.",
+			},
+		],
+	},
+	{
+		id: "website-x5",
+		name: "WebSite X5",
+		website: "https://websitex5.com",
+		description: "WebSite X5 is a tools to create and publish websites.",
+		icon: "WebSite X5.png",
+		categories: [
+			"rich-text-editors",
+			"platform-cms-builder",
+		],
+		rules: [
+			{
+				id: "website-x5:meta:0",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("Incomedia WebSite X5 (\\w+ [\\d.]+)", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
+			{
+				id: "website-x5:meta:1",
+				kind: "meta",
+				key: "generator",
+				valuePattern: new RegExp("incomedia website x5 (\\w+ [\\d.]+)", "i"),
+				version: {
+					source: "match",
+					group: 1,
+				},
+				description: "Meta tag matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: false
-		}
+			saas: true,
+			pricing: [
+				"low",
+				"recurring",
+			],
+		},
 	},
 	{
 		id: "wysibb",
@@ -1162,22 +1482,21 @@ export const richTextEditorsTechnologyDefinitions = [
 		description: "WysiBB very simple and functional open-source WYSIWYG BBCode editor based on jQuery.",
 		icon: "WysiBB.svg",
 		categories: [
-			"rich-text-editors"
+			"rich-text-editors",
 		],
 		rules: [
 			{
 				id: "wysibb:scriptSrc:0",
 				kind: "scriptSrc",
-				pattern: new RegExp("/jquery\\.wysibb\\.min\\.js"),
-				description: "Script source URL matches a known technology marker."
-			}
-		],
-		implies: [
-			"jquery"
+				pattern: new RegExp("\\/jquery\\.wysibb\\.min\\.js"),
+				description: "Script source URL matches a known technology marker.",
+			},
 		],
 		metadata: {
-			saas: false,
-			oss: true
-		}
-	}
+			oss: true,
+		},
+		implies: [
+			"jquery",
+		],
+	},
 ] as const satisfies readonly TechnologyDefinition[];
