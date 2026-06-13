@@ -1770,10 +1770,29 @@ export const securityTechnologyDefinitions = [
 		],
 		rules: [
 			{
-				id: "hsts:url:0",
+				id: "hsts:responseHeader:0",
+				kind: "responseHeader",
+				key: "strict-transport-security",
+				valuePattern: new RegExp("(?:^|;)\\s*max-age\\s*=\\s*(?!0(?:\\D|$))\\d+", "i"),
+				description: "Main document response includes a Strict-Transport-Security header with a non-zero max-age. HTTPS alone is not HSTS evidence.",
+			},
+		],
+	},
+	{
+		id: "hsts-preloaded-tld",
+		name: "HSTS Preloaded TLD",
+		website: "https://hstspreload.org/",
+		description: "The hostname uses a top-level domain that is shipped in browser HSTS preload lists, so browsers require HTTPS before contacting the site. This does not prove the site sends a Strict-Transport-Security header.",
+		categories: [
+			"security",
+		],
+		rules: [
+			{
+				id: "hsts-preloaded-tld:url:0",
 				kind: "url",
-				pattern: new RegExp("^https:\\/\\/[\\w\\d\\.\\-]+(?:\\.dev)(?:\\/.+||\\/)$"),
-				description: "Page URL matches a known technology marker.",
+				pattern: new RegExp("^https:\\/\\/[^/?#]+\\.(?:app|dev|page)(?::\\d+)?(?:[/?#]|$)", "i"),
+				confidence: 90,
+				description: "URL uses a commonly preloaded HTTPS-only TLD. Report separately from response-header HSTS.",
 			},
 		],
 	},

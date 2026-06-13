@@ -11303,6 +11303,25 @@ export const widgetsMiscTechnologyDefinitions = [
 		},
 	},
 	{
+		id: "priority-hints",
+		name: "Priority Hints",
+		website: "https://wicg.github.io/priority-hints/",
+		description: "Priority Hints exposes a mechanism for developers to signal a relative priority for browsers to consider when fetching resources.",
+		icon: "Priority Hints.svg",
+		categories: [
+			"widgets-misc",
+		],
+		rules: [
+			{
+				id: "priority-hints:dom:0",
+				kind: "dom",
+				selector: "iframe[fetchpriority], img[fetchpriority], script[fetchpriority], link[fetchpriority]",
+				confidence: 45,
+				description: "DOM uses the fetchpriority attribute. This is a browser resource-loading hint, not monitoring/error-tracking technology, so keep it below the default display threshold.",
+			},
+		],
+	},
+	{
 		id: "prism",
 		name: "Prism",
 		website: "https://prismjs.com",
@@ -11718,19 +11737,20 @@ export const widgetsMiscTechnologyDefinitions = [
 	},
 	{
 		id: "pwa",
-		name: "PWA",
-		website: "https://web.dev/progressive-web-apps/",
-		description: "Progressive Web Apps (PWAs) are web apps built and enhanced with modern APIs to deliver enhanced capabilities, reliability, and installability while reaching anyone, anywhere, on any device, all with a single codebase.",
+		name: "Web App Manifest",
+		website: "https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Manifest",
+		description: "A web app manifest provides metadata used when a site is installed or presented like an app. A manifest link alone does not prove the site is a complete Progressive Web App.",
 		icon: "PWA.svg",
 		categories: [
 			"widgets-misc",
 		],
 		rules: [
 			{
-				id: "pwa:dom:0",
-				kind: "dom",
-				selector: "link[rel='manifest']",
-				description: "DOM selector matches a known technology marker.",
+				id: "pwa:link:0",
+				kind: "link",
+				rel: "manifest",
+				confidence: 75,
+				description: "Document links to a web app manifest. This is installability metadata, not full PWA proof by itself.",
 			},
 		],
 	},
