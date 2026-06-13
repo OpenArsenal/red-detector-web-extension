@@ -329,6 +329,20 @@ describe('relationship resolver', () => {
 		expect(resultIds(registry, 'woo')).toEqual([]);
 	});
 
+	it('prevents a technology from satisfying its own requirement through an implication', () => {
+		const registry = [
+			relationshipTechnology({
+				id: 'element-ui',
+				marker: 'el-button',
+				implies: ['vue-js'],
+				requires: ['vue-js'],
+			}),
+			relationshipTechnology({ id: 'vue-js' }),
+		];
+
+		expect(resultIds(registry, 'el-button')).toEqual([]);
+	});
+
 	it('keeps detections whose required technologies are present', () => {
 		const registry = [
 			relationshipTechnology({
@@ -393,18 +407,14 @@ describe('relationship resolver', () => {
 		expect(resultIds(registry, 'alpha beta')).toEqual(['beta', 'alpha']);
 	});
 
-	it('uses implied technologies to satisfy requirements after fixed-point expansion', () => {
+	it('does not use implied technologies to satisfy direct requirements', () => {
 		const registry = [
 			relationshipTechnology({ id: 'nextjs', marker: 'next', implies: ['react'] }),
 			relationshipTechnology({ id: 'plugin', marker: 'plugin', requires: ['react'] }),
 			relationshipTechnology({ id: 'react' }),
 		];
 
-		expect(resultIds(registry, 'next plugin')).toEqual([
-			'nextjs',
-			'plugin',
-			'react',
-		]);
+		expect(resultIds(registry, 'next plugin')).toEqual(['nextjs', 'react']);
 	});
 
 	it('removes implied technologies whose requirements are absent', () => {
@@ -568,6 +578,103 @@ describe('relationship resolver', () => {
 			'plugin',
 			'modern-runtime',
 		]);
+	});
+});
+
+
+describe('false-positive regressions', () => {
+	it('does not detect Element UI or Vue.js from Vercel-style class names containing el-', () => {
+		const analysis = analyzeSite(
+			createSignals({
+				html: '<a class="vercel-logo text-label-12">Vercel</a>',
+				dom: {
+					selectors: {
+						".el-button, .el-dialog, .el-form-item, .el-select, .el-select-dropdown, .el-table, .el-pagination, .el-message, .el-notification, .el-popover": false,
+					},
+				},
+			}),
+			technologyDefinitions,
+		);
+
+		expect(analysis.results.some((item) => item.technologyId === 'element-ui')).toBe(false);
+		expect(analysis.results.some((item) => item.technologyId === 'vue-js')).toBe(false);
+	});
+
+	it('does not report Web Components from the internal Next.js route announcer element', () => {
+		const analysis = analyzeSite(
+			createSignals({
+				html: '<next-route-announcer style="position:absolute"></next-route-announcer>',
+			}),
+			technologyDefinitions,
+		);
+
+		expect(analysis.results.some((item) => item.technologyId === 'web-components')).toBe(false);
+	});
+
+	it('does not report Tailwind CSS from HTML-only utility-shaped classes', () => {
+		const analysis = analyzeSite(
+			createSignals({
+				html: '<a class="fixed z-[1000] flex items-center focus:opacity-100">Skip</a>',
+			}),
+			technologyDefinitions,
+		);
+
+		expect(analysis.results.some((item) => item.technologyId === 'tailwind-css')).toBe(false);
+	});
+
+	it('does not report Priority Hints as a displayed technology from fetchpriority alone', () => {
+		const analysis = analyzeSite(
+			createSignals({
+				dom: {
+					selectors: {
+						'iframe[fetchpriority], img[fetchpriority], script[fetchpriority], link[fetchpriority]': true,
+					},
+				},
+			}),
+			technologyDefinitions,
+		);
+
+		expect(analysis.results.some((item) => item.technologyId === 'priority-hints')).toBe(false);
+	});
+
+	it('does not report a full PWA from a manifest link alone', () => {
+		const analysis = analyzeSite(
+			createSignals({
+				dom: { selectors: { "link[rel='manifest']": true } },
+				links: [{ rel: 'manifest', href: '/manifest.webmanifest' }],
+			}),
+			technologyDefinitions,
+		);
+
+		expect(analysis.results.some((item) => item.technologyId === 'pwa')).toBe(false);
+	});
+
+	it('detects HSTS only from a Strict-Transport-Security response header', () => {
+		const httpsOnly = analyzeSite(
+			createSignals({ url: 'https://example.com', hostname: 'example.com' }),
+			technologyDefinitions,
+		);
+		const withHeader = analyzeSite(
+			createSignals({
+				url: 'https://example.com',
+				hostname: 'example.com',
+				headers: { 'strict-transport-security': 'max-age=31536000; includeSubDomains' },
+			}),
+			technologyDefinitions,
+		);
+
+		expect(httpsOnly.results.some((item) => item.technologyId === 'hsts')).toBe(false);
+		expect(withHeader.results.some((item) => item.technologyId === 'hsts')).toBe(true);
+	});
+
+	it('reports preloaded TLDs separately from response-header HSTS', () => {
+		const analysis = analyzeSite(
+			createSignals({ url: 'https://example.dev', hostname: 'example.dev' }),
+			technologyDefinitions,
+		);
+
+		expect(analysis.results.some((item) => item.technologyId === 'hsts')).toBe(false);
+		expect(analysis.results.some((item) => item.technologyId === 'hsts-preloaded-tld')).toBe(true);
 	});
 });
 
