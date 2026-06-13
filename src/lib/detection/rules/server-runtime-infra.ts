@@ -2155,10 +2155,11 @@ export const serverRuntimeInfraTechnologyDefinitions = [
 		],
 		rules: [
 			{
-				id: "hirschmann-hios:dom:0",
-				kind: "dom",
-				selector: "div",
-				description: "DOM selector matches a known technology marker.",
+				id: "hirschmann-hios:html:0",
+				kind: "html",
+				pattern: new RegExp("(?:HiSecOS-|HiOS-.+-)\\d+\\.\\d+\\.\\d+", "i"),
+				confidence: 95,
+				description: "Document HTML contains a Hirschmann HiOS version marker.",
 			},
 			{
 				id: "hirschmann-hios:text:1",
@@ -2170,12 +2171,7 @@ export const serverRuntimeInfraTechnologyDefinitions = [
 				},
 				description: "Page text contains a known technology marker.",
 			},
-			{
-				id: "hirschmann-hios:dom:2",
-				kind: "dom",
-				selector: "h2",
-				description: "DOM selector matches a known technology marker.",
-			},
+
 		],
 		metadata: {
 			cpe: "cpe:2.3:o:belden:hirschmann_hios:*:*:*:*:*:*:*:*",

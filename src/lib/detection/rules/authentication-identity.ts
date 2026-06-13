@@ -66,10 +66,11 @@ export const authenticationIdentityTechnologyDefinitions = [
 		],
 		rules: [
 			{
-				id: "apereo-cas:dom:0",
-				kind: "dom",
-				selector: "head > title",
-				description: "DOM selector matches a known technology marker.",
+				id: "apereo-cas:html:0",
+				kind: "html",
+				pattern: new RegExp("CAS\\s*(?:[–-]|&ndash;)\\s*(?:Central Authentication Service|Service Central d['’]Authentification)", "i"),
+				confidence: 95,
+				description: "Document HTML contains the Apereo CAS title marker.",
 			},
 			{
 				id: "apereo-cas:text:1",
@@ -83,7 +84,6 @@ export const authenticationIdentityTechnologyDefinitions = [
 		},
 		implies: [
 			"java",
-			"php",
 		],
 	},
 	{
@@ -111,8 +111,15 @@ export const authenticationIdentityTechnologyDefinitions = [
 			{
 				id: "apple-sign-in:dom:2",
 				kind: "dom",
-				selector: "button",
-				description: "DOM selector matches a known technology marker.",
+				selector: "#appleid-signin, [data-appleid-signin], meta[name='appleid-signin-client-id']",
+				description: "DOM contains Sign in with Apple markers.",
+			},
+			{
+				id: "apple-sign-in:html:5",
+				kind: "html",
+				pattern: new RegExp("(?:appleid\\.cdn-apple\\.com/appleauth|appleid\\.apple\\.com/auth/authorize|appleid-signin-client-id)", "i"),
+				confidence: 95,
+				description: "Document HTML contains Sign in with Apple SDK or OAuth markers.",
 			},
 			{
 				id: "apple-sign-in:text:3",

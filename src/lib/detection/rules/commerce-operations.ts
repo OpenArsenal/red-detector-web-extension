@@ -4889,14 +4889,15 @@ export const commerceOperationsTechnologyDefinitions = [
 			{
 				id: "localised:dom:1",
 				kind: "dom",
-				selector: "img[src='.localised.com']",
+				selector: "img[src*='localised.com']",
 				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "localised:dom:2",
-				kind: "dom",
-				selector: "span",
-				description: "DOM selector matches a known technology marker.",
+				id: "localised:html:2",
+				kind: "html",
+				pattern: new RegExp("\\b(?:api\\.)?localised\\.com\\b", "i"),
+				confidence: 90,
+				description: "Document HTML contains a Localised platform URL.",
 			},
 		],
 		metadata: {
@@ -6626,12 +6627,6 @@ export const commerceOperationsTechnologyDefinitions = [
 				kind: "requestUrl",
 				pattern: new RegExp("\\.paypal\\.com"),
 				description: "Observed request URL matches a known technology marker.",
-			},
-			{
-				id: "paypal:dom:2",
-				kind: "dom",
-				selector: "button",
-				description: "DOM selector matches a known technology marker.",
 			},
 			{
 				id: "paypal:text:3",

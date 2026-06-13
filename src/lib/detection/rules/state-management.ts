@@ -193,10 +193,11 @@ export const stateManagementTechnologyDefinitions = [
 				description: "Script source URL matches a known technology marker.",
 			},
 			{
-				id: "pinia:dom:1",
-				kind: "dom",
-				selector: "script",
-				description: "DOM selector matches a known technology marker.",
+				id: "pinia:html:1",
+				kind: "html",
+				pattern: new RegExp("\\bpinia\\b", "i"),
+				confidence: 80,
+				description: "Document HTML contains a Pinia package/runtime marker.",
 			},
 			{
 				id: "pinia:text:2",

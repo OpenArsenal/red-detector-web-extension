@@ -5139,10 +5139,11 @@ export const developerToolingTechnologyDefinitions = [
 		],
 		rules: [
 			{
-				id: "statping:dom:0",
-				kind: "dom",
-				selector: "noscript",
-				description: "DOM selector matches a known technology marker.",
+				id: "statping:html:0",
+				kind: "html",
+				pattern: new RegExp("We're\\s+sorry\\s+but\\s+Statping", "i"),
+				confidence: 95,
+				description: "Document HTML contains Statping's no-JavaScript app marker.",
 			},
 			{
 				id: "statping:text:1",

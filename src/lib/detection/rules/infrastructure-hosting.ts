@@ -2068,10 +2068,11 @@ export const infrastructureHostingTechnologyDefinitions = [
 				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "drupal-multisite:dom:4",
-				kind: "dom",
-				selector: "style",
-				description: "DOM selector matches a known technology marker.",
+				id: "drupal-multisite:html:4",
+				kind: "html",
+				pattern: new RegExp("\\/sites\\/(?!(?:default|all)\\/)[^\"'<>]+\\/(?:files|themes|modules)\\/", "i"),
+				confidence: 90,
+				description: "Document HTML contains a non-default Drupal multisite asset path.",
 			},
 			{
 				id: "drupal-multisite:text:5",
@@ -5851,14 +5852,15 @@ export const infrastructureHostingTechnologyDefinitions = [
 			{
 				id: "wordpress-multisite:dom:1",
 				kind: "dom",
-				selector: "img[src*='wp-content/uploads'], img[srcset*='wp-content/uploads'], source[srcset*='wp-content/uploads']",
-				description: "DOM selector matches a known technology marker.",
+				selector: "img[src*='wp-content/uploads/sites/'], img[srcset*='wp-content/uploads/sites/'], source[srcset*='wp-content/uploads/sites/']",
+				description: "DOM contains WordPress multisite upload paths with a site-id segment.",
 			},
 			{
-				id: "wordpress-multisite:dom:2",
-				kind: "dom",
-				selector: "style",
-				description: "DOM selector matches a known technology marker.",
+				id: "wordpress-multisite:html:2",
+				kind: "html",
+				pattern: new RegExp("wp-content/uploads/sites/\\d+", "i"),
+				confidence: 95,
+				description: "Document HTML contains WordPress multisite upload paths.",
 			},
 			{
 				id: "wordpress-multisite:text:3",

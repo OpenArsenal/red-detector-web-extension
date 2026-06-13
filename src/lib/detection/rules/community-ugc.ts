@@ -2805,10 +2805,11 @@ export const communityUgcTechnologyDefinitions = [
 		],
 		rules: [
 			{
-				id: "pleroma:dom:0",
-				kind: "dom",
-				selector: "noscript",
-				description: "DOM selector matches a known technology marker.",
+				id: "pleroma:html:0",
+				kind: "html",
+				pattern: new RegExp("To use Pleroma, please enable JavaScript\\.", "i"),
+				confidence: 95,
+				description: "Document HTML contains Pleroma's no-JavaScript marker.",
 			},
 			{
 				id: "pleroma:text:1",
@@ -2817,10 +2818,11 @@ export const communityUgcTechnologyDefinitions = [
 				description: "Page text contains a known technology marker.",
 			},
 			{
-				id: "pleroma:dom:2",
-				kind: "dom",
-				selector: "title",
-				description: "DOM selector matches a known technology marker.",
+				id: "pleroma:html:2",
+				kind: "html",
+				pattern: new RegExp("<title>\\s*Pleroma\\s*</title>", "i"),
+				confidence: 95,
+				description: "Document title is Pleroma-specific.",
 			},
 			{
 				id: "pleroma:text:3",

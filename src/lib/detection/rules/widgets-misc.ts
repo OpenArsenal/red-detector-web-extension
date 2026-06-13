@@ -2093,10 +2093,17 @@ export const widgetsMiscTechnologyDefinitions = [
 		],
 		rules: [
 			{
-				id: "closure-library:dom:0",
-				kind: "dom",
-				selector: "script",
-				description: "DOM selector matches a known technology marker.",
+				id: "closure-library:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("(?:closure-library|goog/base\\.js|closure/goog)", "i"),
+				description: "Script source URL contains a Closure Library marker.",
+			},
+			{
+				id: "closure-library:html:2",
+				kind: "html",
+				pattern: new RegExp("Copyright\\s+The\\s+Closure\\s+Library\\s+Authors", "i"),
+				confidence: 90,
+				description: "Document HTML contains the Closure Library copyright marker.",
 			},
 			{
 				id: "closure-library:text:1",
@@ -12288,18 +12295,6 @@ export const widgetsMiscTechnologyDefinitions = [
 			"booking-scheduling",
 		],
 		rules: [
-			{
-				id: "rezgo:dom:0",
-				kind: "dom",
-				selector: "iframe",
-				description: "DOM selector matches a known technology marker.",
-			},
-			{
-				id: "rezgo:dom:1",
-				kind: "dom",
-				selector: "link",
-				description: "DOM selector matches a known technology marker.",
-			},
 			{
 				id: "rezgo:scriptSrc:2",
 				kind: "scriptSrc",

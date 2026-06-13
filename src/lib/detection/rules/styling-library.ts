@@ -188,10 +188,11 @@ export const stylingLibraryTechnologyDefinitions = [
 				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "bootstrap:dom:7",
-				kind: "dom",
-				selector: "style",
-				description: "DOM selector matches a known technology marker.",
+				id: "bootstrap:html:7",
+				kind: "html",
+				pattern: new RegExp("\\bdata-bs-(?:toggle|target|dismiss|ride|slide-to|theme|placement)=", "i"),
+				confidence: 85,
+				description: "Document HTML contains Bootstrap JavaScript data attributes.",
 			},
 			{
 				id: "bootstrap:text:8",
@@ -764,8 +765,8 @@ export const stylingLibraryTechnologyDefinitions = [
 			{
 				id: "font-awesome:dom:8",
 				kind: "dom",
-				selector: "[class*='fa']",
-				description: "DOM selector matches a known technology marker.",
+				selector: "[data-fa-i2svg], svg[data-prefix][data-icon], .fa, .fas, .far, .fal, .fab, .fad, [class^='fa-'], [class*=' fa-']",
+				description: "DOM contains Font Awesome class tokens or SVG metadata.",
 			},
 			{
 				id: "font-awesome:jsGlobal:9",
@@ -907,14 +908,8 @@ export const stylingLibraryTechnologyDefinitions = [
 			{
 				id: "headless-ui:dom:0",
 				kind: "dom",
-				selector: "button",
-				description: "DOM selector matches a known technology marker.",
-			},
-			{
-				id: "headless-ui:dom:1",
-				kind: "dom",
-				selector: "div",
-				description: "DOM selector matches a known technology marker.",
+				selector: "[data-headlessui-state], [data-headlessui-focus], [data-headlessui-focus-visible]",
+				description: "DOM contains Headless UI state attributes.",
 			},
 		],
 		metadata: {
@@ -1615,18 +1610,6 @@ export const stylingLibraryTechnologyDefinitions = [
 				description: "Stylesheet content contains a bounded technology signature.",
 			},
 			{
-				id: "tailwind-css:dom:6",
-				kind: "dom",
-				selector: "link[rel='stylesheet'][href*='.css']",
-				description: "DOM selector matches a known technology marker.",
-			},
-			{
-				id: "tailwind-css:dom:7",
-				kind: "dom",
-				selector: "style",
-				description: "DOM selector matches a known technology marker.",
-			},
-			{
 				id: "tailwind-css:text:8",
 				kind: "text",
 				pattern: new RegExp("\\/\\/\\*! tailwindcss v([\\d.]+) \\| MIT License \\| https:\\/\\/tailwindcss\\.com\\*\\/"),
@@ -1650,10 +1633,18 @@ export const stylingLibraryTechnologyDefinitions = [
 				description: "Meta tag matches a known technology marker.",
 			},
 			{
-				id: "tailwind-css:dom:11",
-				kind: "dom",
-				selector: "body [class]",
-				description: "DOM selector matches a known technology marker.",
+				id: "tailwind-css:html:11",
+				kind: "html",
+				pattern: new RegExp("/\\*!\\s*tailwindcss\\s+v[\\d.]+\\s*\\|\\s*MIT\\s*License\\s*\\|\\s*https://tailwindcss\\.com", "i"),
+				confidence: 95,
+				description: "Document HTML contains the Tailwind CSS generated stylesheet banner.",
+			},
+			{
+				id: "tailwind-css:html:12",
+				kind: "html",
+				pattern: new RegExp("--tw-(?:ring|shadow|translate|rotate|skew|scale|space-[xy]|divide-[xy]|border-opacity|text-opacity|bg-opacity)[a-z-]*\\s*:", "i"),
+				confidence: 85,
+				description: "Document HTML contains Tailwind-generated CSS custom properties.",
 			},
 			{
 				id: "tailwind-css:html:modern:0",

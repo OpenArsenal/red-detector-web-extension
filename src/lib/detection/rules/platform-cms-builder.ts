@@ -45357,10 +45357,17 @@ export const platformCmsBuilderTechnologyDefinitions = [
 		],
 		rules: [
 			{
-				id: "summercart:dom:0",
-				kind: "dom",
-				selector: "link",
-				description: "DOM selector matches a known technology marker.",
+				id: "summercart:scriptSrc:0",
+				kind: "scriptSrc",
+				pattern: new RegExp("summercart|sc_events|scevents", "i"),
+				description: "Script source URL contains a SummerCart marker.",
+			},
+			{
+				id: "summercart:html:2",
+				kind: "html",
+				pattern: new RegExp("\\b(?:SCEvents|SummerCart)\\b", "i"),
+				confidence: 90,
+				description: "Document HTML contains a SummerCart runtime marker.",
 			},
 			{
 				id: "summercart:jsGlobal:1",
@@ -50242,10 +50249,11 @@ export const platformCmsBuilderTechnologyDefinitions = [
 				description: "DOM selector matches a known technology marker.",
 			},
 			{
-				id: "wagtail:dom:5",
-				kind: "dom",
-				selector: "style, script",
-				description: "DOM selector matches a known technology marker.",
+				id: "wagtail:html:5",
+				kind: "html",
+				pattern: new RegExp("(?:\\/media)?\\/(?:original_images|images)\\/[\\w.-]+\\.(?:(?:fill|max|min)-\\d+x\\d+(?:-c\\d+)?|(?:width|height|scale)-\\d+|original)\\.", "i"),
+				confidence: 85,
+				description: "Document HTML contains Wagtail image rendition paths.",
 			},
 			{
 				id: "wagtail:text:6",
@@ -52846,7 +52854,7 @@ export const platformCmsBuilderTechnologyDefinitions = [
 				id: "wordpress:meta:20",
 				kind: "meta",
 				key: "generator",
-				valuePattern: new RegExp("^wordpress(?: ([\\d.]+))?", "i"),
+				valuePattern: new RegExp("^wordpress(?:\\s*([\\d.]+))?", "i"),
 				version: {
 					source: "match",
 					group: 1,
@@ -53028,6 +53036,18 @@ export const platformCmsBuilderTechnologyDefinitions = [
 				confidence: 55,
 				description: "HTTP response header matches a modern tooling marker.",
 			},
+			{
+				id: "wordpress:meta:22",
+				kind: "meta",
+				key: "shareaholic:wp_version",
+				description: "Meta tag matches a known technology marker."
+			},
+      {
+				id: "wordpress:cookie:23",
+        kind: "cookie",
+        key: "wordpress_test_cookie",
+        description: "WordPress test cookie exists.",
+      }
 		],
 		metadata: {
 			saas: true,

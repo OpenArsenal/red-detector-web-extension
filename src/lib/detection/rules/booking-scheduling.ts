@@ -6814,8 +6814,8 @@ export const bookingSchedulingTechnologyDefinitions = [
 			{
 				id: "tablebooker:dom:1",
 				kind: "dom",
-				selector: "iframe",
-				description: "DOM selector matches a known technology marker.",
+				selector: "iframe[src*='tablebooker'], iframe[src*='reservations.tablebooker']",
+				description: "DOM contains a TableBooker reservation iframe.",
 			},
 		],
 		metadata: {

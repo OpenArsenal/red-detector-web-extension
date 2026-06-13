@@ -8455,10 +8455,11 @@ export const advertisingPaidMediaTechnologyDefinitions = [
 		],
 		rules: [
 			{
-				id: "verticalscope:dom:0",
-				kind: "dom",
-				selector: "footer > div",
-				description: "DOM selector matches a known technology marker.",
+				id: "verticalscope:html:0",
+				kind: "html",
+				pattern: new RegExp("VerticalScope(?:\\s+Inc\\.)?", "i"),
+				confidence: 90,
+				description: "Document HTML contains VerticalScope branding.",
 			},
 			{
 				id: "verticalscope:text:1",
