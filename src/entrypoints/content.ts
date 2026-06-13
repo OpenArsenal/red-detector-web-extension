@@ -78,7 +78,6 @@ async function collectSignals(
       hostname: globalThis.location?.hostname,
       includeHtml: Boolean(input.includeHtml),
       selectorProbeCount: input.selectorProbeList.length,
-      jsGlobalProbeCount: input.jsGlobalProbeList.length,
       htmlProbeCount: input.htmlProbeList?.length ?? 0,
     });
 
