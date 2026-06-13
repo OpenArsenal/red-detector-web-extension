@@ -109,7 +109,7 @@ describe('extractVersion', () => {
 });
 
 describe('analyzeSite', () => {
-	it.only('detects WordPress from html and meta generator', () => {
+	it('detects WordPress from html and meta generator', () => {
 		const analysis = analyzeSite(
 			createSignals({
 				html: '<meta name="generator" content="WordPress 6.5"><link href="/wp-content/theme.css">',
