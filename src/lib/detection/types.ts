@@ -14,7 +14,6 @@ export type DetectionKind =
 	| 'responseHeader'
 	| 'requestHeader'
 	| 'jsGlobal'
-	| 'pageGlobal'
 	| 'meta'
 	| 'link'
 	| 'storage'
@@ -32,7 +31,6 @@ export type RuntimeDetectionKind =
 	| 'scriptSrc'
 	| 'cookie'
 	| 'header'
-	| 'jsGlobal'
 	| 'meta'
 	| 'url';
 
@@ -194,7 +192,7 @@ export type MetaDetectionRule = DetectionRuleBase & {
 };
 
 export type JsGlobalDetectionRule = DetectionRuleBase & {
-	kind: 'jsGlobal' | 'pageGlobal';
+	kind: 'jsGlobal';
 	property: string;
 	valuePattern?: RegExp;
 	pattern?: never;
@@ -366,8 +364,13 @@ export type PageSignals = {
 		selectors: Record<string, boolean>;
 	};
 	storage: StorageSignals;
+	/**
+	 * JavaScript globals from the inspected page's context.
+	 *
+	 * Browser-extension content scripts run in an isolated context by default, so
+	 * this stays empty until we inject a script directly into the page. 
+	 */
 	jsGlobals: Record<string, unknown>;
-	pageGlobals: Record<string, unknown>;
 	robotsTxt: string;
 	dnsRecords: DnsSignals;
 	certIssuer: string;

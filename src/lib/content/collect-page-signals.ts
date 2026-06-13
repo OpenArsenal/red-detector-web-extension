@@ -12,7 +12,6 @@ import type { HtmlProbe } from '../messaging';
 
 export type CollectPageSignalsInput = {
 	selectorProbeList: string[];
-	jsGlobalProbeList: string[];
 	htmlProbeList?: HtmlProbe[];
 	includeHtml?: boolean;
 };
@@ -35,7 +34,6 @@ export function collectPageSignals(
 	runtime: RuntimePageSignals = {},
 ): PageSignals {
 	const selectorProbeList = uniqueStrings(input.selectorProbeList);
-	const jsGlobalProbeList = uniqueStrings(input.jsGlobalProbeList);
 	const fullHtml = input.includeHtml ? document.documentElement.outerHTML : '';
 	const htmlProbeList = input.htmlProbeList ?? [];
 	const htmlMatches = fullHtml ? collectHtmlProbeMatches(fullHtml, htmlProbeList) : {};
@@ -62,8 +60,9 @@ export function collectPageSignals(
 			),
 		},
 		storage: collectStorageKeys(),
-		jsGlobals: collectLikelyGlobals(jsGlobalProbeList),
-		pageGlobals: {},
+		// Main-world JavaScript globals need an injected/page-world collector.
+		// Leave this empty in the isolated content-script collector.
+		jsGlobals: {},
 		robotsTxt: '',
 		dnsRecords: {},
 		certIssuer: '',
@@ -332,37 +331,6 @@ function safeQuerySelector(selector: string): boolean {
 	} catch {
 		return false;
 	}
-}
-
-/**
- * MVP note: this reads the content script isolated world, not the page's main
- * world. Keep jsGlobal rules supplemental until a safe main-world bridge exists.
- */
-function collectLikelyGlobals(paths: string[]): Record<string, unknown> {
-	return Object.fromEntries(
-		paths.map((path) => [path, sanitizeGlobalValue(readPath(globalThis, path))]),
-	);
-}
-
-function readPath(root: unknown, path: string): unknown {
-	try {
-		return path.split('.').reduce<unknown>((value, key) => {
-			if (value && typeof value === 'object' && key in value) {
-				return (value as Record<string, unknown>)[key];
-			}
-			return undefined;
-		}, root);
-	} catch {
-		return undefined;
-	}
-}
-
-function sanitizeGlobalValue(value: unknown): unknown {
-	if (['string', 'number', 'boolean'].includes(typeof value) || value == null) {
-		return value;
-	}
-
-	return typeof value;
 }
 
 function safeDecode(value: string): string {

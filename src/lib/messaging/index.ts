@@ -46,7 +46,6 @@ export type HtmlProbe = {
 export type CollectPageSignalsInput = {
 	includeHtml?: boolean;
 	selectorProbeList: string[];
-	jsGlobalProbeList: string[];
 	htmlProbeList?: HtmlProbe[];
 };
 

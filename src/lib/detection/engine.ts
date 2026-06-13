@@ -33,7 +33,6 @@ export const runtimeDetectionKinds = [
 	'scriptSrc',
 	'cookie',
 	'header',
-	'jsGlobal',
 	'meta',
 	'url',
 ] as const satisfies readonly RuntimeDetectionKind[];
@@ -206,9 +205,6 @@ function matchRule(
 
 		case 'jsGlobal':
 			return matchGlobalRule(rule, signals.jsGlobals, confidence, metadata);
-
-		case 'pageGlobal':
-			return matchGlobalRule(rule, signals.pageGlobals, confidence, metadata);
 
 		case 'link':
 			return matchLinkRule(rule, signals.links, confidence, metadata);
@@ -411,7 +407,7 @@ function matchMetaRule(
 }
 
 function matchGlobalRule(
-	rule: Extract<DetectionRule, { kind: 'jsGlobal' | 'pageGlobal' }>,
+	rule: Extract<DetectionRule, { kind: 'jsGlobal' }>,
 	globals: Record<string, unknown>,
 	confidence: number,
 	metadata: Pick<Evidence, 'direct'>,
