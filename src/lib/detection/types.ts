@@ -31,6 +31,7 @@ export type RuntimeDetectionKind =
 	| 'scriptSrc'
 	| 'cookie'
 	| 'header'
+	| 'responseHeader'
 	| 'meta'
 	| 'url';
 

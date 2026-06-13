@@ -33,6 +33,7 @@ export const runtimeDetectionKinds = [
 	'scriptSrc',
 	'cookie',
 	'header',
+	'responseHeader',
 	'meta',
 	'url',
 ] as const satisfies readonly RuntimeDetectionKind[];
@@ -721,7 +722,9 @@ function pruneUnsatisfiedRequirements(
 
 	for (const id of Array.from(accepted.keys())) {
 		const requiredIds = relationshipTargets(graph.requires, id, graph.registryOrderById);
-		const hasAllRequirements = requiredIds.every((requiredId) => accepted.has(requiredId));
+		const hasAllRequirements = requiredIds.every((requiredId) =>
+			hasDirectRequirementEvidence(requiredId, accepted),
+		);
 
 		if (!hasAllRequirements) {
 			accepted.delete(id);
@@ -805,9 +808,22 @@ function hasSatisfiedRequirements(
 	accepted: Map<string, RelationshipNode>,
 	graph: RelationshipGraph,
 ): boolean {
-	return relationshipTargets(graph.requires, definition.id, graph.registryOrderById).every(
-		(requiredId) => accepted.has(requiredId),
+	return relationshipTargets(graph.requires, definition.id, graph.registryOrderById).every((requiredId) =>
+		hasDirectRequirementEvidence(requiredId, accepted),
 	);
+}
+
+/**
+ * A requirement is a guard, not extra evidence. It must be satisfied by an
+ * independently detected technology, otherwise a weak component-library hit can
+ * imply its own framework dependency and then use that implication to survive.
+ */
+function hasDirectRequirementEvidence(
+	requiredId: string,
+	accepted: Map<string, RelationshipNode>,
+): boolean {
+	const requiredNode = accepted.get(requiredId);
+	return Boolean(requiredNode && !requiredNode.inferred);
 }
 
 function wouldLoseAcceptedExclusionConflict(
