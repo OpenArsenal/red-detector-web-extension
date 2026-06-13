@@ -24,7 +24,6 @@ export function TechnologyCard(props: {
 				{(description) => <p>{description()}</p>}
 			</Show>
 			<p>
-				Confidence: {props.result.confidence.value}%
 				{props.result.version ? ` · v${props.result.version}` : ''}
 			</p>
 			<Show when={props.result.evidence.length}>
