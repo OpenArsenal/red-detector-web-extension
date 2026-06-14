@@ -25,6 +25,7 @@ export const webVitalsTechnologyDefinition = {
 			id: "web-vitals:scriptContent:1",
 			kind: "scriptContent",
 			pattern: new RegExp("(8999999999999[\\s\\S]+1e12[\\s\\S]+(largest-contentful-paint|first-input|layout-shift)|(largest-contentful-paint|first-input|layout-shift)[\\s\\S]+8999999999999[\\s\\S]+1e12)"),
+			confidence: 45,
 			description: "Script content contains a bounded technology signature.",
 		},
 		{
@@ -37,6 +38,7 @@ export const webVitalsTechnologyDefinition = {
 			id: "web-vitals:scriptContent:3",
 			kind: "scriptContent",
 			pattern: new RegExp("(8999999999999[\\s\\s]+1e12[\\s\\s]+(largest-contentful-paint|first-input|layout-shift)|(largest-contentful-paint|first-input|layout-shift)[\\s\\s]+8999999999999[\\s\\s]+1e12)"),
+			confidence: 45,
 			description: "Script content contains a bounded technology signature.",
 		},
 	],

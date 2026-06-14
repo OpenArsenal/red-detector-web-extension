@@ -48,6 +48,7 @@ export const phpTechnologyDefinition = {
 			id: "php:scriptContent:4",
 			kind: "scriptContent",
 			pattern: new RegExp("\\.php(?:\\?|$)"),
+			confidence: 35,
 			description: "Script content contains a bounded technology signature.",
 		},
 		{
@@ -94,6 +95,7 @@ export const phpTechnologyDefinition = {
 			id: "php:scriptContent:10",
 			kind: "scriptContent",
 			pattern: new RegExp("\\/admin\\/index\\.php"),
+			confidence: 35,
 			description: "Script content contains a bounded technology signature.",
 		},
 		{
