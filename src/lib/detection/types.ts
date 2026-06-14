@@ -29,11 +29,19 @@ export type RuntimeDetectionKind =
 	| 'dom'
 	| 'html'
 	| 'scriptSrc'
+	| 'stylesheetHref'
+	| 'resourceUrl'
+	| 'requestUrl'
 	| 'cookie'
 	| 'header'
 	| 'responseHeader'
+	| 'requestHeader'
 	| 'meta'
-	| 'url';
+	| 'link'
+	| 'storage'
+	| 'url'
+	| 'scriptContent'
+	| 'stylesheetContent';
 
 export type CategoryId =
 	| "framework"
@@ -206,6 +214,9 @@ export type LinkDetectionRule = DetectionRuleBase & {
 	rel?: string;
 	hrefPattern?: RegExp;
 	typePattern?: RegExp;
+	as?: string;
+	hreflangPattern?: RegExp;
+	mediaPattern?: RegExp;
 	valuePattern?: RegExp;
 	pattern?: never;
 	selector?: never;
@@ -322,6 +333,8 @@ export type LinkSignal = {
 	type?: string;
 	as?: string;
 	media?: string;
+	hreflang?: string;
+	crossOrigin?: string;
 };
 
 export type ResourceSignal = {

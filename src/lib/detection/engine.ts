@@ -31,10 +31,18 @@ export const runtimeDetectionKinds = [
 	'dom',
 	'html',
 	'scriptSrc',
+	'stylesheetHref',
+	'resourceUrl',
+	'requestUrl',
+	'scriptContent',
+	'stylesheetContent',
 	'cookie',
 	'header',
 	'responseHeader',
+	'requestHeader',
 	'meta',
+	'link',
+	'storage',
 	'url',
 ] as const satisfies readonly RuntimeDetectionKind[];
 
@@ -451,7 +459,19 @@ function matchLinkRule(
 			continue;
 		}
 
-		const combined = `${link.rel} ${link.type ?? ''} ${link.href}`.trim();
+		if (rule.as && link.as !== rule.as) {
+			continue;
+		}
+
+		if (rule.hreflangPattern && !rule.hreflangPattern.test(link.hreflang ?? '')) {
+			continue;
+		}
+
+		if (rule.mediaPattern && !rule.mediaPattern.test(link.media ?? '')) {
+			continue;
+		}
+
+		const combined = `${link.rel} ${link.type ?? ''} ${link.as ?? ''} ${link.hreflang ?? ''} ${link.media ?? ''} ${link.href}`.trim();
 		if (rule.valuePattern) {
 			const match = matchPattern(
 				{ kind: 'link', pattern: rule.valuePattern, version: rule.version, description: rule.description },
