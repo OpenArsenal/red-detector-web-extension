@@ -247,6 +247,8 @@ export function collectLinkTags(input: LinkTagInput = document): LinkSignal[] {
 			type: link.type || undefined,
 			as: link.as || undefined,
 			media: link.media || undefined,
+			hreflang: link.hreflang || undefined,
+			crossOrigin: link.crossOrigin || undefined,
 		});
 
 		if (links.length >= SOURCE_LIMITS.linkTags) {
