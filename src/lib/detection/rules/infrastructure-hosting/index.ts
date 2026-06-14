@@ -1,13 +1,13 @@
 import type { TechnologyDefinition } from '../../types';
 import { technology34spComTechnologyDefinition } from './34sp-com';
 import { technology5centscdnTechnologyDefinition } from './5centscdn';
-import { acquiaCloudPlatformTechnologyDefinition } from './acquia-cloud-platform';
 import { acquiaCloudPlatformCdnTechnologyDefinition } from './acquia-cloud-platform-cdn';
+import { acquiaCloudPlatformTechnologyDefinition } from './acquia-cloud-platform';
 import { acquiaCloudSiteFactoryTechnologyDefinition } from './acquia-cloud-site-factory';
 import { agoraTechnologyDefinition } from './agora';
 import { aireeTechnologyDefinition } from './airee';
-import { akamaiTechnologyDefinition } from './akamai';
 import { akamaiConnectedCloudTechnologyDefinition } from './akamai-connected-cloud';
+import { akamaiTechnologyDefinition } from './akamai';
 import { akoovaTechnologyDefinition } from './akoova';
 import { alibabaCloudCdnTechnologyDefinition } from './alibaba-cloud-cdn';
 import { alibabaCloudObjectStorageServiceTechnologyDefinition } from './alibaba-cloud-object-storage-service';
@@ -23,8 +23,8 @@ import { arcTechnologyDefinition } from './arc';
 import { arubaItTechnologyDefinition } from './aruba-it';
 import { arvancloudTechnologyDefinition } from './arvancloud';
 import { azionTechnologyDefinition } from './azion';
-import { azureTechnologyDefinition } from './azure';
 import { azureCdnTechnologyDefinition } from './azure-cdn';
+import { azureTechnologyDefinition } from './azure';
 import { baskHealthTechnologyDefinition } from './bask-health';
 import { bernetCloudTechnologyDefinition } from './bernet-cloud';
 import { billmanagerTechnologyDefinition } from './billmanager';
@@ -38,8 +38,8 @@ import { cdnjsTechnologyDefinition } from './cdnjs';
 import { chabokanTechnologyDefinition } from './chabokan';
 import { clientacquisitionTechnologyDefinition } from './clientacquisition';
 import { cloudGuardTechnologyDefinition } from './cloud-guard';
-import { cloudflareTechnologyDefinition } from './cloudflare';
 import { cloudflareWorkersTechnologyDefinition } from './cloudflare-workers';
+import { cloudflareTechnologyDefinition } from './cloudflare';
 import { cloudimageTechnologyDefinition } from './cloudimage';
 import { cloudinaryTechnologyDefinition } from './cloudinary';
 import { cloudwaysTechnologyDefinition } from './cloudways';
@@ -54,6 +54,7 @@ import { diamondcdnTechnologyDefinition } from './diamondcdn';
 import { digicdnTechnologyDefinition } from './digicdn';
 import { digitaloceanSpacesTechnologyDefinition } from './digitalocean-spaces';
 import { directadminTechnologyDefinition } from './directadmin';
+import { dnsPrefetchTechnologyDefinition } from './dns-prefetch';
 import { domainfactoryTechnologyDefinition } from './domainfactory';
 import { dorsaCloudTechnologyDefinition } from './dorsa-cloud';
 import { doteasyTechnologyDefinition } from './doteasy';
@@ -79,8 +80,8 @@ import { githubPagesTechnologyDefinition } from './github-pages';
 import { glitchTechnologyDefinition } from './glitch';
 import { gocacheTechnologyDefinition } from './gocache';
 import { godaddyTechnologyDefinition } from './godaddy';
-import { googleCloudTechnologyDefinition } from './google-cloud';
 import { googleCloudCdnTechnologyDefinition } from './google-cloud-cdn';
+import { googleCloudTechnologyDefinition } from './google-cloud';
 import { googleHostedLibrariesTechnologyDefinition } from './google-hosted-libraries';
 import { gotipathTechnologyDefinition } from './gotipath';
 import { guardflameTechnologyDefinition } from './guardflame';
@@ -95,8 +96,8 @@ import { hostensTechnologyDefinition } from './hostens';
 import { hosteuropeTechnologyDefinition } from './hosteurope';
 import { hostgatorTechnologyDefinition } from './hostgator';
 import { hostingUkraineTechnologyDefinition } from './hosting-ukraine';
-import { hostingerTechnologyDefinition } from './hostinger';
 import { hostingerCdnTechnologyDefinition } from './hostinger-cdn';
+import { hostingerTechnologyDefinition } from './hostinger';
 import { hostiqTechnologyDefinition } from './hostiq';
 import { hostpointTechnologyDefinition } from './hostpoint';
 import { hypercloudhostTechnologyDefinition } from './hypercloudhost';
@@ -123,6 +124,7 @@ import { microsoftAjaxContentDeliveryNetworkTechnologyDefinition } from './micro
 import { mirusTechnologyDefinition } from './mirus';
 import { mittwaldTechnologyDefinition } from './mittwald';
 import { mizbancloudTechnologyDefinition } from './mizbancloud';
+import { modulepreloadTechnologyDefinition } from './modulepreload';
 import { motherhostTechnologyDefinition } from './motherhost';
 import { nestifyTechnologyDefinition } from './nestify';
 import { netlifyTechnologyDefinition } from './netlify';
@@ -141,6 +143,7 @@ import { parminCloudTechnologyDefinition } from './parmin-cloud';
 import { platformShTechnologyDefinition } from './platform-sh';
 import { pleskTechnologyDefinition } from './plesk';
 import { powaTechnologyDefinition } from './powa';
+import { preconnectTechnologyDefinition } from './preconnect';
 import { pressableTechnologyDefinition } from './pressable';
 import { pterodactylPanelTechnologyDefinition } from './pterodactyl-panel';
 import { pxxlAppTechnologyDefinition } from './pxxl-app';
@@ -149,6 +152,7 @@ import { railwayTechnologyDefinition } from './railway';
 import { rawgitTechnologyDefinition } from './rawgit';
 import { regRuTechnologyDefinition } from './reg-ru';
 import { renderTechnologyDefinition } from './render';
+import { resourcePreloadTechnologyDefinition } from './resource-preload';
 import { rostiTechnologyDefinition } from './rosti';
 import { sabaHostTechnologyDefinition } from './saba-host';
 import { sakuraInternetTechnologyDefinition } from './sakura-internet';
@@ -181,26 +185,26 @@ import { voximplantTechnologyDefinition } from './voximplant';
 import { vultrTechnologyDefinition } from './vultr';
 import { wangsuTechnologyDefinition } from './wangsu';
 import { webhostukTechnologyDefinition } from './webhostuk';
-import { wordpressMultisiteTechnologyDefinition, wordpressVipTechnologyDefinition, wordpressComTechnologyDefinition } from './wordpress';
+import { wordpressMultisiteTechnologyDefinition } from './wordpress';
 import { world4youTechnologyDefinition } from './world4you';
-import { wpEngineTechnologyDefinition } from './wp-engine';
 import { wpCloudTechnologyDefinition } from './wp-cloud';
+import { wpEngineTechnologyDefinition } from './wp-engine';
 import { xserverTechnologyDefinition } from './xserver';
 import { yalinhostTechnologyDefinition } from './yalinhost';
-import { yandexCloudTechnologyDefinition } from './yandex-cloud';
 import { yandexCloudCdnTechnologyDefinition } from './yandex-cloud-cdn';
+import { yandexCloudTechnologyDefinition } from './yandex-cloud';
 import { zeaburTechnologyDefinition } from './zeabur';
 
 export const infrastructureHostingTechnologyDefinitions = [
 	technology34spComTechnologyDefinition,
 	technology5centscdnTechnologyDefinition,
-	acquiaCloudPlatformTechnologyDefinition,
 	acquiaCloudPlatformCdnTechnologyDefinition,
+	acquiaCloudPlatformTechnologyDefinition,
 	acquiaCloudSiteFactoryTechnologyDefinition,
 	agoraTechnologyDefinition,
 	aireeTechnologyDefinition,
-	akamaiTechnologyDefinition,
 	akamaiConnectedCloudTechnologyDefinition,
+	akamaiTechnologyDefinition,
 	akoovaTechnologyDefinition,
 	alibabaCloudCdnTechnologyDefinition,
 	alibabaCloudObjectStorageServiceTechnologyDefinition,
@@ -216,8 +220,8 @@ export const infrastructureHostingTechnologyDefinitions = [
 	arubaItTechnologyDefinition,
 	arvancloudTechnologyDefinition,
 	azionTechnologyDefinition,
-	azureTechnologyDefinition,
 	azureCdnTechnologyDefinition,
+	azureTechnologyDefinition,
 	baskHealthTechnologyDefinition,
 	bernetCloudTechnologyDefinition,
 	billmanagerTechnologyDefinition,
@@ -231,8 +235,8 @@ export const infrastructureHostingTechnologyDefinitions = [
 	chabokanTechnologyDefinition,
 	clientacquisitionTechnologyDefinition,
 	cloudGuardTechnologyDefinition,
-	cloudflareTechnologyDefinition,
 	cloudflareWorkersTechnologyDefinition,
+	cloudflareTechnologyDefinition,
 	cloudimageTechnologyDefinition,
 	cloudinaryTechnologyDefinition,
 	cloudwaysTechnologyDefinition,
@@ -247,6 +251,7 @@ export const infrastructureHostingTechnologyDefinitions = [
 	digicdnTechnologyDefinition,
 	digitaloceanSpacesTechnologyDefinition,
 	directadminTechnologyDefinition,
+	dnsPrefetchTechnologyDefinition,
 	domainfactoryTechnologyDefinition,
 	dorsaCloudTechnologyDefinition,
 	doteasyTechnologyDefinition,
@@ -272,8 +277,8 @@ export const infrastructureHostingTechnologyDefinitions = [
 	glitchTechnologyDefinition,
 	gocacheTechnologyDefinition,
 	godaddyTechnologyDefinition,
-	googleCloudTechnologyDefinition,
 	googleCloudCdnTechnologyDefinition,
+	googleCloudTechnologyDefinition,
 	googleHostedLibrariesTechnologyDefinition,
 	gotipathTechnologyDefinition,
 	guardflameTechnologyDefinition,
@@ -288,8 +293,8 @@ export const infrastructureHostingTechnologyDefinitions = [
 	hosteuropeTechnologyDefinition,
 	hostgatorTechnologyDefinition,
 	hostingUkraineTechnologyDefinition,
-	hostingerTechnologyDefinition,
 	hostingerCdnTechnologyDefinition,
+	hostingerTechnologyDefinition,
 	hostiqTechnologyDefinition,
 	hostpointTechnologyDefinition,
 	hypercloudhostTechnologyDefinition,
@@ -316,6 +321,7 @@ export const infrastructureHostingTechnologyDefinitions = [
 	mirusTechnologyDefinition,
 	mittwaldTechnologyDefinition,
 	mizbancloudTechnologyDefinition,
+	modulepreloadTechnologyDefinition,
 	motherhostTechnologyDefinition,
 	nestifyTechnologyDefinition,
 	netlifyTechnologyDefinition,
@@ -334,6 +340,7 @@ export const infrastructureHostingTechnologyDefinitions = [
 	platformShTechnologyDefinition,
 	pleskTechnologyDefinition,
 	powaTechnologyDefinition,
+	preconnectTechnologyDefinition,
 	pressableTechnologyDefinition,
 	pterodactylPanelTechnologyDefinition,
 	pxxlAppTechnologyDefinition,
@@ -342,6 +349,7 @@ export const infrastructureHostingTechnologyDefinitions = [
 	rawgitTechnologyDefinition,
 	regRuTechnologyDefinition,
 	renderTechnologyDefinition,
+	resourcePreloadTechnologyDefinition,
 	rostiTechnologyDefinition,
 	sabaHostTechnologyDefinition,
 	sakuraInternetTechnologyDefinition,
@@ -375,14 +383,12 @@ export const infrastructureHostingTechnologyDefinitions = [
 	wangsuTechnologyDefinition,
 	webhostukTechnologyDefinition,
 	wordpressMultisiteTechnologyDefinition,
-	wordpressVipTechnologyDefinition,
-	wordpressComTechnologyDefinition,
 	world4youTechnologyDefinition,
-	wpEngineTechnologyDefinition,
 	wpCloudTechnologyDefinition,
+	wpEngineTechnologyDefinition,
 	xserverTechnologyDefinition,
 	yalinhostTechnologyDefinition,
-	yandexCloudTechnologyDefinition,
 	yandexCloudCdnTechnologyDefinition,
+	yandexCloudTechnologyDefinition,
 	zeaburTechnologyDefinition,
 ] as const satisfies readonly TechnologyDefinition[];
