@@ -176,6 +176,8 @@ function ruleSignature(rule: DetectionRule): string {
 	const keyPattern = 'keyPattern' in rule && rule.keyPattern ? `${rule.keyPattern.source}/${rule.keyPattern.flags}` : '';
 	const hrefPattern = 'hrefPattern' in rule && rule.hrefPattern ? `${rule.hrefPattern.source}/${rule.hrefPattern.flags}` : '';
 	const typePattern = 'typePattern' in rule && rule.typePattern ? `${rule.typePattern.source}/${rule.typePattern.flags}` : '';
+	const hreflangPattern = 'hreflangPattern' in rule && rule.hreflangPattern ? `${rule.hreflangPattern.source}/${rule.hreflangPattern.flags}` : '';
+	const mediaPattern = 'mediaPattern' in rule && rule.mediaPattern ? `${rule.mediaPattern.source}/${rule.mediaPattern.flags}` : '';
 
 	return JSON.stringify({
 		kind: rule.kind,
@@ -184,11 +186,14 @@ function ruleSignature(rule: DetectionRule): string {
 		keyPattern,
 		hrefPattern,
 		typePattern,
+		hreflangPattern,
+		mediaPattern,
 		selector: 'selector' in rule ? rule.selector : undefined,
 		attribute: 'attribute' in rule ? rule.attribute : undefined,
 		property: 'property' in rule ? rule.property : undefined,
 		key: 'key' in rule ? rule.key : undefined,
 		rel: 'rel' in rule ? rule.rel : undefined,
+		as: 'as' in rule ? rule.as : undefined,
 		recordType: 'recordType' in rule ? rule.recordType : undefined,
 		area: 'area' in rule ? rule.area : undefined,
 	});
