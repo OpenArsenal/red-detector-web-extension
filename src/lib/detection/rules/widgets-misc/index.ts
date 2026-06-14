@@ -1,6 +1,4 @@
 import type { TechnologyDefinition } from '../../types';
-import { suluWebTechnologyDefinition } from './sulu-web';
-import { hyperscriptTechnologyDefinition } from './hyperscript';
 import { accuweatherTechnologyDefinition } from './accuweather';
 import { acquiaContentHubTechnologyDefinition } from './acquia-content-hub';
 import { acquireCobrowseTechnologyDefinition } from './acquire-cobrowse';
@@ -58,8 +56,8 @@ import { carbonfactTechnologyDefinition } from './carbonfact';
 import { cartJsTechnologyDefinition } from './cart-js';
 import { cgitTechnologyDefinition } from './cgit';
 import { chaiTechnologyDefinition } from './chai';
-import { chameleonTechnologyDefinition } from './chameleon';
 import { chameleonPowerTechnologyDefinition } from './chameleon-power';
+import { chameleonTechnologyDefinition } from './chameleon';
 import { chatangoTechnologyDefinition } from './chatango';
 import { checkfrontTechnologyDefinition } from './checkfront';
 import { checkinTechnologyDefinition } from './checkin';
@@ -191,6 +189,7 @@ import { htmxTechnologyDefinition } from './htmx';
 import { http2TechnologyDefinition } from './http-2';
 import { http3TechnologyDefinition } from './http-3';
 import { hurrytimerTechnologyDefinition } from './hurrytimer';
+import { hyperscriptTechnologyDefinition } from './hyperscript';
 import { icheckTechnologyDefinition } from './icheck';
 import { iconscoutTechnologyDefinition } from './iconscout';
 import { iframelyTechnologyDefinition } from './iframely';
@@ -228,8 +227,8 @@ import { klaviyoCustomerHubTechnologyDefinition } from './klaviyo-customer-hub';
 import { koFiTechnologyDefinition } from './ko-fi';
 import { lagaWidgetTechnologyDefinition } from './laga-widget';
 import { laravelEchoTechnologyDefinition } from './laravel-echo';
-import { lazysizesTechnologyDefinition } from './lazysizes';
 import { lazysizesUnveilhooksPluginTechnologyDefinition } from './lazysizes-unveilhooks-plugin';
+import { lazysizesTechnologyDefinition } from './lazysizes';
 import { lengowTechnologyDefinition } from './lengow';
 import { lenisTechnologyDefinition } from './lenis';
 import { libphonenumberTechnologyDefinition } from './libphonenumber';
@@ -393,7 +392,6 @@ import { rezdyTechnologyDefinition } from './rezdy';
 import { rezgoTechnologyDefinition } from './rezgo';
 import { robixcmGeneratorTechnologyDefinition } from './robixcm-generator';
 import { rspackTechnologyDefinition } from './rspack';
-import { rssTechnologyDefinition } from './rss';
 import { rubyReceptionistsTechnologyDefinition } from './ruby-receptionists';
 import { salesfloorTechnologyDefinition } from './salesfloor';
 import { sassySocialShareTechnologyDefinition } from './sassy-social-share';
@@ -428,8 +426,8 @@ import { slidebeanTechnologyDefinition } from './slidebean';
 import { slideoutTechnologyDefinition } from './slideout';
 import { sliderRevolutionTechnologyDefinition } from './slider-revolution';
 import { slimSelectTechnologyDefinition } from './slim-select';
-import { slimboxTechnologyDefinition } from './slimbox';
 import { slimbox2TechnologyDefinition } from './slimbox-2';
+import { slimboxTechnologyDefinition } from './slimbox';
 import { snabbtTechnologyDefinition } from './snabbt';
 import { snapSvgTechnologyDefinition } from './snap-svg';
 import { snapwidgetTechnologyDefinition } from './snapwidget';
@@ -458,6 +456,7 @@ import { stravaTechnologyDefinition } from './strava';
 import { streamwoodTechnologyDefinition } from './streamwood';
 import { sugarTechnologyDefinition } from './sugar';
 import { sugarjsTechnologyDefinition } from './sugarjs';
+import { suluWebTechnologyDefinition } from './sulu-web';
 import { sumoTechnologyDefinition } from './sumo';
 import { supademoTechnologyDefinition } from './supademo';
 import { swcTechnologyDefinition } from './swc';
@@ -498,8 +497,9 @@ import { tripadviserWidgetTechnologyDefinition } from './tripadviser-widget';
 import { tripitTechnologyDefinition } from './tripit';
 import { trustyouTechnologyDefinition } from './trustyou';
 import { turfjsTechnologyDefinition } from './turfjs';
-import { twitterTechnologyDefinition } from './twitter';
+import { twitterCardsTechnologyDefinition } from './twitter-cards';
 import { twitterTypeaheadJsTechnologyDefinition } from './twitter-typeahead-js';
+import { twitterTechnologyDefinition } from './twitter';
 import { typedJsTechnologyDefinition } from './typed-js';
 import { typerJsTechnologyDefinition } from './typer-js';
 import { ubilizTechnologyDefinition } from './ubiliz';
@@ -558,8 +558,6 @@ import { zeptoTechnologyDefinition } from './zepto';
 import { ziggyTechnologyDefinition } from './ziggy';
 
 export const widgetsMiscTechnologyDefinitions = [
-	suluWebTechnologyDefinition,
-	hyperscriptTechnologyDefinition,
 	accuweatherTechnologyDefinition,
 	acquiaContentHubTechnologyDefinition,
 	acquireCobrowseTechnologyDefinition,
@@ -617,8 +615,8 @@ export const widgetsMiscTechnologyDefinitions = [
 	cartJsTechnologyDefinition,
 	cgitTechnologyDefinition,
 	chaiTechnologyDefinition,
-	chameleonTechnologyDefinition,
 	chameleonPowerTechnologyDefinition,
+	chameleonTechnologyDefinition,
 	chatangoTechnologyDefinition,
 	checkfrontTechnologyDefinition,
 	checkinTechnologyDefinition,
@@ -750,6 +748,7 @@ export const widgetsMiscTechnologyDefinitions = [
 	http2TechnologyDefinition,
 	http3TechnologyDefinition,
 	hurrytimerTechnologyDefinition,
+	hyperscriptTechnologyDefinition,
 	icheckTechnologyDefinition,
 	iconscoutTechnologyDefinition,
 	iframelyTechnologyDefinition,
@@ -787,8 +786,8 @@ export const widgetsMiscTechnologyDefinitions = [
 	koFiTechnologyDefinition,
 	lagaWidgetTechnologyDefinition,
 	laravelEchoTechnologyDefinition,
-	lazysizesTechnologyDefinition,
 	lazysizesUnveilhooksPluginTechnologyDefinition,
+	lazysizesTechnologyDefinition,
 	lengowTechnologyDefinition,
 	lenisTechnologyDefinition,
 	libphonenumberTechnologyDefinition,
@@ -952,7 +951,6 @@ export const widgetsMiscTechnologyDefinitions = [
 	rezgoTechnologyDefinition,
 	robixcmGeneratorTechnologyDefinition,
 	rspackTechnologyDefinition,
-	rssTechnologyDefinition,
 	rubyReceptionistsTechnologyDefinition,
 	salesfloorTechnologyDefinition,
 	sassySocialShareTechnologyDefinition,
@@ -987,8 +985,8 @@ export const widgetsMiscTechnologyDefinitions = [
 	slideoutTechnologyDefinition,
 	sliderRevolutionTechnologyDefinition,
 	slimSelectTechnologyDefinition,
-	slimboxTechnologyDefinition,
 	slimbox2TechnologyDefinition,
+	slimboxTechnologyDefinition,
 	snabbtTechnologyDefinition,
 	snapSvgTechnologyDefinition,
 	snapwidgetTechnologyDefinition,
@@ -1017,6 +1015,7 @@ export const widgetsMiscTechnologyDefinitions = [
 	streamwoodTechnologyDefinition,
 	sugarTechnologyDefinition,
 	sugarjsTechnologyDefinition,
+	suluWebTechnologyDefinition,
 	sumoTechnologyDefinition,
 	supademoTechnologyDefinition,
 	swcTechnologyDefinition,
@@ -1057,8 +1056,9 @@ export const widgetsMiscTechnologyDefinitions = [
 	tripitTechnologyDefinition,
 	trustyouTechnologyDefinition,
 	turfjsTechnologyDefinition,
-	twitterTechnologyDefinition,
+	twitterCardsTechnologyDefinition,
 	twitterTypeaheadJsTechnologyDefinition,
+	twitterTechnologyDefinition,
 	typedJsTechnologyDefinition,
 	typerJsTechnologyDefinition,
 	ubilizTechnologyDefinition,
