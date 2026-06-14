@@ -364,6 +364,7 @@ export type PageSignals = {
 	hostname: string;
 	html: string;
 	htmlMatches?: Record<string, HtmlMatchSignal>;
+	text: string;
 	scripts: string[];
 	stylesheets: string[];
 	links: LinkSignal[];

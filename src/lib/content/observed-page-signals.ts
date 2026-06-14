@@ -1,8 +1,26 @@
-import { collectLinkTags, collectMetaTags, collectResourceTimings, collectScriptSources, collectStylesheetSources } from './collect-page-signals';
+import {
+	collectLinkTags,
+	collectMetaTags,
+	collectResourceTimings,
+	collectScriptContents,
+	collectScriptSources,
+	collectStylesheetContents,
+	collectStylesheetSources,
+} from './collect-page-signals';
 import { SOURCE_LIMITS } from '../detection/rules';
 import type { PageSignals } from '../detection/types';
 
-export type ObservedPageSignalsSnapshot = Pick<PageSignals, 'scripts' | 'stylesheets' | 'links' | 'resources' | 'requests' | 'meta'>;
+export type ObservedPageSignalsSnapshot = Pick<
+	PageSignals,
+	| 'scripts'
+	| 'stylesheets'
+	| 'links'
+	| 'resources'
+	| 'requests'
+	| 'scriptContents'
+	| 'stylesheetContents'
+	| 'meta'
+>;
 
 export type ObservationSessionStatus = 'idle' | 'observing' | 'dirty' | 'stopped';
 
@@ -69,12 +87,15 @@ export function createObservedPageSignals(
 ): ObservedPageSignals {
 	const scripts = new Set<string>();
 	const stylesheets = new Set<string>();
+	const scriptContents = new Set<string>();
+	const stylesheetContents = new Set<string>();
 	const metaEntries = new Map<string, Set<string>>();
 	const linkEntries = new Map<string, PageSignals['links'][number]>();
 	const resourceEntries = new Map<string, PageSignals['resources'][number]>();
 	const requestEntries = new Map<string, PageSignals['requests'][number]>();
 	const pendingNodes = new Set<Node>();
 	let throttleTimer: ReturnType<typeof globalThis.setTimeout> | undefined;
+	let resourceObserver: PerformanceObserver | undefined;
 	let activeSession: ActiveObservationSession | undefined;
 	let sessionStatus: ObservationSessionStatus = 'idle';
 	let stopReason: ObservationStopReason | undefined;
@@ -97,6 +118,50 @@ export function createObservedPageSignals(
 		if (throttleTimer !== undefined) {
 			clearTimeout(throttleTimer);
 			throttleTimer = undefined;
+		}
+	}
+
+	function stopResourceObserver(): void {
+		resourceObserver?.disconnect();
+		resourceObserver = undefined;
+	}
+
+	function rememberResourceTimings(): void {
+		const resources = collectResourceTimings();
+		rememberSnapshot({
+			...emptySnapshot(),
+			resources,
+			requests: resources.map((resource) => ({
+				url: resource.url,
+				type: resource.initiatorType,
+			})),
+		});
+	}
+
+	function startResourceObserver(): void {
+		stopResourceObserver();
+
+		if (typeof PerformanceObserver !== 'function') {
+			return;
+		}
+
+		try {
+			resourceObserver = new PerformanceObserver(() => {
+				if (!activeSession) {
+					return;
+				}
+
+				rememberResourceTimings();
+				lastObservedAt = Date.now();
+			});
+
+			try {
+				resourceObserver.observe({ type: 'resource', buffered: true });
+			} catch {
+				resourceObserver.observe({ entryTypes: ['resource'] });
+			}
+		} catch {
+			stopResourceObserver();
 		}
 	}
 
@@ -126,6 +191,20 @@ export function createObservedPageSignals(
 			stylesheets.add(href);
 		}
 
+		for (const value of snapshot.scriptContents) {
+			if (scriptContents.size >= SOURCE_LIMITS.scriptContentItems) {
+				break;
+			}
+			scriptContents.add(value);
+		}
+
+		for (const value of snapshot.stylesheetContents) {
+			if (stylesheetContents.size >= SOURCE_LIMITS.stylesheetContentItems) {
+				break;
+			}
+			stylesheetContents.add(value);
+		}
+
 		for (const link of snapshot.links) {
 			linkEntries.set(`${link.rel}:${link.type ?? ''}:${link.href}`, link);
 		}
@@ -141,19 +220,51 @@ export function createObservedPageSignals(
 		rememberMeta(snapshot.meta);
 	}
 
+	function emptySnapshot(): ObservedPageSignalsSnapshot {
+		return {
+			scripts: [],
+			stylesheets: [],
+			links: [],
+			resources: [],
+			requests: [],
+			scriptContents: [],
+			stylesheetContents: [],
+			meta: {},
+		};
+	}
+
 	function scanNode(node: Node): void {
 		if (node instanceof HTMLScriptElement) {
-			rememberSnapshot({ scripts: collectScriptSources([node]), stylesheets: [], links: [], resources: [], requests: [], meta: {} });
+			rememberSnapshot({
+				...emptySnapshot(),
+				scripts: collectScriptSources([node]),
+				scriptContents: collectScriptContents([node]),
+			});
+			return;
+		}
+
+		if (node instanceof HTMLStyleElement) {
+			rememberSnapshot({
+				...emptySnapshot(),
+				stylesheetContents: collectStylesheetContents([node]),
+			});
 			return;
 		}
 
 		if (node instanceof HTMLLinkElement) {
-			rememberSnapshot({ scripts: [], stylesheets: collectStylesheetSources([node]), links: collectLinkTags([node]), resources: [], requests: [], meta: {} });
+			rememberSnapshot({
+				...emptySnapshot(),
+				stylesheets: collectStylesheetSources([node]),
+				links: collectLinkTags([node]),
+			});
 			return;
 		}
 
 		if (node instanceof HTMLMetaElement) {
-			rememberSnapshot({ scripts: [], stylesheets: [], links: [], resources: [], requests: [], meta: collectMetaTags([node]) });
+			rememberSnapshot({
+				...emptySnapshot(),
+				meta: collectMetaTags([node]),
+			});
 			return;
 		}
 
@@ -165,6 +276,8 @@ export function createObservedPageSignals(
 				links: collectLinkTags(node),
 				resources,
 				requests: resources.map((resource) => ({ url: resource.url, type: resource.initiatorType })),
+				scriptContents: collectScriptContents(node),
+				stylesheetContents: collectStylesheetContents(node),
 				meta: collectMetaTags(node),
 			});
 		}
@@ -178,6 +291,8 @@ export function createObservedPageSignals(
 			links: collectLinkTags(document),
 			resources,
 			requests: resources.map((resource) => ({ url: resource.url, type: resource.initiatorType })),
+			scriptContents: collectScriptContents(document),
+			stylesheetContents: collectStylesheetContents(document),
 			meta: collectMetaTags(document),
 		});
 		lastScannedAt = Date.now();
@@ -297,6 +412,7 @@ export function createObservedPageSignals(
 				maxMutations: activeSession.maxMutations,
 			});
 			observer.disconnect();
+			stopResourceObserver();
 			clearThrottleTimer();
 			clearPendingMutations();
 			activeSession = undefined;
@@ -312,6 +428,7 @@ export function createObservedPageSignals(
 		input: BeginObservationSessionInput,
 	): ObservationSessionState {
 		observer.disconnect();
+		stopResourceObserver();
 		clearThrottleTimer();
 		clearPendingMutations();
 
@@ -335,6 +452,8 @@ export function createObservedPageSignals(
 			attributes: true,
 			attributeFilter: ['src', 'href', 'rel', 'name', 'property', 'http-equiv', 'content'],
 		});
+		startResourceObserver();
+		rememberResourceTimings();
 
 		return observationState();
 	}
@@ -354,6 +473,8 @@ export function createObservedPageSignals(
 				links: [...linkEntries.values()].slice(0, SOURCE_LIMITS.linkTags),
 				resources: [...resourceEntries.values()].slice(0, SOURCE_LIMITS.resourceUrls),
 				requests: [...requestEntries.values()].slice(0, SOURCE_LIMITS.requestUrls),
+				scriptContents: [...scriptContents].slice(0, SOURCE_LIMITS.scriptContentItems),
+				stylesheetContents: [...stylesheetContents].slice(0, SOURCE_LIMITS.stylesheetContentItems),
 				meta: snapshotMeta(),
 			};
 		},
@@ -362,6 +483,7 @@ export function createObservedPageSignals(
 
 		stopObservationSession(reason = 'manual') {
 			observer.disconnect();
+			stopResourceObserver();
 			clearThrottleTimer();
 			clearPendingMutations();
 			activeSession = undefined;
@@ -376,6 +498,7 @@ export function createObservedPageSignals(
 
 		disconnect(reason = 'invalidated') {
 			observer.disconnect();
+			stopResourceObserver();
 			clearThrottleTimer();
 			clearPendingMutations();
 			activeSession = undefined;
@@ -391,15 +514,18 @@ function nodeMayContainSignal(node: Node): boolean {
 	}
 
 	if (node instanceof Element || node instanceof DocumentFragment || node instanceof Document) {
-		return node.querySelector('script,link,meta') !== null;
+		return node.querySelector('script,link,meta,style') !== null;
 	}
 
 	return false;
 }
 
-function isSignalElement(node: Node): node is HTMLScriptElement | HTMLLinkElement | HTMLMetaElement {
+function isSignalElement(
+	node: Node,
+): node is HTMLScriptElement | HTMLStyleElement | HTMLLinkElement | HTMLMetaElement {
 	return (
 		node instanceof HTMLScriptElement ||
+		node instanceof HTMLStyleElement ||
 		node instanceof HTMLLinkElement ||
 		node instanceof HTMLMetaElement
 	);

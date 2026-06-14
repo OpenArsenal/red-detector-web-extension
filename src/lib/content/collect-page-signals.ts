@@ -1,4 +1,4 @@
-import { normalizeMetaMap, truncate, uniqueStrings } from '../detection/normalizers';
+import { limitStringsByTotalChars, normalizeMetaMap, truncate, uniqueStrings } from '../detection/normalizers';
 import { SOURCE_LIMITS } from '../detection/rules';
 import type {
 	CookieSignals,
@@ -18,14 +18,33 @@ export type CollectPageSignalsInput = {
 
 /**
  * Collects only bounded, rule-oriented page signals. The content script may read
- * page DOM and non-HttpOnly cookies, but it never persists raw page payloads.
+ * page DOM, non-HttpOnly cookie names, storage keys, and inline source text, but
+ * it never persists raw unbounded page payloads.
  */
 export type RuntimePageSignals = Partial<
-	Pick<PageSignals, 'scripts' | 'stylesheets' | 'links' | 'resources' | 'requests' | 'meta'>
+	Pick<
+		PageSignals,
+		| 'scripts'
+		| 'stylesheets'
+		| 'links'
+		| 'resources'
+		| 'requests'
+		| 'scriptContents'
+		| 'stylesheetContents'
+		| 'meta'
+		| 'headers'
+		| 'jsGlobals'
+		| 'robotsTxt'
+		| 'dnsRecords'
+		| 'certIssuer'
+		| 'probeResults'
+	>
 >;
 
 type ScriptSourceInput = ParentNode | Iterable<HTMLScriptElement>;
+type ScriptContentInput = ParentNode | Iterable<HTMLScriptElement>;
 type StylesheetSourceInput = ParentNode | Iterable<HTMLLinkElement>;
+type StylesheetContentInput = ParentNode | Iterable<HTMLStyleElement>;
 type LinkTagInput = ParentNode | Iterable<HTMLLinkElement>;
 type MetaTagInput = ParentNode | Iterable<HTMLMetaElement>;
 
@@ -39,20 +58,21 @@ export function collectPageSignals(
 	const htmlMatches = fullHtml ? collectHtmlProbeMatches(fullHtml, htmlProbeList) : {};
 	const resources = runtime.resources ?? collectResourceTimings();
 
-	const signals = {
+	return {
 		url: location.href,
 		hostname: location.hostname,
 		html: input.includeHtml ? boundedHtml(fullHtml, htmlProbeList) : '',
 		htmlMatches,
+		text: collectVisibleText(),
 		scripts: runtime.scripts ?? collectScriptSources(),
 		stylesheets: runtime.stylesheets ?? collectStylesheetSources(),
 		links: runtime.links ?? collectLinkTags(),
 		resources,
 		requests: runtime.requests ?? resources.map(resourceToRequestSignal),
-		scriptContents: [],
-		stylesheetContents: [],
+		scriptContents: runtime.scriptContents ?? collectScriptContents(),
+		stylesheetContents: runtime.stylesheetContents ?? collectStylesheetContents(),
 		cookies: collectCookieNames(document.cookie),
-		headers: {},
+		headers: runtime.headers ?? {},
 		meta: runtime.meta ?? collectMetaTags(),
 		dom: {
 			selectors: Object.fromEntries(
@@ -60,17 +80,16 @@ export function collectPageSignals(
 			),
 		},
 		storage: collectStorageKeys(),
-		// Main-world JavaScript globals need an injected/page-world collector.
-		// Leave this empty in the isolated content-script collector.
-		jsGlobals: {},
-		robotsTxt: '',
-		dnsRecords: {},
-		certIssuer: '',
-		probeResults: [],
+		// JavaScript globals are populated by injected JS context collection.
+		// Content scripts cannot read page-owned globals directly, so callers pass
+		// those injected values through RuntimePageSignals after the injection step.
+		jsGlobals: runtime.jsGlobals ?? {},
+		robotsTxt: runtime.robotsTxt ?? '',
+		dnsRecords: runtime.dnsRecords ?? {},
+		certIssuer: runtime.certIssuer ?? '',
+		probeResults: runtime.probeResults ?? [],
 		collectedAt: Date.now(),
 	};
-
-	return signals;
 }
 
 function boundedHtml(html: string, htmlProbeList: HtmlProbe[]): string {
@@ -225,12 +244,36 @@ export function collectScriptSources(input: ScriptSourceInput = document): strin
 	).slice(0, SOURCE_LIMITS.scriptSrc);
 }
 
+export function collectScriptContents(input: ScriptContentInput = document): string[] {
+	return limitStringsByTotalChars(
+		Array.from(iterateScripts(input))
+			.filter((script) => !script.src)
+			.map((script) => truncate(script.textContent ?? '', SOURCE_LIMITS.scriptContentChars))
+			.filter(Boolean),
+		SOURCE_LIMITS.scriptContentItems,
+		SOURCE_LIMITS.scriptContentTotalChars,
+	);
+}
+
 export function collectStylesheetSources(input: StylesheetSourceInput = document): string[] {
 	return uniqueStrings(
 		Array.from(iterateStylesheetLinks(input))
 			.map((link) => normalizeResourceUrl(link.getAttribute('href') ?? link.href))
 			.filter((href): href is string => Boolean(href)),
 	).slice(0, SOURCE_LIMITS.stylesheetHref);
+}
+
+export function collectStylesheetContents(input: StylesheetContentInput = document): string[] {
+	const inlineStyles = Array.from(iterateStyleTags(input))
+		.map((style) => truncate(style.textContent ?? '', SOURCE_LIMITS.stylesheetContentChars))
+		.filter(Boolean);
+
+	const cssomStyles = isParentNode(input) ? collectAccessibleCssRules() : [];
+	return limitStringsByTotalChars(
+		[...inlineStyles, ...cssomStyles],
+		SOURCE_LIMITS.stylesheetContentItems,
+		SOURCE_LIMITS.stylesheetContentTotalChars,
+	);
 }
 
 export function collectLinkTags(input: LinkTagInput = document): LinkSignal[] {
@@ -295,6 +338,33 @@ export function collectCookieNames(cookieString: string): CookieSignals {
 			})
 			.slice(0, SOURCE_LIMITS.cookieNames),
 	);
+}
+
+function collectVisibleText(): string {
+	const text = document.body?.innerText ?? document.documentElement.textContent ?? '';
+	return truncate(text, SOURCE_LIMITS.textChars);
+}
+
+function collectAccessibleCssRules(): string[] {
+	const values: string[] = [];
+	for (const sheet of Array.from(document.styleSheets)) {
+		if (values.length >= SOURCE_LIMITS.stylesheetContentItems) {
+			break;
+		}
+
+		try {
+			const cssRules = Array.from(sheet.cssRules ?? []);
+			const cssText = cssRules.map((rule) => rule.cssText).join('\n');
+			if (cssText) {
+				values.push(truncate(cssText, SOURCE_LIMITS.stylesheetContentChars));
+			}
+		} catch {
+			// Cross-origin stylesheets commonly throw SecurityError here. Hrefs are
+			// still captured through stylesheetHref/link/resource signals.
+		}
+	}
+
+	return values;
 }
 
 function collectStorageKeys(): StorageSignals {
@@ -363,6 +433,15 @@ function* iterateStylesheetLinks(input: StylesheetSourceInput): Iterable<HTMLLin
 			yield link;
 		}
 	}
+}
+
+function* iterateStyleTags(input: StylesheetContentInput): Iterable<HTMLStyleElement> {
+	if (isParentNode(input)) {
+		yield* input.querySelectorAll('style');
+		return;
+	}
+
+	yield* input;
 }
 
 function* iterateLinks(input: LinkTagInput): Iterable<HTMLLinkElement> {

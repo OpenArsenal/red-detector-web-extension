@@ -4,6 +4,32 @@ export function uniqueStrings(values: string[]): string[] {
 	return Array.from(new Set(values.filter(Boolean)));
 }
 
+export function limitStringsByTotalChars(
+	values: string[],
+	maxItems: number,
+	maxTotalChars: number,
+): string[] {
+	const output: string[] = [];
+	let usedChars = 0;
+
+	for (const value of uniqueStrings(values)) {
+		if (output.length >= maxItems || usedChars >= maxTotalChars) {
+			break;
+		}
+
+		const remainingChars = maxTotalChars - usedChars;
+		const boundedValue = truncate(value, remainingChars);
+		if (!boundedValue) {
+			continue;
+		}
+
+		output.push(boundedValue);
+		usedChars += boundedValue.length;
+	}
+
+	return output;
+}
+
 export function truncate(value: string, maxChars: number): string {
 	if (value.length <= maxChars) {
 		return value;
