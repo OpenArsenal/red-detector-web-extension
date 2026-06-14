@@ -375,7 +375,7 @@ export const wordpressBlockEditorTechnologyDefinition = {
 		{
 			id: "wordpress-block-editor:html:0",
 			kind: "html",
-			pattern: new RegExp("<[^>]+class=[\"\'][^\"\']*\bwp-block-", "i"),
+			pattern: /<[^>]+class=["'][^"']*\bwp-block-/i,
 			confidence: 100,
 			description: "Document HTML contains WordPress block editor classes.",
 		},

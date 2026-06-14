@@ -185,7 +185,11 @@ import { voximplantTechnologyDefinition } from './voximplant';
 import { vultrTechnologyDefinition } from './vultr';
 import { wangsuTechnologyDefinition } from './wangsu';
 import { webhostukTechnologyDefinition } from './webhostuk';
-import { wordpressMultisiteTechnologyDefinition } from './wordpress';
+import {
+	wordpressComTechnologyDefinition,
+	wordpressMultisiteTechnologyDefinition,
+	wordpressVipTechnologyDefinition,
+} from './wordpress';
 import { world4youTechnologyDefinition } from './world4you';
 import { wpCloudTechnologyDefinition } from './wp-cloud';
 import { wpEngineTechnologyDefinition } from './wp-engine';
@@ -382,7 +386,9 @@ export const infrastructureHostingTechnologyDefinitions = [
 	vultrTechnologyDefinition,
 	wangsuTechnologyDefinition,
 	webhostukTechnologyDefinition,
+	wordpressComTechnologyDefinition,
 	wordpressMultisiteTechnologyDefinition,
+	wordpressVipTechnologyDefinition,
 	world4youTechnologyDefinition,
 	wpCloudTechnologyDefinition,
 	wpEngineTechnologyDefinition,

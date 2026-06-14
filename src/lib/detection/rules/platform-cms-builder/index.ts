@@ -1491,7 +1491,11 @@ import { wolfCmsTechnologyDefinition } from './wolf-cms';
 import { woltersKluwerTechnologyDefinition } from './wolters-kluwer';
 import { woltlabCommunityFrameworkTechnologyDefinition } from './woltlab-community-framework';
 import { woocommerceTechnologyDefinition } from './woocommerce';
-import { wordpressTechnologyDefinition } from './wordpress';
+import {
+	wordpressBlockEditorTechnologyDefinition,
+	wordpressSiteEditorTechnologyDefinition,
+	wordpressTechnologyDefinition,
+} from './wordpress';
 import { workareaTechnologyDefinition } from './workarea';
 import { workstandTechnologyDefinition } from './workstand';
 import { wpbakeryTechnologyDefinition } from './wpbakery';
@@ -3040,6 +3044,8 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	woltersKluwerTechnologyDefinition,
 	woltlabCommunityFrameworkTechnologyDefinition,
 	woocommerceTechnologyDefinition,
+	wordpressBlockEditorTechnologyDefinition,
+	wordpressSiteEditorTechnologyDefinition,
 	wordpressTechnologyDefinition,
 	workareaTechnologyDefinition,
 	workstandTechnologyDefinition,
