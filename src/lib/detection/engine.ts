@@ -40,10 +40,16 @@ export const runtimeDetectionKinds = [
 	'header',
 	'responseHeader',
 	'requestHeader',
+	'jsGlobal',
 	'meta',
 	'link',
 	'storage',
 	'url',
+	'text',
+	'robots',
+	'dns',
+	'certIssuer',
+	'probe',
 ] as const satisfies readonly RuntimeDetectionKind[];
 
 /**
@@ -225,7 +231,7 @@ function matchRule(
 			return matchPattern(rule, signals.url, confidence, metadata);
 
 		case 'text':
-			return matchPattern(rule, signals.html, confidence, metadata);
+			return matchPattern(rule, signals.text, confidence, metadata);
 
 		case 'robots':
 			return matchPattern(rule, signals.robotsTxt, confidence, metadata);

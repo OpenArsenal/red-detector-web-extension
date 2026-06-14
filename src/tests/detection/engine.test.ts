@@ -159,6 +159,65 @@ describe('analyzeSite', () => {
 		expect(analysis.results.some((item) => item.technologyId === 'google-analytics')).toBe(true);
 	});
 
+	it('detects jsGlobal values collected by injected JS context', () => {
+		const registry: TechnologyDefinition[] = [
+			{
+				id: 'global-powered',
+				name: 'Global Powered',
+				website: 'https://example.com/global',
+				categories: ['unknown'],
+				rules: [
+					{
+						kind: 'jsGlobal',
+						property: 'ExampleRuntime.version',
+						valuePattern: /^1\./,
+					},
+				],
+			},
+		];
+
+		const analysis = analyzeSite(
+			createSignals({
+				jsGlobals: { 'ExampleRuntime.version': '1.2.3' },
+			}),
+			registry,
+		);
+
+		expect(analysis.results.map((item) => item.technologyId)).toEqual(['global-powered']);
+	});
+
+	it('detects inline script and stylesheet content signatures', () => {
+		const registry: TechnologyDefinition[] = [
+			{
+				id: 'inline-script-tool',
+				name: 'Inline Script Tool',
+				website: 'https://example.com/script',
+				categories: ['unknown'],
+				rules: [{ kind: 'scriptContent', pattern: /__INLINE_SCRIPT_TOOL__/ }],
+			},
+			{
+				id: 'inline-style-tool',
+				name: 'Inline Style Tool',
+				website: 'https://example.com/style',
+				categories: ['unknown'],
+				rules: [{ kind: 'stylesheetContent', pattern: /--inline-style-tool/ }],
+			},
+		];
+
+		const analysis = analyzeSite(
+			createSignals({
+				scriptContents: ['window.__INLINE_SCRIPT_TOOL__ = true'],
+				stylesheetContents: [':root { --inline-style-tool: 1; }'],
+			}),
+			registry,
+		);
+
+		expect(analysis.results.map((item) => item.technologyId)).toEqual([
+			'inline-script-tool',
+			'inline-style-tool',
+		]);
+	});
+
 	it('collects and detects cookies by name without exposing values', () => {
 		const cookies = collectCookieNames(
 			'session_id=super-secret; wordpress_test_cookie=encoded%20value',
@@ -731,7 +790,78 @@ describe('upgraded detection surfaces and graph relationships', () => {
 		]);
 	});
 
-	it('keeps unsupported DNS rules imported but non-executable in the browser runtime', () => {
+	it('matches extended detection kinds when their signals are populated', () => {
+		const registry: TechnologyDefinition[] = [
+			{
+				id: 'text-only',
+				name: 'Text Only',
+				website: 'https://example.com/text',
+				categories: ['unknown'],
+				rules: [{ kind: 'text', pattern: /visible technology marker/i, confidence: 90 }],
+			},
+			{
+				id: 'dns-only',
+				name: 'DNS Only',
+				website: 'https://example.com/dns',
+				categories: ['unknown'],
+				rules: [{ kind: 'dns', recordType: 'TXT', valuePattern: /dns-verification/i, confidence: 90 }],
+			},
+			{
+				id: 'cert-only',
+				name: 'Cert Only',
+				website: 'https://example.com/cert',
+				categories: ['unknown'],
+				rules: [{ kind: 'certIssuer', pattern: /example ca/i, confidence: 90 }],
+			},
+			{
+				id: 'probe-only',
+				name: 'Probe Only',
+				website: 'https://example.com/probe',
+				categories: ['unknown'],
+				rules: [{ kind: 'probe', pattern: /probe marker/i, confidence: 90 }],
+			},
+			{
+				id: 'request-header-only',
+				name: 'Request Header Only',
+				website: 'https://example.com/request-header',
+				categories: ['unknown'],
+				rules: [
+					{
+						kind: 'requestHeader',
+						key: 'x-powered-by-request',
+						valuePattern: /request marker/i,
+						confidence: 90,
+					},
+				],
+			},
+		];
+
+		const analysis = analyzeSite(
+			createSignals({
+				text: 'A visible technology marker on the page.',
+				dnsRecords: { TXT: ['dns-verification=abc123'] },
+				certIssuer: 'Example CA',
+				probeResults: ['probe marker response'],
+				requests: [
+					{
+						url: 'https://example.com/api',
+						requestHeaders: { 'x-powered-by-request': 'request marker' },
+					},
+				],
+			}),
+			registry,
+		);
+
+		expect(analysis.results.map((item) => item.technologyId)).toEqual([
+			'text-only',
+			'dns-only',
+			'cert-only',
+			'probe-only',
+			'request-header-only',
+		]);
+	});
+
+	it('does not detect DNS rules when no DNS records were collected', () => {
 		const registry: TechnologyDefinition[] = [
 			{
 				id: 'dns-only-cdn',
@@ -763,7 +893,7 @@ describe('upgraded detection surfaces and graph relationships', () => {
 		expect(resultIds(registry, 'carrier')).toEqual(['shipping-carrier']);
 	});
 
-	it('keeps active fetch rule kinds disabled by default', () => {
+	it('detects robots rules when robots.txt content is present', () => {
 		const registry: TechnologyDefinition[] = [
 			{
 				id: 'robots-only',
@@ -780,9 +910,9 @@ describe('upgraded detection surfaces and graph relationships', () => {
 			},
 		];
 
-		const analysis = analyzeSite(createSignals({ html: 'RobotsOnly' }), registry);
+		const analysis = analyzeSite(createSignals({ robotsTxt: 'User-agent: *\nDisallow: /RobotsOnly' }), registry);
 
-		expect(analysis.results).toEqual([]);
+		expect(analysis.results.map((item) => item.technologyId)).toEqual(['robots-only']);
 	});
 });
 

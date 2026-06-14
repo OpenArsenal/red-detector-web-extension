@@ -25,23 +25,7 @@ export type DetectionKind =
 	| 'probe'
 	| 'relationship';
 
-export type RuntimeDetectionKind =
-	| 'dom'
-	| 'html'
-	| 'scriptSrc'
-	| 'stylesheetHref'
-	| 'resourceUrl'
-	| 'requestUrl'
-	| 'cookie'
-	| 'header'
-	| 'responseHeader'
-	| 'requestHeader'
-	| 'meta'
-	| 'link'
-	| 'storage'
-	| 'url'
-	| 'scriptContent'
-	| 'stylesheetContent';
+export type RuntimeDetectionKind = Exclude<DetectionKind, 'relationship'>;
 
 export type CategoryId =
 	| "framework"
