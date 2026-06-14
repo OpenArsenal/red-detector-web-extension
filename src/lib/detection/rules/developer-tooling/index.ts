@@ -13,8 +13,8 @@ import { askhandleTechnologyDefinition } from './askhandle';
 import { atarimTechnologyDefinition } from './atarim';
 import { atlassianBitbucketTechnologyDefinition } from './atlassian-bitbucket';
 import { atlassianFisheyeTechnologyDefinition } from './atlassian-fisheye';
-import { atlassianJiraTechnologyDefinition } from './atlassian-jira';
 import { atlassianJiraIssueCollectorTechnologyDefinition } from './atlassian-jira-issue-collector';
+import { atlassianJiraTechnologyDefinition } from './atlassian-jira';
 import { atlassianStatuspageTechnologyDefinition } from './atlassian-statuspage';
 import { betterStackTechnologyDefinition } from './better-stack';
 import { betterUptimeTechnologyDefinition } from './better-uptime';
@@ -66,8 +66,8 @@ import { getfeedbackTechnologyDefinition } from './getfeedback';
 import { gitTechnologyDefinition } from './git';
 import { giteaTechnologyDefinition } from './gitea';
 import { gitilesTechnologyDefinition } from './gitiles';
-import { gitlabTechnologyDefinition } from './gitlab';
 import { gitlabCiCdTechnologyDefinition } from './gitlab-ci-cd';
+import { gitlabTechnologyDefinition } from './gitlab';
 import { gitlistTechnologyDefinition } from './gitlist';
 import { gitwebTechnologyDefinition } from './gitweb';
 import { glitchtipTechnologyDefinition } from './glitchtip';
@@ -174,6 +174,8 @@ import { uservoiceTechnologyDefinition } from './uservoice';
 import { vigilTechnologyDefinition } from './vigil';
 import { webassemblyTechnologyDefinition } from './webassembly';
 import { wordpressProjectManagerTechnologyDefinition } from './wordpress-project-manager';
+import { wpPolyfillTechnologyDefinition } from './wp-polyfill';
+import { xUaCompatibleTechnologyDefinition } from './x-ua-compatible';
 import { xsltTechnologyDefinition } from './xslt';
 import { yaghootWebTechnologyDefinition } from './yaghoot-web';
 import { ybugTechnologyDefinition } from './ybug';
@@ -196,8 +198,8 @@ export const developerToolingTechnologyDefinitions = [
 	atarimTechnologyDefinition,
 	atlassianBitbucketTechnologyDefinition,
 	atlassianFisheyeTechnologyDefinition,
-	atlassianJiraTechnologyDefinition,
 	atlassianJiraIssueCollectorTechnologyDefinition,
+	atlassianJiraTechnologyDefinition,
 	atlassianStatuspageTechnologyDefinition,
 	betterStackTechnologyDefinition,
 	betterUptimeTechnologyDefinition,
@@ -249,8 +251,8 @@ export const developerToolingTechnologyDefinitions = [
 	gitTechnologyDefinition,
 	giteaTechnologyDefinition,
 	gitilesTechnologyDefinition,
-	gitlabTechnologyDefinition,
 	gitlabCiCdTechnologyDefinition,
+	gitlabTechnologyDefinition,
 	gitlistTechnologyDefinition,
 	gitwebTechnologyDefinition,
 	glitchtipTechnologyDefinition,
@@ -357,6 +359,8 @@ export const developerToolingTechnologyDefinitions = [
 	vigilTechnologyDefinition,
 	webassemblyTechnologyDefinition,
 	wordpressProjectManagerTechnologyDefinition,
+	wpPolyfillTechnologyDefinition,
+	xUaCompatibleTechnologyDefinition,
 	xsltTechnologyDefinition,
 	yaghootWebTechnologyDefinition,
 	ybugTechnologyDefinition,
