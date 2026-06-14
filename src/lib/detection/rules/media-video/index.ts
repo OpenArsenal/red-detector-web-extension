@@ -95,11 +95,12 @@ import { videooTvTechnologyDefinition } from './videoo-tv';
 import { vidjetTechnologyDefinition } from './vidjet';
 import { vidscripTechnologyDefinition } from './vidscrip';
 import { viloudTechnologyDefinition } from './viloud';
-import { vimeoTechnologyDefinition } from './vimeo';
 import { vimeoOttTechnologyDefinition } from './vimeo-ott';
+import { vimeoTechnologyDefinition } from './vimeo';
 import { viqeoTechnologyDefinition } from './viqeo';
 import { vonageVideoApiTechnologyDefinition } from './vonage-video-api';
 import { webinatoTechnologyDefinition } from './webinato';
+import { webpImageFormatTechnologyDefinition } from './webp-image-format';
 import { widdeTechnologyDefinition } from './widde';
 import { widenTechnologyDefinition } from './widen';
 import { wistiaTechnologyDefinition } from './wistia';
@@ -204,11 +205,12 @@ export const mediaVideoTechnologyDefinitions = [
 	vidjetTechnologyDefinition,
 	vidscripTechnologyDefinition,
 	viloudTechnologyDefinition,
-	vimeoTechnologyDefinition,
 	vimeoOttTechnologyDefinition,
+	vimeoTechnologyDefinition,
 	viqeoTechnologyDefinition,
 	vonageVideoApiTechnologyDefinition,
 	webinatoTechnologyDefinition,
+	webpImageFormatTechnologyDefinition,
 	widdeTechnologyDefinition,
 	widenTechnologyDefinition,
 	wistiaTechnologyDefinition,
