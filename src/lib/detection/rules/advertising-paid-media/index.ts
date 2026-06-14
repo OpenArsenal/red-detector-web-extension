@@ -120,6 +120,7 @@ import { genieeTechnologyDefinition } from './geniee';
 import { geniewordsTechnologyDefinition } from './geniewords';
 import { getintentTechnologyDefinition } from './getintent';
 import { goaffproTechnologyDefinition } from './goaffpro';
+import { googleAdsConversionTrackingTechnologyDefinition } from './google-ads-conversion-tracking';
 import { googleAdsTechnologyDefinition } from './google-ads';
 import { googleAdsenseTechnologyDefinition } from './google-adsense';
 import { googlePublisherTagTechnologyDefinition } from './google-publisher-tag';
@@ -202,8 +203,8 @@ import { pushubTechnologyDefinition } from './pushub';
 import { q1mediaTechnologyDefinition } from './q1media';
 import { qbrickTechnologyDefinition } from './qbrick';
 import { quonTechnologyDefinition } from './quon';
-import { rakutenTechnologyDefinition } from './rakuten';
 import { rakutenAdvertisingTechnologyDefinition } from './rakuten-advertising';
+import { rakutenTechnologyDefinition } from './rakuten';
 import { raptiveTechnologyDefinition } from './raptive';
 import { redditAdsTechnologyDefinition } from './reddit-ads';
 import { reditusTechnologyDefinition } from './reditus';
@@ -235,8 +236,8 @@ import { socialSnowballTechnologyDefinition } from './social-snowball';
 import { sociohTechnologyDefinition } from './socioh';
 import { sonobiTechnologyDefinition } from './sonobi';
 import { sortableTechnologyDefinition } from './sortable';
-import { sovrnTechnologyDefinition } from './sovrn';
 import { sovrnCommerceTechnologyDefinition } from './sovrn-commerce';
+import { sovrnTechnologyDefinition } from './sovrn';
 import { spotxTechnologyDefinition } from './spotx';
 import { squadataTechnologyDefinition } from './squadata';
 import { stackadaptTechnologyDefinition } from './stackadapt';
@@ -416,6 +417,7 @@ export const advertisingPaidMediaTechnologyDefinitions = [
 	geniewordsTechnologyDefinition,
 	getintentTechnologyDefinition,
 	goaffproTechnologyDefinition,
+	googleAdsConversionTrackingTechnologyDefinition,
 	googleAdsTechnologyDefinition,
 	googleAdsenseTechnologyDefinition,
 	googlePublisherTagTechnologyDefinition,
@@ -498,8 +500,8 @@ export const advertisingPaidMediaTechnologyDefinitions = [
 	q1mediaTechnologyDefinition,
 	qbrickTechnologyDefinition,
 	quonTechnologyDefinition,
-	rakutenTechnologyDefinition,
 	rakutenAdvertisingTechnologyDefinition,
+	rakutenTechnologyDefinition,
 	raptiveTechnologyDefinition,
 	redditAdsTechnologyDefinition,
 	reditusTechnologyDefinition,
@@ -531,8 +533,8 @@ export const advertisingPaidMediaTechnologyDefinitions = [
 	sociohTechnologyDefinition,
 	sonobiTechnologyDefinition,
 	sortableTechnologyDefinition,
-	sovrnTechnologyDefinition,
 	sovrnCommerceTechnologyDefinition,
+	sovrnTechnologyDefinition,
 	spotxTechnologyDefinition,
 	squadataTechnologyDefinition,
 	stackadaptTechnologyDefinition,
