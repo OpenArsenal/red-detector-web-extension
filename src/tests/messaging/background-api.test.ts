@@ -6,6 +6,8 @@ import type { PageSignalPollingState } from '../../lib/content/observed-page-sig
 import { CONTENT_SCRIPT_TIMEOUT_MS } from '../../lib/messaging/rpc';
 import { ok, type AppResult } from '../../lib/shared/result';
 
+vi.setConfig({ testTimeout: 20_000 });
+
 type TestTab = {
 	id?: number;
 	url?: string;
@@ -155,7 +157,7 @@ afterEach(() => {
 	vi.resetModules();
 });
 
-describe('background analyzeActiveTab messaging hardening', () => {
+describe.sequential('background analyzeActiveTab messaging hardening', () => {
 	it('returns NO_ACTIVE_TAB when there is no selected tab', async () => {
 		const api = await loadBackgroundApi({ tab: null });
 

@@ -2,8 +2,10 @@ import { defineProxy } from 'comctx';
 import { browser } from 'wxt/browser';
 
 import { technologies } from '../data/technologies';
-import { getActiveTab, canInspectTab } from '../lib/browser/active-tab';
+import { canInspectTab, getActiveTab } from '../lib/browser/active-tab';
 import { analyzeSite } from '../lib/detection/engine';
+import { limitStringsByTotalChars, truncate, uniqueStrings } from '../lib/detection/normalizers';
+import { SOURCE_LIMITS } from '../lib/detection/rules';
 
 import type { ObservationSessionState } from '../lib/content/observed-page-signals';
 import type {
@@ -42,9 +44,13 @@ type InspectableTab = {
   url: string;
 };
 
+type JsGlobalSignalValue = string | boolean | number;
+
 const CONTENT_SCRIPT_FILE = '/content-scripts/content.js';
 const CONTENT_SCRIPT_PING_TIMEOUT_MS = 750;
 const BACKGROUND_LOG_PREFIX = '[red-detector][background]';
+const PASSIVE_FETCH_TIMEOUT_MS = 1_500;
+const BACKGROUND_FETCH_CONCURRENCY = 4;
 const OBSERVATION_POLICY: BeginObservationSessionInput['policy'] = {
 	durationMs: 60_000,
 	throttleMs: 1_500,
@@ -78,10 +84,14 @@ function summarizeSignals(signals: PageSignals) {
 		linkCount: signals.links.length,
 		resourceCount: signals.resources.length,
 		requestCount: signals.requests.length,
+		scriptContentCount: signals.scriptContents.length,
+		stylesheetContentCount: signals.stylesheetContents.length,
+		headerCount: Object.keys(signals.headers).length,
 		metaKeyCount: Object.keys(signals.meta).length,
 		domSelectorCount: Object.keys(signals.dom.selectors).length,
 		jsGlobalCount: Object.keys(signals.jsGlobals).length,
 		htmlMatchCount: Object.keys(signals.htmlMatches ?? {}).length,
+		textChars: signals.text.length,
 		cookieNameCount: Object.keys(signals.cookies).length,
 		localStorageKeyCount: Object.keys(signals.storage.localStorage).length,
 		sessionStorageKeyCount: Object.keys(signals.storage.sessionStorage).length,
@@ -241,16 +251,6 @@ async function collectFromTab(
 			return response;
 		}
 
-		const validationError = validatePageSignals(response.value);
-		if (validationError) {
-			logBackgroundEvent('collect-validation-failed', {
-				tabId,
-				hostname: response.value.hostname,
-				error: validationError,
-			});
-			return errorResponse('PAYLOAD_TOO_LARGE', validationError);
-		}
-    
 		if (!isSameDocumentUrl(response.value.url, expectedUrl)) {
 			logBackgroundEvent('collect-document-mismatch', {
 				tabId,
@@ -263,20 +263,305 @@ async function collectFromTab(
 			);
 		}
 
+		const enrichedSignals = await enrichBackgroundSignals(tabId, response.value, technologies);
+		const validationError = validatePageSignals(enrichedSignals);
+		if (validationError) {
+			logBackgroundEvent('collect-validation-failed', {
+				tabId,
+				hostname: enrichedSignals.hostname,
+				error: validationError,
+			});
+			return errorResponse('PAYLOAD_TOO_LARGE', validationError);
+		}
+
 		logBackgroundEvent('collect-success', {
 			tabId,
-			...summarizeSignals(response.value),
+			...summarizeSignals(enrichedSignals),
 		});
 
-		return response;
-  } catch (error) {
-    logBackgroundEvent('collect-failed', {
-      tabId,
-      hostname: new URL(expectedUrl).hostname,
-      message: error instanceof Error ? error.message : 'Unknown content collection failure',
-    });
-    return contentScriptFailure(error);
-  }
+		return ok(enrichedSignals);
+	} catch (error) {
+		logBackgroundEvent('collect-failed', {
+			tabId,
+			hostname: new URL(expectedUrl).hostname,
+			message: error instanceof Error ? error.message : 'Unknown content collection failure',
+		});
+		return contentScriptFailure(error);
+	}
+}
+
+async function enrichBackgroundSignals(
+	tabId: number,
+	signals: PageSignals,
+	registry: TechnologyDefinition[],
+): Promise<PageSignals> {
+	const pageOrigin = getOrigin(signals.url);
+	const [jsGlobals, headers, fetchedSourceContents] = await Promise.all([
+		collectInjectedJsGlobals(tabId, registry),
+		collectResponseHeaders(signals.url),
+		collectSameOriginSourceContents(signals, pageOrigin),
+	]);
+
+	return {
+		...signals,
+		headers: {
+			...signals.headers,
+			...headers,
+		},
+		scriptContents: limitStringsByTotalChars(
+			[...signals.scriptContents, ...fetchedSourceContents.scriptContents],
+			SOURCE_LIMITS.scriptContentItems,
+			SOURCE_LIMITS.scriptContentTotalChars,
+		),
+		stylesheetContents: limitStringsByTotalChars(
+			[...signals.stylesheetContents, ...fetchedSourceContents.stylesheetContents],
+			SOURCE_LIMITS.stylesheetContentItems,
+			SOURCE_LIMITS.stylesheetContentTotalChars,
+		),
+		jsGlobals,
+	};
+}
+
+async function collectInjectedJsGlobals(
+	tabId: number,
+	registry: TechnologyDefinition[],
+): Promise<Record<string, JsGlobalSignalValue>> {
+	const propertyPaths = buildJsGlobalPropertyList(registry);
+	if (!propertyPaths.length) {
+		return {};
+	}
+
+	try {
+		const results = await browser.scripting.executeScript({
+			target: { tabId, frameIds: [0] },
+			world: 'MAIN' as const,
+			func: collectInjectedJsGlobalsFromPageContext,
+			args: [propertyPaths, SOURCE_LIMITS.jsGlobalValueChars],
+		});
+
+		const firstResult = results[0]?.result;
+		return isJsGlobalSignalRecord(firstResult) ? firstResult : {};
+	} catch (error) {
+		logBackgroundEvent('collect-js-globals-failed', {
+			tabId,
+			message: error instanceof Error ? error.message : 'Unknown JavaScript global collection failure',
+		});
+		return {};
+	}
+}
+
+type SourceContentSignals = Pick<PageSignals, 'scriptContents' | 'stylesheetContents'>;
+
+async function collectResponseHeaders(pageUrl: string): Promise<Record<string, string>> {
+	try {
+		const response = await fetchWithTimeout(pageUrl, {
+			cache: 'force-cache',
+			credentials: 'omit',
+			method: 'HEAD',
+		}, PASSIVE_FETCH_TIMEOUT_MS);
+
+		return headersToSignalRecord(response.headers);
+	} catch {
+		return {};
+	}
+}
+
+async function collectSameOriginSourceContents(
+	signals: PageSignals,
+	pageOrigin: string,
+): Promise<SourceContentSignals> {
+	const [scriptContents, stylesheetContents] = await Promise.all([
+		fetchBoundedTextSignals(
+			signals.scripts,
+			pageOrigin,
+			SOURCE_LIMITS.scriptContentItems - signals.scriptContents.length,
+			SOURCE_LIMITS.scriptContentChars,
+			SOURCE_LIMITS.scriptContentTotalChars - totalChars(signals.scriptContents),
+		),
+		fetchBoundedTextSignals(
+			signals.stylesheets,
+			pageOrigin,
+			SOURCE_LIMITS.stylesheetContentItems - signals.stylesheetContents.length,
+			SOURCE_LIMITS.stylesheetContentChars,
+			SOURCE_LIMITS.stylesheetContentTotalChars - totalChars(signals.stylesheetContents),
+		),
+	]);
+
+	return { scriptContents, stylesheetContents };
+}
+
+async function fetchBoundedTextSignals(
+	urls: readonly string[],
+	allowedOrigin: string,
+	maxItems: number,
+	maxChars: number,
+	maxTotalChars: number,
+): Promise<string[]> {
+	if (maxItems <= 0 || maxTotalChars <= 0) {
+		return [];
+	}
+
+	const candidates = uniqueStrings(
+		urls.filter((url) => isFetchableSameOriginUrl(url, allowedOrigin)),
+	).slice(0, maxItems);
+
+	const fetched: string[] = [];
+	for (let index = 0; index < candidates.length; index += BACKGROUND_FETCH_CONCURRENCY) {
+		const batch = candidates.slice(index, index + BACKGROUND_FETCH_CONCURRENCY);
+		const values = await Promise.all(
+			batch.map((url) => fetchBoundedText(url, maxChars)),
+		);
+
+		for (const value of values) {
+			if (!value) {
+				continue;
+			}
+			fetched.push(value);
+			if (fetched.length >= maxItems) {
+				return limitStringsByTotalChars(fetched, maxItems, maxTotalChars);
+			}
+		}
+	}
+
+	return limitStringsByTotalChars(fetched, maxItems, maxTotalChars);
+}
+
+function totalChars(values: readonly string[]): number {
+	return values.reduce((total, value) => total + value.length, 0);
+}
+
+async function fetchBoundedText(url: string, maxChars: number): Promise<string> {
+	try {
+		const response = await fetchWithTimeout(url, {
+			cache: 'force-cache',
+			credentials: 'omit',
+		}, PASSIVE_FETCH_TIMEOUT_MS);
+
+		if (!response.ok) {
+			return '';
+		}
+
+		return truncate(await response.text(), maxChars);
+	} catch {
+		return '';
+	}
+}
+
+async function fetchWithTimeout(
+	url: string,
+	init: RequestInit,
+	timeoutMs: number,
+): Promise<Response> {
+	const controller = new AbortController();
+	const timeoutId = globalThis.setTimeout(() => controller.abort(), timeoutMs);
+	try {
+		return await fetch(url, {
+			...init,
+			signal: controller.signal,
+		});
+	} finally {
+		globalThis.clearTimeout(timeoutId);
+	}
+}
+
+function headersToSignalRecord(headers: Headers): Record<string, string> {
+	const entries: Array<[string, string]> = [];
+	for (const [key, value] of headers.entries()) {
+		if (entries.length >= SOURCE_LIMITS.headers) {
+			break;
+		}
+
+		entries.push([
+			key.toLowerCase(),
+			truncate(value, SOURCE_LIMITS.headerValueChars),
+		]);
+	}
+
+	return Object.fromEntries(entries);
+}
+
+function isFetchableSameOriginUrl(url: string, allowedOrigin: string): boolean {
+	try {
+		const parsed = new URL(url);
+		return parsed.origin === allowedOrigin && (parsed.protocol === 'http:' || parsed.protocol === 'https:');
+	} catch {
+		return false;
+	}
+}
+
+function isJsGlobalSignalRecord(value: unknown): value is Record<string, JsGlobalSignalValue> {
+	if (!value || typeof value !== 'object' || Array.isArray(value)) {
+		return false;
+	}
+
+	return Object.values(value).every((item) =>
+		typeof item === 'string' || typeof item === 'boolean' || typeof item === 'number',
+	);
+}
+
+function collectInjectedJsGlobalsFromPageContext(
+	propertyPaths: string[],
+	maxValueChars: number,
+): Record<string, JsGlobalSignalValue> {
+	const values: Record<string, JsGlobalSignalValue> = {};
+	const root = globalThis as Record<string, unknown>;
+
+	function readGlobalPath(propertyPath: string): unknown {
+		if (Object.hasOwn(root, propertyPath)) {
+			return root[propertyPath];
+		}
+
+		let current: unknown = root;
+		for (const segment of propertyPath.split('.')) {
+			if (current === undefined || current === null) {
+				return undefined;
+			}
+
+			current = (current as Record<string, unknown>)[segment];
+		}
+
+		return current;
+	}
+
+	function summarizeValue(value: unknown): JsGlobalSignalValue {
+		const valueType = typeof value;
+		if (valueType === 'string') {
+			return (value as string).slice(0, maxValueChars);
+		}
+		if (valueType === 'number' || valueType === 'boolean') {
+			return value as number | boolean;
+		}
+		if (valueType === 'function') {
+			return 'function';
+		}
+
+		try {
+			const constructorName = (value as { constructor?: { name?: string } }).constructor?.name;
+			if (constructorName) {
+				return constructorName.slice(0, maxValueChars);
+			}
+		} catch {
+			// Fall through to String(value).
+		}
+
+		return String(value).slice(0, maxValueChars);
+	}
+
+	for (const propertyPath of propertyPaths) {
+		try {
+			const value = readGlobalPath(propertyPath);
+			if (value === undefined || value === null) {
+				continue;
+			}
+
+			values[propertyPath] = summarizeValue(value);
+		} catch {
+			// Some pages define getters with side effects or throwing accessors. Treat
+			// those globals as unavailable rather than letting detection mutate the page.
+		}
+	}
+
+	return values;
 }
 
 function getAnalysisCacheKey(url: string): string {
@@ -468,6 +753,18 @@ function buildHtmlProbeList(registry: TechnologyDefinition[]): HtmlProbe[] {
 			];
 		}),
 	);
+}
+
+function buildJsGlobalPropertyList(registry: TechnologyDefinition[]): string[] {
+	return Array.from(
+		new Set(
+			registry.flatMap((technology) =>
+				technology.rules.flatMap((rule) =>
+					rule.kind === 'jsGlobal' && rule.property ? [rule.property] : [],
+				),
+			),
+		),
+	).slice(0, SOURCE_LIMITS.jsGlobals);
 }
 
 export function createBackgroundApi(): BackgroundApi {
