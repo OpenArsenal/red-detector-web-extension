@@ -861,6 +861,36 @@ describe('upgraded detection surfaces and graph relationships', () => {
 		]);
 	});
 
+	it('detects standard metadata, resource hints, and modern image assets', () => {
+		const analysis = analyzeSite(
+			createSignals({
+				html: '<html lang="en-CA"><head><meta property="og:image" content="/social.avif"></head><body><picture><source srcset="/hero.avif" type="image/avif"></picture></body></html>',
+				meta: {
+					'content-language': ['en-CA'],
+					referrer: ['strict-origin-when-cross-origin'],
+					'content-security-policy': ["default-src 'self'; script-src 'self'"],
+				},
+				links: [
+					{ rel: 'prefetch', href: 'https://example.com/next-page' },
+					{ rel: 'prerender', href: 'https://example.com/checkout' },
+					{ rel: 'icon', href: 'https://example.com/favicon.avif', type: 'image/avif' },
+				],
+				resources: [
+					{ url: 'https://example.com/assets/hero.avif', initiatorType: 'img' },
+				],
+			}),
+			technologyDefinitions,
+		);
+
+		const ids = new Set(analysis.results.map((item) => item.technologyId));
+		expect(ids.has('language-declaration')).toBe(true);
+		expect(ids.has('referrer-policy-meta')).toBe(true);
+		expect(ids.has('meta-content-security-policy')).toBe(true);
+		expect(ids.has('resource-prefetch')).toBe(true);
+		expect(ids.has('prerender-hint')).toBe(true);
+		expect(ids.has('avif-image-format')).toBe(true);
+	});
+
 	it('does not detect DNS rules when no DNS records were collected', () => {
 		const registry: TechnologyDefinition[] = [
 			{
@@ -918,6 +948,174 @@ describe('upgraded detection surfaces and graph relationships', () => {
 
 
 describe('payload-ready collector promotions', () => {
+	it('does not detect Sphinx technologies from generic visible version numbers', () => {
+		const analysis = analyzeSite(
+			createSignals({
+				url: 'https://wordpress.com/',
+				hostname: 'wordpress.com',
+				text: 'WordPress.com has a 4.5 rating from customers and supports modern publishing workflows.',
+			}),
+			technologyDefinitions,
+		);
+
+		const ids = new Set(analysis.results.map((item) => item.technologyId));
+		expect(ids.has('sphinx')).toBe(false);
+		expect(ids.has('pydata-sphinx-theme')).toBe(false);
+	});
+
+	it('still detects Sphinx technologies from explicit visible generator text', () => {
+		const analysis = analyzeSite(
+			createSignals({
+				text: 'Created using Sphinx 7.2.6. PyData Sphinx Theme 0.15.4',
+			}),
+			technologyDefinitions,
+		);
+
+		const sphinx = analysis.results.find((item) => item.technologyId === 'sphinx');
+		const pydataSphinxTheme = analysis.results.find((item) => item.technologyId === 'pydata-sphinx-theme');
+
+		expect(sphinx?.version).toBe('7.2.6');
+		expect(pydataSphinxTheme?.version).toBe('0.15.4');
+	});
+
+	it('does not display named tooling from single weak compiled-code snippets', () => {
+		const analysis = analyzeSite(
+			createSignals({
+				scriptContents: [
+					'const coerced = flags | 0;',
+					'if (enabled == !1) return;',
+					'return { currentPagePath: getCurrentPagePath() };',
+					'return function() { return currentPageName; }',
+					'module.exports = factory;',
+					'fetch("/xmlrpc.php?rsd")',
+					'8999999999999 * Math.random() + 1e12; performance.getEntriesByType("largest-contentful-paint")',
+				],
+			}),
+			technologyDefinitions,
+		);
+
+		const ids = new Set(analysis.results.map((item) => item.technologyId));
+		expect(ids.has('babel-minify')).toBe(false);
+		expect(ids.has('uglify')).toBe(false);
+		expect(ids.has('amd')).toBe(false);
+		expect(ids.has('umd')).toBe(false);
+		expect(ids.has('php')).toBe(false);
+		expect(ids.has('web-vitals')).toBe(false);
+	});
+
+	it('still detects named tooling from explicit high-confidence signals', () => {
+		const analysis = analyzeSite(
+			createSignals({
+				scriptContents: [
+					'define(["require", "exports", "module"], function(require, exports, module) { return exports; });',
+					'(function(root, factory) { if (typeof define === "function" && define.amd) { define([], factory); } else if (typeof exports === "object") { module.exports = factory(); } })(this, function() { return {}; });',
+				],
+				resources: [
+					{ url: 'https://cdn.example.com/babel-minify/app.min.js', initiatorType: 'script' },
+					{ url: 'https://cdn.example.com/vendor.uglify.min.js', initiatorType: 'script' },
+				],
+				cookies: { PHPSESSID: true },
+				jsGlobals: { webVitals: {} },
+			}),
+			technologyDefinitions,
+		);
+
+		const ids = new Set(analysis.results.map((item) => item.technologyId));
+		expect(ids.has('amd')).toBe(true);
+		expect(ids.has('umd')).toBe(true);
+		expect(ids.has('babel-minify')).toBe(true);
+		expect(ids.has('uglify')).toBe(true);
+		expect(ids.has('php')).toBe(true);
+		expect(ids.has('web-vitals')).toBe(true);
+	});
+
+	it('does not display transpilers from generic compiled JavaScript fragments', () => {
+		const analysis = analyzeSite(
+			createSignals({
+				scriptContents: [
+					'Object.defineProperty(exports, "__esModule", { value: true });',
+					'exports.default = void 0;',
+					'"use strict";',
+					'React.createElement(App, null, title);',
+					'var fallback = value === void 0 ? defaultValue : value;',
+					'var item = source == null ? void 0 : source.item;',
+				],
+			}),
+			technologyDefinitions,
+		);
+
+		const ids = new Set(analysis.results.map((item) => item.technologyId));
+		expect(ids.has('babel')).toBe(false);
+		expect(ids.has('typescript')).toBe(false);
+		expect(ids.has('sucrase')).toBe(false);
+	});
+
+	it('still detects transpilers from explicit runtime or helper signals', () => {
+		const analysis = analyzeSite(
+			createSignals({
+				scriptContents: [
+					'function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) throw new TypeError("Cannot call a class as a function"); }',
+					'function _createClass(Constructor, protoProps, staticProps) { return Constructor; }',
+					'var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) { return generator; };',
+					'var __generator = (this && this.__generator) || function (thisArg, body) { return body; };',
+				],
+				resources: [
+					{ url: 'https://cdn.example.com/@babel/runtime/helpers/classCallCheck.js', initiatorType: 'script' },
+					{ url: 'https://cdn.example.com/npm/tslib@2.6.2/tslib.es6.js', initiatorType: 'script' },
+					{ url: 'https://cdn.example.com/sucrase/sucrase.min.js', initiatorType: 'script' },
+				],
+			}),
+			technologyDefinitions,
+		);
+
+		const ids = new Set(analysis.results.map((item) => item.technologyId));
+		expect(ids.has('babel')).toBe(true);
+		expect(ids.has('typescript')).toBe(true);
+		expect(ids.has('sucrase')).toBe(true);
+	});
+
+	it('does not display bundlers from generic chunks or ESM boilerplate', () => {
+		const analysis = analyzeSite(
+			createSignals({
+				scriptContents: [
+					'import { createApp as c } from "./chunk-ABCD1234.js";',
+					'export { createApp as c, hydrate as h } from "./runtime.js";',
+					'function loadBundle(bundle) { return Promise.all(Object.keys(bundle).map((key) => bundle[key])); }',
+					'var __defProp = Object.defineProperty; var __getOwnPropDesc = Object.getOwnPropertyDescriptor;',
+				],
+				resources: [
+					{ url: 'https://cdn.example.com/assets/chunk-ABCD1234.js', initiatorType: 'script' },
+				],
+			}),
+			technologyDefinitions,
+		);
+
+		const ids = new Set(analysis.results.map((item) => item.technologyId));
+		expect(ids.has('vite')).toBe(false);
+		expect(ids.has('rollup')).toBe(false);
+		expect(ids.has('esbuild')).toBe(false);
+	});
+
+	it('still detects bundlers from explicit tool-specific signals', () => {
+		const analysis = analyzeSite(
+			createSignals({
+				scriptContents: [
+					'import "/@vite/client"; new Event("vite:preloadError");',
+					'var bundle = (function (exports) { "use strict"; /* Rollup generated */ return exports; });',
+				],
+				resources: [
+					{ url: 'https://cdn.example.com/app.esbuild.min.js', initiatorType: 'script' },
+				],
+			}),
+			technologyDefinitions,
+		);
+
+		const ids = new Set(analysis.results.map((item) => item.technologyId));
+		expect(ids.has('vite')).toBe(true);
+		expect(ids.has('rollup')).toBe(true);
+		expect(ids.has('esbuild')).toBe(true);
+	});
+
 	it('detects WordPress.com observed passive technologies from source and resource signals', () => {
 		const analysis = analyzeSite(
 			createSignals({
@@ -959,5 +1157,12 @@ describe('payload-ready collector promotions', () => {
 		expect(ids.has('hreflang')).toBe(true);
 		expect(ids.has('open-graph')).toBe(true);
 		expect(ids.has('json-ld')).toBe(true);
+		expect(ids.has('sphinx')).toBe(false);
+		expect(ids.has('pydata-sphinx-theme')).toBe(false);
+		expect(ids.has('babel-minify')).toBe(false);
+		expect(ids.has('uglify')).toBe(false);
+		expect(ids.has('amd')).toBe(false);
+		expect(ids.has('umd')).toBe(false);
+		expect(ids.has('web-vitals')).toBe(false);
 	});
 });
