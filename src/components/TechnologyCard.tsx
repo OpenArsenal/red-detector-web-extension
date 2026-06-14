@@ -23,9 +23,9 @@ export function TechnologyCard(props: {
 			<Show when={props.result.description}>
 				{(description) => <p>{description()}</p>}
 			</Show>
-			<p>
-				{props.result.version ? ` · v${props.result.version}` : ''}
-			</p>
+			<Show when={props.result.version}>
+				{(version) => <p>Version: {version()}</p>}
+			</Show>
 			<Show when={props.result.evidence.length}>
 				<p class="result-meta">Evidence: {props.result.evidence.length} signal(s)</p>
 				<ul class="evidence-list">
