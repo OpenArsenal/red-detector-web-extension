@@ -13,9 +13,10 @@ import { apigeeTechnologyDefinition } from './apigee';
 import { ascEdupageTechnologyDefinition } from './asc-edupage';
 import { asciidoctorTechnologyDefinition } from './asciidoctor';
 import { atlassianConfluenceTechnologyDefinition } from './atlassian-confluence';
+import { atomFeedTechnologyDefinition } from './atom-feed';
 import { bearBlogTechnologyDefinition } from './bear-blog';
-import { beehiivTechnologyDefinition } from './beehiiv';
 import { beehiivRssFeedTechnologyDefinition } from './beehiiv-rss-feed';
+import { beehiivTechnologyDefinition } from './beehiiv';
 import { betterdocsTechnologyDefinition } from './betterdocs';
 import { blendleTechnologyDefinition } from './blendle';
 import { blessingSkinTechnologyDefinition } from './blessing-skin';
@@ -26,6 +27,7 @@ import { bookstackTechnologyDefinition } from './bookstack';
 import { bumpTechnologyDefinition } from './bump';
 import { buroguTechnologyDefinition } from './burogu';
 import { bxsliderTechnologyDefinition } from './bxslider';
+import { canonicalUrlTechnologyDefinition } from './canonical-url';
 import { canvasLmsTechnologyDefinition } from './canvas-lms';
 import { canvyTechnologyDefinition } from './canvy';
 import { chamiloTechnologyDefinition } from './chamilo';
@@ -73,6 +75,7 @@ import { haloscanTechnologyDefinition } from './haloscan';
 import { hashnodeTechnologyDefinition } from './hashnode';
 import { heightsPlatformTechnologyDefinition } from './heights-platform';
 import { helpdocsTechnologyDefinition } from './helpdocs';
+import { hreflangTechnologyDefinition } from './hreflang';
 import { huddleTechnologyDefinition } from './huddle';
 import { ikiwikiTechnologyDefinition } from './ikiwiki';
 import { iliasTechnologyDefinition } from './ilias';
@@ -83,6 +86,7 @@ import { invenioTechnologyDefinition } from './invenio';
 import { irislmsTechnologyDefinition } from './irislms';
 import { jalbumTechnologyDefinition } from './jalbum';
 import { javadocTechnologyDefinition } from './javadoc';
+import { jsonLdTechnologyDefinition } from './json-ld';
 import { jugemTechnologyDefinition } from './jugem';
 import { kamarTechnologyDefinition } from './kamar';
 import { keepeekTechnologyDefinition } from './keepeek';
@@ -148,12 +152,15 @@ import { rapidocTechnologyDefinition } from './rapidoc';
 import { rdocTechnologyDefinition } from './rdoc';
 import { readTheDocsTechnologyDefinition } from './read-the-docs';
 import { readmeTechnologyDefinition } from './readme';
+import { reallySimpleDiscoveryTechnologyDefinition } from './really-simple-discovery';
 import { redocTechnologyDefinition } from './redoc';
 import { releasedTechnologyDefinition } from './released';
 import { respecTechnologyDefinition } from './respec';
+import { rssTechnologyDefinition } from './rss';
 import { ruzukuTechnologyDefinition } from './ruzuku';
 import { sakaiTechnologyDefinition } from './sakai';
 import { scalarTechnologyDefinition } from './scalar';
+import { schemaOrgTechnologyDefinition } from './schema-org';
 import { schoolKiwiTechnologyDefinition } from './school-kiwi';
 import { schudioTechnologyDefinition } from './schudio';
 import { simpleroWebsitesTechnologyDefinition } from './simplero-websites';
@@ -219,9 +226,10 @@ export const contentPublishingTechnologyDefinitions = [
 	ascEdupageTechnologyDefinition,
 	asciidoctorTechnologyDefinition,
 	atlassianConfluenceTechnologyDefinition,
+	atomFeedTechnologyDefinition,
 	bearBlogTechnologyDefinition,
-	beehiivTechnologyDefinition,
 	beehiivRssFeedTechnologyDefinition,
+	beehiivTechnologyDefinition,
 	betterdocsTechnologyDefinition,
 	blendleTechnologyDefinition,
 	blessingSkinTechnologyDefinition,
@@ -232,6 +240,7 @@ export const contentPublishingTechnologyDefinitions = [
 	bumpTechnologyDefinition,
 	buroguTechnologyDefinition,
 	bxsliderTechnologyDefinition,
+	canonicalUrlTechnologyDefinition,
 	canvasLmsTechnologyDefinition,
 	canvyTechnologyDefinition,
 	chamiloTechnologyDefinition,
@@ -279,6 +288,7 @@ export const contentPublishingTechnologyDefinitions = [
 	hashnodeTechnologyDefinition,
 	heightsPlatformTechnologyDefinition,
 	helpdocsTechnologyDefinition,
+	hreflangTechnologyDefinition,
 	huddleTechnologyDefinition,
 	ikiwikiTechnologyDefinition,
 	iliasTechnologyDefinition,
@@ -289,6 +299,7 @@ export const contentPublishingTechnologyDefinitions = [
 	irislmsTechnologyDefinition,
 	jalbumTechnologyDefinition,
 	javadocTechnologyDefinition,
+	jsonLdTechnologyDefinition,
 	jugemTechnologyDefinition,
 	kamarTechnologyDefinition,
 	keepeekTechnologyDefinition,
@@ -354,12 +365,15 @@ export const contentPublishingTechnologyDefinitions = [
 	rdocTechnologyDefinition,
 	readTheDocsTechnologyDefinition,
 	readmeTechnologyDefinition,
+	reallySimpleDiscoveryTechnologyDefinition,
 	redocTechnologyDefinition,
 	releasedTechnologyDefinition,
 	respecTechnologyDefinition,
+	rssTechnologyDefinition,
 	ruzukuTechnologyDefinition,
 	sakaiTechnologyDefinition,
 	scalarTechnologyDefinition,
+	schemaOrgTechnologyDefinition,
 	schoolKiwiTechnologyDefinition,
 	schudioTechnologyDefinition,
 	simpleroWebsitesTechnologyDefinition,
