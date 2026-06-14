@@ -47,12 +47,12 @@ export const sphinxTechnologyDefinition = {
 		{
 			id: "sphinx:text:5",
 			kind: "text",
-			pattern: new RegExp("([\\d]+(?:\\.[\\d]+)*)"),
+			pattern: new RegExp("Created using Sphinx ([\\d]+(?:\\.[\\d]+)*)", "i"),
 			version: {
 				source: "match",
 				group: 1,
 			},
-			description: "Page text contains a known technology marker.",
+			description: "Page text contains a known Sphinx generator signature.",
 		},
 		{
 			id: "sphinx:jsGlobal:6",

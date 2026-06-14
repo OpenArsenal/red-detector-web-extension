@@ -14,7 +14,7 @@ export const pwaTechnologyDefinition = {
 			id: "pwa:link:0",
 			kind: "link",
 			rel: "manifest",
-			confidence: 75,
+			confidence: 45,
 			description: "Document links to a web app manifest. This is installability metadata, not full PWA proof by itself.",
 		},
 	],

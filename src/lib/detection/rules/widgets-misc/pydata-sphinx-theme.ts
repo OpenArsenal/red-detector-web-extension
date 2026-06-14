@@ -19,12 +19,12 @@ export const pydataSphinxThemeTechnologyDefinition = {
 		{
 			id: "pydata-sphinx-theme:text:1",
 			kind: "text",
-			pattern: new RegExp("([\\d]+(?:\\.[\\d]+)*)"),
+			pattern: new RegExp("PyData Sphinx Theme ([\\d]+(?:\\.[\\d]+)*)", "i"),
 			version: {
 				source: "match",
 				group: 1,
 			},
-			description: "Page text contains a known technology marker.",
+			description: "Page text contains a known PyData Sphinx Theme signature.",
 		},
 	],
 	metadata: {
