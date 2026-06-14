@@ -110,17 +110,23 @@ export const magentoTechnologyDefinition = {
 			description: "Cookie name matches a known technology marker.",
 		},
 		{
-			id: "magento:probe:14",
-			kind: "probe",
-			pattern: new RegExp("magento"),
-			description: "Probe result matches a known technology marker.",
-		},
-		{
-			id: "magento:cookie:15",
+			id: "magento:cookie:14",
 			kind: "cookie",
 			keyPattern: new RegExp("^x\\-magento\\-vary$", "i"),
 			description: "Cookie name matches a known technology marker.",
 		},
+		{
+			id: "magento:script-content:15",
+			kind: "scriptContent",
+			pattern: /\bMagento_[A-Z][A-Za-z0-9_]+\/js\//,
+			description: "Script content references Magento module JavaScript paths.",
+		},
+		{
+			id: "magento:html:16",
+			kind: "html",
+			pattern: /data-mage-init|text\/x-magento-init/i,
+			description: "HTML contains Magento frontend initialization markers.",
+		}
 	],
 	metadata: {
 		oss: true,
