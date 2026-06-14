@@ -12,6 +12,14 @@ export const wordpressTechnologyDefinition = {
 	],
 	rules: [
 		{
+			id: "wordpress:meta:wordpress-com-generator",
+			kind: "meta",
+			key: "generator",
+			valuePattern: new RegExp("^WordPress\\.com$", "i"),
+			confidence: 95,
+			description: "WordPress.com generator meta tag implies WordPress.",
+		},
+		{
 			id: "wordpress:scriptSrc:0",
 			kind: "scriptSrc",
 			pattern: new RegExp("\\/wp-(?:content|includes)\\/"),
@@ -367,9 +375,42 @@ export const wordpressBlockEditorTechnologyDefinition = {
 		{
 			id: "wordpress-block-editor:html:0",
 			kind: "html",
-			pattern: new RegExp("<div[^>]+class=[\"']wp-block-*"),
-			description: "HTML contains a known technology signature.",
+			pattern: new RegExp("<[^>]+class=[\"\'][^\"\']*\bwp-block-", "i"),
+			confidence: 100,
+			description: "Document HTML contains WordPress block editor classes.",
 		},
+		{
+			id: "wordpress-block-editor:stylesheetHref:1",
+			kind: "stylesheetHref",
+			pattern: new RegExp("/wp-content/plugins/gutenberg-core/v([0-9][^/]+)/build/styles/block-library/", "i"),
+			version: {
+				source: "match",
+				group: 1,
+			},
+			confidence: 100,
+			description: "Gutenberg block-library stylesheet is declared.",
+		},
+		{
+			id: "wordpress-block-editor:resourceUrl:2",
+			kind: "resourceUrl",
+			pattern: new RegExp("/wp-content/plugins/gutenberg-core/v([0-9][^/]+)/", "i"),
+			version: {
+				source: "match",
+				group: 1,
+			},
+			confidence: 100,
+			description: "Loaded resource URL references Gutenberg core plugin assets.",
+		},
+		{
+			id: "wordpress-block-editor:scriptSrc:3",
+			kind: "scriptSrc",
+			pattern: new RegExp("/wp-includes/js/dist/block-library/|/wp-includes/blocks/|/wp-content/plugins/gutenberg-core/", "i"),
+			confidence: 95,
+			description: "Script URL references WordPress block editor packages.",
+		},
+	],
+	implies: [
+		"react",
 	],
 	requires: [
 		"wordpress",

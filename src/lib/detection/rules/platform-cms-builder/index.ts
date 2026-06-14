@@ -24,9 +24,9 @@ import { adaptTechnologyDefinition } from './adapt';
 import { adevoleTechnologyDefinition } from './adevole';
 import { adimoTechnologyDefinition } from './adimo';
 import { adminbuyTechnologyDefinition } from './adminbuy';
-import { adobeExperienceManagerTechnologyDefinition } from './adobe-experience-manager';
 import { adobeExperienceManagerEdgeDeliveryServicesTechnologyDefinition } from './adobe-experience-manager-edge-delivery-services';
 import { adobeExperienceManagerFranklinTechnologyDefinition } from './adobe-experience-manager-franklin';
+import { adobeExperienceManagerTechnologyDefinition } from './adobe-experience-manager';
 import { adobePortfolioTechnologyDefinition } from './adobe-portfolio';
 import { advinTechnologyDefinition } from './advin';
 import { adwosCmsTechnologyDefinition } from './adwos-cms';
@@ -118,8 +118,8 @@ import { beyondmenuTechnologyDefinition } from './beyondmenu';
 import { bigCartelTechnologyDefinition } from './big-cartel';
 import { bigTunaTechnologyDefinition } from './big-tuna';
 import { bigaceTechnologyDefinition } from './bigace';
-import { bigcommerceTechnologyDefinition } from './bigcommerce';
 import { bigcommerceB2bEditionTechnologyDefinition } from './bigcommerce-b2b-edition';
+import { bigcommerceTechnologyDefinition } from './bigcommerce';
 import { bigshopTechnologyDefinition } from './bigshop';
 import { bigtreeCmsTechnologyDefinition } from './bigtree-cms';
 import { bigwareTechnologyDefinition } from './bigware';
@@ -156,9 +156,9 @@ import { bricksTechnologyDefinition } from './bricks';
 import { bricksiteTechnologyDefinition } from './bricksite';
 import { brightspotTechnologyDefinition } from './brightspot';
 import { brinkCommerceTechnologyDefinition } from './brink-commerce';
-import { brizyTechnologyDefinition } from './brizy';
 import { brizyCloudTechnologyDefinition } from './brizy-cloud';
 import { brizyWordpressTechnologyDefinition } from './brizy-wordpress';
+import { brizyTechnologyDefinition } from './brizy';
 import { brownieTechnologyDefinition } from './brownie';
 import { browsercmsTechnologyDefinition } from './browsercms';
 import { brushdTechnologyDefinition } from './brushd';
@@ -184,8 +184,8 @@ import { caramellaTechnologyDefinition } from './caramella';
 import { carbonmadeTechnologyDefinition } from './carbonmade';
 import { cargoTechnologyDefinition } from './cargo';
 import { carrdTechnologyDefinition } from './carrd';
-import { cartFunctionalityTechnologyDefinition } from './cart-functionality';
 import { cartComTechnologyDefinition } from './cart-com';
+import { cartFunctionalityTechnologyDefinition } from './cart-functionality';
 import { carteraTechnologyDefinition } from './cartera';
 import { cartflowsTechnologyDefinition } from './cartflows';
 import { cartpandaTechnologyDefinition } from './cartpanda';
@@ -239,9 +239,9 @@ import { comarchESklepTechnologyDefinition } from './comarch-e-sklep';
 import { comgemTechnologyDefinition } from './comgem';
 import { commentsoldTechnologyDefinition } from './commentsold';
 import { commerceEngineTechnologyDefinition } from './commerce-engine';
+import { commerceJsTechnologyDefinition } from './commerce-js';
 import { commerceServerTechnologyDefinition } from './commerce-server';
 import { commerceVisionTechnologyDefinition } from './commerce-vision';
-import { commerceJsTechnologyDefinition } from './commerce-js';
 import { commerce7TechnologyDefinition } from './commerce7';
 import { commercehqTechnologyDefinition } from './commercehq';
 import { commercelayerTechnologyDefinition } from './commercelayer';
@@ -266,8 +266,8 @@ import { convertrTechnologyDefinition } from './convertr';
 import { convertriTechnologyDefinition } from './convertri';
 import { convrrtTechnologyDefinition } from './convrrt';
 import { corebineTechnologyDefinition } from './corebine';
-import { coremediaTechnologyDefinition } from './coremedia';
 import { coremediaContentCloudTechnologyDefinition } from './coremedia-content-cloud';
+import { coremediaTechnologyDefinition } from './coremedia';
 import { corksyTechnologyDefinition } from './corksy';
 import { cornerstoneTechnologyDefinition } from './cornerstone';
 import { correosEcommerceTechnologyDefinition } from './correos-ecommerce';
@@ -293,8 +293,8 @@ import { cstoreTechnologyDefinition } from './cstore';
 import { cubecartTechnologyDefinition } from './cubecart';
 import { cueTechnologyDefinition } from './cue';
 import { cyberbizTechnologyDefinition } from './cyberbiz';
-import { dandomainTechnologyDefinition } from './dandomain';
 import { dandomainWebshopTechnologyDefinition } from './dandomain-webshop';
+import { dandomainTechnologyDefinition } from './dandomain';
 import { danneoCmsTechnologyDefinition } from './danneo-cms';
 import { datalifeEngineTechnologyDefinition } from './datalife-engine';
 import { datocmsTechnologyDefinition } from './datocms';
@@ -341,8 +341,8 @@ import { drLeonardoTechnologyDefinition } from './dr-leonardo';
 import { drinksTechnologyDefinition } from './drinks';
 import { droipTechnologyDefinition } from './droip';
 import { drubbitTechnologyDefinition } from './drubbit';
-import { drupalTechnologyDefinition } from './drupal';
 import { drupalCommerceTechnologyDefinition } from './drupal-commerce';
+import { drupalTechnologyDefinition } from './drupal';
 import { dudaTechnologyDefinition } from './duda';
 import { dukaanTechnologyDefinition } from './dukaan';
 import { dukanyTechnologyDefinition } from './dukany';
@@ -466,6 +466,7 @@ import { fortune3TechnologyDefinition } from './fortune3';
 import { fourthwallTechnologyDefinition } from './fourthwall';
 import { foxyIoTechnologyDefinition } from './foxy-io';
 import { framerSitesTechnologyDefinition } from './framer-sites';
+import { framerTechnologyDefinition } from './framer';
 import { freemiusTechnologyDefinition } from './freemius';
 import { freewebstoreTechnologyDefinition } from './freewebstore';
 import { freshoTechnologyDefinition } from './fresho';
@@ -604,8 +605,8 @@ import { itorisTechnologyDefinition } from './itoris';
 import { iwikiTechnologyDefinition } from './iwiki';
 import { j2storeTechnologyDefinition } from './j2store';
 import { jacklistTechnologyDefinition } from './jacklist';
-import { jaduTechnologyDefinition } from './jadu';
 import { jaduCentralContentTechnologyDefinition } from './jadu-central-content';
+import { jaduTechnologyDefinition } from './jadu';
 import { jahiaDxTechnologyDefinition } from './jahia-dx';
 import { jaliosTechnologyDefinition } from './jalios';
 import { jamfeedTechnologyDefinition } from './jamfeed';
@@ -764,8 +765,8 @@ import { mivaTechnologyDefinition } from './miva';
 import { mixinTechnologyDefinition } from './mixin';
 import { mobifyTechnologyDefinition } from './mobify';
 import { mobiriseTechnologyDefinition } from './mobirise';
-import { modifiedTechnologyDefinition } from './modified';
 import { modifiedEcommerceTechnologyDefinition } from './modified-ecommerce';
+import { modifiedTechnologyDefinition } from './modified';
 import { modulifyTechnologyDefinition } from './modulify';
 import { modxTechnologyDefinition } from './modx';
 import { mogutaCmsTechnologyDefinition } from './moguta-cms';
@@ -796,9 +797,9 @@ import { myonlinestoreTechnologyDefinition } from './myonlinestore';
 import { myplayTechnologyDefinition } from './myplay';
 import { mysitefyTechnologyDefinition } from './mysitefy';
 import { mysitenowTechnologyDefinition } from './mysitenow';
-import { mywebsiteTechnologyDefinition } from './mywebsite';
 import { mywebsiteCreatorTechnologyDefinition } from './mywebsite-creator';
 import { mywebsiteNowTechnologyDefinition } from './mywebsite-now';
+import { mywebsiteTechnologyDefinition } from './mywebsite';
 import { nacelleTechnologyDefinition } from './nacelle';
 import { nagacommerceTechnologyDefinition } from './nagacommerce';
 import { namelessmcTechnologyDefinition } from './namelessmc';
@@ -862,15 +863,15 @@ import { opencitiesTechnologyDefinition } from './opencities';
 import { opencmsTechnologyDefinition } from './opencms';
 import { openelementTechnologyDefinition } from './openelement';
 import { opennemasTechnologyDefinition } from './opennemas';
-import { opentextWebTechnologyDefinition } from './opentext-web';
 import { opentextWebSolutionsTechnologyDefinition } from './opentext-web-solutions';
+import { opentextWebTechnologyDefinition } from './opentext-web';
 import { opentiendasTechnologyDefinition } from './opentiendas';
 import { optimizelyCommerceTechnologyDefinition } from './optimizely-commerce';
 import { optimizelyContentManagementTechnologyDefinition } from './optimizely-content-management';
 import { optimxSportsTechnologyDefinition } from './optimx-sports';
 import { oracleApplicationExpressTechnologyDefinition } from './oracle-application-express';
-import { oracleCommerceTechnologyDefinition } from './oracle-commerce';
 import { oracleCommerceCloudTechnologyDefinition } from './oracle-commerce-cloud';
+import { oracleCommerceTechnologyDefinition } from './oracle-commerce';
 import { oracleContentManagementTechnologyDefinition } from './oracle-content-management';
 import { orchardCoreTechnologyDefinition } from './orchard-core';
 import { orckestraTechnologyDefinition } from './orckestra';
@@ -882,10 +883,10 @@ import { orocommerceTechnologyDefinition } from './orocommerce';
 import { oscommerceTechnologyDefinition } from './oscommerce';
 import { ovaTechnologyDefinition } from './ova';
 import { oxatisTechnologyDefinition } from './oxatis';
-import { oxidEshopTechnologyDefinition } from './oxid-eshop';
 import { oxidEshopCommunityEditionTechnologyDefinition } from './oxid-eshop-community-edition';
 import { oxidEshopEnterpriseEditionTechnologyDefinition } from './oxid-eshop-enterprise-edition';
 import { oxidEshopProfessionalEditionTechnologyDefinition } from './oxid-eshop-professional-edition';
+import { oxidEshopTechnologyDefinition } from './oxid-eshop';
 import { oxygenTechnologyDefinition } from './oxygen';
 import { oxyshopTechnologyDefinition } from './oxyshop';
 import { packmanTechnologyDefinition } from './packman';
@@ -1072,8 +1073,8 @@ import { salesnautsTechnologyDefinition } from './salesnauts';
 import { sallaTechnologyDefinition } from './salla';
 import { salyTechnologyDefinition } from './saly';
 import { sanaCommerceTechnologyDefinition } from './sana-commerce';
-import { sanityTechnologyDefinition } from './sanity';
 import { sanityIoTechnologyDefinition } from './sanity-io';
+import { sanityTechnologyDefinition } from './sanity';
 import { sapCommerceCloudTechnologyDefinition } from './sap-commerce-cloud';
 import { sapUpscaleCommerceTechnologyDefinition } from './sap-upscale-commerce';
 import { sapoTechnologyDefinition } from './sapo';
@@ -1171,16 +1172,16 @@ import { signCustomiserTechnologyDefinition } from './sign-customiser';
 import { silexTechnologyDefinition } from './silex';
 import { silverstripeTechnologyDefinition } from './silverstripe';
 import { simbelTechnologyDefinition } from './simbel';
+import { simplBoTechnologyDefinition } from './simpl-bo';
 import { simpleGoodsTechnologyDefinition } from './simple-goods';
 import { simpleInkTechnologyDefinition } from './simple-ink';
 import { simplo7TechnologyDefinition } from './simplo7';
 import { simplocmsTechnologyDefinition } from './simplocms';
-import { simplBoTechnologyDefinition } from './simpl-bo';
 import { simsiteTechnologyDefinition } from './simsite';
 import { simvolyTechnologyDefinition } from './simvoly';
 import { sircloTechnologyDefinition } from './sirclo';
-import { sitecoreTechnologyDefinition } from './sitecore';
 import { sitecoreExperiencePlatformTechnologyDefinition } from './sitecore-experience-platform';
+import { sitecoreTechnologyDefinition } from './sitecore';
 import { siteeditTechnologyDefinition } from './siteedit';
 import { sitefinityTechnologyDefinition } from './sitefinity';
 import { sitegaloreTechnologyDefinition } from './sitegalore';
@@ -1214,9 +1215,9 @@ import { skycmsByNetkonceptTechnologyDefinition } from './skycms-by-netkoncept';
 import { smallboxTechnologyDefinition } from './smallbox';
 import { smartLGovTechnologyDefinition } from './smart-l-gov';
 import { smartsiteTechnologyDefinition } from './smartsite';
-import { smartstoreTechnologyDefinition } from './smartstore';
 import { smartstoreBizTechnologyDefinition } from './smartstore-biz';
 import { smartstorePageBuilderTechnologyDefinition } from './smartstore-page-builder';
+import { smartstoreTechnologyDefinition } from './smartstore';
 import { smartwebTechnologyDefinition } from './smartweb';
 import { sminkTechnologyDefinition } from './smink';
 import { smootifyTechnologyDefinition } from './smootify';
@@ -1252,8 +1253,8 @@ import { springnestTechnologyDefinition } from './springnest';
 import { sprykerTechnologyDefinition } from './spryker';
 import { sqimpleTechnologyDefinition } from './sqimple';
 import { squareOnlineTechnologyDefinition } from './square-online';
-import { squarespaceTechnologyDefinition } from './squarespace';
 import { squarespaceCommerceTechnologyDefinition } from './squarespace-commerce';
+import { squarespaceTechnologyDefinition } from './squarespace';
 import { squizMatrixTechnologyDefinition } from './squiz-matrix';
 import { sqwizTechnologyDefinition } from './sqwiz';
 import { stackbitTechnologyDefinition } from './stackbit';
@@ -1414,8 +1415,8 @@ import { vivvoTechnologyDefinition } from './vivvo';
 import { vndaTechnologyDefinition } from './vnda';
 import { volusionTechnologyDefinition } from './volusion';
 import { vonderaTechnologyDefinition } from './vondera';
-import { voogTechnologyDefinition } from './voog';
 import { voogComWebsiteBuilderTechnologyDefinition } from './voog-com-website-builder';
+import { voogTechnologyDefinition } from './voog';
 import { vopTechnologyDefinition } from './vop';
 import { voracioTechnologyDefinition } from './voracio';
 import { vortalaTechnologyDefinition } from './vortala';
@@ -1426,8 +1427,8 @@ import { vrioTechnologyDefinition } from './vrio';
 import { vtexTechnologyDefinition } from './vtex';
 import { vvvebCmsTechnologyDefinition } from './vvveb-cms';
 import { wagtailTechnologyDefinition } from './wagtail';
-import { wakeTechnologyDefinition } from './wake';
 import { wakeCommerceTechnologyDefinition } from './wake-commerce';
+import { wakeTechnologyDefinition } from './wake';
 import { wallaTechnologyDefinition } from './walla';
 import { wapStoreTechnologyDefinition } from './wap-store';
 import { warpStoreTechnologyDefinition } from './warp-store';
@@ -1445,8 +1446,8 @@ import { webbossTechnologyDefinition } from './webboss';
 import { webcakeTechnologyDefinition } from './webcake';
 import { webcoolCmsTechnologyDefinition } from './webcool-cms';
 import { webeditionTechnologyDefinition } from './webedition';
-import { webflowTechnologyDefinition } from './webflow';
 import { webflowEcommerceTechnologyDefinition } from './webflow-ecommerce';
+import { webflowTechnologyDefinition } from './webflow';
 import { webguiTechnologyDefinition } from './webgui';
 import { webhealerTechnologyDefinition } from './webhealer';
 import { webitoTechnologyDefinition } from './webito';
@@ -1481,8 +1482,8 @@ import { winedirectTechnologyDefinition } from './winedirect';
 import { winsEcommerceTechnologyDefinition } from './wins-ecommerce';
 import { winterCmsTechnologyDefinition } from './winter-cms';
 import { wisycmsTechnologyDefinition } from './wisycms';
-import { wixTechnologyDefinition } from './wix';
 import { wixEcommerceTechnologyDefinition } from './wix-ecommerce';
+import { wixTechnologyDefinition } from './wix';
 import { wizedTechnologyDefinition } from './wized';
 import { wizishopTechnologyDefinition } from './wizishop';
 import { wobilyTechnologyDefinition } from './wobily';
@@ -1490,7 +1491,7 @@ import { wolfCmsTechnologyDefinition } from './wolf-cms';
 import { woltersKluwerTechnologyDefinition } from './wolters-kluwer';
 import { woltlabCommunityFrameworkTechnologyDefinition } from './woltlab-community-framework';
 import { woocommerceTechnologyDefinition } from './woocommerce';
-import { wordpressTechnologyDefinition, wordpressBlockEditorTechnologyDefinition, wordpressSiteEditorTechnologyDefinition } from './wordpress';
+import { wordpressTechnologyDefinition } from './wordpress';
 import { workareaTechnologyDefinition } from './workarea';
 import { workstandTechnologyDefinition } from './workstand';
 import { wpbakeryTechnologyDefinition } from './wpbakery';
@@ -1545,7 +1546,6 @@ import { zolaPlannerTechnologyDefinition } from './zola-planner';
 import { zoorixTechnologyDefinition } from './zoorix';
 import { zoyeqTechnologyDefinition } from './zoyeq';
 import { zozoTechnologyDefinition } from './zozo';
-import { framerTechnologyDefinition } from './framer';
 
 export const platformCmsBuilderTechnologyDefinitions = [
 	technology1cBitrixTechnologyDefinition,
@@ -1573,9 +1573,9 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	adevoleTechnologyDefinition,
 	adimoTechnologyDefinition,
 	adminbuyTechnologyDefinition,
-	adobeExperienceManagerTechnologyDefinition,
 	adobeExperienceManagerEdgeDeliveryServicesTechnologyDefinition,
 	adobeExperienceManagerFranklinTechnologyDefinition,
+	adobeExperienceManagerTechnologyDefinition,
 	adobePortfolioTechnologyDefinition,
 	advinTechnologyDefinition,
 	adwosCmsTechnologyDefinition,
@@ -1667,8 +1667,8 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	bigCartelTechnologyDefinition,
 	bigTunaTechnologyDefinition,
 	bigaceTechnologyDefinition,
-	bigcommerceTechnologyDefinition,
 	bigcommerceB2bEditionTechnologyDefinition,
+	bigcommerceTechnologyDefinition,
 	bigshopTechnologyDefinition,
 	bigtreeCmsTechnologyDefinition,
 	bigwareTechnologyDefinition,
@@ -1705,9 +1705,9 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	bricksiteTechnologyDefinition,
 	brightspotTechnologyDefinition,
 	brinkCommerceTechnologyDefinition,
-	brizyTechnologyDefinition,
 	brizyCloudTechnologyDefinition,
 	brizyWordpressTechnologyDefinition,
+	brizyTechnologyDefinition,
 	brownieTechnologyDefinition,
 	browsercmsTechnologyDefinition,
 	brushdTechnologyDefinition,
@@ -1733,8 +1733,8 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	carbonmadeTechnologyDefinition,
 	cargoTechnologyDefinition,
 	carrdTechnologyDefinition,
-	cartFunctionalityTechnologyDefinition,
 	cartComTechnologyDefinition,
+	cartFunctionalityTechnologyDefinition,
 	carteraTechnologyDefinition,
 	cartflowsTechnologyDefinition,
 	cartpandaTechnologyDefinition,
@@ -1788,9 +1788,9 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	comgemTechnologyDefinition,
 	commentsoldTechnologyDefinition,
 	commerceEngineTechnologyDefinition,
+	commerceJsTechnologyDefinition,
 	commerceServerTechnologyDefinition,
 	commerceVisionTechnologyDefinition,
-	commerceJsTechnologyDefinition,
 	commerce7TechnologyDefinition,
 	commercehqTechnologyDefinition,
 	commercelayerTechnologyDefinition,
@@ -1815,8 +1815,8 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	convertriTechnologyDefinition,
 	convrrtTechnologyDefinition,
 	corebineTechnologyDefinition,
-	coremediaTechnologyDefinition,
 	coremediaContentCloudTechnologyDefinition,
+	coremediaTechnologyDefinition,
 	corksyTechnologyDefinition,
 	cornerstoneTechnologyDefinition,
 	correosEcommerceTechnologyDefinition,
@@ -1842,8 +1842,8 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	cubecartTechnologyDefinition,
 	cueTechnologyDefinition,
 	cyberbizTechnologyDefinition,
-	dandomainTechnologyDefinition,
 	dandomainWebshopTechnologyDefinition,
+	dandomainTechnologyDefinition,
 	danneoCmsTechnologyDefinition,
 	datalifeEngineTechnologyDefinition,
 	datocmsTechnologyDefinition,
@@ -1890,8 +1890,8 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	drinksTechnologyDefinition,
 	droipTechnologyDefinition,
 	drubbitTechnologyDefinition,
-	drupalTechnologyDefinition,
 	drupalCommerceTechnologyDefinition,
+	drupalTechnologyDefinition,
 	dudaTechnologyDefinition,
 	dukaanTechnologyDefinition,
 	dukanyTechnologyDefinition,
@@ -2015,6 +2015,7 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	fourthwallTechnologyDefinition,
 	foxyIoTechnologyDefinition,
 	framerSitesTechnologyDefinition,
+	framerTechnologyDefinition,
 	freemiusTechnologyDefinition,
 	freewebstoreTechnologyDefinition,
 	freshoTechnologyDefinition,
@@ -2153,8 +2154,8 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	iwikiTechnologyDefinition,
 	j2storeTechnologyDefinition,
 	jacklistTechnologyDefinition,
-	jaduTechnologyDefinition,
 	jaduCentralContentTechnologyDefinition,
+	jaduTechnologyDefinition,
 	jahiaDxTechnologyDefinition,
 	jaliosTechnologyDefinition,
 	jamfeedTechnologyDefinition,
@@ -2313,8 +2314,8 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	mixinTechnologyDefinition,
 	mobifyTechnologyDefinition,
 	mobiriseTechnologyDefinition,
-	modifiedTechnologyDefinition,
 	modifiedEcommerceTechnologyDefinition,
+	modifiedTechnologyDefinition,
 	modulifyTechnologyDefinition,
 	modxTechnologyDefinition,
 	mogutaCmsTechnologyDefinition,
@@ -2345,9 +2346,9 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	myplayTechnologyDefinition,
 	mysitefyTechnologyDefinition,
 	mysitenowTechnologyDefinition,
-	mywebsiteTechnologyDefinition,
 	mywebsiteCreatorTechnologyDefinition,
 	mywebsiteNowTechnologyDefinition,
+	mywebsiteTechnologyDefinition,
 	nacelleTechnologyDefinition,
 	nagacommerceTechnologyDefinition,
 	namelessmcTechnologyDefinition,
@@ -2411,15 +2412,15 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	opencmsTechnologyDefinition,
 	openelementTechnologyDefinition,
 	opennemasTechnologyDefinition,
-	opentextWebTechnologyDefinition,
 	opentextWebSolutionsTechnologyDefinition,
+	opentextWebTechnologyDefinition,
 	opentiendasTechnologyDefinition,
 	optimizelyCommerceTechnologyDefinition,
 	optimizelyContentManagementTechnologyDefinition,
 	optimxSportsTechnologyDefinition,
 	oracleApplicationExpressTechnologyDefinition,
-	oracleCommerceTechnologyDefinition,
 	oracleCommerceCloudTechnologyDefinition,
+	oracleCommerceTechnologyDefinition,
 	oracleContentManagementTechnologyDefinition,
 	orchardCoreTechnologyDefinition,
 	orckestraTechnologyDefinition,
@@ -2431,10 +2432,10 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	oscommerceTechnologyDefinition,
 	ovaTechnologyDefinition,
 	oxatisTechnologyDefinition,
-	oxidEshopTechnologyDefinition,
 	oxidEshopCommunityEditionTechnologyDefinition,
 	oxidEshopEnterpriseEditionTechnologyDefinition,
 	oxidEshopProfessionalEditionTechnologyDefinition,
+	oxidEshopTechnologyDefinition,
 	oxygenTechnologyDefinition,
 	oxyshopTechnologyDefinition,
 	packmanTechnologyDefinition,
@@ -2621,8 +2622,8 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	sallaTechnologyDefinition,
 	salyTechnologyDefinition,
 	sanaCommerceTechnologyDefinition,
-	sanityTechnologyDefinition,
 	sanityIoTechnologyDefinition,
+	sanityTechnologyDefinition,
 	sapCommerceCloudTechnologyDefinition,
 	sapUpscaleCommerceTechnologyDefinition,
 	sapoTechnologyDefinition,
@@ -2720,16 +2721,16 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	silexTechnologyDefinition,
 	silverstripeTechnologyDefinition,
 	simbelTechnologyDefinition,
+	simplBoTechnologyDefinition,
 	simpleGoodsTechnologyDefinition,
 	simpleInkTechnologyDefinition,
 	simplo7TechnologyDefinition,
 	simplocmsTechnologyDefinition,
-	simplBoTechnologyDefinition,
 	simsiteTechnologyDefinition,
 	simvolyTechnologyDefinition,
 	sircloTechnologyDefinition,
-	sitecoreTechnologyDefinition,
 	sitecoreExperiencePlatformTechnologyDefinition,
+	sitecoreTechnologyDefinition,
 	siteeditTechnologyDefinition,
 	sitefinityTechnologyDefinition,
 	sitegaloreTechnologyDefinition,
@@ -2763,9 +2764,9 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	smallboxTechnologyDefinition,
 	smartLGovTechnologyDefinition,
 	smartsiteTechnologyDefinition,
-	smartstoreTechnologyDefinition,
 	smartstoreBizTechnologyDefinition,
 	smartstorePageBuilderTechnologyDefinition,
+	smartstoreTechnologyDefinition,
 	smartwebTechnologyDefinition,
 	sminkTechnologyDefinition,
 	smootifyTechnologyDefinition,
@@ -2801,8 +2802,8 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	sprykerTechnologyDefinition,
 	sqimpleTechnologyDefinition,
 	squareOnlineTechnologyDefinition,
-	squarespaceTechnologyDefinition,
 	squarespaceCommerceTechnologyDefinition,
+	squarespaceTechnologyDefinition,
 	squizMatrixTechnologyDefinition,
 	sqwizTechnologyDefinition,
 	stackbitTechnologyDefinition,
@@ -2963,8 +2964,8 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	vndaTechnologyDefinition,
 	volusionTechnologyDefinition,
 	vonderaTechnologyDefinition,
-	voogTechnologyDefinition,
 	voogComWebsiteBuilderTechnologyDefinition,
+	voogTechnologyDefinition,
 	vopTechnologyDefinition,
 	voracioTechnologyDefinition,
 	vortalaTechnologyDefinition,
@@ -2975,8 +2976,8 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	vtexTechnologyDefinition,
 	vvvebCmsTechnologyDefinition,
 	wagtailTechnologyDefinition,
-	wakeTechnologyDefinition,
 	wakeCommerceTechnologyDefinition,
+	wakeTechnologyDefinition,
 	wallaTechnologyDefinition,
 	wapStoreTechnologyDefinition,
 	warpStoreTechnologyDefinition,
@@ -2994,8 +2995,8 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	webcakeTechnologyDefinition,
 	webcoolCmsTechnologyDefinition,
 	webeditionTechnologyDefinition,
-	webflowTechnologyDefinition,
 	webflowEcommerceTechnologyDefinition,
+	webflowTechnologyDefinition,
 	webguiTechnologyDefinition,
 	webhealerTechnologyDefinition,
 	webitoTechnologyDefinition,
@@ -3030,8 +3031,8 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	winsEcommerceTechnologyDefinition,
 	winterCmsTechnologyDefinition,
 	wisycmsTechnologyDefinition,
-	wixTechnologyDefinition,
 	wixEcommerceTechnologyDefinition,
+	wixTechnologyDefinition,
 	wizedTechnologyDefinition,
 	wizishopTechnologyDefinition,
 	wobilyTechnologyDefinition,
@@ -3040,8 +3041,6 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	woltlabCommunityFrameworkTechnologyDefinition,
 	woocommerceTechnologyDefinition,
 	wordpressTechnologyDefinition,
-	wordpressBlockEditorTechnologyDefinition,
-	wordpressSiteEditorTechnologyDefinition,
 	workareaTechnologyDefinition,
 	workstandTechnologyDefinition,
 	wpbakeryTechnologyDefinition,
@@ -3096,5 +3095,4 @@ export const platformCmsBuilderTechnologyDefinitions = [
 	zoorixTechnologyDefinition,
 	zoyeqTechnologyDefinition,
 	zozoTechnologyDefinition,
-	framerTechnologyDefinition,
 ] as const satisfies readonly TechnologyDefinition[];
