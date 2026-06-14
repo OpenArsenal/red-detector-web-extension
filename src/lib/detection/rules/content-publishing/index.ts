@@ -87,6 +87,7 @@ import { irislmsTechnologyDefinition } from './irislms';
 import { jalbumTechnologyDefinition } from './jalbum';
 import { javadocTechnologyDefinition } from './javadoc';
 import { jsonLdTechnologyDefinition } from './json-ld';
+import { languageDeclarationTechnologyDefinition } from './language-declaration';
 import { jugemTechnologyDefinition } from './jugem';
 import { kamarTechnologyDefinition } from './kamar';
 import { keepeekTechnologyDefinition } from './keepeek';
@@ -153,6 +154,7 @@ import { rdocTechnologyDefinition } from './rdoc';
 import { readTheDocsTechnologyDefinition } from './read-the-docs';
 import { readmeTechnologyDefinition } from './readme';
 import { reallySimpleDiscoveryTechnologyDefinition } from './really-simple-discovery';
+import { referrerPolicyMetaTechnologyDefinition } from './referrer-policy-meta';
 import { redocTechnologyDefinition } from './redoc';
 import { releasedTechnologyDefinition } from './released';
 import { respecTechnologyDefinition } from './respec';
@@ -300,6 +302,7 @@ export const contentPublishingTechnologyDefinitions = [
 	jalbumTechnologyDefinition,
 	javadocTechnologyDefinition,
 	jsonLdTechnologyDefinition,
+	languageDeclarationTechnologyDefinition,
 	jugemTechnologyDefinition,
 	kamarTechnologyDefinition,
 	keepeekTechnologyDefinition,
@@ -366,6 +369,7 @@ export const contentPublishingTechnologyDefinitions = [
 	readTheDocsTechnologyDefinition,
 	readmeTechnologyDefinition,
 	reallySimpleDiscoveryTechnologyDefinition,
+	referrerPolicyMetaTechnologyDefinition,
 	redocTechnologyDefinition,
 	releasedTechnologyDefinition,
 	respecTechnologyDefinition,

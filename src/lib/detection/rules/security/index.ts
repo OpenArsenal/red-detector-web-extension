@@ -73,6 +73,7 @@ import { kiprotectTechnologyDefinition } from './kiprotect';
 import { kondutoTechnologyDefinition } from './konduto';
 import { letSEncryptTechnologyDefinition } from './let-s-encrypt';
 import { mineroCcTechnologyDefinition } from './minero-cc';
+import { metaContentSecurityPolicyTechnologyDefinition } from './meta-content-security-policy';
 import { minerstatTechnologyDefinition } from './minerstat';
 import { mollomTechnologyDefinition } from './mollom';
 import { mtcaptchaTechnologyDefinition } from './mtcaptcha';
@@ -196,6 +197,7 @@ export const securityTechnologyDefinitions = [
 	kondutoTechnologyDefinition,
 	letSEncryptTechnologyDefinition,
 	mineroCcTechnologyDefinition,
+	metaContentSecurityPolicyTechnologyDefinition,
 	minerstatTechnologyDefinition,
 	mollomTechnologyDefinition,
 	mtcaptchaTechnologyDefinition,

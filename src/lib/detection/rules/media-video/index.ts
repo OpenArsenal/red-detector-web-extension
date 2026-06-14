@@ -8,6 +8,7 @@ import { artplayerJsTechnologyDefinition } from './artplayer-js';
 import { aryeoTechnologyDefinition } from './aryeo';
 import { asciinemaTechnologyDefinition } from './asciinema';
 import { aushaTechnologyDefinition } from './ausha';
+import { avifImageFormatTechnologyDefinition } from './avif-image-format';
 import { azuracastTechnologyDefinition } from './azuracast';
 import { bambuserTechnologyDefinition } from './bambuser';
 import { bigbluebuttonTechnologyDefinition } from './bigbluebutton';
@@ -118,6 +119,7 @@ export const mediaVideoTechnologyDefinitions = [
 	aryeoTechnologyDefinition,
 	asciinemaTechnologyDefinition,
 	aushaTechnologyDefinition,
+	avifImageFormatTechnologyDefinition,
 	azuracastTechnologyDefinition,
 	bambuserTechnologyDefinition,
 	bigbluebuttonTechnologyDefinition,

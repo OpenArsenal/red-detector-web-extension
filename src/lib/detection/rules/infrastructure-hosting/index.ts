@@ -144,6 +144,7 @@ import { platformShTechnologyDefinition } from './platform-sh';
 import { pleskTechnologyDefinition } from './plesk';
 import { powaTechnologyDefinition } from './powa';
 import { preconnectTechnologyDefinition } from './preconnect';
+import { prerenderHintTechnologyDefinition } from './prerender-hint';
 import { pressableTechnologyDefinition } from './pressable';
 import { pterodactylPanelTechnologyDefinition } from './pterodactyl-panel';
 import { pxxlAppTechnologyDefinition } from './pxxl-app';
@@ -152,6 +153,7 @@ import { railwayTechnologyDefinition } from './railway';
 import { rawgitTechnologyDefinition } from './rawgit';
 import { regRuTechnologyDefinition } from './reg-ru';
 import { renderTechnologyDefinition } from './render';
+import { resourcePrefetchTechnologyDefinition } from './resource-prefetch';
 import { resourcePreloadTechnologyDefinition } from './resource-preload';
 import { rostiTechnologyDefinition } from './rosti';
 import { sabaHostTechnologyDefinition } from './saba-host';
@@ -345,6 +347,7 @@ export const infrastructureHostingTechnologyDefinitions = [
 	pleskTechnologyDefinition,
 	powaTechnologyDefinition,
 	preconnectTechnologyDefinition,
+	prerenderHintTechnologyDefinition,
 	pressableTechnologyDefinition,
 	pterodactylPanelTechnologyDefinition,
 	pxxlAppTechnologyDefinition,
@@ -353,6 +356,7 @@ export const infrastructureHostingTechnologyDefinitions = [
 	rawgitTechnologyDefinition,
 	regRuTechnologyDefinition,
 	renderTechnologyDefinition,
+	resourcePrefetchTechnologyDefinition,
 	resourcePreloadTechnologyDefinition,
 	rostiTechnologyDefinition,
 	sabaHostTechnologyDefinition,
