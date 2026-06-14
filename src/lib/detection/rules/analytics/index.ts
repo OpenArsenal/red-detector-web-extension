@@ -65,6 +65,7 @@ import { castleTechnologyDefinition } from './castle';
 import { catchjsTechnologyDefinition } from './catchjs';
 import { channeladvisorTechnologyDefinition } from './channeladvisor';
 import { chartbeatTechnologyDefinition } from './chartbeat';
+import { clarityTechnologyDefinition } from './clarity';
 import { clearbitRevealTechnologyDefinition } from './clearbit-reveal';
 import { clearsaleTechnologyDefinition } from './clearsale';
 import { clickheatTechnologyDefinition } from './clickheat';
@@ -128,9 +129,9 @@ import { glassboxTechnologyDefinition } from './glassbox';
 import { goatcounterTechnologyDefinition } from './goatcounter';
 import { gongTechnologyDefinition } from './gong';
 import { googleAdsConversionTrackingTechnologyDefinition } from './google-ads-conversion-tracking';
-import { googleAnalyticsTechnologyDefinition } from './google-analytics';
 import { googleAnalyticsEnhancedEcommerceTechnologyDefinition } from './google-analytics-enhanced-ecommerce';
 import { googleAnalyticsForWoocommerceTechnologyDefinition } from './google-analytics-for-woocommerce';
+import { googleAnalyticsTechnologyDefinition } from './google-analytics';
 import { googleCallConversionTrackingTechnologyDefinition } from './google-call-conversion-tracking';
 import { gosquaredTechnologyDefinition } from './gosquared';
 import { gostatsTechnologyDefinition } from './gostats';
@@ -201,6 +202,7 @@ import { marfeelTechnologyDefinition } from './marfeel';
 import { marketplanTechnologyDefinition } from './marketplan';
 import { massflowTechnologyDefinition } from './massflow';
 import { matomoAnalyticsTechnologyDefinition } from './matomo-analytics';
+import { matomoTechnologyDefinition } from './matomo';
 import { measuredTechnologyDefinition } from './measured';
 import { medalliaTechnologyDefinition } from './medallia';
 import { mediahawkTechnologyDefinition } from './mediahawk';
@@ -404,8 +406,6 @@ import { yxperTechnologyDefinition } from './yxper';
 import { zentapTechnologyDefinition } from './zentap';
 import { zipkinTechnologyDefinition } from './zipkin';
 import { zoominfoTechnologyDefinition } from './zoominfo';
-import { clarityTechnologyDefinition } from './clarity';
-import { matomoTechnologyDefinition } from './matomo';
 
 export const analyticsTechnologyDefinitions = [
 	technology51LaTechnologyDefinition,
@@ -474,6 +474,7 @@ export const analyticsTechnologyDefinitions = [
 	catchjsTechnologyDefinition,
 	channeladvisorTechnologyDefinition,
 	chartbeatTechnologyDefinition,
+	clarityTechnologyDefinition,
 	clearbitRevealTechnologyDefinition,
 	clearsaleTechnologyDefinition,
 	clickheatTechnologyDefinition,
@@ -537,9 +538,9 @@ export const analyticsTechnologyDefinitions = [
 	goatcounterTechnologyDefinition,
 	gongTechnologyDefinition,
 	googleAdsConversionTrackingTechnologyDefinition,
-	googleAnalyticsTechnologyDefinition,
 	googleAnalyticsEnhancedEcommerceTechnologyDefinition,
 	googleAnalyticsForWoocommerceTechnologyDefinition,
+	googleAnalyticsTechnologyDefinition,
 	googleCallConversionTrackingTechnologyDefinition,
 	gosquaredTechnologyDefinition,
 	gostatsTechnologyDefinition,
@@ -610,6 +611,7 @@ export const analyticsTechnologyDefinitions = [
 	marketplanTechnologyDefinition,
 	massflowTechnologyDefinition,
 	matomoAnalyticsTechnologyDefinition,
+	matomoTechnologyDefinition,
 	measuredTechnologyDefinition,
 	medalliaTechnologyDefinition,
 	mediahawkTechnologyDefinition,
@@ -813,6 +815,4 @@ export const analyticsTechnologyDefinitions = [
 	zentapTechnologyDefinition,
 	zipkinTechnologyDefinition,
 	zoominfoTechnologyDefinition,
-	clarityTechnologyDefinition,
-	matomoTechnologyDefinition,
 ] as const satisfies readonly TechnologyDefinition[];
