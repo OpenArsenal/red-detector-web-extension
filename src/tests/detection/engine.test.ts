@@ -679,7 +679,7 @@ describe('false-positive regressions', () => {
 });
 
 describe('upgraded detection surfaces and graph relationships', () => {
-	it('keeps newly added resource URL and link-tag rule kinds disabled by default', () => {
+	it('detects passive resource URL and link-tag rule kinds at runtime', () => {
 		const registry: TechnologyDefinition[] = [
 			{
 				id: 'pagefind',
@@ -724,7 +724,10 @@ describe('upgraded detection surfaces and graph relationships', () => {
 			registry,
 		);
 
-		expect(analysis.results).toEqual([]);
+		expect(analysis.results.map((result) => result.technologyId)).toEqual([
+			'pagefind',
+			'opensearch',
+		]);
 	});
 
 	it('keeps unsupported DNS rules imported but non-executable in the browser runtime', () => {
@@ -779,5 +782,51 @@ describe('upgraded detection surfaces and graph relationships', () => {
 		const analysis = analyzeSite(createSignals({ html: 'RobotsOnly' }), registry);
 
 		expect(analysis.results).toEqual([]);
+	});
+});
+
+
+describe('payload-ready collector promotions', () => {
+	it('detects WordPress.com observed passive technologies from source and resource signals', () => {
+		const analysis = analyzeSite(
+			createSignals({
+				url: 'https://wordpress.com/',
+				hostname: 'wordpress.com',
+				meta: {
+					generator: ['WordPress.com'],
+					viewport: ['width=device-width, initial-scale=1.0'],
+					'apple-itunes-app': ['app-id=1565481562'],
+					'twitter:app:id:iphone': ['335703880'],
+				},
+				links: [
+					{ rel: 'EditURI', href: 'https://s1.wp.com/xmlrpc.php?rsd', type: 'application/rsd+xml' },
+					{ rel: 'search', href: 'https://wordpress.com/osd.xml', type: 'application/opensearchdescription+xml' },
+					{ rel: 'alternate', href: 'https://wordpress.com/blog/feed/', type: 'application/rss+xml' },
+					{ rel: 'alternate', href: 'https://wordpress.com/fr/', hreflang: 'fr' },
+				],
+				stylesheets: [
+					'https://wordpress.com/wp-content/plugins/gutenberg-core/v23.2.2/build/styles/block-library/common.min.css',
+				],
+				resources: [
+					{ url: 'https://cdn.parsely.com/keys/wordpress.com/p.js?ver=3.3.2', initiatorType: 'script' },
+					{ url: 'https://widgets.wp.com/help-center/help-center-logged-out.min.js', initiatorType: 'script' },
+					{ url: 'https://wordpress.com/wp-content/plugins/gutenberg-core/v23.2.2/build/scripts/vendors/react.min.js?ver=18.3.1', initiatorType: 'script' },
+				],
+				html: '<meta property="og:title" content="WordPress.com"><script type="application/ld+json">{}</script><div class="wp-block-group jetpack-reblog-enabled"></div>',
+			}),
+			technologyDefinitions,
+		);
+
+		const ids = new Set(analysis.results.map((item) => item.technologyId));
+		expect(ids.has('wordpress')).toBe(true);
+		expect(ids.has('wordpress-com')).toBe(true);
+		expect(ids.has('wordpress-block-editor')).toBe(true);
+		expect(ids.has('parse-ly')).toBe(true);
+		expect(ids.has('really-simple-discovery')).toBe(true);
+		expect(ids.has('opensearch')).toBe(true);
+		expect(ids.has('rss')).toBe(true);
+		expect(ids.has('hreflang')).toBe(true);
+		expect(ids.has('open-graph')).toBe(true);
+		expect(ids.has('json-ld')).toBe(true);
 	});
 });
