@@ -39,6 +39,7 @@ import { marsFlagTechnologyDefinition } from './mars-flag';
 import { meilisearchTechnologyDefinition } from './meilisearch';
 import { misoTechnologyDefinition } from './miso';
 import { novaBuscaTechnologyDefinition } from './nova-busca';
+import { opensearchTechnologyDefinition } from './opensearch';
 import { oramaTechnologyDefinition } from './orama';
 import { pagefindTechnologyDefinition } from './pagefind';
 import { pickzenTechnologyDefinition } from './pickzen';
@@ -105,6 +106,7 @@ export const searchTechnologyDefinitions = [
 	meilisearchTechnologyDefinition,
 	misoTechnologyDefinition,
 	novaBuscaTechnologyDefinition,
+	opensearchTechnologyDefinition,
 	oramaTechnologyDefinition,
 	pagefindTechnologyDefinition,
 	pickzenTechnologyDefinition,
