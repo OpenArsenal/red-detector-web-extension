@@ -10,6 +10,7 @@ import { adasitecomplianceTechnologyDefinition } from './adasitecompliance';
 import { allInOneAccessibilityTechnologyDefinition } from './all-in-one-accessibility';
 import { allyableTechnologyDefinition } from './allyable';
 import { allyantTechnologyDefinition } from './allyant';
+import { ariaLiveRegionTechnologyDefinition } from './aria-live-region';
 import { audioeyeTechnologyDefinition } from './audioeye';
 import { digiAccessTechnologyDefinition } from './digi-access';
 import { droxitTechnologyDefinition } from './droxit';
@@ -29,14 +30,17 @@ import { nagishliTechnologyDefinition } from './nagishli';
 import { pimanTechnologyDefinition } from './piman';
 import { pojoMeTechnologyDefinition } from './pojo-me';
 import { polodaAiTechnologyDefinition } from './poloda-ai';
+import { prefersReducedMotionTechnologyDefinition } from './prefers-reduced-motion';
 import { reciteMeTechnologyDefinition } from './recite-me';
 import { silktideTechnologyDefinition } from './silktide';
+import { skipLinkTechnologyDefinition } from './skip-link';
 import { texthelpTechnologyDefinition } from './texthelp';
 import { uremediateTechnologyDefinition } from './uremediate';
 import { usablenetTechnologyDefinition } from './usablenet';
 import { userAccessibilityTechnologyDefinition } from './user-accessibility';
 import { userwayTechnologyDefinition } from './userway';
 import { voiceIntuitiveTechnologyDefinition } from './voice-intuitive';
+import { waiAriaTechnologyDefinition } from './wai-aria';
 import { xcompliantTechnologyDefinition } from './xcompliant';
 
 export const accessibilityTechnologyDefinitions = [
@@ -51,6 +55,7 @@ export const accessibilityTechnologyDefinitions = [
 	allInOneAccessibilityTechnologyDefinition,
 	allyableTechnologyDefinition,
 	allyantTechnologyDefinition,
+	ariaLiveRegionTechnologyDefinition,
 	audioeyeTechnologyDefinition,
 	digiAccessTechnologyDefinition,
 	droxitTechnologyDefinition,
@@ -70,13 +75,16 @@ export const accessibilityTechnologyDefinitions = [
 	pimanTechnologyDefinition,
 	pojoMeTechnologyDefinition,
 	polodaAiTechnologyDefinition,
+	prefersReducedMotionTechnologyDefinition,
 	reciteMeTechnologyDefinition,
 	silktideTechnologyDefinition,
+	skipLinkTechnologyDefinition,
 	texthelpTechnologyDefinition,
 	uremediateTechnologyDefinition,
 	usablenetTechnologyDefinition,
 	userAccessibilityTechnologyDefinition,
 	userwayTechnologyDefinition,
 	voiceIntuitiveTechnologyDefinition,
+	waiAriaTechnologyDefinition,
 	xcompliantTechnologyDefinition,
 ] as const satisfies readonly TechnologyDefinition[];
