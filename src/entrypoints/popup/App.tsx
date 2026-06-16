@@ -5,6 +5,7 @@ import { createStore } from "solid-js/store";
 import { CategoryGroup } from "../../components/CategoryGroup";
 import { EmptyState } from "../../components/EmptyState";
 import { ErrorState } from "../../components/ErrorState";
+import { PopupShell } from "./PopupRegions";
 import type {
   AnalysisStatus,
   SiteAnalysis,
@@ -397,18 +398,18 @@ export default function App() {
   });
 
   return (
-    <main class="popup-shell" aria-busy={busy() ? "true" : "false"}>
-      <section class="hero-panel">
-        <div class="hero-copy">
+    <PopupShell.Root busy={busy()}>
+      <PopupShell.Hero>
+        <PopupShell.HeroCopy>
           <p class="eyebrow">Technology Detection</p>
           <h1>RED Detector</h1>
           <p class="lede">
             Analyze the active tab locally, then keep the latest normalized
             detections up to date as the page lazy-loads.
           </p>
-        </div>
+        </PopupShell.HeroCopy>
 
-        <div class="button-row">
+        <PopupShell.Actions>
           <button
             class="primary-button"
             disabled={busy()}
@@ -423,63 +424,64 @@ export default function App() {
           >
             Stop observation
           </button>
-        </div>
+        </PopupShell.Actions>
 
-        <div class="stats-grid">
-          <article class="stat-card accent-moss">
-            <span class="stat-label">Cached Analyses</span>
-            <strong class="stat-value">{status.totalAnalyses}</strong>
-          </article>
-          <article class="stat-card accent-amber">
-            <span class="stat-label">Tracked Origins</span>
-            <strong class="stat-value">{status.trackedOrigins}</strong>
-          </article>
-          <article class="stat-card accent-slate">
-            <span class="stat-label">Detected Technologies</span>
-            <strong class="stat-value">{resultCount()}</strong>
-          </article>
-        </div>
+        <PopupShell.Stats>
+          <PopupShell.Stat
+            accent="moss"
+            label="Cached Analyses"
+            value={status.totalAnalyses}
+          />
+          <PopupShell.Stat
+            accent="amber"
+            label="Tracked Origins"
+            value={status.trackedOrigins}
+          />
+          <PopupShell.Stat
+            accent="slate"
+            label="Detected Technologies"
+            value={resultCount()}
+          />
+        </PopupShell.Stats>
 
-        <div class="mini-metrics">
+        <PopupShell.Metrics>
           <p>Source: {analysis()?.source ?? "none"}</p>
           <p>Host: {analysis()?.hostname ?? "not analyzed"}</p>
           <p>Polling: {pollingChipLabel().toLowerCase()}</p>
-        </div>
-      </section>
+        </PopupShell.Metrics>
+      </PopupShell.Hero>
 
-      <Show when={errorMessage()}>
-        {(value) => <ErrorState message={value()} />}
-      </Show>
-      <Show when={notice()}>
-        {(value) => (
-          <p
-            class={`status-message ${value().variant}`}
-            role="status"
-            aria-live="polite"
-          >
-            {value().text}
-          </p>
-        )}
-      </Show>
+      <PopupShell.Feedback>
+        <Show when={errorMessage()}>
+          {(value) => <ErrorState message={value()} />}
+        </Show>
+        <Show when={notice()}>
+          {(value) => (
+            <p
+              class={`status-message ${value().variant}`}
+              role="status"
+              aria-live="polite"
+            >
+              {value().text}
+            </p>
+          )}
+        </Show>
+      </PopupShell.Feedback>
 
-      <section class="panel result-panel" aria-live="polite">
-        <div class="panel-heading">
-          <div>
-            <p class="panel-kicker">Normalized Results</p>
-            <h2>Latest Site Analysis</h2>
-          </div>
+      <PopupShell.ResultPanel
+        modeChip={(
           <Show when={analysis()}>
             {(value) => <span class="mode-chip">{value().source}</span>}
           </Show>
-        </div>
-        <p class="result-meta">
-          {hasLateDetections()
+        )}
+        meta={
+          hasLateDetections()
             ? `${lateAddedIds().length} detection${lateAddedIds().length === 1 ? "" : "s"} arrived after the popup opened and are marked below.`
             : pollingMode() === "active"
               ? "Showing the latest snapshot. Late detections will appear here automatically while polling is active."
-              : "Showing the latest snapshot from the page. Refresh to resume polling for future late detections."}
-        </p>
-
+              : "Showing the latest snapshot from the page. Refresh to resume polling for future late detections."
+        }
+      >
         <Show
           when={analysis()}
           fallback={
@@ -503,7 +505,7 @@ export default function App() {
             </Show>
           )}
         </Show>
-      </section>
-    </main>
+      </PopupShell.ResultPanel>
+    </PopupShell.Root>
   );
 }
