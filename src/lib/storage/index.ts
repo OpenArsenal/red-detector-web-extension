@@ -1,13 +1,8 @@
 import { browser } from 'wxt/browser';
 
 import type { AnalysisStatus, SiteAnalysis } from '../detection/types';
-import { getOrigin, tryGetOrigin } from '../shared/url';
-import { ANALYSIS_CACHE_PREFIX, STORAGE_LIMITS } from './contracts';
-
-/** Cache by origin so localhost ports and http/https variants do not collide. */
-function keyForUrl(url: string): string {
-	return `${ANALYSIS_CACHE_PREFIX}${getOrigin(url)}`;
-}
+import { tryGetOrigin } from '../shared/url';
+import { ANALYSIS_CACHE_PREFIX, STORAGE_LIMITS, getAnalysisCacheKey } from './contracts';
 
 function isSiteAnalysis(value: unknown): value is SiteAnalysis {
 	return (
@@ -22,7 +17,7 @@ function isSiteAnalysis(value: unknown): value is SiteAnalysis {
 
 /** Return a fresh-enough normalized analysis, never raw page signals. */
 export async function getCachedAnalysis(url: string): Promise<SiteAnalysis | null> {
-	const key = keyForUrl(url);
+	const key = getAnalysisCacheKey(url);
 	const raw = await browser.storage.local.get(key);
 	const value = raw[key];
 
@@ -42,7 +37,7 @@ export async function getCachedAnalysis(url: string): Promise<SiteAnalysis | nul
 /** Persist only normalized detector output and trim stale/overflow cache entries. */
 export async function saveAnalysis(analysis: SiteAnalysis): Promise<SiteAnalysis> {
 	const normalized: SiteAnalysis = { ...analysis, source: 'fresh' };
-	await browser.storage.local.set({ [keyForUrl(normalized.url)]: normalized });
+	await browser.storage.local.set({ [getAnalysisCacheKey(normalized.url)]: normalized });
 	await trimAnalysisCache();
 	return normalized;
 }

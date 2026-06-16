@@ -36,7 +36,7 @@ import {
 } from '../lib/messaging';
 import { errorResponse, ok, type AppResult } from '../lib/shared/result';
 import { getOrigin, isSameDocumentUrl } from '../lib/shared/url';
-import { ANALYSIS_CACHE_PREFIX, STORAGE_LIMITS } from '../lib/storage/contracts';
+import { STORAGE_LIMITS, getAnalysisCacheKey } from '../lib/storage/contracts';
 import { getCachedAnalysis, getStatus, saveAnalysis } from '../lib/storage';
 
 type InspectableTab = {
@@ -613,10 +613,6 @@ function collectInjectedJsGlobalsFromPageContext(
 	}
 
 	return values;
-}
-
-function getAnalysisCacheKey(url: string): string {
-	return `${ANALYSIS_CACHE_PREFIX}${getOrigin(url)}`;
 }
 
 function createAnalysisOutput(

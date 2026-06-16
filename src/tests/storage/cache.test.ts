@@ -2,7 +2,7 @@ import { fc, test } from '@fast-check/vitest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { SiteAnalysis } from '../../lib/detection/types';
-import { STORAGE_LIMITS } from '../../lib/storage/contracts';
+import { STORAGE_LIMITS, getAnalysisCacheKey } from '../../lib/storage/contracts';
 
 function makeAnalysis(url: string, analyzedAt = 1_700_000_000_000): SiteAnalysis {
 	return {
@@ -63,6 +63,15 @@ afterEach(() => {
 });
 
 describe.sequential('analysis cache baseline', () => {
+	it('builds cache keys from origins instead of full paths', () => {
+		expect(getAnalysisCacheKey('https://example.com/products')).toBe(
+			'analysis:https://example.com',
+		);
+		expect(getAnalysisCacheKey('https://example.com:8443/products')).toBe(
+			'analysis:https://example.com:8443',
+		);
+	});
+
 	it('returns cached analysis for a different URL on the same origin', async () => {
 		vi.useFakeTimers();
 		vi.setSystemTime(1_700_000_000_000);
