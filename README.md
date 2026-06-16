@@ -2,7 +2,7 @@
 
 A Chrome-first Manifest V3 technology detector built with WXT, TypeScript, Solid, and `comctx`.
 
-This MVP analyzes the active `http`/`https` tab locally when the user opens the popup or clicks refresh, collects bounded page signals in a runtime-injected content script, runs a pure TypeScript detector against a small bundled registry, and caches only normalized `SiteAnalysis` results.
+This MVP analyzes the active `http`/`https` tab locally when the user opens the popup or clicks refresh, collects bounded page signals in a runtime-injected content script, runs a pure TypeScript detector against the bundled technology registry, and caches only normalized `SiteAnalysis` results.
 
 ## Current MVP flow
 
@@ -31,7 +31,7 @@ The current permission model is intentionally narrow:
 
 ## Manual messaging QA checklist
 
-Before accepting messaging changes, run the extension in Chrome and verify:
+The full phase 1 behavior baseline lives in [`docs/migration/phase-1-behavior-baseline.md`](docs/migration/phase-1-behavior-baseline.md). Before accepting messaging changes, run the extension in Chrome and verify:
 
 - A normal `https://` page returns either detected technologies or a stable empty result.
 - `chrome://extensions` returns `UNSUPPORTED_URL` and the popup remains responsive.
@@ -77,20 +77,13 @@ Aube will install dependencies before running scripts when the manifest or lockf
 - `src/lib/messaging/` — typed `comctx` message contracts and adapters for popup, background, and content contexts.
 - `src/lib/storage/` — per-origin normalized analysis cache and aggregate status helpers.
 - `src/lib/browser/` — active-tab helpers owned by privileged contexts.
-- `src/data/` — category labels and bundled MVP technology registry exports.
-- `src/tests/` — Vitest coverage for page signals, detector behavior, and messaging contracts.
+- `src/data/` — category labels and bundled technology registry exports.
+- `src/tests/` — Vitest coverage for detector behavior, messaging contracts, content observation, and storage cache semantics.
 - `public/icons/` — placeholder extension icon files.
 
-## MVP registry
+## Registry baseline
 
-The current bundled registry intentionally stays small:
-
-- WordPress
-- Shopify
-- React
-- Google Analytics
-
-Add technologies only after the detector contract, cache behavior, and fixtures are stable.
+The bundled registry is generated from the TypeScript rule tree under `src/lib/detection/rules/` and re-exported through `src/data/technologies.ts`. Keep registry-source changes separate from phase 1 behavior-baseline work so detector output changes are easy to review.
 
 ## Privacy notes
 
