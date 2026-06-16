@@ -1,9 +1,9 @@
 import { defineProxy } from 'comctx';
 import { browser } from 'wxt/browser';
 
-import { technologies } from '../data/technologies';
 import { canInspectTab, getActiveTab } from '../lib/browser/active-tab';
 import { analyzeSite } from '../lib/detection/engine';
+import { bundledTechnologyRegistryProvider } from '../lib/detection/registry-provider';
 import { limitStringsByTotalChars, truncate, uniqueStrings } from '../lib/detection/normalizers';
 import { SOURCE_LIMITS } from '../lib/detection/rules';
 
@@ -223,6 +223,7 @@ async function ensureContentScript(tabId: number): Promise<AppResult<void>> {
 async function collectFromTab(
 	tabId: number,
 	expectedUrl: string,
+	registry: TechnologyDefinition[],
 ): Promise<AppResult<PageSignals>> {
 	logBackgroundEvent('collect-start', {
 		tabId,
@@ -240,8 +241,8 @@ async function collectFromTab(
 		const response = await withTimeout(
 			contentApi.collectPageSignals({
 				includeHtml: true,
-				selectorProbeList: buildSelectorProbeList(technologies),
-				htmlProbeList: buildHtmlProbeList(technologies),
+				selectorProbeList: buildSelectorProbeList(registry),
+				htmlProbeList: buildHtmlProbeList(registry),
 			}),
 			CONTENT_SCRIPT_TIMEOUT_MS,
 			'Content script did not respond before the messaging timeout.',
@@ -263,7 +264,7 @@ async function collectFromTab(
 			);
 		}
 
-		const enrichedSignals = await enrichBackgroundSignals(tabId, response.value, technologies);
+		const enrichedSignals = await enrichBackgroundSignals(tabId, response.value, registry);
 		const validationError = validatePageSignals(enrichedSignals);
 		if (validationError) {
 			logBackgroundEvent('collect-validation-failed', {
@@ -726,12 +727,13 @@ async function analyzeFreshActiveTab(
 		cacheStatus,
 	});
 
-	const signalsResponse = await collectFromTab(tab.id, tab.url);
+	const registry = bundledTechnologyRegistryProvider.listTechnologies();
+	const signalsResponse = await collectFromTab(tab.id, tab.url, registry);
 	if (!signalsResponse.ok) {
 		return signalsResponse;
 	}
 
-	const analysis = analyzeSite(signalsResponse.value, technologies);
+	const analysis = analyzeSite(signalsResponse.value, registry);
 	const savedAnalysis = await saveAnalysis(analysis);
 	logAnalysisSummary(savedAnalysis);
 

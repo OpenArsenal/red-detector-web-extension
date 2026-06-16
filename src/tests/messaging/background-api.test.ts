@@ -172,6 +172,11 @@ async function loadBackgroundApiHarness(input: {
 		analyzeSite,
 	}));
 
+	const listTechnologies = vi.fn(() => []);
+	vi.doMock('../../lib/detection/registry-provider', () => ({
+		bundledTechnologyRegistryProvider: { listTechnologies },
+	}));
+
 	vi.doMock('../../lib/messaging', () => ({
 		BACKGROUND_RPC_NAMESPACE: 'red-detector.background-rpc.v1',
 		CONTENT_RPC_NAMESPACE: 'red-detector.content-rpc.v1',
@@ -197,6 +202,7 @@ async function loadBackgroundApiHarness(input: {
 			executeScript,
 			getCachedAnalysis,
 			getStatus,
+			listTechnologies,
 			saveAnalysis,
 		},
 	};
@@ -210,6 +216,7 @@ afterEach(() => {
 	vi.doUnmock('../../data/technologies');
 	vi.doUnmock('../../lib/browser/active-tab');
 	vi.doUnmock('../../lib/detection/engine');
+	vi.doUnmock('../../lib/detection/registry-provider');
 	vi.doUnmock('../../lib/detection/rules');
 	vi.doUnmock('../../lib/messaging');
 	vi.doUnmock('../../lib/storage');
@@ -338,6 +345,7 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 
 		expect(harness.mocks.getCachedAnalysis).toHaveBeenCalledWith(HTTP_TAB.url);
 		expect(harness.contentApi.collectPageSignals).toHaveBeenCalledOnce();
+		expect(harness.mocks.listTechnologies).toHaveBeenCalledOnce();
 		expect(harness.mocks.analyzeSite).toHaveBeenCalledOnce();
 		expect(harness.mocks.saveAnalysis).toHaveBeenCalledOnce();
 		expect(harness.contentApi.beginObservationSession).not.toHaveBeenCalled();
