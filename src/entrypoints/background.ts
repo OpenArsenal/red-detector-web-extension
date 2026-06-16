@@ -2,23 +2,12 @@ import { defineProxy } from 'comctx';
 import { browser } from 'wxt/browser';
 
 import { canInspectTab, getActiveTab } from '../lib/browser/active-tab';
-import {
-	buildCollectionPlan,
-	toCollectPageSignalsInput,
-	type CollectionPlan,
-} from '../lib/collectors/planning';
+import { collectExtensionPageSignals } from '../lib/collectors/extension-page-collector';
 import { analyzeSite } from '../lib/detection/engine';
 import { bundledTechnologyRegistryProvider } from '../lib/detection/registry-provider';
-import { limitStringsByTotalChars, truncate, uniqueStrings } from '../lib/detection/normalizers';
-import { SOURCE_LIMITS } from '../lib/detection/rules';
 
 import type { ObservationSessionState } from '../lib/content/observed-page-signals';
-import type {
-	PageSignals,
-	SiteAnalysis,
-	TechnologyDefinition,
-} from '../lib/detection/types';
-import { validatePageSignals } from '../lib/detection/validate';
+import type { PageSignals, SiteAnalysis, TechnologyDefinition } from '../lib/detection/types';
 
 import type {
 	AnalyzeActiveTabInput,
@@ -39,22 +28,17 @@ import {
 	createContentClientAdapter,
 } from '../lib/messaging';
 import { errorResponse, ok, type AppResult } from '../lib/shared/result';
-import { getOrigin, isSameDocumentUrl } from '../lib/shared/url';
 import { STORAGE_LIMITS, getAnalysisCacheKey } from '../lib/storage/contracts';
 import { getCachedAnalysis, getStatus, saveAnalysis } from '../lib/storage';
 
 type InspectableTab = {
-  id: number;
-  url: string;
+	id: number;
+	url: string;
 };
-
-type JsGlobalSignalValue = string | boolean | number;
 
 const CONTENT_SCRIPT_FILE = '/content-scripts/content.js';
 const CONTENT_SCRIPT_PING_TIMEOUT_MS = 750;
 const BACKGROUND_LOG_PREFIX = '[red-detector][background]';
-const PASSIVE_FETCH_TIMEOUT_MS = 1_500;
-const BACKGROUND_FETCH_CONCURRENCY = 4;
 const OBSERVATION_POLICY: BeginObservationSessionInput['policy'] = {
 	durationMs: 60_000,
 	throttleMs: 1_500,
@@ -80,29 +64,6 @@ function summarizeTab(tab: InspectableTab) {
 	};
 }
 
-function summarizeSignals(signals: PageSignals) {
-	return {
-		hostname: signals.hostname,
-		scriptCount: signals.scripts.length,
-		stylesheetCount: signals.stylesheets.length,
-		linkCount: signals.links.length,
-		resourceCount: signals.resources.length,
-		requestCount: signals.requests.length,
-		scriptContentCount: signals.scriptContents.length,
-		stylesheetContentCount: signals.stylesheetContents.length,
-		headerCount: Object.keys(signals.headers).length,
-		metaKeyCount: Object.keys(signals.meta).length,
-		domSelectorCount: Object.keys(signals.dom.selectors).length,
-		jsGlobalCount: Object.keys(signals.jsGlobals).length,
-		htmlMatchCount: Object.keys(signals.htmlMatches ?? {}).length,
-		textChars: signals.text.length,
-		cookieNameCount: Object.keys(signals.cookies).length,
-		localStorageKeyCount: Object.keys(signals.storage.localStorage).length,
-		sessionStorageKeyCount: Object.keys(signals.storage.sessionStorage).length,
-		collectedAt: signals.collectedAt,
-	};
-}
-
 function summarizeSession(session: ObservationSessionState) {
 	return {
 		sessionId: session.sessionId,
@@ -115,35 +76,35 @@ function summarizeSession(session: ObservationSessionState) {
 }
 
 function createContentApiClient(tabId: number, frameId = 0): ContentApi {
-  const [, injectContentApi] = defineProxy(() => ({}) as ContentApi, {
-    namespace: CONTENT_RPC_NAMESPACE,
-    heartbeatCheck: false,
-    transfer: false,
-  });
+	const [, injectContentApi] = defineProxy(() => ({}) as ContentApi, {
+		namespace: CONTENT_RPC_NAMESPACE,
+		heartbeatCheck: false,
+		transfer: false,
+	});
 
-  return injectContentApi(createContentClientAdapter(tabId, frameId));
+	return injectContentApi(createContentClientAdapter(tabId, frameId));
 }
 
 async function getInspectableActiveTab(): Promise<AppResult<InspectableTab>> {
-  const tab = await getActiveTab();
+	const tab = await getActiveTab();
 
-  if (typeof tab?.id !== 'number' || !tab.url) {
+	if (typeof tab?.id !== 'number' || !tab.url) {
 		logBackgroundEvent('active-tab-missing');
-    return errorResponse('NO_ACTIVE_TAB', 'No active tab found');
-  }
+		return errorResponse('NO_ACTIVE_TAB', 'No active tab found');
+	}
 
-  if (!canInspectTab(tab)) {
+	if (!canInspectTab(tab)) {
 		logBackgroundEvent('active-tab-unsupported', {
 			tabId: tab.id,
 			url: tab.url,
 		});
-    return errorResponse(
-      'UNSUPPORTED_URL',
-      'Detection only works on normal http/https pages. Reload a website tab and try again.',
-    );
-  }
+		return errorResponse(
+			'UNSUPPORTED_URL',
+			'Detection only works on normal http/https pages. Reload a website tab and try again.',
+		);
+	}
 
-  return ok({ id: tab.id, url: tab.url });
+	return ok({ id: tab.id, url: tab.url });
 }
 
 async function pingContentScript(tabId: number): Promise<boolean> {
@@ -221,399 +182,27 @@ async function ensureContentScript(tabId: number): Promise<AppResult<void>> {
 }
 
 /**
- * Ask the content script for bounded PageSignals and reject stale responses from
- * a different origin. Navigation can happen while the service worker is active.
+ * Ask the extension collector for the active tab's PageSignals. Content-script
+ * readiness still belongs to the background lifecycle path; raw acquisition now
+ * lives behind the collector boundary.
  */
 async function collectFromTab(
 	tabId: number,
 	expectedUrl: string,
-	registry: TechnologyDefinition[],
+	registry: readonly TechnologyDefinition[],
 ): Promise<AppResult<PageSignals>> {
-	logBackgroundEvent('collect-start', {
-		tabId,
-		hostname: new URL(expectedUrl).hostname,
-	});
-
 	const contentScriptResponse = await ensureContentScript(tabId);
 	if (!contentScriptResponse.ok) {
 		return contentScriptResponse;
 	}
 
-	const contentApi = createContentApiClient(tabId, 0);
-
-	try {
-		const collectionPlan = buildCollectionPlan(registry);
-		const response = await withTimeout(
-			contentApi.collectPageSignals(toCollectPageSignalsInput(collectionPlan)),
-			CONTENT_SCRIPT_TIMEOUT_MS,
-			'Content script did not respond before the messaging timeout.',
-		);
-
-		if (!response.ok) {
-			return response;
-		}
-
-		if (!isSameDocumentUrl(response.value.url, expectedUrl)) {
-			logBackgroundEvent('collect-document-mismatch', {
-				tabId,
-				expectedUrl,
-				actualUrl: response.value.url,
-			});
-			return errorResponse(
-				'VALIDATION_ERROR',
-				`Collected page signals do not match the active tab URL. Expected ${expectedUrl}, got ${response.value.url}.`,
-			);
-		}
-
-		const enrichedSignals = await enrichBackgroundSignals(tabId, response.value, collectionPlan);
-		const validationError = validatePageSignals(enrichedSignals);
-		if (validationError) {
-			logBackgroundEvent('collect-validation-failed', {
-				tabId,
-				hostname: enrichedSignals.hostname,
-				error: validationError,
-			});
-			return errorResponse('PAYLOAD_TOO_LARGE', validationError);
-		}
-
-		logBackgroundEvent('collect-success', {
-			tabId,
-			...summarizeSignals(enrichedSignals),
-		});
-
-		return ok(enrichedSignals);
-	} catch (error) {
-		logBackgroundEvent('collect-failed', {
-			tabId,
-			hostname: new URL(expectedUrl).hostname,
-			message: error instanceof Error ? error.message : 'Unknown content collection failure',
-		});
-		return contentScriptFailure(error);
-	}
-}
-
-async function enrichBackgroundSignals(
-	tabId: number,
-	signals: PageSignals,
-	collectionPlan: CollectionPlan,
-): Promise<PageSignals> {
-	const pageOrigin = getOrigin(signals.url);
-	const [jsGlobals, headers, fetchedSourceContents] = await Promise.all([
-		collectInjectedJsGlobals(tabId, collectionPlan.jsGlobalPropertyList),
-		collectResponseHeaders(signals.url),
-		collectSameOriginSourceContents(signals, pageOrigin),
-	]);
-
-	return {
-		...signals,
-		headers: {
-			...signals.headers,
-			...headers,
-		},
-		scriptContents: limitStringsByTotalChars(
-			[...signals.scriptContents, ...fetchedSourceContents.scriptContents],
-			SOURCE_LIMITS.scriptContentItems,
-			SOURCE_LIMITS.scriptContentTotalChars,
-		),
-		stylesheetContents: limitStringsByTotalChars(
-			[...signals.stylesheetContents, ...fetchedSourceContents.stylesheetContents],
-			SOURCE_LIMITS.stylesheetContentItems,
-			SOURCE_LIMITS.stylesheetContentTotalChars,
-		),
-		jsGlobals,
-	};
-}
-
-async function collectInjectedJsGlobals(
-	tabId: number,
-	propertyPaths: readonly string[],
-): Promise<Record<string, JsGlobalSignalValue>> {
-	if (!propertyPaths.length) {
-		return {};
-	}
-
-	try {
-		const results = await browser.scripting.executeScript({
-			target: { tabId, frameIds: [0] },
-			world: 'MAIN' as const,
-			func: collectInjectedJsGlobalsFromPageContext,
-			args: [propertyPaths, SOURCE_LIMITS.jsGlobalValueChars],
-		});
-
-		const firstResult = results[0]?.result;
-		return isJsGlobalSignalRecord(firstResult) ? firstResult : {};
-	} catch (error) {
-		logBackgroundEvent('collect-js-globals-failed', {
-			tabId,
-			message: error instanceof Error ? error.message : 'Unknown JavaScript global collection failure',
-		});
-		return {};
-	}
-}
-
-type SourceContentSignals = Pick<PageSignals, 'scriptContents' | 'stylesheetContents'>;
-
-async function collectResponseHeaders(pageUrl: string): Promise<Record<string, string>> {
-	try {
-		const response = await fetchWithTimeout(pageUrl, {
-			cache: 'force-cache',
-			credentials: 'omit',
-			method: 'HEAD',
-		}, PASSIVE_FETCH_TIMEOUT_MS);
-
-		return headersToSignalRecord(response.headers);
-	} catch {
-		return {};
-	}
-}
-
-async function collectSameOriginSourceContents(
-	signals: PageSignals,
-	pageOrigin: string,
-): Promise<SourceContentSignals> {
-	const scriptUrls = uniqueStrings([
-		...signals.scripts,
-		...signals.resources
-			.filter((resource) => resource.initiatorType === 'script')
-			.map((resource) => resource.url),
-	]);
-	const stylesheetUrls = uniqueStrings([
-		...signals.stylesheets,
-		...signals.resources
-			.filter((resource) =>
-				resource.initiatorType === 'link' ||
-				resource.initiatorType === 'css',
-			)
-			.map((resource) => resource.url),
-	]);
-	const [scriptContents, stylesheetContents] = await Promise.all([
-		fetchBoundedTextSignals(
-			scriptUrls,
-			pageOrigin,
-			SOURCE_LIMITS.scriptContentItems - signals.scriptContents.length,
-			SOURCE_LIMITS.scriptContentChars,
-			SOURCE_LIMITS.scriptContentTotalChars - totalChars(signals.scriptContents),
-		),
-		fetchBoundedTextSignals(
-			stylesheetUrls,
-			pageOrigin,
-			SOURCE_LIMITS.stylesheetContentItems - signals.stylesheetContents.length,
-			SOURCE_LIMITS.stylesheetContentChars,
-			SOURCE_LIMITS.stylesheetContentTotalChars - totalChars(signals.stylesheetContents),
-		),
-	]);
-
-	return { scriptContents, stylesheetContents };
-}
-
-async function fetchBoundedTextSignals(
-	urls: readonly string[],
-	allowedOrigin: string,
-	maxItems: number,
-	maxChars: number,
-	maxTotalChars: number,
-): Promise<string[]> {
-	if (maxItems <= 0 || maxTotalChars <= 0) {
-		return [];
-	}
-
-	const candidates = uniqueStrings(
-		urls.filter((url) => isFetchableSameOriginUrl(url, allowedOrigin)),
-	).slice(0, maxItems);
-
-	const fetched: string[] = [];
-	for (let index = 0; index < candidates.length; index += BACKGROUND_FETCH_CONCURRENCY) {
-		const batch = candidates.slice(index, index + BACKGROUND_FETCH_CONCURRENCY);
-		const values = await Promise.all(
-			batch.map((url) => fetchBoundedText(url, maxChars)),
-		);
-
-		for (const value of values) {
-			if (!value) {
-				continue;
-			}
-			fetched.push(value);
-			if (fetched.length >= maxItems) {
-				return limitStringsByTotalChars(fetched, maxItems, maxTotalChars);
-			}
-		}
-	}
-
-	return limitStringsByTotalChars(fetched, maxItems, maxTotalChars);
-}
-
-function totalChars(values: readonly string[]): number {
-	return values.reduce((total, value) => total + value.length, 0);
-}
-
-async function fetchBoundedText(url: string, maxChars: number): Promise<string> {
-	let reader: ReadableStreamDefaultReader<Uint8Array<ArrayBuffer>> | null = null;
-
-	try {
-		const response = await fetchWithTimeout(url, {
-			cache: 'force-cache',
-			credentials: 'omit',
-		}, PASSIVE_FETCH_TIMEOUT_MS);
-
-		if (!response.ok || !response.body) {
-			return '';
-		}
-
-		reader = response.body.getReader();
-		const decoder = new TextDecoder();
-		let text = '';
-
-		while (text.length < maxChars) {
-			const { done, value } = await reader.read();
-			if (done) break;
-
-			text += decoder.decode(value, { stream: true });
-			if (text.length >= maxChars) {
-				// Stop the stream early
-				await reader.cancel();
-				break;
-			}
-		}
-
-		return text.slice(0, maxChars);
-	} catch {
-		return '';
-	} finally {
-		// Ensure the reader is released even if cancel() was already called
-		if (reader) {
-			try {
-				// If the stream is still active, cancel it
-				await reader.cancel();
-			} catch {
-				// Ignore errors from double-cancel or closed streams
-			}
-
-			try {
-				reader.releaseLock();
-			} catch {
-				// releaseLock() can throw if already released
-			}
-
-			reader = null;
-		}
-	}
-}
-
-async function fetchWithTimeout(
-	url: string,
-	init: RequestInit,
-	timeoutMs: number,
-): Promise<Response> {
-	const controller = new AbortController();
-	const timeoutId = globalThis.setTimeout(() => controller.abort(), timeoutMs);
-	try {
-		return await fetch(url, {
-			...init,
-			signal: controller.signal,
-		});
-	} finally {
-		globalThis.clearTimeout(timeoutId);
-	}
-}
-
-function headersToSignalRecord(headers: Headers): Record<string, string> {
-	const entries: Array<[string, string]> = [];
-	for (const [key, value] of headers.entries()) {
-		if (entries.length >= SOURCE_LIMITS.headers) {
-			break;
-		}
-
-		entries.push([
-			key.toLowerCase(),
-			truncate(value, SOURCE_LIMITS.headerValueChars),
-		]);
-	}
-
-	return Object.fromEntries(entries);
-}
-
-function isFetchableSameOriginUrl(url: string, allowedOrigin: string): boolean {
-	try {
-		const parsed = new URL(url);
-		return parsed.origin === allowedOrigin && (parsed.protocol === 'http:' || parsed.protocol === 'https:');
-	} catch {
-		return false;
-	}
-}
-
-function isJsGlobalSignalRecord(value: unknown): value is Record<string, JsGlobalSignalValue> {
-	if (!value || typeof value !== 'object' || Array.isArray(value)) {
-		return false;
-	}
-
-	return Object.values(value).every((item) =>
-		typeof item === 'string' || typeof item === 'boolean' || typeof item === 'number',
-	);
-}
-
-function collectInjectedJsGlobalsFromPageContext(
-	propertyPaths: string[],
-	maxValueChars: number,
-): Record<string, JsGlobalSignalValue> {
-	const values: Record<string, JsGlobalSignalValue> = {};
-	const root = globalThis as Record<string, unknown>;
-
-	function readGlobalPath(propertyPath: string): unknown {
-		if (Object.hasOwn(root, propertyPath)) {
-			return root[propertyPath];
-		}
-
-		let current: unknown = root;
-		for (const segment of propertyPath.split('.')) {
-			if (current === undefined || current === null) {
-				return undefined;
-			}
-
-			current = (current as Record<string, unknown>)[segment];
-		}
-
-		return current;
-	}
-
-	function summarizeValue(value: unknown): JsGlobalSignalValue {
-		const valueType = typeof value;
-		if (valueType === 'string') {
-			return (value as string).slice(0, maxValueChars);
-		}
-		if (valueType === 'number' || valueType === 'boolean') {
-			return value as number | boolean;
-		}
-		if (valueType === 'function') {
-			return 'function';
-		}
-
-		try {
-			const constructorName = (value as { constructor?: { name?: string } }).constructor?.name;
-			if (constructorName) {
-				return constructorName.slice(0, maxValueChars);
-			}
-		} catch {
-			// Fall through to String(value).
-		}
-
-		return String(value).slice(0, maxValueChars);
-	}
-
-	for (const propertyPath of propertyPaths) {
-		try {
-			const value = readGlobalPath(propertyPath);
-			if (value === undefined || value === null) {
-				continue;
-			}
-
-			values[propertyPath] = summarizeValue(value);
-		} catch {
-			// Some pages define getters with side effects or throwing accessors. Treat
-			// those globals as unavailable rather than letting detection mutate the page.
-		}
-	}
-
-	return values;
+	return collectExtensionPageSignals({
+		tabId,
+		expectedUrl,
+		registry,
+		contentApi: createContentApiClient(tabId, 0),
+		log: logBackgroundEvent,
+	});
 }
 
 function createAnalysisOutput(
