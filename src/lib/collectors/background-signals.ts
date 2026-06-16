@@ -77,7 +77,7 @@ export async function collectBackgroundPageSignals(
  */
 export async function collectInjectedJsGlobals(
 	tabId: number,
-	propertyPaths: readonly string[],
+	propertyPaths: string[],
 	log?: CollectorLog,
 ): Promise<Record<string, JsGlobalSignalValue>> {
 	if (!propertyPaths.length) {
