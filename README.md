@@ -31,7 +31,7 @@ The current permission model is intentionally narrow:
 
 ## Manual messaging QA checklist
 
-The full phase 1 behavior baseline lives in [`docs/migration/phase-1-behavior-baseline.md`](docs/migration/phase-1-behavior-baseline.md). Before accepting messaging changes, run the extension in Chrome and verify:
+The full phase 1 behavior baseline lives in [`docs/migration/phase-1-behavior-baseline.md`](docs/migration/phase-1-behavior-baseline.md). The phase 2 contract seams are described in [`docs/migration/phase-2-contract-seams.md`](docs/migration/phase-2-contract-seams.md), and the phase 3 collector boundary is described in [`docs/migration/phase-3-collector-boundary.md`](docs/migration/phase-3-collector-boundary.md). Before accepting messaging or collector changes, run the extension in Chrome and verify:
 
 - A normal `https://` page returns either detected technologies or a stable empty result.
 - `chrome://extensions` returns `UNSUPPORTED_URL` and the popup remains responsive.
