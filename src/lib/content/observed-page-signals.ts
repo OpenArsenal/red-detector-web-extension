@@ -9,6 +9,7 @@ import {
 } from './collect-page-signals';
 import { SOURCE_LIMITS } from '../detection/rules';
 import type { PageSignals } from '../detection/types';
+import { isObservationSessionForUrl } from '../lifecycle/observation';
 
 export type ObservedPageSignalsSnapshot = Pick<
 	PageSignals,
@@ -124,6 +125,30 @@ export function createObservedPageSignals(
 	function stopResourceObserver(): void {
 		resourceObserver?.disconnect();
 		resourceObserver = undefined;
+	}
+
+	function stopObservationSessionWithReason(reason: ObservationStopReason): ObservationSessionState {
+		observer.disconnect();
+		stopResourceObserver();
+		clearThrottleTimer();
+		clearPendingMutations();
+		activeSession = undefined;
+		sessionStatus = 'stopped';
+		stopReason = reason;
+		return observationState();
+	}
+
+	function stopIfDocumentChanged(): void {
+		if (!activeSession || isObservationSessionForUrl(activeSession, location.href)) {
+			return;
+		}
+
+		logObserverEvent('session-navigation', {
+			sessionId: activeSession.sessionId,
+			expectedUrl: activeSession.expectedUrl,
+			actualUrl: location.href,
+		});
+		stopObservationSessionWithReason('navigation');
 	}
 
 	function rememberResourceTimings(): void {
@@ -411,13 +436,7 @@ export function createObservedPageSignals(
 				pendingMutationCount,
 				maxMutations: activeSession.maxMutations,
 			});
-			observer.disconnect();
-			stopResourceObserver();
-			clearThrottleTimer();
-			clearPendingMutations();
-			activeSession = undefined;
-			sessionStatus = 'stopped';
-			stopReason = 'expired';
+			stopObservationSessionWithReason('expired');
 			return;
 		}
 
@@ -460,6 +479,7 @@ export function createObservedPageSignals(
 
 	return {
 		snapshot() {
+			stopIfDocumentChanged();
 			flushPendingMutations();
 			scanCurrentDocument();
 
@@ -482,28 +502,16 @@ export function createObservedPageSignals(
 		beginObservationSession,
 
 		stopObservationSession(reason = 'manual') {
-			observer.disconnect();
-			stopResourceObserver();
-			clearThrottleTimer();
-			clearPendingMutations();
-			activeSession = undefined;
-			sessionStatus = 'stopped';
-			stopReason = reason;
-			return observationState();
+			return stopObservationSessionWithReason(reason);
 		},
 
 		status() {
+			stopIfDocumentChanged();
 			return observationState();
 		},
 
 		disconnect(reason = 'invalidated') {
-			observer.disconnect();
-			stopResourceObserver();
-			clearThrottleTimer();
-			clearPendingMutations();
-			activeSession = undefined;
-			sessionStatus = 'stopped';
-			stopReason = reason;
+			stopObservationSessionWithReason(reason);
 		},
 	};
 }

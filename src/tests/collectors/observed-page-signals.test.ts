@@ -114,6 +114,32 @@ describe('observed page signals', () => {
 		});
 	});
 
+
+	it('stops an active session when the document URL changes', () => {
+		vi.stubGlobal('document', makeDocument());
+		vi.stubGlobal('location', { href: 'https://example.com/products' });
+		vi.stubGlobal('MutationObserver', FakeMutationObserver);
+		vi.stubGlobal('PerformanceObserver', undefined);
+		vi.stubGlobal('performance', {
+			getEntriesByType: vi.fn(() => []),
+		});
+
+		const observedSignals = createObservedPageSignals({ throttleMs: 25 });
+		observedSignals.beginObservationSession({
+			sessionId: 'session-1',
+			expectedUrl: 'https://example.com/products',
+			durationMs: 1_000,
+			maxPendingNodes: 10,
+			maxMutations: 100,
+		});
+		vi.stubGlobal('location', { href: 'https://example.com/pricing' });
+
+		expect(observedSignals.status()).toMatchObject({
+			status: 'stopped',
+			stopReason: 'navigation',
+		});
+	});
+
 	it('returns a current document snapshot in the same shape used by collectPageSignals', () => {
 		vi.stubGlobal('document', makeDocument());
 		vi.stubGlobal('location', { href: 'https://example.com/products' });
