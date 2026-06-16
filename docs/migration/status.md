@@ -1,8 +1,8 @@
-# Migration status after phase 8
+# Migration status after phase 9
 
 This status page lets reviewers see which migration seams are complete, which seams are only compatibility wrappers, and which future architecture goals remain unimplemented. It should be updated whenever a phase changes a boundary that another maintainer would rely on.
 
-The project is now past the first documentation pass. Phases 1 through 7 established behavior baselines, contracts, collectors, lifecycle rules, graph seams, popup view-state boundaries, and shared test fixtures. Phase 8 records those decisions so future work can stop rediscovering them from commit history.
+The project is now past the first documentation pass and the first normalized-observation seam. Phases 1 through 8 established behavior baselines, contracts, collectors, lifecycle rules, graph seams, popup view-state boundaries, shared test fixtures, and architecture docs. Phase 9 adds the observation contract that future evidence and replay work can target without changing detector behavior yet.
 
 ## Phase status matrix
 
@@ -15,7 +15,8 @@ The project is now past the first documentation pass. Phases 1 through 7 establi
 | 5 graph seam | Complete | `src/lib/detection/registry-graph.ts` | The detector can run through a compiled registry graph while preserving current output shape. | YAML or JSON registry source is active. |
 | 6 popup view model | Complete | `src/lib/popup/view-model.ts` | Popup state translation is testable outside the Solid component. | Popup shows explanations or all evidence. |
 | 7 test boundaries | Complete | `src/tests/support/` | Shared fixtures and browser storage mocks exist for subsystem tests. | The test suite includes full extension runtime automation. |
-| 8 architecture docs | Complete after this patch stack | `docs/architecture/overview.md` and this status page | Future prompts can cite the current migrated shape instead of stale README assumptions. | Documentation replaces implementation validation. |
+| 8 architecture docs | Complete | `docs/architecture/overview.md` and this status page | Future prompts can cite the current migrated shape instead of stale README assumptions. | Documentation replaces implementation validation. |
+| 9 observation normalization | Complete after this patch stack | `src/lib/observations/` | The project has a normalized observation contract and a `PageSignals` adapter for tests and future evidence work. | The detector consumes observations or replay logs exist. |
 
 ## Decision ledger
 
@@ -26,7 +27,7 @@ The table records decisions that affect future phases. A decision can be reopene
 | Per-origin cache keys | Keep `analysis:<origin>` compatibility. | Do not change cache key semantics without storage tests and a migration note. |
 | Active-tab-first extension flow | Keep current active-tab analysis as the extension interaction model. | Do not introduce persistent host access or background crawling as incidental refactor fallout. |
 | TypeScript registry source | Keep the TypeScript rule tree as the runtime source for now. | Compiled registry work must preserve order and relationship equivalence before source-format changes. |
-| `PageSignals` detector input | Keep as the compatibility input. | Normalized observations should be introduced beside this input before replacing it. |
+| `PageSignals` detector input | Keep as the compatibility input. | Normalized observations now exist beside this input; replacing it still needs detector equivalence tests. |
 | Popup grouping | Keep primary-category grouping. | Multi-category or explanation UI must be an intentional popup change with view-model tests. |
 | Browser mocks | Mock browser APIs, not production modules. | Runtime-adjacent tests should import production code after installing the API mock. |
 | Benchmarks | Add only for measured hot paths. | Docs, fixtures, and UI composition changes do not need benchmark files. |
@@ -57,13 +58,16 @@ Phase 2: contracts and provider seams
                       │
                       ▼
               Phase 8: architecture docs
+                      │
+                      ▼
+              Phase 9: observation normalization
 ```
 
 The order matters because the popup view model depends on stabilized analysis and lifecycle semantics, graph work depends on preserving registry order, and future observation/replay work depends on shared fixtures that do not duplicate contract assumptions.
 
 ## Known validation limits
 
-Phase 8 records the current limitations rather than hiding them.
+Phase 9 records the current limitations rather than hiding them.
 
 - The full Vitest suite may still be slower or less stable in the sandbox than targeted suites.
 - `npm run compile` may continue to expose branch-wide TypeScript issues that predate a docs patch.

@@ -9,5 +9,6 @@ Start with the overview when you need the system shape, then use the workflow or
 | [`overview.md`](overview.md) | You need the current runtime map, target pipeline map, subsystem seam table, compatibility rules, or open architecture decisions. |
 | [`verification-workflow.md`](verification-workflow.md) | You need to decide which commands, targeted tests, or manual Chrome checks belong on a patch or pull request. |
 | [`popup-composition.md`](popup-composition.md) | You are changing the Solid popup shell, named regions, status feedback, or future explanation/replay placement. |
+| [`../migration/phase-9-observation-normalization.md`](../migration/phase-9-observation-normalization.md) | You need to understand the first normalized observation seam and why it does not replace `PageSignals` yet. |
 
 Migration phase notes remain under [`../migration/`](../migration/). The short current-state matrix is [`../migration/status.md`](../migration/status.md).
