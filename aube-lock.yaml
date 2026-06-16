@@ -9,7 +9,6 @@ time:
   '@fast-check/vitest@0.4.1': 2026-04-28T22:22:05.897Z
   '@wxt-dev/module-solid@1.1.4': 2025-09-03T22:26:17.973Z
   comctx@1.7.5: 2026-06-15T13:00:20.342Z
-  fast-check@4.8.0: 2026-05-11T22:16:13.224Z
   solid-js@1.9.13: 2026-05-15T17:36:58.458Z
   typescript@6.0.3: 2026-04-16T23:38:27.905Z
   vitest@4.1.9: 2026-06-15T07:23:00.326Z
@@ -41,9 +40,6 @@ importers:
       '@wxt-dev/module-solid':
         specifier: latest
         version: 1.1.4(wxt@0.20.26)
-      fast-check:
-        specifier: latest
-        version: 4.8.0
       typescript:
         specifier: latest
         version: 6.0.3

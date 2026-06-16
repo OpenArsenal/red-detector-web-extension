@@ -17,9 +17,8 @@
     "solid-js": "latest"
   },
   "devDependencies": {
-    "@wxt-dev/module-solid": "latest",
-    "fast-check": "latest",
     "@fast-check/vitest": "latest",
+    "@wxt-dev/module-solid": "latest",
     "typescript": "latest",
     "vitest": "latest",
     "wxt": "latest"

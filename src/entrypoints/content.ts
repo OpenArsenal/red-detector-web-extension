@@ -112,10 +112,10 @@ async function collectSignals(
 /**
  * Build the content-script RPC surface around one observation store.
  *
- * The exported factory lets baseline tests exercise the same content API that WXT
+ * The exported factory lets baseline tests use the same content API that WXT
  * registers at runtime without booting a full extension context. The important
- * invariant is that the API owns only page-local collection and observation
- * timers; detection and persistence remain background responsibilities.
+ * rule is that this API only owns page-local collection and observation timers;
+ * detection and persistence stay in the background service worker.
  */
 export function createContentApi(observedSignals: ObservedPageSignals): ContentApi {
   let observationExpiryTimer: ReturnType<typeof globalThis.setTimeout> | undefined;

@@ -1,4 +1,4 @@
-import * as fc from 'fast-check';
+import { fc, test } from '@fast-check/vitest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { SiteAnalysis } from '../../lib/detection/types';
@@ -97,18 +97,19 @@ describe.sequential('analysis cache baseline', () => {
 		});
 	});
 
-	it('preserves same-origin cache lookup across path variants', async () => {
-		vi.useFakeTimers();
-		vi.setSystemTime(1_700_000_000_000);
-		const storage = await loadStorageHarness();
-		const pathSegment = fc.array(fc.constantFrom('a', 'b', 'c', '0', '1', '-', '_'), {
-			minLength: 0,
-			maxLength: 12,
-		}).map((chars) => chars.join(''));
-		const path = fc.array(pathSegment, { minLength: 0, maxLength: 4 })
-			.map((segments) => `/${segments.join('/')}`);
+	const pathSegment = fc.array(fc.constantFrom('a', 'b', 'c', '0', '1', '-', '_'), {
+		minLength: 0,
+		maxLength: 12,
+	}).map((chars) => chars.join(''));
+	const path = fc.array(pathSegment, { minLength: 0, maxLength: 4 })
+		.map((segments) => `/${segments.join('/')}`);
 
-		await fc.assert(fc.asyncProperty(path, path, async (savedPath, lookupPath) => {
+	test.prop([path, path], { numRuns: 50 })(
+		'preserves same-origin cache lookup across path variants',
+		async (savedPath, lookupPath) => {
+			vi.useFakeTimers();
+			vi.setSystemTime(1_700_000_000_000);
+			const storage = await loadStorageHarness();
 			const savedUrl = `https://example.com${savedPath}`;
 			const lookupUrl = `https://example.com${lookupPath}`;
 
@@ -119,8 +120,8 @@ describe.sequential('analysis cache baseline', () => {
 				url: savedUrl,
 				source: 'cache',
 			});
-		}), { numRuns: 50 });
-	});
+		},
+	);
 
 	it('removes expired analysis records instead of returning stale cache output', async () => {
 		vi.useFakeTimers();

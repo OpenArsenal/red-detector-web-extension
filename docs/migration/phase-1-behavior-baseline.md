@@ -1,8 +1,8 @@
 # Phase 1 behavior baseline
 
-Phase 1 protects the behavior the extension already exposes before the migration starts moving boundaries. The baseline is intentionally about what users and subsystem callers can observe today, not about the target event-driven architecture. Later phases can split collectors, contracts, registry loading, and graph reasoning only when these checks keep passing.
+Phase 1 protects the behavior the extension already exposes before the migration starts moving boundaries. The baseline is intentionally about what users and other parts of the code can observe today, not about the future event-based design. Later phases can split collectors, contracts, registry loading, and graph reasoning only when these checks keep passing.
 
-The current runtime path looks like this:
+The current path looks like this:
 
 ```text
 Popup open
@@ -16,7 +16,7 @@ Popup open
   -> popup polling and refresh
 ```
 
-This diagram matters because phase 1 is not allowed to change any edge in the flow. A patch can add tests, documentation, and fixtures, but cache keys, message names, result shapes, permission posture, and popup-visible states stay fixed.
+This diagram matters because phase 1 is not allowed to change any edge in the flow. A patch can add tests, documentation, and fixtures, but cache keys, message names, result shapes, permissions, and popup-visible states stay fixed.
 
 ## Analysis request matrix
 
@@ -26,7 +26,7 @@ This diagram matters because phase 1 is not allowed to change any edge in the fl
 | --- | --- | --- | --- |
 | `cache-first` | `none` | Read the per-origin cache first. On hit, return cached `SiteAnalysis`. On miss, collect fresh signals, analyze, save, and do not start observation. | Cache hit must not contact the content script. Cache miss returns `cache.status: "miss"`. |
 | `cache-first` | `while-popup-open` | Read cache first. On hit, return cache without observation. On miss, collect fresh signals, analyze, save, then request an observation session. | Cache hit returns no `session`. Cache miss can return `session.status: "observing"`. |
-| `cache-first` | `bounded` | Same current branch as `while-popup-open` after a cache miss. There is no distinct bounded implementation in the background today. | Treat as a fresh observation request until lifecycle semantics are changed deliberately. |
+| `cache-first` | `bounded` | Same current branch as `while-popup-open` after a cache miss. There is no distinct bounded implementation in the background today. | Treat as a fresh observation request until lifecycle behavior changes deliberately. |
 | `refresh` | `none` | Bypass cache lookup, collect fresh signals, analyze, save, and do not start observation. | Return `cache.status: "bypassed"` and do not call `getCachedAnalysis`. |
 | `refresh` | `while-popup-open` | Bypass cache lookup, collect fresh signals, analyze, save, then request an observation session. | Return `cache.status: "bypassed"` and include an observing session when content accepts it. |
 | `refresh` | `bounded` | Same current branch as `while-popup-open`. | Keep this behavior until the lifecycle phase gives `bounded` separate semantics. |
@@ -54,7 +54,7 @@ A cached record older than `STORAGE_LIMITS.analysisTtlMs` is removed and treated
 
 ## Observation baseline
 
-Observation is content-script state. The background asks the active tab content runtime to start, stop, or report observation state, and the popup only sees the state returned through `BackgroundApi`.
+Observation is content-script state. The background asks the active tab content script to start, stop, or report observation state, and the popup only sees the state returned through `BackgroundApi`.
 
 Current rules to preserve:
 
@@ -62,7 +62,7 @@ Current rules to preserve:
 - Fresh analysis starts observation only when `observe !== "none"`.
 - `refreshActiveObservationSession()` re-analyzes only when the content session is `observing` or `dirty`.
 - `stopActiveObservationSession()` forwards a stop request to the content script.
-- Content observation expiry uses the same `stopObservationSession("expired")` path as other stop reasons.
+- Content-script observation expiry uses the same `stopObservationSession("expired")` path as other stop reasons.
 - Manual content stops clear the expiry timer so expiration does not fire later.
 
 `navigation` exists as a stop reason in the type model, but phase 1 treats it as a future lifecycle decision because the current production code does not emit it.
@@ -100,6 +100,6 @@ The phase 1 tests cover the current behavior at three boundaries:
 
 - `src/tests/messaging/background-api.test.ts` pins background API cache, refresh, unsupported URL, content-script failure, document mismatch, and observation-refresh behavior.
 - `src/tests/content/content-api.test.ts` pins content observation start, expiry, and manual-stop timer behavior without booting a browser.
-- `src/tests/storage/cache.test.ts` pins origin-keyed storage behavior, including path variants, scheme and port separation, expiration, and a property-based same-origin lookup invariant.
+- `src/tests/storage/cache.test.ts` pins origin-keyed storage behavior, including path variants, scheme and port separation, expiration, and a property-based same-origin lookup rule.
 
 These tests are intentionally characterization tests. When later phases intentionally change behavior, update this document and the tests in the same commit so the migration history explains the old behavior, the new behavior, and why the change was safe.
