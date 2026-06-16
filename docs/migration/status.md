@@ -1,8 +1,8 @@
-# Migration status after phase 10
+# Migration status after phase 11
 
 This status page lets reviewers see which migration seams are complete, which seams are only compatibility wrappers, and which future architecture goals remain unimplemented. It should be updated whenever a phase changes a boundary that another maintainer would rely on.
 
-The project is now past the first documentation pass, the first normalized-observation seam, and the first evidence repository seam. Phases 1 through 8 established behavior baselines, contracts, collectors, lifecycle rules, graph seams, popup view-state boundaries, shared test fixtures, and architecture docs. Phase 9 adds the observation contract that future evidence and replay work can target without changing detector behavior. Phase 10 adds evidence entries and an in-memory repository while keeping detector output unchanged.
+The project is now past the first documentation pass, the first normalized-observation seam, and the first evidence repository seam. Phases 1 through 8 established behavior baselines, contracts, collectors, lifecycle rules, graph seams, popup view-state boundaries, shared test fixtures, and architecture docs. Phase 9 adds the observation contract that future evidence and replay work can target without changing detector behavior. Phase 10 adds evidence entries and an in-memory repository while keeping detector output unchanged. Phase 11 adds a sidecar observation matcher that turns normalized observations into pattern-match events and evidence entries without replacing `analyzeSite(...)`.
 
 ## Phase status matrix
 
@@ -17,7 +17,8 @@ The project is now past the first documentation pass, the first normalized-obser
 | 7 test boundaries | Complete | `src/tests/support/` | Shared fixtures and browser storage mocks exist for subsystem tests. | The test suite includes full extension runtime automation. |
 | 8 architecture docs | Complete | `docs/architecture/overview.md` and this status page | Future prompts can cite the current migrated shape instead of stale README assumptions. | Documentation replaces implementation validation. |
 | 9 observation normalization | Complete | `src/lib/observations/` | The project has a normalized observation contract and a `PageSignals` adapter for tests and future evidence work. | The detector consumes observations or replay logs exist. |
-| 10 evidence repository | Complete after this patch stack | `src/lib/evidence/` | Evidence entries, compatibility evidence batches, and an in-memory repository exist for future pipeline tests. | Evidence is persisted, replay logs exist, or the detector consumes evidence entries. |
+| 10 evidence repository | Complete | `src/lib/evidence/` | Evidence entries, compatibility evidence batches, and an in-memory repository exist for future pipeline tests. | Evidence is persisted, replay logs exist, or the detector consumes evidence entries. |
+| 11 observation pattern matching | Complete after this patch stack | `src/lib/detection/observation-matcher.ts` | Normalized observations can be matched against current registry rules to emit pattern-match events and evidence entries. | Observation matching is wired into background runtime, graph inference, or popup explanations. |
 
 ## Decision ledger
 
@@ -65,13 +66,16 @@ Phase 2: contracts and provider seams
                       │
                       ▼
               Phase 10: evidence repository
+                      │
+                      ▼
+              Phase 11: observation pattern matching
 ```
 
-The order matters because the popup view model depends on stabilized analysis and lifecycle semantics, graph work depends on preserving registry order, and future observation/replay work depends on shared fixtures that do not duplicate contract assumptions.
+The order matters because the popup view model depends on stabilized analysis and lifecycle semantics, graph work depends on preserving registry order, and future observation/replay work depends on shared fixtures and a sidecar matcher that do not duplicate contract assumptions.
 
 ## Known validation limits
 
-Phase 10 records the current limitations rather than hiding them.
+Phase 11 records the current limitations rather than hiding them.
 
 - The full Vitest suite may still be slower or less stable in the sandbox than targeted suites.
 - `npm run compile` may continue to expose branch-wide TypeScript issues that predate a docs patch.

@@ -1,6 +1,6 @@
-# Architecture overview after phase 10
+# Architecture overview after phase 11
 
-This overview gives maintainers a single map for the current extension and the migration path toward the event-based detection engine. It describes verified repository shape after phases 1 through 10, not the earlier small-registry MVP narrative.
+This overview gives maintainers a single map for the current extension and the migration path toward the event-based detection engine. It describes verified repository shape after phases 1 through 11, not the earlier small-registry MVP narrative.
 
 The current extension is still a Chrome-first Manifest V3 extension. The popup asks the background service worker to analyze the active tab, the background coordinates content-script collection and enrichment, the detector turns `PageSignals` into `SiteAnalysis`, and storage keeps only normalized analysis results. The migration has not changed that user-visible flow. It has made the seams around that flow explicit so future work can replace snapshot-shaped internals with normalized observations, evidence, replay, and shared CLI-compatible engine behavior.
 
@@ -19,6 +19,7 @@ Popup extension page
           -> background enrichment
           -> MAIN-world js-global probe
       -> normalizePageSignals(...) observation seam
+      -> matchObservationBatch(...) matcher seam
       -> analyzeSite(...) compatibility entrypoint
           -> compiled registry graph
           -> candidates
@@ -72,6 +73,7 @@ The extension collector and the future CLI collector will not collect the same r
 | Collectors | `src/lib/collectors/**`, content signal modules | Extension collection is behind an extension collector boundary while still producing `PageSignals`. | Emit normalized observations beside or instead of whole snapshots. |
 | Observations | `src/lib/observations/**` | `PageSignals` can be adapted into ordered normalized observation batches without changing detector output. | Feed pattern matching, replay, and future CLI fixtures through this shape. |
 | Evidence | `src/lib/evidence/**` | Observation-derived and compatibility evidence entries can be represented and grouped without changing detector output. | Feed candidate creation, replay persistence, and explanation output through this shape after equivalence tests. |
+| Observation matcher | `src/lib/detection/observation-match-types.ts`, `src/lib/detection/observation-matcher.ts` | Normalized observations can be matched against current registry rules to emit sidecar pattern-match events and evidence entries. | Compare observation-derived evidence with current detector output before runtime cutover. |
 | Detection and graph | `src/lib/detection/**` | `analyzeSite(...)` remains compatible while delegating through a compiled registry graph and candidates. | Make evidence and explanation outputs first-class after equivalence tests protect results. |
 | Storage | `src/lib/storage/**` | Per-origin `SiteAnalysis` cache semantics remain stable. | Keep evidence/replay persistence separate until the storage format is designed. |
 | Tests | `src/tests/**`, `src/tests/support/**` | Shared fixtures and browser mocks prevent duplicated contract assumptions. | Add observation and replay fixtures when the normalized pipeline exists. |
@@ -83,14 +85,14 @@ These rules are compatibility facts, not final product claims.
 - `BackgroundApi` still analyzes the current active inspectable tab.
 - Cache keys are still per origin, not per full URL.
 - Cache hits still return normalized analysis without starting live observation.
-- `PageSignals` remains the detector input; normalized observations and evidence entries now exist beside it for future replay work.
+- `PageSignals` remains the detector input; normalized observations, pattern-match events, and evidence entries now exist beside it for future replay work.
 - Registry order remains compatibility data because result ordering and graph conflict tie-breaks can depend on it.
 - Popup grouping still uses the primary category for each detection.
 - Popup named regions are layout seams, not a detector model.
 
 ## Open architecture decisions
 
-The following decisions are intentionally not resolved by phase 9.
+The following decisions are intentionally not resolved by phase 11.
 
 | Decision | Current answer | Why it stays open |
 | --- | --- | --- |
