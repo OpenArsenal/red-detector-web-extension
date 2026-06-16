@@ -31,7 +31,7 @@ The current permission model is intentionally narrow:
 
 ## Manual messaging QA checklist
 
-The full phase 1 behavior baseline lives in [`docs/migration/phase-1-behavior-baseline.md`](docs/migration/phase-1-behavior-baseline.md). The phase 2 contract seams are described in [`docs/migration/phase-2-contract-seams.md`](docs/migration/phase-2-contract-seams.md), the phase 3 collector boundary is described in [`docs/migration/phase-3-collector-boundary.md`](docs/migration/phase-3-collector-boundary.md), and the phase 4 lifecycle model is described in [`docs/migration/phase-4-extension-lifecycle.md`](docs/migration/phase-4-extension-lifecycle.md). Before accepting messaging, collector, or lifecycle changes, run the extension in Chrome and verify:
+The full phase 1 behavior baseline lives in [`docs/migration/phase-1-behavior-baseline.md`](docs/migration/phase-1-behavior-baseline.md). The phase 2 contract seams are described in [`docs/migration/phase-2-contract-seams.md`](docs/migration/phase-2-contract-seams.md), the phase 3 collector boundary is described in [`docs/migration/phase-3-collector-boundary.md`](docs/migration/phase-3-collector-boundary.md), the phase 4 lifecycle model is described in [`docs/migration/phase-4-extension-lifecycle.md`](docs/migration/phase-4-extension-lifecycle.md), and the phase 5 graph seam is described in [`docs/migration/phase-5-graph-registry.md`](docs/migration/phase-5-graph-registry.md). Before accepting messaging, collector, lifecycle, or graph changes, run the extension in Chrome and verify:
 
 - A normal `https://` page returns either detected technologies or a stable empty result.
 - `chrome://extensions` returns `UNSUPPORTED_URL` and the popup remains responsive.
