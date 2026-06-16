@@ -11,6 +11,7 @@ import {
   CONTENT_RPC_NAMESPACE,
   createContentServerAdapter,
 } from "../lib/messaging";
+import type { ObservationStopReason } from "../lib/contracts/analysis";
 import { errorResponse, ok } from "../lib/shared/result";
 
 const DOM_MUTATION_THROTTLE_MS = 1_500;
@@ -18,8 +19,21 @@ const CONTENT_RUNTIME_KEY = '__redDetectorContentRuntimeV1';
 const CONTENT_LOG_PREFIX = '[red-detector][content]';
 
 type ContentRuntimeState = {
-  clearObservationExpiry(): void;
   dispose(): void;
+};
+
+/**
+ * Content-script runtime pieces that share one observation timer.
+ *
+ * The RPC API exposes manual start, stop, and status calls to the background.
+ * The local `dispose` function is not part of RPC; it lets WXT invalidation stop
+ * the observer with the correct reason without pretending the user clicked Stop.
+ */
+export type ContentRuntime = {
+  /** API registered with the content-script messaging adapter. */
+  contentApi: ContentApi;
+  /** Stop timers and observers for content-runtime shutdown. */
+  dispose(reason: ObservationStopReason): void;
 };
 
 function getRuntimeState(): ContentRuntimeState | undefined {
@@ -110,14 +124,14 @@ async function collectSignals(
 }
 
 /**
- * Build the content-script RPC surface around one observation store.
+ * Build the content-script runtime around one observation store.
  *
- * The exported factory lets baseline tests use the same content API that WXT
- * registers at runtime without booting a full extension context. The important
- * rule is that this API only owns page-local collection and observation timers;
- * detection and persistence stay in the background service worker.
+ * Tests and the WXT entrypoint both use this factory so timer cleanup follows the
+ * same path in normal RPC calls and content-script invalidation. Invalidation is
+ * a browser lifecycle event, not a manual stop, so the returned `dispose` method
+ * records the real stop reason on the observed-signal store.
  */
-export function createContentApi(observedSignals: ObservedPageSignals): ContentApi {
+export function createContentRuntime(observedSignals: ObservedPageSignals): ContentRuntime {
   let observationExpiryTimer: ReturnType<typeof globalThis.setTimeout> | undefined;
 
   function clearObservationExpiry() {
@@ -127,7 +141,7 @@ export function createContentApi(observedSignals: ObservedPageSignals): ContentA
     }
   }
 
-  return {
+  const contentApi: ContentApi = {
     async collectPageSignals(input) {
       return collectSignals(input, observedSignals);
     },
@@ -187,6 +201,21 @@ export function createContentApi(observedSignals: ObservedPageSignals): ContentA
       return ok(observedSignals.status());
     },
   };
+
+  return {
+    contentApi,
+    dispose(reason) {
+      clearObservationExpiry();
+      observedSignals.disconnect(reason);
+    },
+  };
+}
+
+/**
+ * Build only the RPC API for callers that do not need runtime disposal control.
+ */
+export function createContentApi(observedSignals: ObservedPageSignals): ContentApi {
+  return createContentRuntime(observedSignals).contentApi;
 }
 
 const [provideContentApi] = defineProxy(
@@ -218,20 +247,15 @@ export default defineContentScript({
     const observedSignals = createObservedPageSignals({
       throttleMs: DOM_MUTATION_THROTTLE_MS,
     });
-    const contentApi = createContentApi(observedSignals);
+    const runtime = createContentRuntime(observedSignals);
+    const { contentApi } = runtime;
 
     const state: ContentRuntimeState = {
-      clearObservationExpiry() {
-        // Expiry timers are owned by the content API closure; stopObservationSession clears them.
-        void contentApi.stopObservationSession();
-      },
-
       dispose() {
         logContentEvent("runtime-dispose", {
           hostname: globalThis.location?.hostname,
         });
-        state.clearObservationExpiry();
-        observedSignals.disconnect("invalidated");
+        runtime.dispose("invalidated");
         clearRuntimeState(state);
       },
     };

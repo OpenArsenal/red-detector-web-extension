@@ -142,4 +142,34 @@ describe.sequential('content API observation baseline', () => {
 		expect(observedSignals.stopObservationSession).toHaveBeenCalledOnce();
 		expect(observedSignals.stopObservationSession).toHaveBeenCalledWith('manual');
 	});
+
+	it('disposes invalidated runtimes without reporting a manual stop', async () => {
+		vi.useFakeTimers();
+		const { createContentRuntime } = await loadContentApiFactory();
+		const observedSignals = {
+			snapshot: vi.fn(),
+			beginObservationSession: vi.fn(() => makeState({ status: 'observing' })),
+			stopObservationSession: vi.fn(() => makeState({ status: 'stopped', stopReason: 'manual' })),
+			status: vi.fn(() => makeState()),
+			disconnect: vi.fn(),
+		} satisfies ObservedPageSignals;
+
+		const runtime = createContentRuntime(observedSignals);
+		await runtime.contentApi.beginObservationSession({
+			sessionId: 'session-1',
+			expectedUrl: 'https://example.com/products',
+			policy: {
+				durationMs: 25,
+				throttleMs: 1_500,
+				maxPendingNodes: 100,
+				maxMutations: 5_000,
+			},
+		});
+		runtime.dispose('invalidated');
+		await vi.advanceTimersByTimeAsync(25);
+
+		expect(observedSignals.disconnect).toHaveBeenCalledWith('invalidated');
+		expect(observedSignals.stopObservationSession).not.toHaveBeenCalled();
+	});
+
 });
