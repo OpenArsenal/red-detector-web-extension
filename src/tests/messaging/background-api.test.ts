@@ -347,6 +347,7 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 		expect(harness.contentApi.collectPageSignals).toHaveBeenCalledOnce();
 		expect(harness.mocks.listTechnologies).toHaveBeenCalledOnce();
 		expect(harness.mocks.analyzeSite).toHaveBeenCalledOnce();
+		expect(harness.mocks.saveAnalysis).toHaveBeenCalledWith(expect.objectContaining({ source: 'fresh' }));
 		expect(harness.mocks.saveAnalysis).toHaveBeenCalledOnce();
 		expect(harness.contentApi.beginObservationSession).not.toHaveBeenCalled();
 	});
@@ -374,6 +375,39 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 		expect(harness.mocks.getCachedAnalysis).not.toHaveBeenCalled();
 		expect(harness.contentApi.collectPageSignals).toHaveBeenCalledOnce();
 		expect(harness.mocks.saveAnalysis).toHaveBeenCalledOnce();
+	});
+
+	it('routes fresh analysis through the event pipeline when requested', async () => {
+		const harness = await loadBackgroundApiHarness({ tab: HTTP_TAB });
+
+		await expect(
+			harness.api.analyzeActiveTab({ mode: 'refresh', observe: 'none', pipeline: 'event' }),
+		).resolves.toMatchObject({
+			ok: true,
+			value: {
+				analysis: {
+					url: HTTP_TAB.url,
+					hostname: 'example.com',
+					source: 'fresh',
+					results: [],
+				},
+				cache: {
+					status: 'bypassed',
+					key: 'analysis:https://example.com',
+				},
+				session: undefined,
+			},
+		});
+
+		expect(harness.contentApi.collectPageSignals).toHaveBeenCalledOnce();
+		expect(harness.mocks.analyzeSite).not.toHaveBeenCalled();
+		expect(harness.mocks.saveAnalysis).toHaveBeenCalledWith(expect.objectContaining({
+			url: HTTP_TAB.url,
+			hostname: 'example.com',
+			source: 'fresh',
+			results: [],
+		}));
+		expect(harness.contentApi.beginObservationSession).not.toHaveBeenCalled();
 	});
 
 	it('returns VALIDATION_ERROR when collected signals belong to a different document', async () => {
