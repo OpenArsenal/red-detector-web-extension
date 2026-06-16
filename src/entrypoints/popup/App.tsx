@@ -397,7 +397,7 @@ export default function App() {
   });
 
   return (
-    <main class="popup-shell">
+    <main class="popup-shell" aria-busy={busy() ? "true" : "false"}>
       <section class="hero-panel">
         <div class="hero-copy">
           <p class="eyebrow">Technology Detection</p>
@@ -452,11 +452,17 @@ export default function App() {
       </Show>
       <Show when={notice()}>
         {(value) => (
-          <p class={`status-message ${value().variant}`}>{value().text}</p>
+          <p
+            class={`status-message ${value().variant}`}
+            role="status"
+            aria-live="polite"
+          >
+            {value().text}
+          </p>
         )}
       </Show>
 
-      <section class="panel result-panel">
+      <section class="panel result-panel" aria-live="polite">
         <div class="panel-heading">
           <div>
             <p class="panel-kicker">Normalized Results</p>
