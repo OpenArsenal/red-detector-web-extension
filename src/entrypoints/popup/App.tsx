@@ -2,14 +2,11 @@ import { defineProxy } from "comctx";
 import { createSignal, For, Show, onCleanup, onMount } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import { categories } from "../../data/categories";
 import { CategoryGroup } from "../../components/CategoryGroup";
 import { EmptyState } from "../../components/EmptyState";
 import { ErrorState } from "../../components/ErrorState";
 import type {
   AnalysisStatus,
-  CategoryId,
-  DetectionResult,
   SiteAnalysis,
 } from "../../lib/detection/types";
 import type {
@@ -21,17 +18,18 @@ import {
   BACKGROUND_RPC_NAMESPACE,
   createBackgroundClientAdapter,
 } from "../../lib/messaging";
+import {
+  buildPopupAnalysisUpdate,
+  formatPopupAppError,
+  getPopupObservationLabel,
+  getPopupObservationModeFromSession,
+  groupDetectionsByPrimaryCategory,
+  shouldRefreshObservedChange,
+  type PopupNotice,
+  type PopupObservationMode,
+} from "../../lib/popup/view-model";
 
 import "./App.css";
-
-type PollingMode = "unknown" | "active" | "stopped";
-
-type ScanNotice = {
-  variant: "success" | "warning";
-  text: string;
-};
-
-type ObservationMode = "idle" | "active" | "stopped" | "unknown";
 
 const POPUP_POLL_INTERVAL_MS = 1_500;
 const POPUP_LOG_PREFIX = "[red-detector][popup]";
@@ -61,57 +59,14 @@ function normalizeError(error: unknown): string {
     : "Unexpected messaging failure";
 }
 
-function groupByCategory(results: DetectionResult[]) {
-  const grouped = results.reduce<Record<string, DetectionResult[]>>(
-    (groups, result) => {
-      const category = result.categories[0] ?? "unknown";
-      return {
-        ...groups,
-        [category]: [...(groups[category] ?? []), result],
-      };
-    },
-    {},
-  );
-
-  return Object.entries(grouped)
-    .map(([category, categoryResults]) => {
-      const meta = categories[category as CategoryId] ?? categories.unknown;
-      return {
-        category,
-        label: meta.label,
-        priority: meta.priority,
-        results: categoryResults,
-      };
-    })
-    .sort((a, b) => a.priority - b.priority || a.label.localeCompare(b.label));
-}
-
-function getDetectionIds(results: DetectionResult[]) {
-  return new Set(results.map((result) => result.technologyId));
-}
-
-function getAddedDetectionIds(
-  previous: DetectionResult[],
-  next: DetectionResult[],
-) {
-  const previousIds = getDetectionIds(previous);
-  return next
-    .filter((result) => !previousIds.has(result.technologyId))
-    .map((result) => result.technologyId);
-}
-
-function mergeUniqueIds(previous: string[], next: string[]) {
-  return [...new Set([...previous, ...next])];
-}
-
 export default function App() {
   const [status, setStatus] = createStore<AnalysisStatus>({
     totalAnalyses: 0,
     trackedOrigins: 0,
   });
   const [busy, setBusy] = createSignal(false);
-  const [pollingMode, setPollingMode] = createSignal<ObservationMode>("unknown");
-  const [notice, setNotice] = createSignal<ScanNotice | null>(null);
+  const [pollingMode, setPollingMode] = createSignal<PopupObservationMode>("unknown");
+  const [notice, setNotice] = createSignal<PopupNotice | null>(null);
   const [errorMessage, setErrorMessage] = createSignal("");
   const [analysis, setAnalysis] = createSignal<SiteAnalysis | null>(null);
   const [lateAddedIds, setLateAddedIds] = createSignal<string[]>([]);
@@ -124,7 +79,7 @@ export default function App() {
   }
 
   function groupedResults() {
-    return groupByCategory(analysis()?.results ?? []);
+    return groupDetectionsByPrimaryCategory(analysis()?.results ?? []);
   }
 
   function hasLateDetections() {
@@ -132,13 +87,7 @@ export default function App() {
   }
 
   function pollingChipLabel() {
-    return pollingMode() === "active"
-      ? "Observing"
-      : pollingMode() === "stopped"
-        ? "Stopped"
-        : pollingMode() === "idle"
-          ? "Idle"
-          : "Loading";
+    return getPopupObservationLabel(pollingMode());
   }
 
   function clearPopupPolling() {
@@ -173,26 +122,24 @@ export default function App() {
         return;
       }
 
-      if (response.value.status !== "observing" && response.value.status !== "dirty") {
+      const nextPollingMode = getPopupObservationModeFromSession(response.value);
+      if (nextPollingMode !== "active") {
         logPopupEvent("observation-state-inactive", {
           status: response.value.status,
           stopReason: response.value.stopReason,
         });
-        setPollingMode("stopped");
+        setPollingMode(nextPollingMode);
         clearPopupPolling();
         return;
       }
 
-      setPollingMode("active");
+      setPollingMode(nextPollingMode);
       const latestAnalysis = analysis();
-      const lastObservedAt = response.value.lastObservedAt ?? 0;
-      const lastAnalyzedAt = latestAnalysis?.analyzedAt ?? 0;
-
-      if (response.value.status === "dirty" || !latestAnalysis || lastObservedAt > lastAnalyzedAt) {
+      if (shouldRefreshObservedChange({ session: response.value, analysis: latestAnalysis })) {
         logPopupEvent("observation-refresh-triggered", {
           sessionStatus: response.value.status,
-          lastObservedAt,
-          lastAnalyzedAt,
+          lastObservedAt: response.value.lastObservedAt ?? 0,
+          lastAnalyzedAt: latestAnalysis?.analyzedAt ?? 0,
         });
         await refreshActiveObservationSession();
       }
@@ -223,53 +170,42 @@ export default function App() {
       resetLateMarkers?: boolean;
     },
   ) {
-    const nextAnalysis = response.analysis;
-    const previous = analysis();
-    const addedIds = previous
-      ? getAddedDetectionIds(previous.results, nextAnalysis.results)
-      : [];
+    const update = buildPopupAnalysisUpdate({
+      previousAnalysis: analysis(),
+      response,
+      source: options.source,
+      currentLateDetectionIds: lateAddedIds(),
+      resetLateMarkers: options.resetLateMarkers,
+    });
 
-    if (options.resetLateMarkers) {
-      setLateAddedIds([]);
-    }
-
-    setAnalysis(nextAnalysis);
+    setAnalysis(update.analysis);
+    setLateAddedIds(update.lateDetectionIds);
 
     logPopupEvent("analysis-applied", {
       source: options.source,
-      analysisSource: nextAnalysis.source,
+      analysisSource: update.analysis.source,
       cacheStatus: response.cache.status,
-      resultCount: nextAnalysis.results.length,
-      hostname: nextAnalysis.hostname,
+      resultCount: update.analysis.results.length,
+      hostname: update.analysis.hostname,
       sessionStatus: response.session?.status ?? "none",
     });
 
-    if (response.session && (response.session.status === "observing" || response.session.status === "dirty")) {
-      setPollingMode("active");
+    setPollingMode(update.observationMode);
+    if (update.shouldPoll) {
       startPopupPolling();
     } else {
-      setPollingMode(response.cache.status === "hit" ? "idle" : "stopped");
       clearPopupPolling();
     }
 
-    if (addedIds.length) {
+    if (update.addedDetectionIds.length) {
       logPopupEvent("late-detections-found", {
-        hostname: nextAnalysis.hostname,
-        addedCount: addedIds.length,
+        hostname: update.analysis.hostname,
+        addedCount: update.addedDetectionIds.length,
       });
-      setLateAddedIds((current) => mergeUniqueIds(current, addedIds));
-      setNotice({
-        variant: "success",
-        text: `Observation found ${addedIds.length} new late detection${addedIds.length === 1 ? "" : "s"} on ${nextAnalysis.hostname}.`,
-      });
-      return;
     }
 
-    if (options.source === "manual") {
-      setNotice({
-        variant: "success",
-        text: `Refreshed ${nextAnalysis.results.length} technologies for ${nextAnalysis.hostname}. ${response.session ? "Observation is active again." : "Showing the latest cached state."}`,
-      });
+    if (update.notice) {
+      setNotice(update.notice);
     }
   }
 
@@ -290,11 +226,11 @@ export default function App() {
         stopReason: response.value.stopReason,
       });
 
-      if (response.value.status === "observing" || response.value.status === "dirty") {
-        setPollingMode("active");
+      const nextPollingMode = getPopupObservationModeFromSession(response.value);
+      setPollingMode(nextPollingMode);
+      if (nextPollingMode === "active") {
         startPopupPolling();
       } else {
-        setPollingMode(response.value.status === "idle" ? "idle" : "stopped");
         clearPopupPolling();
       }
     } catch (error) {
@@ -341,7 +277,7 @@ export default function App() {
           message: response.error.message,
         });
         if (isUserVisibleRefresh) {
-          setErrorMessage(`${response.error.code}: ${response.error.message}`);
+          setErrorMessage(formatPopupAppError(response.error));
         }
         return;
       }
@@ -405,7 +341,7 @@ export default function App() {
           code: response.error.code,
           message: response.error.message,
         });
-        setErrorMessage(`${response.error.code}: ${response.error.message}`);
+        setErrorMessage(formatPopupAppError(response.error));
         return;
       }
 

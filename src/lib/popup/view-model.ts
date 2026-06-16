@@ -217,9 +217,10 @@ export function buildPopupAnalysisUpdate(
 	const addedDetectionIds = input.previousAnalysis
 		? getAddedDetectionIds(input.previousAnalysis.results, nextAnalysis.results)
 		: [];
-	const lateDetectionIds = input.resetLateMarkers
+	const lateMarkerBase = input.resetLateMarkers
 		? []
-		: mergeUniqueIds(input.currentLateDetectionIds ?? [], addedDetectionIds);
+		: input.currentLateDetectionIds ?? [];
+	const lateDetectionIds = mergeUniqueIds(lateMarkerBase, addedDetectionIds);
 	const observationMode = getPopupObservationModeFromAnalysis(input.response);
 	const shouldPoll = shouldPollPopupObservation(observationMode);
 	const notice = getPopupAnalysisNotice({
