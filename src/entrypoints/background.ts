@@ -2,6 +2,11 @@ import { defineProxy } from 'comctx';
 import { browser } from 'wxt/browser';
 
 import { canInspectTab, getActiveTab } from '../lib/browser/active-tab';
+import {
+	buildCollectionPlan,
+	toCollectPageSignalsInput,
+	type CollectionPlan,
+} from '../lib/collectors/planning';
 import { analyzeSite } from '../lib/detection/engine';
 import { bundledTechnologyRegistryProvider } from '../lib/detection/registry-provider';
 import { limitStringsByTotalChars, truncate, uniqueStrings } from '../lib/detection/normalizers';
@@ -21,7 +26,6 @@ import type {
 	BackgroundApi,
 	BeginObservationSessionInput,
 	ContentApi,
-	HtmlProbe,
 } from '../lib/messaging';
 import {
 	CONTENT_SCRIPT_TIMEOUT_MS,
@@ -238,12 +242,9 @@ async function collectFromTab(
 	const contentApi = createContentApiClient(tabId, 0);
 
 	try {
+		const collectionPlan = buildCollectionPlan(registry);
 		const response = await withTimeout(
-			contentApi.collectPageSignals({
-				includeHtml: true,
-				selectorProbeList: buildSelectorProbeList(registry),
-				htmlProbeList: buildHtmlProbeList(registry),
-			}),
+			contentApi.collectPageSignals(toCollectPageSignalsInput(collectionPlan)),
 			CONTENT_SCRIPT_TIMEOUT_MS,
 			'Content script did not respond before the messaging timeout.',
 		);
@@ -264,7 +265,7 @@ async function collectFromTab(
 			);
 		}
 
-		const enrichedSignals = await enrichBackgroundSignals(tabId, response.value, registry);
+		const enrichedSignals = await enrichBackgroundSignals(tabId, response.value, collectionPlan);
 		const validationError = validatePageSignals(enrichedSignals);
 		if (validationError) {
 			logBackgroundEvent('collect-validation-failed', {
@@ -294,11 +295,11 @@ async function collectFromTab(
 async function enrichBackgroundSignals(
 	tabId: number,
 	signals: PageSignals,
-	registry: TechnologyDefinition[],
+	collectionPlan: CollectionPlan,
 ): Promise<PageSignals> {
 	const pageOrigin = getOrigin(signals.url);
 	const [jsGlobals, headers, fetchedSourceContents] = await Promise.all([
-		collectInjectedJsGlobals(tabId, registry),
+		collectInjectedJsGlobals(tabId, collectionPlan.jsGlobalPropertyList),
 		collectResponseHeaders(signals.url),
 		collectSameOriginSourceContents(signals, pageOrigin),
 	]);
@@ -325,9 +326,8 @@ async function enrichBackgroundSignals(
 
 async function collectInjectedJsGlobals(
 	tabId: number,
-	registry: TechnologyDefinition[],
+	propertyPaths: readonly string[],
 ): Promise<Record<string, JsGlobalSignalValue>> {
-	const propertyPaths = buildJsGlobalPropertyList(registry);
 	if (!propertyPaths.length) {
 		return {};
 	}
@@ -768,52 +768,6 @@ function logAnalysisSummary(analysis: SiteAnalysis) {
 		technologyIds: analysis.results.map((result) => result.technologyId),
 		analyzedAt: analysis.analyzedAt,
 	});
-}
-
-/** Build the exact DOM selector probes needed by the active bundled rules. */
-function buildSelectorProbeList(registry: TechnologyDefinition[]): string[] {
-	return Array.from(
-		new Set(
-			registry.flatMap((technology) =>
-				technology.rules
-					.filter((rule) => rule.kind === 'dom' && rule.selector)
-					.map((rule) => rule.selector!),
-			),
-		),
-	);
-}
-
-
-/** Build serializable HTML regex probes from the active bundled rules. */
-function buildHtmlProbeList(registry: TechnologyDefinition[]): HtmlProbe[] {
-	return registry.flatMap((technology) =>
-		technology.rules.flatMap((rule, ruleIndex) => {
-			if (rule.kind !== 'html' || !rule.pattern) {
-				return [];
-			}
-
-			return [
-				{
-					technologyId: technology.id,
-					ruleIndex,
-					source: rule.pattern.source,
-					flags: rule.pattern.flags,
-				},
-			];
-		}),
-	);
-}
-
-function buildJsGlobalPropertyList(registry: TechnologyDefinition[]): string[] {
-	return Array.from(
-		new Set(
-			registry.flatMap((technology) =>
-				technology.rules.flatMap((rule) =>
-					rule.kind === 'jsGlobal' && rule.property ? [rule.property] : [],
-				),
-			),
-		),
-	).slice(0, SOURCE_LIMITS.jsGlobals);
 }
 
 export function createBackgroundApi(): BackgroundApi {
