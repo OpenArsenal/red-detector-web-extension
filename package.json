@@ -18,6 +18,8 @@
   },
   "devDependencies": {
     "@wxt-dev/module-solid": "latest",
+    "fast-check": "latest",
+    "@fast-check/vitest": "latest",
     "typescript": "latest",
     "vitest": "latest",
     "wxt": "latest"
