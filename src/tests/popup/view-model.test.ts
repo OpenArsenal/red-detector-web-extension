@@ -1,8 +1,5 @@
 import { describe, expect, it } from 'vitest';
 
-import type { ObservationSessionState } from '../../lib/content/observed-page-signals';
-import type { AnalyzeActiveTabOutput } from '../../lib/contracts/analysis';
-import type { CategoryId, ConfidenceScore, DetectionResult, SiteAnalysis } from '../../lib/detection/types';
 import {
 	buildPopupAnalysisUpdate,
 	formatPopupAppError,
@@ -13,63 +10,12 @@ import {
 	shouldPollPopupObservation,
 	shouldRefreshObservedChange,
 } from '../../lib/popup/view-model';
-
-const HIGH_CONFIDENCE: ConfidenceScore = { value: 95, level: 'certain' };
-
-function makeDetection(
-	technologyId: string,
-	categories: CategoryId[] = ['framework'],
-): DetectionResult {
-	return {
-		technologyId,
-		name: technologyId,
-		website: `https://${technologyId}.example`,
-		categories,
-		confidence: HIGH_CONFIDENCE,
-		evidence: [],
-	};
-}
-
-function makeAnalysis(
-	results: DetectionResult[] = [],
-	overrides: Partial<SiteAnalysis> = {},
-): SiteAnalysis {
-	return {
-		url: 'https://example.com/products',
-		hostname: 'example.com',
-		analyzedAt: 1_700_000_000_000,
-		source: 'fresh',
-		results,
-		errors: [],
-		...overrides,
-	};
-}
-
-function makeSession(status: ObservationSessionState['status']): ObservationSessionState {
-	return {
-		sessionId: 'session-1',
-		expectedUrl: 'https://example.com/products',
-		status,
-		throttleMs: 1_500,
-		startedAt: 1_700_000_000_000,
-		expiresAt: 1_700_000_060_000,
-		pendingMutationCount: 0,
-	};
-}
-
-function makeResponse(
-	overrides: Partial<AnalyzeActiveTabOutput> = {},
-): AnalyzeActiveTabOutput {
-	return {
-		analysis: makeAnalysis(),
-		cache: {
-			status: 'miss',
-			key: 'analysis:https://example.com',
-			expiresAt: 1_700_086_400_000,
-		},
-		...overrides,
-	};
-}
+import {
+	makeAnalysis,
+	makeAnalyzeActiveTabOutput,
+	makeDetection,
+	makeObservationSession,
+} from '../support/factories';
 
 describe('popup view model', () => {
 	it('groups detections by their first category and keeps category priority order', () => {
@@ -88,7 +34,7 @@ describe('popup view model', () => {
 	});
 
 	it('maps cache hits without an active session to idle state', () => {
-		const response = makeResponse({
+		const response = makeAnalyzeActiveTabOutput({
 			cache: {
 				status: 'hit',
 				key: 'analysis:https://example.com',
@@ -101,22 +47,22 @@ describe('popup view model', () => {
 	});
 
 	it('maps observing and dirty sessions to active popup polling', () => {
-		expect(getPopupObservationModeFromSession(makeSession('observing'))).toBe('active');
-		expect(getPopupObservationModeFromSession(makeSession('dirty'))).toBe('active');
+		expect(getPopupObservationModeFromSession(makeObservationSession('observing'))).toBe('active');
+		expect(getPopupObservationModeFromSession(makeObservationSession('dirty'))).toBe('active');
 		expect(shouldPollPopupObservation('active')).toBe(true);
 		expect(getPopupObservationLabel('active')).toBe('Observing');
 	});
 
 	it('maps stopped sessions to stopped popup controls', () => {
-		expect(getPopupObservationModeFromSession(makeSession('stopped'))).toBe('stopped');
+		expect(getPopupObservationModeFromSession(makeObservationSession('stopped'))).toBe('stopped');
 		expect(shouldPollPopupObservation('stopped')).toBe(false);
 		expect(getPopupObservationLabel('stopped')).toBe('Stopped');
 	});
 
 	it('builds a manual refresh notice while preserving active observation state', () => {
-		const response = makeResponse({
+		const response = makeAnalyzeActiveTabOutput({
 			analysis: makeAnalysis([makeDetection('react')]),
-			session: makeSession('observing'),
+			session: makeObservationSession('observing'),
 		});
 
 		const update = buildPopupAnalysisUpdate({
@@ -139,9 +85,9 @@ describe('popup view model', () => {
 
 	it('marks newly added automatic observation detections without duplicating previous late ids', () => {
 		const previousAnalysis = makeAnalysis([makeDetection('react')]);
-		const response = makeResponse({
+		const response = makeAnalyzeActiveTabOutput({
 			analysis: makeAnalysis([makeDetection('react'), makeDetection('shopify', ['platform-cms-builder'])]),
-			session: makeSession('dirty'),
+			session: makeObservationSession('dirty'),
 		});
 
 		const update = buildPopupAnalysisUpdate({
@@ -158,15 +104,15 @@ describe('popup view model', () => {
 
 	it('refreshes observed changes when the session is dirty or newer than analysis', () => {
 		expect(shouldRefreshObservedChange({
-			session: { ...makeSession('dirty'), lastObservedAt: 1_700_000_000_001 },
+			session: { ...makeObservationSession('dirty'), lastObservedAt: 1_700_000_000_001 },
 			analysis: makeAnalysis([], { analyzedAt: 1_700_000_000_000 }),
 		})).toBe(true);
 		expect(shouldRefreshObservedChange({
-			session: { ...makeSession('observing'), lastObservedAt: 1_700_000_000_001 },
+			session: { ...makeObservationSession('observing'), lastObservedAt: 1_700_000_000_001 },
 			analysis: makeAnalysis([], { analyzedAt: 1_700_000_000_000 }),
 		})).toBe(true);
 		expect(shouldRefreshObservedChange({
-			session: { ...makeSession('observing'), lastObservedAt: 1_699_999_999_999 },
+			session: { ...makeObservationSession('observing'), lastObservedAt: 1_699_999_999_999 },
 			analysis: makeAnalysis([], { analyzedAt: 1_700_000_000_000 }),
 		})).toBe(false);
 	});

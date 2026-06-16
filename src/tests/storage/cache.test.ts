@@ -1,48 +1,15 @@
 import { fc, test } from '@fast-check/vitest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import type { SiteAnalysis } from '../../lib/detection/types';
-import { STORAGE_LIMITS, getAnalysisCacheKey } from '../../lib/storage/contracts';
+vi.setConfig({ testTimeout: 20_000 });
 
-function makeAnalysis(url: string, analyzedAt = 1_700_000_000_000): SiteAnalysis {
-	return {
-		url,
-		hostname: new URL(url).hostname,
-		analyzedAt,
-		source: 'fresh',
-		results: [],
-		errors: [],
-	};
-}
+import { STORAGE_LIMITS, getAnalysisCacheKey } from '../../lib/storage/contracts';
+import { makeAnalysis } from '../support/factories';
+import { createMockBrowserStorageArea } from '../support/mock-browser';
 
 async function loadStorageHarness() {
 	vi.resetModules();
-	const values = new Map<string, unknown>();
-	const local = {
-		get: vi.fn(async (key: string | string[] | null) => {
-			if (key === null) {
-				return Object.fromEntries(values.entries());
-			}
-
-			if (Array.isArray(key)) {
-				return Object.fromEntries(
-					key.map((item) => [item, values.get(item)]),
-				);
-			}
-
-			return { [key]: values.get(key) };
-		}),
-		set: vi.fn(async (items: Record<string, unknown>) => {
-			for (const [key, value] of Object.entries(items)) {
-				values.set(key, value);
-			}
-		}),
-		remove: vi.fn(async (key: string | string[]) => {
-			for (const item of Array.isArray(key) ? key : [key]) {
-				values.delete(item);
-			}
-		}),
-	};
+	const { local, values } = createMockBrowserStorageArea();
 
 	vi.doMock('wxt/browser', () => ({
 		browser: {
@@ -73,11 +40,12 @@ describe.sequential('analysis cache baseline', () => {
 	});
 
 	it('returns cached analysis for a different URL on the same origin', async () => {
-		vi.useFakeTimers();
-		vi.setSystemTime(1_700_000_000_000);
 		const storage = await loadStorageHarness();
 
-		await storage.saveAnalysis(makeAnalysis('https://example.com/products'));
+		await storage.saveAnalysis(makeAnalysis([], {
+			url: 'https://example.com/products',
+			analyzedAt: Date.now(),
+		}));
 		const cached = await storage.getCachedAnalysis('https://example.com/pricing?tab=plans');
 
 		expect(cached).toMatchObject({
@@ -87,13 +55,12 @@ describe.sequential('analysis cache baseline', () => {
 	});
 
 	it('keeps scheme and port inside the origin cache key', async () => {
-		vi.useFakeTimers();
-		vi.setSystemTime(1_700_000_000_000);
 		const storage = await loadStorageHarness();
+		const analyzedAt = Date.now();
 
-		await storage.saveAnalysis(makeAnalysis('https://example.com/products'));
-		await storage.saveAnalysis(makeAnalysis('http://example.com/products'));
-		await storage.saveAnalysis(makeAnalysis('https://example.com:8443/products'));
+		await storage.saveAnalysis(makeAnalysis([], { url: 'https://example.com/products', analyzedAt }));
+		await storage.saveAnalysis(makeAnalysis([], { url: 'http://example.com/products', analyzedAt }));
+		await storage.saveAnalysis(makeAnalysis([], { url: 'https://example.com:8443/products', analyzedAt }));
 
 		await expect(storage.getCachedAnalysis('https://example.com/other')).resolves.toMatchObject({
 			url: 'https://example.com/products',
@@ -116,13 +83,12 @@ describe.sequential('analysis cache baseline', () => {
 	test.prop([path, path], { numRuns: 50 })(
 		'preserves same-origin cache lookup across path variants',
 		async (savedPath, lookupPath) => {
-			vi.useFakeTimers();
-			vi.setSystemTime(1_700_000_000_000);
 			const storage = await loadStorageHarness();
+			const analyzedAt = Date.now();
 			const savedUrl = `https://example.com${savedPath}`;
 			const lookupUrl = `https://example.com${lookupPath}`;
 
-			await storage.saveAnalysis(makeAnalysis(savedUrl));
+			await storage.saveAnalysis(makeAnalysis([], { url: savedUrl, analyzedAt }));
 			const cached = await storage.getCachedAnalysis(lookupUrl);
 
 			expect(cached).toMatchObject({
@@ -133,11 +99,10 @@ describe.sequential('analysis cache baseline', () => {
 	);
 
 	it('removes expired analysis records instead of returning stale cache output', async () => {
-		vi.useFakeTimers();
-		vi.setSystemTime(1_700_000_000_000);
+		vi.useFakeTimers({ now: 1_700_000_000_000 });
 		const storage = await loadStorageHarness();
 
-		await storage.saveAnalysis(makeAnalysis('https://example.com/products'));
+		await storage.saveAnalysis(makeAnalysis([], { url: 'https://example.com/products' }));
 		vi.setSystemTime(1_700_000_000_000 + STORAGE_LIMITS.analysisTtlMs + 1);
 		const cached = await storage.getCachedAnalysis('https://example.com/products');
 

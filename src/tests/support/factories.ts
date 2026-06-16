@@ -1,0 +1,141 @@
+import type { ObservationSessionState } from '../../lib/content/observed-page-signals';
+import type { AnalyzeActiveTabOutput } from '../../lib/contracts/analysis';
+import type {
+	CategoryId,
+	ConfidenceScore,
+	DetectionResult,
+	PageSignals,
+	SiteAnalysis,
+} from '../../lib/detection/types';
+
+/**
+ * Stable timestamp used by test factories that do not care about time itself.
+ *
+ * Keeping a single timestamp makes cache, popup, and lifecycle expectations easy
+ * to compare without depending on the wall clock. Tests that need time to move
+ * should still use `vi.setSystemTime(...)` and override the relevant field.
+ */
+export const TEST_NOW = 1_700_000_000_000;
+
+/** Confidence object for high-confidence fixture detections. */
+export const HIGH_CONFIDENCE: ConfidenceScore = { value: 95, level: 'certain' };
+
+/**
+ * Create a normalized analysis fixture for storage, popup, and background tests.
+ *
+ * The default URL matches the active-tab fixture used in background tests so a
+ * cache record, analysis response, and page-signal snapshot can be combined
+ * without each test repeating the same hostname setup.
+ */
+export function makeAnalysis(
+	results: readonly DetectionResult[] = [],
+	overrides: Partial<SiteAnalysis> = {},
+): SiteAnalysis {
+	const url = overrides.url ?? 'https://example.com/products';
+	return {
+		url,
+		hostname: overrides.hostname ?? new URL(url).hostname,
+		analyzedAt: overrides.analyzedAt ?? TEST_NOW,
+		source: overrides.source ?? 'fresh',
+		results: [...results],
+		errors: overrides.errors ?? [],
+	};
+}
+
+/**
+ * Create a detection result with only the fields popup and graph tests need.
+ *
+ * Tests can override categories to document UI grouping behavior without copying
+ * confidence and website boilerplate into each assertion.
+ */
+export function makeDetection(
+	technologyId: string,
+	categories: readonly CategoryId[] = ['framework'],
+	overrides: Partial<DetectionResult> = {},
+): DetectionResult {
+	return {
+		technologyId,
+		name: overrides.name ?? technologyId,
+		website: overrides.website ?? `https://${technologyId}.example`,
+		categories: [...categories],
+		confidence: overrides.confidence ?? HIGH_CONFIDENCE,
+		evidence: overrides.evidence ?? [],
+		version: overrides.version,
+		description: overrides.description,
+		inferred: overrides.inferred,
+	};
+}
+
+/**
+ * Create a complete page-signal snapshot for detector and background tests.
+ *
+ * The defaults represent a quiet page. Tests override only the signal surface
+ * they care about, such as `html`, `scripts`, or `headers`, which keeps the
+ * fixture aligned with the current `PageSignals` contract as that contract moves
+ * toward normalized observations later.
+ */
+export function makePageSignals(overrides: Partial<PageSignals> = {}): PageSignals {
+	const url = overrides.url ?? 'https://example.com/products';
+	return {
+		url,
+		hostname: overrides.hostname ?? new URL(url).hostname,
+		html: overrides.html ?? '<html><head></head><body></body></html>',
+		text: overrides.text ?? '',
+		scripts: overrides.scripts ?? [],
+		stylesheets: overrides.stylesheets ?? [],
+		links: overrides.links ?? [],
+		resources: overrides.resources ?? [],
+		requests: overrides.requests ?? [],
+		scriptContents: overrides.scriptContents ?? [],
+		stylesheetContents: overrides.stylesheetContents ?? [],
+		cookies: overrides.cookies ?? {},
+		headers: overrides.headers ?? {},
+		meta: overrides.meta ?? {},
+		dom: overrides.dom ?? { selectors: {} },
+		storage: overrides.storage ?? { localStorage: {}, sessionStorage: {} },
+		jsGlobals: overrides.jsGlobals ?? {},
+		robotsTxt: overrides.robotsTxt ?? '',
+		dnsRecords: overrides.dnsRecords ?? {},
+		certIssuer: overrides.certIssuer ?? '',
+		probeResults: overrides.probeResults ?? [],
+		collectedAt: overrides.collectedAt ?? TEST_NOW,
+	};
+}
+
+/**
+ * Create an observation-session fixture for lifecycle, popup, and background tests.
+ */
+export function makeObservationSession(
+	status: ObservationSessionState['status'] = 'idle',
+	overrides: Partial<ObservationSessionState> = {},
+): ObservationSessionState {
+	return {
+		sessionId: overrides.sessionId ?? 'session-1',
+		expectedUrl: overrides.expectedUrl ?? 'https://example.com/products',
+		status,
+		throttleMs: overrides.throttleMs ?? 1_500,
+		startedAt: overrides.startedAt ?? TEST_NOW,
+		expiresAt: overrides.expiresAt ?? TEST_NOW + 60_000,
+		pendingMutationCount: overrides.pendingMutationCount ?? 0,
+		lastObservedAt: overrides.lastObservedAt,
+		stopReason: overrides.stopReason,
+	};
+}
+
+/**
+ * Create a background analysis response fixture for popup and extension tests.
+ */
+export function makeAnalyzeActiveTabOutput(
+	overrides: Partial<AnalyzeActiveTabOutput> = {},
+): AnalyzeActiveTabOutput {
+	const analysis = overrides.analysis ?? makeAnalysis();
+	return {
+		analysis,
+		cache: overrides.cache ?? {
+			status: 'miss',
+			key: 'analysis:https://example.com',
+			expiresAt: analysis.analyzedAt + 86_400_000,
+		},
+		session: overrides.session,
+	};
+}
