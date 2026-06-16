@@ -473,6 +473,33 @@ describe.sequential('background observation session baseline', () => {
 		expect(harness.contentApi.beginObservationSession).toHaveBeenCalledOnce();
 	});
 
+
+	it('rejects observation refresh when the session belongs to a previous page path', async () => {
+		const harness = await loadBackgroundApiHarness({
+			tab: { id: 7, url: 'https://example.com/pricing' },
+			contentApi: {
+				getObservationSessionState: vi.fn(async () => ok({
+					status: 'dirty',
+					throttleMs: 1_500,
+					pendingMutationCount: 2,
+					sessionId: 'session-1',
+					expectedUrl: 'https://example.com/products',
+				})),
+			},
+		});
+
+		await expect(harness.api.refreshActiveObservationSession()).resolves.toMatchObject({
+			ok: false,
+			error: {
+				code: 'OBSERVATION_SESSION_UNAVAILABLE',
+				message: 'The active tab navigated away from the observed document.',
+			},
+		});
+
+		expect(harness.contentApi.collectPageSignals).not.toHaveBeenCalled();
+		expect(harness.contentApi.beginObservationSession).not.toHaveBeenCalled();
+	});
+
 	it('rejects observation refresh when the current tab has no active session', async () => {
 		const harness = await loadBackgroundApiHarness({ tab: HTTP_TAB });
 

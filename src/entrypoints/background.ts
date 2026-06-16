@@ -13,7 +13,6 @@ import type {
 	AnalyzeActiveTabInput,
 	AnalyzeActiveTabOutput,
 	BackgroundApi,
-	BeginObservationSessionInput,
 	ContentApi,
 } from '../lib/messaging';
 import {
@@ -27,6 +26,11 @@ import {
 	createBackgroundServerAdapter,
 	createContentClientAdapter,
 } from '../lib/messaging';
+import {
+	EXTENSION_OBSERVATION_POLICY,
+	getObservationRefreshBlockReason,
+	shouldStartObservationForAnalysis,
+} from '../lib/lifecycle/observation';
 import { errorResponse, ok, type AppResult } from '../lib/shared/result';
 import { STORAGE_LIMITS, getAnalysisCacheKey } from '../lib/storage/contracts';
 import { getCachedAnalysis, getStatus, saveAnalysis } from '../lib/storage';
@@ -39,12 +43,6 @@ type InspectableTab = {
 const CONTENT_SCRIPT_FILE = '/content-scripts/content.js';
 const CONTENT_SCRIPT_PING_TIMEOUT_MS = 750;
 const BACKGROUND_LOG_PREFIX = '[red-detector][background]';
-const OBSERVATION_POLICY: BeginObservationSessionInput['policy'] = {
-	durationMs: 60_000,
-	throttleMs: 1_500,
-	maxPendingNodes: 100,
-	maxMutations: 5_000,
-};
 
 const contentScriptInjectionByTab = new Map<number, Promise<AppResult<void>>>();
 
@@ -244,7 +242,7 @@ async function beginObservationSessionForTab(
 	logBackgroundEvent('observation-start-requested', {
 		tabId,
 		hostname: new URL(expectedUrl).hostname,
-		policy: OBSERVATION_POLICY,
+		policy: EXTENSION_OBSERVATION_POLICY,
 	});
 
 	const contentScriptResponse = await ensureContentScript(tabId);
@@ -259,7 +257,7 @@ async function beginObservationSessionForTab(
 			contentApi.beginObservationSession({
 				sessionId: crypto.randomUUID(),
 				expectedUrl,
-				policy: OBSERVATION_POLICY,
+				policy: EXTENSION_OBSERVATION_POLICY,
 			}),
 			CONTENT_SCRIPT_TIMEOUT_MS,
 			'Content script did not respond before the messaging timeout.',
@@ -327,7 +325,7 @@ async function analyzeFreshActiveTab(
 	logAnalysisSummary(savedAnalysis);
 
 	let session: ObservationSessionState | undefined;
-	if (input.observe !== 'none') {
+	if (shouldStartObservationForAnalysis(input)) {
 		const sessionResponse = await beginObservationSessionForTab(tab.id, tab.url);
 		if (sessionResponse.ok) {
 			session = sessionResponse.value;
@@ -426,14 +424,18 @@ export function createBackgroundApi(): BackgroundApi {
 					...summarizeSession(sessionResponse.value),
 				});
 
-				if (
-					sessionResponse.value.status !== 'observing' &&
-					sessionResponse.value.status !== 'dirty'
-				) {
-					logBackgroundEvent('observation-refresh-unavailable', summarizeTab(tab));
+				const blockReason = getObservationRefreshBlockReason(sessionResponse.value, tab.url);
+				if (blockReason) {
+					logBackgroundEvent('observation-refresh-unavailable', {
+						...summarizeTab(tab),
+						reason: blockReason,
+						sessionExpectedUrl: sessionResponse.value.expectedUrl,
+					});
 					return errorResponse(
 						'OBSERVATION_SESSION_UNAVAILABLE',
-						'No active observation session exists for the current tab.',
+						blockReason === 'navigation'
+							? 'The active tab navigated away from the observed document.'
+							: 'No active observation session exists for the current tab.',
 					);
 				}
 
