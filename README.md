@@ -31,7 +31,7 @@ The current permission model is intentionally narrow:
 
 ## Manual messaging QA checklist
 
-The full phase 1 behavior baseline lives in [`docs/migration/phase-1-behavior-baseline.md`](docs/migration/phase-1-behavior-baseline.md). The phase 2 contract seams are described in [`docs/migration/phase-2-contract-seams.md`](docs/migration/phase-2-contract-seams.md), the phase 3 collector boundary is described in [`docs/migration/phase-3-collector-boundary.md`](docs/migration/phase-3-collector-boundary.md), the phase 4 lifecycle model is described in [`docs/migration/phase-4-extension-lifecycle.md`](docs/migration/phase-4-extension-lifecycle.md), the phase 5 graph seam is described in [`docs/migration/phase-5-graph-registry.md`](docs/migration/phase-5-graph-registry.md), and the phase 6 popup view-model boundary is described in [`docs/migration/phase-6-popup-view-model.md`](docs/migration/phase-6-popup-view-model.md). Before accepting messaging, collector, lifecycle, graph, or popup changes, run the extension in Chrome and verify:
+The full phase 1 behavior baseline lives in [`docs/migration/phase-1-behavior-baseline.md`](docs/migration/phase-1-behavior-baseline.md). The phase 2 contract seams are described in [`docs/migration/phase-2-contract-seams.md`](docs/migration/phase-2-contract-seams.md), the phase 3 collector boundary is described in [`docs/migration/phase-3-collector-boundary.md`](docs/migration/phase-3-collector-boundary.md), the phase 4 lifecycle model is described in [`docs/migration/phase-4-extension-lifecycle.md`](docs/migration/phase-4-extension-lifecycle.md), the phase 5 graph seam is described in [`docs/migration/phase-5-graph-registry.md`](docs/migration/phase-5-graph-registry.md), the phase 6 popup view-model boundary is described in [`docs/migration/phase-6-popup-view-model.md`](docs/migration/phase-6-popup-view-model.md), and the phase 7 test boundary is described in [`docs/migration/phase-7-test-boundaries.md`](docs/migration/phase-7-test-boundaries.md). Before accepting messaging, collector, lifecycle, graph, or popup changes, run the extension in Chrome and verify:
 
 - A normal `https://` page returns either detected technologies or a stable empty result.
 - `chrome://extensions` returns `UNSUPPORTED_URL` and the popup remains responsive.
@@ -78,7 +78,7 @@ Aube will install dependencies before running scripts when the manifest or lockf
 - `src/lib/storage/` — per-origin normalized analysis cache and aggregate status helpers.
 - `src/lib/browser/` — active-tab helpers owned by privileged contexts.
 - `src/data/` — category labels and bundled technology registry exports.
-- `src/tests/` — Vitest coverage for detector behavior, messaging contracts, content observation, and storage cache semantics.
+- `src/tests/` — Vitest coverage for detector behavior, messaging contracts, content observation, popup view models, storage cache semantics, and shared test fixtures.
 - `public/icons/` — placeholder extension icon files.
 
 ## Registry baseline
