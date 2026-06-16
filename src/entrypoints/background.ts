@@ -3,8 +3,8 @@ import { browser } from 'wxt/browser';
 
 import { canInspectTab, getActiveTab } from '../lib/browser/active-tab';
 import { collectExtensionPageSignals } from '../lib/collectors/extension-page-collector';
-import { analyzeSite } from '../lib/detection/engine';
 import { bundledTechnologyRegistryProvider } from '../lib/detection/registry-provider';
+import { runDetectionPipeline } from '../lib/pipeline';
 
 import type { ObservationSessionState } from '../lib/content/observed-page-signals';
 import type { PageSignals, SiteAnalysis, TechnologyDefinition } from '../lib/detection/types';
@@ -312,6 +312,7 @@ async function analyzeFreshActiveTab(
 		mode: input.mode,
 		observe: input.observe,
 		cacheStatus,
+		pipeline: input.pipeline ?? 'legacy',
 	});
 
 	const registry = bundledTechnologyRegistryProvider.listTechnologies();
@@ -320,9 +321,20 @@ async function analyzeFreshActiveTab(
 		return signalsResponse;
 	}
 
-	const analysis = analyzeSite(signalsResponse.value, registry);
-	const savedAnalysis = await saveAnalysis(analysis);
+	const pipelineResult = runDetectionPipeline({
+		signals: signalsResponse.value,
+		registry,
+		mode: input.pipeline ?? 'legacy',
+	});
+	const savedAnalysis = await saveAnalysis(pipelineResult.analysis);
 	logAnalysisSummary(savedAnalysis);
+	logBackgroundEvent('analysis-pipeline-complete', {
+		...summarizeTab(tab),
+		requestedMode: pipelineResult.requestedMode,
+		completedMode: pipelineResult.completedMode,
+		eventCount: pipelineResult.events.length,
+		fallbackReason: pipelineResult.fallback?.reason ?? 'none',
+	});
 
 	let session: ObservationSessionState | undefined;
 	if (shouldStartObservationForAnalysis(input)) {
@@ -377,6 +389,7 @@ export function createBackgroundApi(): BackgroundApi {
 					...summarizeTab(tab),
 					mode: input.mode,
 					observe: input.observe,
+					pipeline: input.pipeline ?? 'legacy',
 				});
 				if (input.mode === 'cache-first') {
 					const cached = await getCachedAnalysis(tab.url);
