@@ -3,7 +3,6 @@ import { Graph } from '@dagrejs/graphlib';
 import type {
 	ConfidenceScore,
 	DetectionKind,
-	DetectionRelationship,
 	DetectionResult,
 	DetectionRunOptions,
 	DetectionRule,
@@ -20,6 +19,10 @@ import type {
 	RuntimeDetectionKind,
 } from './types';
 import { SOURCE_LIMITS } from './rules';
+import {
+	createCompiledDetectionRegistry,
+	type CompiledDetectionRegistry,
+} from './registry-graph';
 import { extractVersion } from './version';
 
 const DISPLAY_CONFIDENCE_THRESHOLD = 50;
@@ -61,13 +64,32 @@ export function analyzeSite(
 	registry: TechnologyDefinition[],
 	options: DetectionRunOptions = {},
 ): SiteAnalysis {
-	const candidates = registry
+	return analyzeCompiledSite(
+		signals,
+		createCompiledDetectionRegistry(registry),
+		options,
+	);
+}
+
+/**
+ * Run detection against a compiled registry graph.
+ *
+ * `analyzeSite` remains the compatibility wrapper for callers that still pass a
+ * raw technology array. This entrypoint lets registry-compiler work prove graph
+ * equivalence before switching the runtime source format.
+ */
+export function analyzeCompiledSite(
+	signals: PageSignals,
+	compiledRegistry: CompiledDetectionRegistry,
+	options: DetectionRunOptions = {},
+): SiteAnalysis {
+	const candidates = compiledRegistry.technologies
 		.map((definition) => detectTechnology(definition, signals, options))
 		.filter((result): result is DetectionResult => Boolean(result));
 
-	const results = applyRelationships(candidates, registry)
+	const results = applyRelationships(candidates, compiledRegistry)
 		.filter((result) => result.confidence.value >= DISPLAY_CONFIDENCE_THRESHOLD)
-		.sort(compareDetectionResults(buildRegistryOrder(registry)));
+		.sort(compareDetectionResults(compiledRegistry.registryOrderById));
 
 	return {
 		url: signals.url,
@@ -620,9 +642,9 @@ type RelationshipNode = {
 
 function applyRelationships(
 	results: DetectionResult[],
-	registry: TechnologyDefinition[],
+	compiledRegistry: CompiledDetectionRegistry,
 ): DetectionResult[] {
-	const graph = buildRelationshipGraph(registry);
+	const graph = buildRelationshipGraph(compiledRegistry);
 	const accepted = new Map<string, RelationshipNode>();
 
 	for (const result of results) {
@@ -640,77 +662,40 @@ function applyRelationships(
 		.sort(compareDetectionResults(graph.registryOrderById));
 }
 
-function buildRegistryOrder(registry: TechnologyDefinition[]): Map<string, number> {
-	return new Map(registry.map((definition, index) => [definition.id, index]));
-}
+function buildRelationshipGraph(compiledRegistry: CompiledDetectionRegistry): RelationshipGraph {
+	const implies = createDirectedRelationshipGraph(compiledRegistry);
+	const requires = createDirectedRelationshipGraph(compiledRegistry);
+	const excludes = createDirectedRelationshipGraph(compiledRegistry);
 
-function buildRelationshipGraph(registry: TechnologyDefinition[]): RelationshipGraph {
-	const definitionsById = new Map<string, TechnologyDefinition>();
-	const registryOrderById = new Map<string, number>();
-	const implies = createDirectedRelationshipGraph(registry);
-	const requires = createDirectedRelationshipGraph(registry);
-	const excludes = createDirectedRelationshipGraph(registry);
-
-	registry.forEach((definition, index) => {
-		definitionsById.set(definition.id, definition);
-		registryOrderById.set(definition.id, index);
-		addRelationshipEdges(implies, definition.id, definition.implies ?? []);
-		addRelationshipEdges(requires, definition.id, definition.requires ?? []);
-		addRelationshipEdges(excludes, definition.id, definition.excludes ?? []);
-
-		for (const relationship of definition.relationships ?? []) {
-			addExplicitRelationship(definition.id, relationship, {
-				implies,
-				requires,
-				excludes,
-			});
+	for (const edge of compiledRegistry.relationshipEdges) {
+		switch (edge.kind) {
+			case 'implies':
+				implies.setEdge(edge.sourceId, edge.targetId);
+				break;
+			case 'requires':
+				requires.setEdge(edge.sourceId, edge.targetId);
+				break;
+			case 'excludes':
+				excludes.setEdge(edge.sourceId, edge.targetId);
+				break;
 		}
-	});
+	}
 
 	return {
-		definitionsById,
-		registryOrderById,
+		definitionsById: compiledRegistry.definitionsById,
+		registryOrderById: compiledRegistry.registryOrderById,
 		implies,
 		requires,
 		excludes,
 	};
 }
 
-function createDirectedRelationshipGraph(registry: TechnologyDefinition[]): Graph {
+function createDirectedRelationshipGraph(compiledRegistry: CompiledDetectionRegistry): Graph {
 	const graph = new Graph({ directed: true });
-	for (const definition of registry) {
+	for (const definition of compiledRegistry.technologies) {
 		graph.setNode(definition.id);
 	}
 	return graph;
-}
-
-function addExplicitRelationship(
-	sourceId: string,
-	relationship: DetectionRelationship,
-	graphs: {
-		implies: Graph;
-		requires: Graph;
-		excludes: Graph;
-	},
-): void {
-	const target = relationship.target;
-	switch (relationship.kind) {
-		case 'implies':
-			graphs.implies.setEdge(sourceId, target, relationship);
-			break;
-		case 'requires':
-			graphs.requires.setEdge(sourceId, target, relationship);
-			break;
-		case 'excludes':
-			graphs.excludes.setEdge(sourceId, target, relationship);
-			break;
-	}
-}
-
-function addRelationshipEdges(graph: Graph, sourceId: string, targetIds: string[]): void {
-	for (const targetId of targetIds) {
-		graph.setEdge(sourceId, targetId);
-	}
 }
 
 function relationshipTargets(
