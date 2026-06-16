@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import type { PageSignalPollingState } from '../../lib/content/observed-page-signals';
 import type { PageSignals, SiteAnalysis } from '../../lib/detection/types';
 import type { ContentApi } from '../../lib/messaging';
-import type { PageSignalPollingState } from '../../lib/content/observed-page-signals';
 import { CONTENT_SCRIPT_TIMEOUT_MS } from '../../lib/messaging/rpc';
 import { ok, type AppResult } from '../../lib/shared/result';
 
@@ -72,8 +72,17 @@ async function loadBackgroundApi(input: {
 	contentApi?: Partial<ContentApi>;
 	cachedAnalysis?: SiteAnalysis | null;
 }) {
+	return (await loadBackgroundApiHarness(input)).api;
+}
+
+async function loadBackgroundApiHarness(input: {
+	tab?: TestTab | null;
+	contentApi?: Partial<ContentApi>;
+	cachedAnalysis?: SiteAnalysis | null;
+}) {
 	vi.resetModules();
 	vi.stubGlobal('defineBackground', (setup: () => void) => setup);
+	vi.stubGlobal('fetch', vi.fn(async () => new Response('', { status: 204 })));
 
 	const pollingState: PageSignalPollingState = {
 		status: 'idle',
@@ -101,10 +110,11 @@ async function loadBackgroundApi(input: {
 		...input.contentApi,
 	} satisfies ContentApi;
 
+	const executeScript = vi.fn(async () => [{ frameId: 0, result: undefined }]);
 	vi.doMock('wxt/browser', () => ({
 		browser: {
 			scripting: {
-				executeScript: vi.fn(async () => [{ frameId: 0, result: undefined }]),
+				executeScript,
 			},
 		},
 	}));
@@ -124,8 +134,9 @@ async function loadBackgroundApi(input: {
 		canInspectTab: canInspectUrl,
 	}));
 
+	const analyzeSite = vi.fn((signals: PageSignals) => makeAnalysis(signals));
 	vi.doMock('../../lib/detection/engine', () => ({
-		analyzeSite: vi.fn((signals: PageSignals) => makeAnalysis(signals)),
+		analyzeSite,
 	}));
 
 	vi.doMock('../../lib/messaging', () => ({
@@ -135,14 +146,27 @@ async function loadBackgroundApi(input: {
 		createContentClientAdapter: vi.fn(() => ({})),
 	}));
 
+	const getCachedAnalysis = vi.fn(async () => input.cachedAnalysis ?? null);
+	const getStatus = vi.fn(async () => ({ totalAnalyses: 0, trackedOrigins: 0 }));
+	const saveAnalysis = vi.fn(async (analysis: SiteAnalysis) => analysis);
 	vi.doMock('../../lib/storage', () => ({
-		getCachedAnalysis: vi.fn(async () => input.cachedAnalysis ?? null),
-		getStatus: vi.fn(async () => ({ totalAnalyses: 0, trackedOrigins: 0 })),
-		saveAnalysis: vi.fn(async (analysis: SiteAnalysis) => analysis),
+		getCachedAnalysis,
+		getStatus,
+		saveAnalysis,
 	}));
 
 	const background = await import('../../entrypoints/background');
-	return background.createBackgroundApi();
+	return {
+		api: background.createBackgroundApi(),
+		contentApi,
+		mocks: {
+			analyzeSite,
+			executeScript,
+			getCachedAnalysis,
+			getStatus,
+			saveAnalysis,
+		},
+	};
 }
 
 afterEach(() => {
@@ -258,6 +282,81 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 		expect(collectPageSignals).not.toHaveBeenCalled();
 	});
 
+	it('returns a fresh cache-miss analysis and persists normalized output', async () => {
+		const harness = await loadBackgroundApiHarness({ tab: HTTP_TAB });
+
+		await expect(
+			harness.api.analyzeActiveTab({ mode: 'cache-first', observe: 'none' }),
+		).resolves.toMatchObject({
+			ok: true,
+			value: {
+				analysis: {
+					source: 'fresh',
+				},
+				cache: {
+					status: 'miss',
+					key: 'analysis:https://example.com',
+				},
+				session: undefined,
+			},
+		});
+
+		expect(harness.mocks.getCachedAnalysis).toHaveBeenCalledWith(HTTP_TAB.url);
+		expect(harness.contentApi.collectPageSignals).toHaveBeenCalledOnce();
+		expect(harness.mocks.analyzeSite).toHaveBeenCalledOnce();
+		expect(harness.mocks.saveAnalysis).toHaveBeenCalledOnce();
+		expect(harness.contentApi.beginObservationSession).not.toHaveBeenCalled();
+	});
+
+	it('bypasses cached analysis when refresh mode is requested', async () => {
+		const harness = await loadBackgroundApiHarness({
+			tab: HTTP_TAB,
+			cachedAnalysis: { ...makeAnalysis(), source: 'cache' as const },
+		});
+
+		await expect(
+			harness.api.analyzeActiveTab({ mode: 'refresh', observe: 'none' }),
+		).resolves.toMatchObject({
+			ok: true,
+			value: {
+				analysis: {
+					source: 'fresh',
+				},
+				cache: {
+					status: 'bypassed',
+				},
+			},
+		});
+
+		expect(harness.mocks.getCachedAnalysis).not.toHaveBeenCalled();
+		expect(harness.contentApi.collectPageSignals).toHaveBeenCalledOnce();
+		expect(harness.mocks.saveAnalysis).toHaveBeenCalledOnce();
+	});
+
+	it('returns VALIDATION_ERROR when collected signals belong to a different document', async () => {
+		const harness = await loadBackgroundApiHarness({
+			tab: HTTP_TAB,
+			contentApi: {
+				collectPageSignals: vi.fn(async () => ok(makeSignals({
+					url: 'https://other.example/products',
+					hostname: 'other.example',
+				}))),
+			},
+		});
+
+		await expect(
+			harness.api.analyzeActiveTab({ mode: 'refresh', observe: 'none' }),
+		).resolves.toMatchObject({
+			ok: false,
+			error: {
+				code: 'VALIDATION_ERROR',
+			},
+		});
+
+		expect(harness.mocks.analyzeSite).not.toHaveBeenCalled();
+		expect(harness.mocks.saveAnalysis).not.toHaveBeenCalled();
+	});
+
 	it('starts an observation session after a fresh refresh analysis', async () => {
 		const api = await loadBackgroundApi({ tab: HTTP_TAB });
 
@@ -277,5 +376,84 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 				},
 			},
 		});
+	});
+
+	it('currently treats bounded observation as a fresh observation request', async () => {
+		const harness = await loadBackgroundApiHarness({ tab: HTTP_TAB });
+
+		await expect(
+			harness.api.analyzeActiveTab({ mode: 'refresh', observe: 'bounded' }),
+		).resolves.toMatchObject({
+			ok: true,
+			value: {
+				cache: {
+					status: 'bypassed',
+				},
+				session: {
+					status: 'observing',
+				},
+			},
+		});
+
+		expect(harness.contentApi.beginObservationSession).toHaveBeenCalledOnce();
+	});
+});
+
+describe.sequential('background observation session baseline', () => {
+	it('refreshes active dirty observation sessions with a fresh analysis', async () => {
+		const harness = await loadBackgroundApiHarness({
+			tab: HTTP_TAB,
+			contentApi: {
+				getObservationSessionState: vi.fn(async () => ok({
+					status: 'dirty',
+					throttleMs: 1_500,
+					pendingMutationCount: 2,
+					sessionId: 'session-1',
+					expectedUrl: HTTP_TAB.url!,
+				})),
+			},
+		});
+
+		await expect(harness.api.refreshActiveObservationSession()).resolves.toMatchObject({
+			ok: true,
+			value: {
+				cache: {
+					status: 'bypassed',
+				},
+				session: {
+					status: 'observing',
+				},
+			},
+		});
+
+		expect(harness.contentApi.collectPageSignals).toHaveBeenCalledOnce();
+		expect(harness.contentApi.beginObservationSession).toHaveBeenCalledOnce();
+	});
+
+	it('rejects observation refresh when the current tab has no active session', async () => {
+		const harness = await loadBackgroundApiHarness({ tab: HTTP_TAB });
+
+		await expect(harness.api.refreshActiveObservationSession()).resolves.toMatchObject({
+			ok: false,
+			error: {
+				code: 'OBSERVATION_SESSION_UNAVAILABLE',
+			},
+		});
+
+		expect(harness.contentApi.collectPageSignals).not.toHaveBeenCalled();
+		expect(harness.mocks.saveAnalysis).not.toHaveBeenCalled();
+	});
+
+	it('forwards stop requests to the active tab content script', async () => {
+		const harness = await loadBackgroundApiHarness({ tab: HTTP_TAB });
+
+		await expect(harness.api.stopActiveObservationSession()).resolves.toMatchObject({
+			ok: true,
+			value: {
+				status: 'stopped',
+			},
+		});
+
+		expect(harness.contentApi.stopObservationSession).toHaveBeenCalledOnce();
 	});
 });
