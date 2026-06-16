@@ -18,6 +18,33 @@ const HTTP_TAB: TestTab = {
 	url: 'https://example.com/products',
 };
 
+const SOURCE_LIMITS_STUB = {
+	htmlChars: 200_000,
+	textChars: 80_000,
+	scriptSrc: 300,
+	stylesheetHref: 300,
+	resourceUrls: 500,
+	requestUrls: 500,
+	linkTags: 200,
+	storageKeys: 200,
+	scriptContentItems: 200,
+	stylesheetContentItems: 200,
+	scriptContentChars: 40_000,
+	stylesheetContentChars: 40_000,
+	scriptContentTotalChars: 320_000,
+	stylesheetContentTotalChars: 240_000,
+	jsGlobals: 6_000,
+	jsGlobalValueChars: 500,
+	robotsTxtChars: 40_000,
+	headers: 80,
+	headerValueChars: 1_000,
+	probeResults: 50,
+	metaValueChars: 500,
+	metaValuesPerKey: 5,
+	cookieNames: 200,
+	evidenceValueChars: 160,
+} as const;
+
 function canInspectUrl(tab: { url?: string }): boolean {
 	if (!tab.url) return false;
 	try {
@@ -83,6 +110,12 @@ async function loadBackgroundApiHarness(input: {
 	vi.resetModules();
 	vi.stubGlobal('defineBackground', (setup: () => void) => setup);
 	vi.stubGlobal('fetch', vi.fn(async () => new Response('', { status: 204 })));
+	vi.doMock('../../data/technologies', () => ({
+		technologies: [],
+	}));
+	vi.doMock('../../lib/detection/rules', () => ({
+		SOURCE_LIMITS: SOURCE_LIMITS_STUB,
+	}));
 
 	const pollingState: PageSignalPollingState = {
 		status: 'idle',
@@ -174,8 +207,10 @@ afterEach(() => {
 	vi.unstubAllGlobals();
 	vi.doUnmock('comctx');
 	vi.doUnmock('wxt/browser');
+	vi.doUnmock('../../data/technologies');
 	vi.doUnmock('../../lib/browser/active-tab');
 	vi.doUnmock('../../lib/detection/engine');
+	vi.doUnmock('../../lib/detection/rules');
 	vi.doUnmock('../../lib/messaging');
 	vi.doUnmock('../../lib/storage');
 	vi.resetModules();

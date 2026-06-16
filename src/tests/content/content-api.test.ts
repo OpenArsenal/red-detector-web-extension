@@ -17,6 +17,15 @@ function makeState(overrides: Partial<ObservationSessionState> = {}): Observatio
 async function loadContentApiFactory() {
 	vi.resetModules();
 	vi.stubGlobal('defineContentScript', (options: unknown) => options);
+	vi.doMock('../../lib/content/collect-page-signals', () => ({
+		collectPageSignals: vi.fn(),
+	}));
+	vi.doMock('../../lib/content/observed-page-signals', () => ({
+		createObservedPageSignals: vi.fn(),
+	}));
+	vi.doMock('../../lib/detection/validate', () => ({
+		validatePageSignals: vi.fn(() => null),
+	}));
 	vi.doMock('comctx', () => ({
 		defineProxy: vi.fn(() => [vi.fn()]),
 	}));
@@ -27,12 +36,16 @@ async function loadContentApiFactory() {
 afterEach(() => {
 	vi.useRealTimers();
 	vi.unstubAllGlobals();
+	vi.doUnmock('../../lib/content/collect-page-signals');
+	vi.doUnmock('../../lib/content/observed-page-signals');
+	vi.doUnmock('../../lib/detection/validate');
 	vi.doUnmock('comctx');
 	vi.resetModules();
 });
 
 describe.sequential('content API observation baseline', () => {
 	it('starts observation through the observed-signal store and reports the session', async () => {
+		vi.useFakeTimers();
 		const { createContentApi } = await loadContentApiFactory();
 		const observing = makeState({
 			status: 'observing',
@@ -68,6 +81,9 @@ describe.sequential('content API observation baseline', () => {
 			maxPendingNodes: 100,
 			maxMutations: 5_000,
 		});
+
+		await api.stopObservationSession();
+		expect(observedSignals.stopObservationSession).toHaveBeenCalledWith('manual');
 	});
 
 	it('expires observation through the same stop path used by manual stops', async () => {
