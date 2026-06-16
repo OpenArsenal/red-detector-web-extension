@@ -18,6 +18,12 @@ import type {
 	VersionExtraction,
 	RuntimeDetectionKind,
 } from './types';
+import {
+	createDirectDetectionCandidate,
+	createRelationshipDetectionCandidate,
+	detectionCandidateToResult,
+	type DetectionCandidate,
+} from './candidates';
 import { SOURCE_LIMITS } from './rules';
 import {
 	createCompiledDetectionRegistry,
@@ -85,7 +91,8 @@ export function analyzeCompiledSite(
 ): SiteAnalysis {
 	const candidates = compiledRegistry.technologies
 		.map((definition) => detectTechnology(definition, signals, options))
-		.filter((result): result is DetectionResult => Boolean(result));
+		.filter((result): result is DetectionCandidate => Boolean(result))
+		.map(detectionCandidateToResult);
 
 	const results = applyRelationships(candidates, compiledRegistry)
 		.filter((result) => result.confidence.value >= DISPLAY_CONFIDENCE_THRESHOLD)
@@ -105,7 +112,7 @@ function detectTechnology(
 	definition: TechnologyDefinition,
 	signals: PageSignals,
 	options: DetectionRunOptions,
-): DetectionResult | null {
+): DetectionCandidate | null {
 	const evidence = definition.rules
 		.map((rule, ruleIndex) => matchRule(definition.id, ruleIndex, rule, signals, options))
 		.filter((item): item is Evidence => Boolean(item));
@@ -117,17 +124,12 @@ function detectTechnology(
 	const confidenceValue = combineEvidenceConfidence(evidence);
 	const version = evidence.find((item) => item.version)?.version;
 
-	return {
-		technologyId: definition.id,
-		name: definition.name,
-		website: definition.website,
-		description: definition.description,
-		icon: definition.icon,
-		categories: definition.categories,
-		confidence: toConfidenceScore(confidenceValue),
-		version,
+	return createDirectDetectionCandidate(
+		definition,
 		evidence,
-	};
+		toConfidenceScore(confidenceValue),
+		version,
+	);
 }
 
 /**
@@ -917,26 +919,13 @@ function createImpliedResult(
 	definition: TechnologyDefinition,
 	sourceDefinition: TechnologyDefinition,
 ): DetectionResult {
-	return {
-		technologyId: definition.id,
-		name: definition.name,
-		website: definition.website,
-		description: definition.description,
-		icon: definition.icon,
-		categories: definition.categories,
-		confidence: toConfidenceScore(IMPLIED_CONFIDENCE),
-		inferred: true,
-		evidence: [
-			{
-				kind: 'relationship',
-				confidence: IMPLIED_CONFIDENCE,
-				ruleDescription: `Implied by ${sourceDefinition.name}`,
-				matchedValue: `Implied by ${sourceDefinition.name}`,
-				direct: false,
-				sourceTechnologyId: sourceDefinition.id,
-			},
-		],
-	};
+	return detectionCandidateToResult(
+		createRelationshipDetectionCandidate(
+			definition,
+			sourceDefinition,
+			toConfidenceScore(IMPLIED_CONFIDENCE),
+		),
+	);
 }
 
 function compareDetectionResults(registryOrderById: Map<string, number>) {
