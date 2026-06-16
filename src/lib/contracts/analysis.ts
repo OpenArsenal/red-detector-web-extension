@@ -3,6 +3,7 @@ import type {
 	PageSignalPollingState as ObservationSessionState,
 } from '../content/observed-page-signals';
 import type { AnalysisStatus, PageSignals, SiteAnalysis } from '../detection/types';
+import type { DetectionPipelineMode } from '../pipeline';
 import type { AppResult } from '../shared/result';
 
 /**
@@ -42,6 +43,14 @@ export type AnalyzeActiveTabInput = {
 	mode: AnalyzeActiveTabMode;
 	/** Whether the content script should watch the page after a fresh analysis. */
 	observe: ActiveTabObservationMode;
+	/**
+	 * Runtime detector path for fresh analysis.
+	 *
+	 * The field defaults to `legacy` so existing popup requests keep the current
+	 * production behavior. Tests and migration-only callers can pass `event` to
+	 * run the Phase 15 coordinator through final emission.
+	 */
+	pipeline?: DetectionPipelineMode;
 };
 
 /**
