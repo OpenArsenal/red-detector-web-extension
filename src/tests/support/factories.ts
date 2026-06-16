@@ -80,6 +80,7 @@ export function makePageSignals(overrides: Partial<PageSignals> = {}): PageSigna
 		url,
 		hostname: overrides.hostname ?? new URL(url).hostname,
 		html: overrides.html ?? '<html><head></head><body></body></html>',
+		htmlMatches: overrides.htmlMatches ?? {},
 		text: overrides.text ?? '',
 		scripts: overrides.scripts ?? [],
 		stylesheets: overrides.stylesheets ?? [],
