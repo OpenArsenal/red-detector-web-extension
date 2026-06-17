@@ -226,7 +226,22 @@ function compareEvidenceByStrength(left: EvidenceEntry, right: EvidenceEntry): n
 }
 
 function compareEvidenceEntries(left: EvidenceEntry, right: EvidenceEntry): number {
-	return left.observedAt - right.observedAt || left.id.localeCompare(right.id);
+	return compareOptionalRuleIndex(left, right) || left.observedAt - right.observedAt || left.id.localeCompare(right.id);
+}
+
+function compareOptionalRuleIndex(left: EvidenceEntry, right: EvidenceEntry): number {
+	const leftRuleIndex = getRuleIndex(left);
+	const rightRuleIndex = getRuleIndex(right);
+	if (leftRuleIndex === undefined || rightRuleIndex === undefined) {
+		return 0;
+	}
+
+	return leftRuleIndex - rightRuleIndex;
+}
+
+function getRuleIndex(entry: EvidenceEntry): number | undefined {
+	const ruleIndex = entry.attributes?.ruleIndex;
+	return typeof ruleIndex === 'number' ? ruleIndex : undefined;
 }
 
 function sortEvidenceEntries(entries: readonly EvidenceEntry[]): EvidenceEntry[] {

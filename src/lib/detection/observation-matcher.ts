@@ -55,7 +55,7 @@ export function matchObservationRule(
 		ruleDescription: input.rule.description,
 		version: matched.version,
 		matchedValue: matched.matchedValue,
-		attributes: matched.attributes,
+		attributes: withRuleOrder(matched.attributes, input.ruleIndex),
 	});
 
 	return {
@@ -115,6 +115,22 @@ interface MatchedObservationValue {
 	matchedValue: ObservationValue;
 	version?: string;
 	attributes?: ObservationAttributes;
+}
+
+
+/**
+ * Preserve detector rule order after observations become evidence entries.
+ *
+ * The observation matcher loops over observations first so it can stream facts
+ * later. Current `analyzeSite(...)` loops over rules first. Carrying the rule
+ * index as scalar evidence context lets candidate aggregation restore current
+ * evidence and version order without changing the public `Evidence` shape.
+ */
+function withRuleOrder(
+	attributes: ObservationAttributes | undefined,
+	ruleIndex: number,
+): ObservationAttributes {
+	return Object.assign({}, attributes, { ruleIndex });
 }
 
 function canMatchRule(rule: DetectionRule, options: DetectionRunOptions = {}): boolean {

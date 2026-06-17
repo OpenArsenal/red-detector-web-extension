@@ -72,15 +72,20 @@ function createDetectionResultFromCandidate(candidate: EvidenceCandidate): Detec
 }
 
 function createDetectionEvidenceFromEntry(entry: EvidenceEntry): Evidence {
-	return {
+	const evidence: Evidence = {
 		kind: entry.kind,
 		ruleDescription: entry.ruleDescription,
 		matchedValue: stringifyMatchedValue(entry.matchedValue),
 		confidence: entry.confidence,
 		version: entry.version,
 		direct: entry.direct,
-		sourceTechnologyId: entry.sourceTechnologyId,
 	};
+
+	if (entry.sourceTechnologyId !== undefined) {
+		evidence.sourceTechnologyId = entry.sourceTechnologyId;
+	}
+
+	return evidence;
 }
 
 /**
