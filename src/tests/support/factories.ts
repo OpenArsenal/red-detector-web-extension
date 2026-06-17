@@ -7,6 +7,10 @@ import type {
 	PageSignals,
 	SiteAnalysis,
 } from '../../lib/detection/types';
+import {
+	DETECTION_REPLAY_TRACE_SCHEMA_VERSION,
+	type DetectionReplayTrace,
+} from '../../lib/pipeline';
 
 /**
  * Stable timestamp used by test factories that do not care about time itself.
@@ -64,6 +68,43 @@ export function makeDetection(
 		description: overrides.description,
 		inferred: overrides.inferred,
 		warnings: overrides.warnings,
+	};
+}
+
+/**
+ * Create a redacted replay trace fixture for storage, popup, and messaging tests.
+ *
+ * The default trace has one stage event and no explanations. Tests that need a
+ * richer explanation can override only the replay fields they assert against.
+ */
+export function makeDetectionReplayTrace(
+	overrides: Partial<DetectionReplayTrace> = {},
+): DetectionReplayTrace {
+	const target = overrides.target ?? {
+		url: 'https://example.com/products',
+		hostname: 'example.com',
+	};
+	const analyzedAt = overrides.analyzedAt ?? TEST_NOW;
+
+	return {
+		schemaVersion: overrides.schemaVersion ?? DETECTION_REPLAY_TRACE_SCHEMA_VERSION,
+		target,
+		requestedMode: overrides.requestedMode ?? 'legacy',
+		completedMode: overrides.completedMode ?? 'legacy',
+		analyzedAt,
+		resultCount: overrides.resultCount ?? 0,
+		events: overrides.events ?? [
+			{
+				sequence: 0,
+				stage: 'legacy-analyzed',
+				target,
+				occurredAt: analyzedAt,
+				count: 0,
+			},
+		],
+		explanations: overrides.explanations ?? [],
+		fallback: overrides.fallback,
+		emission: overrides.emission,
 	};
 }
 
@@ -139,5 +180,6 @@ export function makeAnalyzeActiveTabOutput(
 			expiresAt: analysis.analyzedAt + 86_400_000,
 		},
 		session: overrides.session,
+		replayTrace: overrides.replayTrace,
 	};
 }

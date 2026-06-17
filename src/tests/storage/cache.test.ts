@@ -3,8 +3,12 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 vi.setConfig({ testTimeout: 20_000 });
 
-import { STORAGE_LIMITS, getAnalysisCacheKey } from '../../lib/storage/contracts';
-import { makeAnalysis } from '../support/factories';
+import {
+	STORAGE_LIMITS,
+	getAnalysisCacheKey,
+	getReplayTraceCacheKey,
+} from '../../lib/storage/contracts';
+import { makeAnalysis, makeDetectionReplayTrace } from '../support/factories';
 import { createMockBrowserStorageArea } from '../support/mock-browser';
 
 async function loadStorageHarness() {
@@ -36,6 +40,9 @@ describe.sequential('analysis cache baseline', () => {
 		);
 		expect(getAnalysisCacheKey('https://example.com:8443/products')).toBe(
 			'analysis:https://example.com:8443',
+		);
+		expect(getReplayTraceCacheKey('https://example.com/products')).toBe(
+			'replay:https://example.com',
 		);
 	});
 
@@ -103,10 +110,49 @@ describe.sequential('analysis cache baseline', () => {
 		const storage = await loadStorageHarness();
 
 		await storage.saveAnalysis(makeAnalysis([], { url: 'https://example.com/products' }));
+		await storage.saveReplayTrace(makeDetectionReplayTrace());
 		vi.setSystemTime(1_700_000_000_000 + STORAGE_LIMITS.analysisTtlMs + 1);
 		const cached = await storage.getCachedAnalysis('https://example.com/products');
 
 		expect(cached).toBeNull();
-		expect(storage.local.remove).toHaveBeenCalledWith('analysis:https://example.com');
+		expect(storage.local.remove).toHaveBeenCalledWith([
+			'analysis:https://example.com',
+			'replay:https://example.com',
+		]);
+	});
+
+	it('returns cached replay traces for a different URL on the same origin', async () => {
+		const storage = await loadStorageHarness();
+		const trace = makeDetectionReplayTrace({
+			target: {
+				url: 'https://example.com/products',
+				hostname: 'example.com',
+			},
+		});
+
+		await storage.saveReplayTrace(trace);
+		const cached = await storage.getCachedReplayTrace('https://example.com/pricing');
+
+		expect(cached).toMatchObject({
+			target: {
+				url: 'https://example.com/products',
+			},
+			completedMode: 'legacy',
+		});
+		expect(cached).not.toBe(trace);
+	});
+
+	it('removes expired replay traces without removing fresh analysis records', async () => {
+		vi.useFakeTimers({ now: 1_700_000_000_000 });
+		const storage = await loadStorageHarness();
+
+		await storage.saveAnalysis(makeAnalysis([], { analyzedAt: 1_700_000_000_000 }));
+		await storage.saveReplayTrace(makeDetectionReplayTrace({ analyzedAt: 1_700_000_000_000 }));
+		vi.setSystemTime(1_700_000_000_000 + STORAGE_LIMITS.replayTraceTtlMs + 1);
+		const cachedTrace = await storage.getCachedReplayTrace('https://example.com/products');
+
+		expect(cachedTrace).toBeNull();
+		expect(storage.local.remove).toHaveBeenCalledWith('replay:https://example.com');
+		expect(storage.values.has('analysis:https://example.com')).toBe(true);
 	});
 });
