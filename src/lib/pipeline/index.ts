@@ -28,3 +28,6 @@ export {
 	createDetectionExplanations,
 	createDetectionReplayTrace,
 } from './replay';
+
+export type { RunObservationBatchPipelineInput } from './observation-batch-runtime';
+export { runObservationBatchPipeline } from './observation-batch-runtime';

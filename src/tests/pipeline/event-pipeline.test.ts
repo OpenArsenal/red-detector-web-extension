@@ -5,7 +5,8 @@ vi.mock('../../lib/detection/rules', () => ({
 }));
 
 import type { SiteAnalysis, TechnologyDefinition } from '../../lib/detection/types';
-import { runDetectionPipeline } from '../../lib/pipeline';
+import { runDetectionPipeline, runObservationBatchPipeline } from '../../lib/pipeline';
+import { normalizePageSignals } from '../../lib/observations';
 import { compileTechnologyRegistry } from '../../lib/registry';
 import { makeAnalysis, makeDetection, makePageSignals, TEST_NOW } from '../support/factories';
 
@@ -135,6 +136,47 @@ describe('event pipeline runtime coordinator', () => {
 		expect(result.completedMode).toBe('event');
 		expect(result.analysis.results).toEqual([
 			expect.objectContaining({ technologyId: 'artifact-tech' }),
+		]);
+	});
+
+
+	it('runs event stages from a normalized observation batch', () => {
+		const registry = [
+			makeTechnology({
+				id: 'batch-tech',
+				name: 'Batch Tech',
+				website: 'https://batch.example',
+				rules: [{ kind: 'scriptSrc', pattern: /batch-tech\.js/, confidence: 95 }],
+			}),
+		];
+		const artifact = compileTechnologyRegistry({ technologies: registry });
+		const batch = normalizePageSignals(makePageSignals({
+			scripts: ['https://cdn.example/batch-tech.js'],
+			collectedAt: 123,
+		}));
+
+		const result = runObservationBatchPipeline({
+			batch,
+			registry,
+			compiledRegistryArtifact: artifact,
+			analyzedAt: 456,
+		});
+
+		expect(result).toMatchObject({
+			requestedMode: 'event',
+			completedMode: 'event',
+		});
+		expect(result.analysis).toMatchObject({
+			url: 'https://example.com/products',
+			analyzedAt: 456,
+			results: [expect.objectContaining({ technologyId: 'batch-tech' })],
+		});
+		expect(result.events.map((event) => event.stage)).toEqual([
+			'pattern-matched',
+			'evidence-created',
+			'candidates-created',
+			'candidates-refined',
+			'detections-emitted',
 		]);
 	});
 
