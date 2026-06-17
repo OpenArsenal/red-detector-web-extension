@@ -128,6 +128,7 @@ describe.sequential('analysis cache baseline', () => {
 				url: 'https://example.com/products',
 				hostname: 'example.com',
 			},
+			analyzedAt: Date.now(),
 		});
 
 		await storage.saveReplayTrace(trace);
