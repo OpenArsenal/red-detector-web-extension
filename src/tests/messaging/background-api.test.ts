@@ -4,7 +4,9 @@ import type { PageSignalPollingState } from '../../lib/content/observed-page-sig
 import type { PageSignals, SiteAnalysis } from '../../lib/detection/types';
 import type { ContentApi } from '../../lib/messaging';
 import { CONTENT_SCRIPT_TIMEOUT_MS } from '../../lib/messaging/rpc';
+import type { DetectionReplayTrace } from '../../lib/pipeline';
 import { ok, type AppResult } from '../../lib/shared/result';
+import { makeDetectionReplayTrace } from '../support/factories';
 
 vi.setConfig({ testTimeout: 20_000 });
 
@@ -98,6 +100,7 @@ async function loadBackgroundApi(input: {
 	tab?: TestTab | null;
 	contentApi?: Partial<ContentApi>;
 	cachedAnalysis?: SiteAnalysis | null;
+	cachedReplayTrace?: DetectionReplayTrace | null;
 }) {
 	return (await loadBackgroundApiHarness(input)).api;
 }
@@ -106,6 +109,7 @@ async function loadBackgroundApiHarness(input: {
 	tab?: TestTab | null;
 	contentApi?: Partial<ContentApi>;
 	cachedAnalysis?: SiteAnalysis | null;
+	cachedReplayTrace?: DetectionReplayTrace | null;
 }) {
 	vi.resetModules();
 	vi.stubGlobal('defineBackground', (setup: () => void) => setup);
@@ -185,12 +189,16 @@ async function loadBackgroundApiHarness(input: {
 	}));
 
 	const getCachedAnalysis = vi.fn(async () => input.cachedAnalysis ?? null);
+	const getCachedReplayTrace = vi.fn(async () => input.cachedReplayTrace ?? null);
 	const getStatus = vi.fn(async () => ({ totalAnalyses: 0, trackedOrigins: 0 }));
 	const saveAnalysis = vi.fn(async (analysis: SiteAnalysis) => analysis);
+	const saveReplayTrace = vi.fn(async (trace: DetectionReplayTrace) => trace);
 	vi.doMock('../../lib/storage', () => ({
 		getCachedAnalysis,
+		getCachedReplayTrace,
 		getStatus,
 		saveAnalysis,
+		saveReplayTrace,
 	}));
 
 	const background = await import('../../entrypoints/background');
@@ -201,9 +209,11 @@ async function loadBackgroundApiHarness(input: {
 			analyzeSite,
 			executeScript,
 			getCachedAnalysis,
+			getCachedReplayTrace,
 			getStatus,
 			listTechnologies,
 			saveAnalysis,
+			saveReplayTrace,
 		},
 	};
 }
@@ -300,14 +310,16 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 	it('returns cached analysis without contacting the content script in cache-first mode', async () => {
 		const collectPageSignals = vi.fn(async () => ok(makeSignals()));
 		const cachedAnalysis = { ...makeAnalysis(), source: 'cache' as const };
-		const api = await loadBackgroundApi({
+		const cachedReplayTrace = makeDetectionReplayTrace({ completedMode: 'event' });
+		const harness = await loadBackgroundApiHarness({
 			tab: HTTP_TAB,
 			cachedAnalysis,
+			cachedReplayTrace,
 			contentApi: { collectPageSignals },
 		});
 
 		await expect(
-			api.analyzeActiveTab({ mode: 'cache-first', observe: 'while-popup-open' }),
+			harness.api.analyzeActiveTab({ mode: 'cache-first', observe: 'while-popup-open' }),
 		).resolves.toMatchObject({
 			ok: true,
 			value: {
@@ -318,10 +330,14 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 					status: 'hit',
 				},
 				session: undefined,
+				replayTrace: {
+					completedMode: 'event',
+				},
 			},
 		});
 
 		expect(collectPageSignals).not.toHaveBeenCalled();
+		expect(harness.mocks.getCachedReplayTrace).toHaveBeenCalledWith(HTTP_TAB.url);
 	});
 
 	it('returns a fresh cache-miss analysis and persists normalized output', async () => {
@@ -340,6 +356,9 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 					key: 'analysis:https://example.com',
 				},
 				session: undefined,
+				replayTrace: {
+					completedMode: 'legacy',
+				},
 			},
 		});
 
@@ -349,6 +368,9 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 		expect(harness.mocks.analyzeSite).toHaveBeenCalledOnce();
 		expect(harness.mocks.saveAnalysis).toHaveBeenCalledWith(expect.objectContaining({ source: 'fresh' }));
 		expect(harness.mocks.saveAnalysis).toHaveBeenCalledOnce();
+		expect(harness.mocks.saveReplayTrace).toHaveBeenCalledWith(expect.objectContaining({
+			completedMode: 'legacy',
+		}));
 		expect(harness.contentApi.beginObservationSession).not.toHaveBeenCalled();
 	});
 
@@ -396,6 +418,9 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 					key: 'analysis:https://example.com',
 				},
 				session: undefined,
+				replayTrace: {
+					completedMode: 'event',
+				},
 			},
 		});
 
@@ -406,6 +431,9 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 			hostname: 'example.com',
 			source: 'fresh',
 			results: [],
+		}));
+		expect(harness.mocks.saveReplayTrace).toHaveBeenCalledWith(expect.objectContaining({
+			completedMode: 'event',
 		}));
 		expect(harness.contentApi.beginObservationSession).not.toHaveBeenCalled();
 	});
