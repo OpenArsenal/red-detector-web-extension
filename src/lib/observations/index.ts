@@ -20,5 +20,9 @@ export {
 	DEFAULT_OBSERVATION_BATCH_POLICY,
 	createObservationBatchController,
 } from './batch-controller';
+export type { ObservedPageSignalsObservationOptions } from './observed-page-signals';
+export {
+	normalizeObservedPageSignalsSnapshot,
+} from './observed-page-signals';
 export type { PageSignalsObservationOptions } from './page-signals';
 export { normalizePageSignals } from './page-signals';
