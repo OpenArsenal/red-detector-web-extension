@@ -329,15 +329,16 @@ async function analyzeFreshActiveTab(
 		pipeline: input.pipeline ?? 'legacy',
 	});
 
-	const registry = bundledTechnologyRegistryProvider.listTechnologies();
-	const signalsResponse = await collectFromTab(tab.id, tab.url, registry);
+	const compiledRegistryArtifact = bundledTechnologyRegistryProvider.getCompiledRegistry();
+	const signalsResponse = await collectFromTab(tab.id, tab.url, compiledRegistryArtifact.technologies);
 	if (!signalsResponse.ok) {
 		return signalsResponse;
 	}
 
 	const pipelineResult = runDetectionPipeline({
 		signals: signalsResponse.value,
-		registry,
+		registry: compiledRegistryArtifact.technologies,
+		compiledRegistryArtifact,
 		mode: input.pipeline ?? 'legacy',
 	});
 	const replayTrace = createDetectionReplayTrace({ result: pipelineResult });

@@ -6,6 +6,7 @@ vi.mock('../../lib/detection/rules', () => ({
 
 import type { SiteAnalysis, TechnologyDefinition } from '../../lib/detection/types';
 import { runDetectionPipeline } from '../../lib/pipeline';
+import { compileTechnologyRegistry } from '../../lib/registry';
 import { makeAnalysis, makeDetection, makePageSignals, TEST_NOW } from '../support/factories';
 
 /**
@@ -109,6 +110,32 @@ describe('event pipeline runtime coordinator', () => {
 				relationshipEvidenceCount: 0,
 			},
 		});
+	});
+
+
+	it('uses a precompiled registry artifact when one is supplied', () => {
+		const registry = [
+			makeTechnology({
+				id: 'artifact-tech',
+				name: 'Artifact Tech',
+				website: 'https://artifact.example',
+				rules: [{ kind: 'meta', key: 'generator', valuePattern: /Artifact Tech/, confidence: 90 }],
+			}),
+		];
+		const artifact = compileTechnologyRegistry({ technologies: registry });
+
+		const result = runDetectionPipeline({
+			signals: makePageSignals({ meta: { generator: ['Artifact Tech'] } }),
+			registry,
+			compiledRegistryArtifact: artifact,
+			mode: 'event',
+			analyzedAt: TEST_NOW,
+		});
+
+		expect(result.completedMode).toBe('event');
+		expect(result.analysis.results).toEqual([
+			expect.objectContaining({ technologyId: 'artifact-tech' }),
+		]);
 	});
 
 	it('records ordered public-safe stage events for the event path', () => {

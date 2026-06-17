@@ -1,4 +1,5 @@
 import { technologies } from '../../data/technologies';
+import { compileTechnologyRegistry, type CompiledTechnologyRegistryArtifact } from '../registry';
 import type { TechnologyDefinition } from './types';
 
 /**
@@ -10,7 +11,14 @@ import type { TechnologyDefinition } from './types';
  */
 export interface TechnologyRegistryProvider {
 	/** Return the active technology definitions in detector order. */
-	listTechnologies(): TechnologyDefinition[];
+	listTechnologies(): readonly TechnologyDefinition[];
+	/**
+	 * Return the compiled artifact for the active registry.
+	 *
+	 * The provider owns caching so callers do not rebuild matcher indexes, graphs,
+	 * and collection plans during every active-tab analysis.
+	 */
+	getCompiledRegistry(): CompiledTechnologyRegistryArtifact;
 }
 
 /**
@@ -20,11 +28,21 @@ export interface TechnologyRegistryProvider {
  * the generated bundled rule tree.
  */
 export function createStaticTechnologyRegistryProvider(
-	registry: TechnologyDefinition[],
+	registry: readonly TechnologyDefinition[],
 ): TechnologyRegistryProvider {
+	let compiledRegistry: CompiledTechnologyRegistryArtifact | undefined;
+
 	return {
 		listTechnologies() {
 			return registry;
+		},
+
+		getCompiledRegistry() {
+			compiledRegistry ??= compileTechnologyRegistry({
+				technologies: registry,
+				sourceKind: 'typescript-definition',
+			});
+			return compiledRegistry;
 		},
 	};
 }

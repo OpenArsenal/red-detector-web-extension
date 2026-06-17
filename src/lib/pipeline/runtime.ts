@@ -17,6 +17,7 @@ import {
 	type ObservationInterface,
 	type ObservationTarget,
 } from '../observations';
+import type { CompiledTechnologyRegistryArtifact } from '../registry';
 
 /** Runtime detector paths available during the event-pipeline migration. */
 export const DETECTION_PIPELINE_MODES = ['legacy', 'event'] as const;
@@ -88,6 +89,8 @@ export interface RunDetectionPipelineInput {
 	readonly signals: PageSignals;
 	/** Ordered technology registry used for matching and relationship reasoning. */
 	readonly registry: readonly TechnologyDefinition[];
+	/** Optional compiler artifact that lets the event path reuse prebuilt indexes. */
+	readonly compiledRegistryArtifact?: Pick<CompiledTechnologyRegistryArtifact, 'matcherIndex' | 'relationshipGraph'>;
 	/** Runtime path to execute. Defaults to `legacy` until the event path is promoted. */
 	readonly mode?: DetectionPipelineMode;
 	/** Optional detector compatibility flags shared with matching stages. */
@@ -185,6 +188,7 @@ function runEventPipeline(
 	const matches = matchIndexedObservationBatch({
 		registry: input.registry,
 		batch: observations,
+		index: input.compiledRegistryArtifact?.matcherIndex,
 		options: input.options,
 	});
 	record('pattern-matched', matches.matches.length);
@@ -198,7 +202,7 @@ function runEventPipeline(
 
 	const refined = refineEvidenceCandidateBatch({
 		batch: candidates,
-		compiledRegistry: createCompiledDetectionRegistry(input.registry),
+		compiledRegistry: input.compiledRegistryArtifact?.relationshipGraph ?? createCompiledDetectionRegistry(input.registry),
 	});
 	record('candidates-refined', refined.candidates.length, {
 		rejectionCount: refined.rejections.length,
