@@ -10,6 +10,13 @@ import {
 import { SOURCE_LIMITS } from '../detection/rules';
 import type { PageSignals } from '../detection/types';
 import { isObservationSessionForUrl } from '../lifecycle/observation';
+import {
+	createObservationBatchController,
+	normalizeObservedPageSignalsSnapshot,
+	type ObservationBatch,
+	type ObservationBatchControllerStats,
+	type ObservationTarget,
+} from '../observations';
 
 export type ObservedPageSignalsSnapshot = Pick<
 	PageSignals,
@@ -42,6 +49,16 @@ export type ObservationSessionState = {
 
 export type PageSignalPollingState = ObservationSessionState;
 
+/** Result returned when the content observer flushes queued observation events. */
+export type FlushObservedObservationBatchOutput = {
+	/** Next bounded observation batch, when late facts are queued. */
+	batch?: ObservationBatch;
+	/** Batch controller counters after the flush attempt. */
+	stats: ObservationBatchControllerStats;
+	/** Observation session state after pending mutation scans run. */
+	session: ObservationSessionState;
+};
+
 export type BeginObservationSessionInput = {
 	sessionId: string;
 	expectedUrl: string;
@@ -52,6 +69,7 @@ export type BeginObservationSessionInput = {
 
 export type ObservedPageSignals = {
 	snapshot(): ObservedPageSignalsSnapshot;
+	flushObservationBatch(): FlushObservedObservationBatchOutput;
 	beginObservationSession(input: BeginObservationSessionInput): ObservationSessionState;
 	stopObservationSession(reason?: ObservationStopReason): ObservationSessionState;
 	status(): ObservationSessionState;
@@ -104,6 +122,7 @@ export function createObservedPageSignals(
 	let lastScannedAt: number | undefined;
 	let pendingMutationCount = 0;
 	let pendingFullDocumentScan = false;
+	const observationBatchController = createObservationBatchController();
 
 	function clearPendingMutations(): void {
 		pendingNodes.clear();
@@ -132,6 +151,7 @@ export function createObservedPageSignals(
 		stopResourceObserver();
 		clearThrottleTimer();
 		clearPendingMutations();
+		observationBatchController.reset();
 		activeSession = undefined;
 		sessionStatus = 'stopped';
 		stopReason = reason;
@@ -208,6 +228,7 @@ export function createObservedPageSignals(
 	}
 
 	function rememberSnapshot(snapshot: ObservedPageSignalsSnapshot): void {
+		const observedAt = Date.now();
 		for (const source of snapshot.scripts) {
 			scripts.add(source);
 		}
@@ -243,6 +264,29 @@ export function createObservedPageSignals(
 		}
 
 		rememberMeta(snapshot.meta);
+		enqueueObservationSnapshot(snapshot, observedAt);
+	}
+
+	function enqueueObservationSnapshot(snapshot: ObservedPageSignalsSnapshot, observedAt: number): void {
+		const target = currentObservationTarget();
+		if (!target || sessionStatus === 'stopped') return;
+
+		const batch = normalizeObservedPageSignalsSnapshot(snapshot, {
+			target,
+			observedAt,
+			collector: 'content-observer',
+		});
+
+		for (const observation of batch.observations) observationBatchController.push(observation);
+	}
+
+	function currentObservationTarget(): ObservationTarget | undefined {
+		if (!activeSession) return undefined;
+
+		return {
+			url: activeSession.expectedUrl,
+			hostname: new URL(activeSession.expectedUrl).hostname,
+		};
 	}
 
 	function emptySnapshot(): ObservedPageSignalsSnapshot {
@@ -450,6 +494,7 @@ export function createObservedPageSignals(
 		stopResourceObserver();
 		clearThrottleTimer();
 		clearPendingMutations();
+		observationBatchController.reset();
 
 		const startedAt = Date.now();
 		activeSession = {
@@ -496,6 +541,23 @@ export function createObservedPageSignals(
 				scriptContents: [...scriptContents].slice(0, SOURCE_LIMITS.scriptContentItems),
 				stylesheetContents: [...stylesheetContents].slice(0, SOURCE_LIMITS.stylesheetContentItems),
 				meta: snapshotMeta(),
+			};
+		},
+
+		flushObservationBatch() {
+			stopIfDocumentChanged();
+			if (activeSession && sessionStatus !== 'stopped') flushPendingMutations();
+
+			const session = observationState();
+			const target = currentObservationTarget();
+			const batch = target && session.status !== 'stopped'
+				? observationBatchController.flush({ target, observedAt: Date.now() })
+				: null;
+
+			return {
+				...(batch ? { batch } : {}),
+				stats: observationBatchController.stats(),
+				session,
 			};
 		},
 

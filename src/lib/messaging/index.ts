@@ -8,6 +8,7 @@ export type {
 	BeginObservationSessionInput,
 	CollectPageSignalsInput,
 	ContentApi,
+	FlushObservationBatchOutput,
 	HtmlProbe,
 	ObservationStopReason,
 } from '../contracts/analysis';

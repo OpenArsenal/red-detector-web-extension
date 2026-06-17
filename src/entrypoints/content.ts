@@ -185,6 +185,10 @@ export function createContentRuntime(observedSignals: ObservedPageSignals): Cont
       return ok(session);
     },
 
+    async flushObservationBatch() {
+      return ok(observedSignals.flushObservationBatch());
+    },
+
     async stopObservationSession() {
       clearObservationExpiry();
       const session = observedSignals.stopObservationSession("manual");

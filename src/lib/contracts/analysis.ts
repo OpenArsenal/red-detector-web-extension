@@ -4,6 +4,7 @@ import type {
 } from '../content/observed-page-signals';
 import type { AnalysisStatus, PageSignals, SiteAnalysis } from '../detection/types';
 import type { DetectionPipelineMode, DetectionReplayTrace } from '../pipeline';
+import type { ObservationBatch, ObservationBatchControllerStats } from '../observations';
 import type { AppResult } from '../shared/result';
 
 /**
@@ -108,6 +109,16 @@ export type BeginObservationSessionInput = {
 	};
 };
 
+/** Content-script response for flushing queued late observation events. */
+export type FlushObservationBatchOutput = {
+	/** Next bounded batch when late evidence-bearing facts are queued. */
+	batch?: ObservationBatch;
+	/** Queue and drop counters from the content-side batch controller. */
+	stats: ObservationBatchControllerStats;
+	/** Observation session state after pending DOM mutation scans are flushed. */
+	session: ObservationSessionState;
+};
+
 /** Serializable HTML pattern probe sent to the content script. */
 export type HtmlProbe = {
 	/** Technology that owns the original HTML rule. */
@@ -154,6 +165,8 @@ export interface ContentApi {
 	beginObservationSession(input: BeginObservationSessionInput): Promise<AppResult<ObservationSessionState>>;
 	/** Stop the current observation session manually. */
 	stopObservationSession(): Promise<AppResult<ObservationSessionState>>;
+	/** Flush late normalized observations queued by DOM and resource observers. */
+	flushObservationBatch(): Promise<AppResult<FlushObservationBatchOutput>>;
 	/** Return the current observation session state. */
 	getObservationSessionState(): Promise<AppResult<ObservationSessionState>>;
 }
