@@ -176,9 +176,25 @@ async function loadBackgroundApiHarness(input: {
 		analyzeSite,
 	}));
 
-	const listTechnologies = vi.fn(() => []);
+	const { buildCollectionPlan } = await import('../../lib/collectors/planning');
+	const { createObservationMatcherIndex } = await import('../../lib/detection/observation-matcher-index');
+	const { createCompiledDetectionRegistry } = await import('../../lib/detection/registry-graph');
+	const compiledRegistryArtifact = {
+		artifactVersion: 1,
+		sourceSchemaVersion: 1,
+		technologies: [],
+		technologyMetadata: [],
+		patternTables: {},
+		relationshipGraph: createCompiledDetectionRegistry([]),
+		matcherIndex: createObservationMatcherIndex([]),
+		collectionPlan: buildCollectionPlan([]),
+		sourceMap: {},
+		diagnostics: [],
+	};
+	const listTechnologies = vi.fn(() => compiledRegistryArtifact.technologies);
+	const getCompiledRegistry = vi.fn(() => compiledRegistryArtifact);
 	vi.doMock('../../lib/detection/registry-provider', () => ({
-		bundledTechnologyRegistryProvider: { listTechnologies },
+		bundledTechnologyRegistryProvider: { listTechnologies, getCompiledRegistry },
 	}));
 
 	vi.doMock('../../lib/messaging', () => ({
@@ -211,6 +227,7 @@ async function loadBackgroundApiHarness(input: {
 			getCachedAnalysis,
 			getCachedReplayTrace,
 			getStatus,
+			getCompiledRegistry,
 			listTechnologies,
 			saveAnalysis,
 			saveReplayTrace,
@@ -364,7 +381,7 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 
 		expect(harness.mocks.getCachedAnalysis).toHaveBeenCalledWith(HTTP_TAB.url);
 		expect(harness.contentApi.collectPageSignals).toHaveBeenCalledOnce();
-		expect(harness.mocks.listTechnologies).toHaveBeenCalledOnce();
+		expect(harness.mocks.getCompiledRegistry).toHaveBeenCalledOnce();
 		expect(harness.mocks.analyzeSite).toHaveBeenCalledOnce();
 		expect(harness.mocks.saveAnalysis).toHaveBeenCalledWith(expect.objectContaining({ source: 'fresh' }));
 		expect(harness.mocks.saveAnalysis).toHaveBeenCalledOnce();
