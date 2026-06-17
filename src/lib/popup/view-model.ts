@@ -1,7 +1,8 @@
 import { categories } from '../../data/categories';
 import type { ObservationSessionState } from '../content/observed-page-signals';
 import type { AnalyzeActiveTabOutput } from '../contracts/analysis';
-import type { CategoryId, DetectionResult, SiteAnalysis } from '../detection/types';
+import type { CategoryId, ConfidenceScore, DetectionResult, SiteAnalysis } from '../detection/types';
+import type { DetectionExplanation, DetectionReplayTrace } from '../pipeline';
 import type { AppError } from '../shared/errors';
 
 /**
@@ -52,6 +53,32 @@ export type PopupCategoryGroup = {
 };
 
 /**
+ * Popup-ready explanation summary for one detection card.
+ *
+ * The view model keeps this smaller than `DetectionExplanation` so Solid
+ * components do not need to know about the full replay trace schema.
+ */
+export type PopupDetectionExplanationSummary = {
+	/** Technology id this explanation belongs to. */
+	technologyId: string;
+	/** Short headline rendered above the explanation reasons. */
+	headline: string;
+	/** Final confidence value and label copied for UI copy. */
+	confidence: ConfidenceScore;
+	/** Bounded explanation phrases safe for popup rendering. */
+	reasons: readonly string[];
+	/** Number of public evidence entries behind the detection. */
+	evidenceCount: number;
+	/** Most useful public evidence kind to summarize in compact card copy. */
+	primaryEvidenceKind: string | null;
+	/** Whether the detection was inferred through graph relationships. */
+	inferred: boolean;
+};
+
+/** Lookup table keyed by technology id for explanation rendering. */
+export type PopupExplanationLookup = Readonly<Record<string, PopupDetectionExplanationSummary>>;
+
+/**
  * Input needed to derive popup state from a background analysis response.
  */
 export type BuildPopupAnalysisUpdateInput = {
@@ -77,6 +104,8 @@ export type PopupAnalysisUpdate = {
 	addedDetectionIds: string[];
 	/** Complete late-detection id list after this response is applied. */
 	lateDetectionIds: string[];
+	/** Explanation summaries keyed by technology id for result cards. */
+	explanationsByTechnologyId: PopupExplanationLookup;
 	/** User-facing observation state for buttons, chips, and result copy. */
 	observationMode: PopupObservationMode;
 	/** Whether the popup should keep polling the background for late page signals. */
@@ -202,6 +231,63 @@ export function shouldRefreshObservedChange(
 	return !input.analysis || latestObservedAt > latestAnalyzedAt;
 }
 
+/**
+ * Convert replay explanations into a popup lookup keyed by technology id.
+ *
+ * The popup only renders explanation summaries for detections present in the
+ * current response. Missing traces, cache hits, or stale trace data therefore
+ * degrade to an empty lookup instead of creating misleading explanation copy.
+ */
+export function buildPopupExplanationLookup(
+	trace: DetectionReplayTrace | undefined,
+): PopupExplanationLookup {
+	if (!trace) {
+		return {};
+	}
+
+	return Object.fromEntries(
+		trace.explanations.map((explanation) => [
+			explanation.technologyId,
+			createPopupExplanationSummary(explanation),
+		]),
+	);
+}
+
+/**
+ * Create the compact explanation shape consumed by detection cards.
+ *
+ * Reasons are intentionally capped so explanation cards stay scannable inside
+ * the extension popup. The full replay explanation remains available on the
+ * trace for later dedicated replay UI.
+ */
+function createPopupExplanationSummary(
+	explanation: DetectionExplanation,
+): PopupDetectionExplanationSummary {
+	return {
+		technologyId: explanation.technologyId,
+		headline: createExplanationHeadline(explanation),
+		confidence: { ...explanation.confidence },
+		reasons: explanation.reasons.slice(0, 3),
+		evidenceCount: explanation.evidenceCount,
+		primaryEvidenceKind: getPrimaryEvidenceKind(explanation),
+		inferred: explanation.inferred,
+	};
+}
+
+/** Build the one-line reason shown before detailed explanation bullets. */
+function createExplanationHeadline(explanation: DetectionExplanation): string {
+	if (explanation.inferred) {
+		return `Inferred from ${explanation.relationshipEvidenceCount} relationship signal${explanation.relationshipEvidenceCount === 1 ? '' : 's'}.`;
+	}
+
+	return `Matched ${explanation.directEvidenceCount} direct signal${explanation.directEvidenceCount === 1 ? '' : 's'}.`;
+}
+
+/** Pick the first public evidence kind because replay preserves detector order. */
+function getPrimaryEvidenceKind(explanation: DetectionExplanation): string | null {
+	return explanation.evidence[0]?.kind ?? null;
+}
+
 /** Formats an application error for the existing popup error state. */
 export function formatPopupAppError(error: AppError): string {
 	return `${error.code}: ${error.message}`;
@@ -221,6 +307,7 @@ export function buildPopupAnalysisUpdate(
 		? []
 		: input.currentLateDetectionIds ?? [];
 	const lateDetectionIds = mergeUniqueIds(lateMarkerBase, addedDetectionIds);
+	const explanationsByTechnologyId = buildPopupExplanationLookup(input.response.replayTrace);
 	const observationMode = getPopupObservationModeFromAnalysis(input.response);
 	const shouldPoll = shouldPollPopupObservation(observationMode);
 	const notice = getPopupAnalysisNotice({
@@ -234,6 +321,7 @@ export function buildPopupAnalysisUpdate(
 		analysis: nextAnalysis,
 		addedDetectionIds,
 		lateDetectionIds,
+		explanationsByTechnologyId,
 		observationMode,
 		shouldPoll,
 		notice,

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
 	buildPopupAnalysisUpdate,
+	buildPopupExplanationLookup,
 	formatPopupAppError,
 	getPopupObservationLabel,
 	getPopupObservationModeFromAnalysis,
@@ -115,6 +116,39 @@ describe('popup view model', () => {
 			session: { ...makeObservationSession('observing'), lastObservedAt: 1_699_999_999_999 },
 			analysis: makeAnalysis([], { analyzedAt: 1_700_000_000_000 }),
 		})).toBe(false);
+	});
+
+	it('maps replay explanations into popup summaries keyed by technology id', () => {
+		const lookup = buildPopupExplanationLookup({
+			schemaVersion: 1,
+			target: { url: 'https://example.com/products', hostname: 'example.com' },
+			requestedMode: 'event',
+			completedMode: 'event',
+			analyzedAt: 1_700_000_000_000,
+			resultCount: 1,
+			events: [],
+			explanations: [{
+				technologyId: 'react',
+				name: 'React',
+				categories: ['ui-library'],
+				confidence: { value: 95, level: 'certain' },
+				inferred: false,
+				evidenceCount: 2,
+				directEvidenceCount: 2,
+				relationshipEvidenceCount: 0,
+				reasons: ['Matched scriptSrc evidence', 'Selected version 18.3.1'],
+				evidence: [
+					{ kind: 'scriptSrc', confidence: 95, direct: true, matchedValue: 'react.js' },
+				],
+				warnings: [],
+			}],
+		});
+
+		expect(lookup.react).toMatchObject({
+			headline: 'Matched 2 direct signals.',
+			primaryEvidenceKind: 'scriptSrc',
+			reasons: ['Matched scriptSrc evidence', 'Selected version 18.3.1'],
+		});
 	});
 
 	it('formats application errors for popup recovery UI', () => {
