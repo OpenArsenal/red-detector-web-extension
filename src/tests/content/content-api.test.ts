@@ -4,6 +4,35 @@ import type {
 	ObservedPageSignals,
 	ObservationSessionState,
 } from '../../lib/content/observed-page-signals';
+import type { PageSignals } from '../../lib/detection/types';
+
+function makeSignals(overrides: Partial<PageSignals> = {}): PageSignals {
+	return {
+		url: 'https://example.com/products',
+		hostname: 'example.com',
+		html: '<html><head></head><body>Example</body></html>',
+		text: 'Example',
+		scripts: ['https://example.com/assets/app.js'],
+		stylesheets: [],
+		links: [],
+		resources: [],
+		requests: [],
+		scriptContents: [],
+		stylesheetContents: [],
+		cookies: {},
+		headers: {},
+		meta: {},
+		dom: { selectors: {} },
+		storage: { localStorage: {}, sessionStorage: {} },
+		jsGlobals: {},
+		robotsTxt: '',
+		dnsRecords: {},
+		certIssuer: '',
+		probeResults: [],
+		collectedAt: 1_700_000_000_000,
+		...overrides,
+	};
+}
 
 function makeState(overrides: Partial<ObservationSessionState> = {}): ObservationSessionState {
 	return {
@@ -32,7 +61,7 @@ async function loadContentApiFactory() {
 	vi.resetModules();
 	vi.stubGlobal('defineContentScript', (options: unknown) => options);
 	vi.doMock('../../lib/content/collect-page-signals', () => ({
-		collectPageSignals: vi.fn(),
+		collectPageSignals: vi.fn(() => makeSignals()),
 	}));
 	vi.doMock('../../lib/content/observed-page-signals', () => ({
 		createObservedPageSignals: vi.fn(),
@@ -124,7 +153,7 @@ describe.sequential('content API observation baseline', () => {
 			snapshot: vi.fn(),
 			beginObservationSession: vi.fn(() => makeState({ status: 'observing' })),
 			stopObservationSession: vi.fn(() => makeState({ status: 'stopped', stopReason: 'expired' })),
-			flushObservationBatch: vi.fn(),
+			flushObservationBatch: vi.fn(() => makeFlushOutput()),
 			status: vi.fn(() => makeState()),
 			disconnect: vi.fn(),
 		} satisfies ObservedPageSignals;
@@ -153,7 +182,7 @@ describe.sequential('content API observation baseline', () => {
 			snapshot: vi.fn(),
 			beginObservationSession: vi.fn(() => makeState({ status: 'observing' })),
 			stopObservationSession: vi.fn(() => makeState({ status: 'stopped', stopReason: 'manual' })),
-			flushObservationBatch: vi.fn(),
+			flushObservationBatch: vi.fn(() => makeFlushOutput()),
 			status: vi.fn(() => makeState()),
 			disconnect: vi.fn(),
 		} satisfies ObservedPageSignals;
@@ -220,6 +249,32 @@ describe.sequential('content API observation baseline', () => {
 
 		await expect(createContentApi(observedSignals).flushObservationBatch()).resolves.toEqual({ ok: true, value: makeFlushOutput(session) });
 		expect(observedSignals.flushObservationBatch).toHaveBeenCalledOnce();
+	});
+
+	it('collects the initial document through the observation batch API', async () => {
+		const { createContentApi } = await loadContentApiFactory();
+		const observedSignals = {
+			snapshot: vi.fn(() => ({
+				scripts: [],
+				stylesheets: [],
+				links: [],
+				resources: [],
+				requests: [],
+				scriptContents: [],
+				stylesheetContents: [],
+				meta: {},
+			})),
+			beginObservationSession: vi.fn(() => makeState()),
+			stopObservationSession: vi.fn(() => makeState({ status: 'stopped' })),
+			flushObservationBatch: vi.fn(() => makeFlushOutput()),
+			status: vi.fn(() => makeState()),
+			disconnect: vi.fn(),
+		} satisfies ObservedPageSignals;
+
+		await expect(createContentApi(observedSignals).collectObservationBatch({ selectorProbeList: [], includeHtml: true })).resolves.toMatchObject({
+			ok: true,
+			value: { batch: { target: { url: 'https://example.com/products', hostname: 'example.com' } } },
+		});
 	});
 
 });

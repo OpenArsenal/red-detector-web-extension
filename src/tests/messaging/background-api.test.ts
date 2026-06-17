@@ -4,6 +4,7 @@ import type { PageSignalPollingState } from '../../lib/content/observed-page-sig
 import type { PageSignals, SiteAnalysis } from '../../lib/detection/types';
 import type { ContentApi } from '../../lib/messaging';
 import { CONTENT_SCRIPT_TIMEOUT_MS } from '../../lib/messaging/rpc';
+import type { ObservationBatch } from '../../lib/observations';
 import type { DetectionReplayTrace } from '../../lib/pipeline';
 import { ok, type AppResult } from '../../lib/shared/result';
 import { makeDetectionReplayTrace } from '../support/factories';
@@ -85,6 +86,27 @@ function makeSignals(overrides: Partial<PageSignals> = {}): PageSignals {
 	};
 }
 
+function makeObservationBatch(signals = makeSignals()): ObservationBatch {
+	const target = {
+		url: signals.url,
+		hostname: signals.hostname,
+	};
+
+	return {
+		target,
+		interface: 'extension',
+		observedAt: signals.collectedAt,
+		observations: [{
+			kind: 'url',
+			interface: 'extension',
+			collector: 'content-snapshot',
+			target,
+			observedAt: signals.collectedAt,
+			value: signals.url,
+		}],
+	};
+}
+
 function makeAnalysis(signals = makeSignals()): SiteAnalysis {
 	return {
 		url: signals.url,
@@ -141,6 +163,18 @@ async function loadBackgroundApiHarness(input: {
 
 	const contentApi = {
 		collectPageSignals: vi.fn(async () => ok(makeSignals())),
+		collectObservationBatch: vi.fn(async () => ok({ batch: makeObservationBatch() })),
+		flushObservationBatch: vi.fn(async () => ok({
+			stats: {
+				queuedCount: 0,
+				acceptedCount: 0,
+				duplicateDropCount: 0,
+				queueLimitDropCount: 0,
+				stormLimitDropCount: 0,
+				acceptedInStormWindow: 0,
+			},
+			session: observingState,
+		})),
 		beginObservationSession: vi.fn(async () => ok(observingState)),
 		stopObservationSession: vi.fn(async () => ok(stoppedState)),
 		getObservationSessionState: vi.fn(async () => ok(pollingState)),
@@ -380,7 +414,8 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 		});
 
 		expect(harness.mocks.getCachedAnalysis).toHaveBeenCalledWith(HTTP_TAB.url);
-		expect(harness.contentApi.collectPageSignals).toHaveBeenCalledOnce();
+		expect(harness.contentApi.collectObservationBatch).toHaveBeenCalledOnce();
+		expect(harness.contentApi.collectPageSignals).not.toHaveBeenCalled();
 		expect(harness.mocks.getCompiledRegistry).toHaveBeenCalledOnce();
 		expect(harness.mocks.analyzeSite).toHaveBeenCalledOnce();
 		expect(harness.mocks.saveAnalysis).toHaveBeenCalledWith(expect.objectContaining({ source: 'fresh' }));
@@ -441,7 +476,8 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 			},
 		});
 
-		expect(harness.contentApi.collectPageSignals).toHaveBeenCalledOnce();
+		expect(harness.contentApi.collectObservationBatch).toHaveBeenCalledOnce();
+		expect(harness.contentApi.collectPageSignals).not.toHaveBeenCalled();
 		expect(harness.mocks.analyzeSite).not.toHaveBeenCalled();
 		expect(harness.mocks.saveAnalysis).toHaveBeenCalledWith(expect.objectContaining({
 			url: HTTP_TAB.url,
@@ -548,7 +584,8 @@ describe.sequential('background observation session baseline', () => {
 			},
 		});
 
-		expect(harness.contentApi.collectPageSignals).toHaveBeenCalledOnce();
+		expect(harness.contentApi.collectObservationBatch).toHaveBeenCalledOnce();
+		expect(harness.contentApi.collectPageSignals).not.toHaveBeenCalled();
 		expect(harness.contentApi.beginObservationSession).toHaveBeenCalledOnce();
 	});
 
