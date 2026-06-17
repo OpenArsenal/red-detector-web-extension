@@ -9,6 +9,7 @@
     "zip": "wxt zip",
     "test": "vitest",
     "compile": "tsc --noEmit",
+    "bench": "vitest bench src/benchmarks/*.bench.ts",
     "postinstall": "wxt prepare"
   },
   "dependencies": {
