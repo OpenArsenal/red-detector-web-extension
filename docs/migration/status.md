@@ -1,8 +1,8 @@
-# Migration status after phase 14
+# Migration status after phase 15
 
 This status page lets reviewers see which migration seams are complete, which seams are only compatibility wrappers, and which future architecture goals remain unimplemented. It should be updated whenever a phase changes a boundary that another maintainer would rely on.
 
-The project is now past the first documentation pass, the first normalized-observation seam, and the first evidence repository seam. Phases 1 through 8 established behavior baselines, contracts, collectors, lifecycle rules, graph seams, popup view-state boundaries, shared test fixtures, and architecture docs. Phase 9 adds the observation contract that future evidence and replay work can target without changing detector behavior. Phase 10 adds evidence entries and an in-memory repository while keeping detector output unchanged. Phase 11 adds a sidecar observation matcher that turns normalized observations into pattern-match events and evidence entries without replacing `analyzeSite(...)`. Phase 12 adds evidence candidate aggregation so those entries can become technology candidates before graph refinement. Phase 13 refines those candidates through registry relationships. Phase 14 emits the refined candidates back into `SiteAnalysis` and adds parity fixtures against `analyzeSite(...)`.
+The project is now past the first documentation pass, the first normalized-observation seam, and the first evidence repository seam. Phases 1 through 8 established behavior baselines, contracts, collectors, lifecycle rules, graph seams, popup view-state boundaries, shared test fixtures, and architecture docs. Phase 9 adds the observation contract that future evidence and replay work can target without changing detector behavior. Phase 10 adds evidence entries and an in-memory repository while keeping detector output unchanged. Phase 11 adds a sidecar observation matcher that turns normalized observations into pattern-match events and evidence entries without replacing `analyzeSite(...)`. Phase 12 adds evidence candidate aggregation so those entries can become technology candidates before graph refinement. Phase 13 refines those candidates through registry relationships. Phase 14 emits the refined candidates back into `SiteAnalysis` and adds parity fixtures against `analyzeSite(...)`. Phase 15 makes that sidecar path runtime-capable behind an explicit active-tab pipeline switch.
 
 ## Phase status matrix
 
@@ -21,7 +21,8 @@ The project is now past the first documentation pass, the first normalized-obser
 | 11 observation pattern matching | Complete | `src/lib/detection/observation-matcher.ts` | Normalized observations can be matched against current registry rules to emit pattern-match events and evidence entries. | Observation matching is wired into background runtime, graph inference, or popup explanations. |
 | 12 evidence candidate aggregation | Complete | `src/lib/candidates/aggregate.ts` | Evidence entries can be grouped into deterministic technology candidates with detector-compatible confidence weighting. | Candidate aggregation is the production detector path or popup explanations render candidates. |
 | 13 candidate relationship refinement | Complete | `src/lib/candidates/refine.ts` | Evidence candidates can be refined through `implies`, `requires`, and `excludes` graph rules with rejection records. | Refined candidates replace `analyzeSite(...)` or render in popup explanations. |
-| 14 emission and parity | Complete after this patch stack | `src/lib/emission/site-analysis.ts` and `src/tests/emission/site-analysis.test.ts` | Refined candidates can emit `SiteAnalysis`-compatible output and focused fixtures compare that output with `analyzeSite(...)`. | The background runtime uses the sidecar event pipeline by default. |
+| 14 emission and parity | Complete | `src/lib/emission/site-analysis.ts` and `src/tests/emission/site-analysis.test.ts` | Refined candidates can emit `SiteAnalysis`-compatible output and focused fixtures compare that output with `analyzeSite(...)`. | The background runtime uses the sidecar event pipeline by default. |
+| 15 event pipeline runtime | Complete after this patch stack | `src/lib/pipeline/runtime.ts` and `src/tests/pipeline/event-pipeline.test.ts` | Fresh active-tab analysis can run through the event pipeline behind an explicit request switch with legacy fallback. | The event pipeline is the default detector path, replay traces exist, or popup explanations render pipeline details. |
 
 ## Decision ledger
 
@@ -81,13 +82,16 @@ Phase 2: contracts and provider seams
                       │
                       ▼
               Phase 14: emission and parity
+                       │
+                       ▼
+              Phase 15: event pipeline runtime
 ```
 
 The order matters because the popup view model depends on stabilized analysis and lifecycle semantics, graph work depends on preserving registry order, and future observation/replay work depends on shared fixtures and sidecar matcher/candidate stages that do not duplicate contract assumptions.
 
 ## Known validation limits
 
-Phase 14 records the current limitations rather than hiding them.
+Phase 15 records the current limitations rather than hiding them.
 
 - The full Vitest suite may still be slower or less stable in the sandbox than targeted suites.
 - `npm run compile` may continue to expose branch-wide TypeScript issues that predate a docs patch.
