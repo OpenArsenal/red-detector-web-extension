@@ -2,7 +2,10 @@ import { defineProxy } from 'comctx';
 import { browser } from 'wxt/browser';
 
 import { canInspectTab, getActiveTab } from '../lib/browser/active-tab';
-import { collectExtensionPageSignals } from '../lib/collectors/extension-page-collector';
+import {
+	collectExtensionObservationBatch,
+	collectExtensionPageSignals,
+} from '../lib/collectors/extension-page-collector';
 import { bundledTechnologyRegistryProvider } from '../lib/detection/registry-provider';
 import {
 	createDetectionReplayTrace,
@@ -20,6 +23,7 @@ import type {
 	ContentApi,
 	FlushObservationBatchOutput,
 } from '../lib/messaging';
+import type { ObservationBatch } from '../lib/observations';
 import {
 	CONTENT_SCRIPT_TIMEOUT_MS,
 	contentScriptFailure,
@@ -206,6 +210,32 @@ async function collectFromTab(
 	}
 
 	return collectExtensionPageSignals({
+		tabId,
+		expectedUrl,
+		registry,
+		contentApi: createContentApiClient(tabId, 0),
+		log: logBackgroundEvent,
+	});
+}
+
+/**
+ * Ask the extension collector for normalized observations from the active tab.
+ *
+ * This path is used only by event-mode fresh analysis. The legacy path continues
+ * to request `PageSignals` so cache parity and old analyzer fallback remain
+ * reviewable while the extension runtime finishes its event cutover.
+ */
+async function collectObservationBatchFromTab(
+	tabId: number,
+	expectedUrl: string,
+	registry: readonly TechnologyDefinition[],
+): Promise<AppResult<ObservationBatch>> {
+	const contentScriptResponse = await ensureContentScript(tabId);
+	if (!contentScriptResponse.ok) {
+		return contentScriptResponse;
+	}
+
+	return collectExtensionObservationBatch({
 		tabId,
 		expectedUrl,
 		registry,
@@ -422,27 +452,36 @@ async function analyzeFreshActiveTab(
 	});
 
 	const compiledRegistryArtifact = bundledTechnologyRegistryProvider.getCompiledRegistry();
-	const signalsResponse = await collectFromTab(tab.id, tab.url, compiledRegistryArtifact.technologies);
-	if (!signalsResponse.ok) {
-		return signalsResponse;
-	}
+	const requestedPipeline = input.pipeline ?? 'legacy';
+	const pipelineResult = requestedPipeline === 'event'
+		? (() => {
+			return collectObservationBatchFromTab(tab.id, tab.url, compiledRegistryArtifact.technologies)
+				.then((batchResponse) => {
+					if (!batchResponse.ok) return batchResponse;
 
-	const pipelineResult = runDetectionPipeline({
-		signals: signalsResponse.value,
-		registry: compiledRegistryArtifact.technologies,
-		compiledRegistryArtifact,
-		mode: input.pipeline ?? 'legacy',
-	});
-	const replayTrace = createDetectionReplayTrace({ result: pipelineResult });
-	const savedAnalysis = await saveAnalysis(pipelineResult.analysis);
+					return ok(runObservationBatchPipeline({
+						batch: batchResponse.value,
+						registry: compiledRegistryArtifact.technologies,
+						compiledRegistryArtifact,
+						source: 'fresh',
+					}));
+				});
+		})()
+		: runLegacyOrSnapshotEventPipeline(tab, compiledRegistryArtifact, requestedPipeline);
+	const resolvedPipelineResult = await pipelineResult;
+	if (!resolvedPipelineResult.ok) {
+		return resolvedPipelineResult;
+	}
+	const replayTrace = createDetectionReplayTrace({ result: resolvedPipelineResult.value });
+	const savedAnalysis = await saveAnalysis(resolvedPipelineResult.value.analysis);
 	const savedReplayTrace = await saveReplayTrace(replayTrace);
 	logAnalysisSummary(savedAnalysis);
 	logBackgroundEvent('analysis-pipeline-complete', {
 		...summarizeTab(tab),
-		requestedMode: pipelineResult.requestedMode,
-		completedMode: pipelineResult.completedMode,
-		eventCount: pipelineResult.events.length,
-		fallbackReason: pipelineResult.fallback?.reason ?? 'none',
+		requestedMode: resolvedPipelineResult.value.requestedMode,
+		completedMode: resolvedPipelineResult.value.completedMode,
+		eventCount: resolvedPipelineResult.value.events.length,
+		fallbackReason: resolvedPipelineResult.value.fallback?.reason ?? 'none',
 	});
 
 	let session: ObservationSessionState | undefined;
@@ -466,6 +505,25 @@ async function analyzeFreshActiveTab(
 	});
 
 	return ok(createAnalysisOutput(savedAnalysis, cacheStatus, session, savedReplayTrace));
+}
+
+/** Run the compatibility snapshot collector for legacy mode and fallback checks. */
+async function runLegacyOrSnapshotEventPipeline(
+	tab: InspectableTab,
+	compiledRegistryArtifact: ReturnType<typeof bundledTechnologyRegistryProvider.getCompiledRegistry>,
+	requestedPipeline: AnalyzeActiveTabInput['pipeline'] | 'legacy',
+) {
+	const signalsResponse = await collectFromTab(tab.id, tab.url, compiledRegistryArtifact.technologies);
+	if (!signalsResponse.ok) {
+		return signalsResponse;
+	}
+
+	return ok(runDetectionPipeline({
+		signals: signalsResponse.value,
+		registry: compiledRegistryArtifact.technologies,
+		compiledRegistryArtifact,
+		mode: requestedPipeline,
+	}));
 }
 
 /** Debug output is intentionally summary-only; never log raw page signals. */
