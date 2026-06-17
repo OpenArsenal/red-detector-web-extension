@@ -26,6 +26,7 @@ import {
   getPopupObservationModeFromSession,
   groupDetectionsByPrimaryCategory,
   shouldRefreshObservedChange,
+  type PopupExplanationLookup,
   type PopupNotice,
   type PopupObservationMode,
 } from "../../lib/popup/view-model";
@@ -71,6 +72,8 @@ export default function App() {
   const [errorMessage, setErrorMessage] = createSignal("");
   const [analysis, setAnalysis] = createSignal<SiteAnalysis | null>(null);
   const [lateAddedIds, setLateAddedIds] = createSignal<string[]>([]);
+  const [explanationsByTechnologyId, setExplanationsByTechnologyId] =
+    createSignal<PopupExplanationLookup>({});
   let pollTimer: ReturnType<typeof globalThis.setInterval> | undefined;
   let refreshInFlight = false;
   let pollingCheckInFlight = false;
@@ -181,12 +184,14 @@ export default function App() {
 
     setAnalysis(update.analysis);
     setLateAddedIds(update.lateDetectionIds);
+    setExplanationsByTechnologyId(update.explanationsByTechnologyId);
 
     logPopupEvent("analysis-applied", {
       source: options.source,
       analysisSource: update.analysis.source,
       cacheStatus: response.cache.status,
       resultCount: update.analysis.results.length,
+      explanationCount: Object.keys(update.explanationsByTechnologyId).length,
       hostname: update.analysis.hostname,
       sessionStatus: response.session?.status ?? "none",
     });
@@ -499,6 +504,7 @@ export default function App() {
                     label={group.label}
                     results={group.results}
                     newDetectionIds={lateAddedIds()}
+                    explanationsByTechnologyId={explanationsByTechnologyId()}
                   />
                 )}
               </For>

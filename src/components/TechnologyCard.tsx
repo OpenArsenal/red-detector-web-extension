@@ -1,11 +1,17 @@
 import { For, Show } from 'solid-js';
 
 import type { DetectionResult } from '../lib/detection/types';
+import type { PopupDetectionExplanationSummary } from '../lib/popup/view-model';
 
 export function TechnologyCard(props: {
+	/** Detection result rendered by this card. */
 	result: DetectionResult;
+	/** Whether this detection appeared after the popup opened. */
 	isNew?: boolean;
+	/** Whether this card represents a live pending observation state. */
 	isPending?: boolean;
+	/** Optional explanation summary derived from the replay sidecar. */
+	explanation?: PopupDetectionExplanationSummary;
 }) {
 	return (
 		<article
@@ -26,7 +32,25 @@ export function TechnologyCard(props: {
 			<Show when={props.result.version}>
 				{(version) => <p>Version: {version()}</p>}
 			</Show>
-			<Show when={props.result.evidence.length}>
+			<Show when={props.explanation}>
+				{(explanation) => (
+					<section
+						class="explanation-summary"
+						aria-label={`Why ${props.result.name} was detected`}
+					>
+						<p class="result-meta">
+							{explanation().headline}
+							{explanation().primaryEvidenceKind ? ` Primary signal: ${explanation().primaryEvidenceKind}.` : ''}
+						</p>
+						<ul class="evidence-list">
+							<For each={explanation().reasons}>
+								{(reason) => <li>{reason}</li>}
+							</For>
+						</ul>
+					</section>
+				)}
+			</Show>
+			<Show when={props.result.evidence.length && !props.explanation}>
 				<p class="result-meta">Evidence: {props.result.evidence.length} signal(s)</p>
 				<ul class="evidence-list">
 					<For each={props.result.evidence.slice(0, 3)}>
