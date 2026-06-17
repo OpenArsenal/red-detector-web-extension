@@ -1,4 +1,12 @@
 export type {
+	ObservationBatchController,
+	ObservationBatchControllerStats,
+	ObservationBatchDropReason,
+	ObservationBatchFlushInput,
+	ObservationBatchPolicy,
+	ObservationBatchPushResult,
+} from './batch-controller';
+export type {
 	NormalizedObservation,
 	NormalizedObservationKind,
 	ObservationAttributes,
@@ -8,5 +16,9 @@ export type {
 	ObservationTarget,
 	ObservationValue,
 } from './types';
+export {
+	DEFAULT_OBSERVATION_BATCH_POLICY,
+	createObservationBatchController,
+} from './batch-controller';
 export type { PageSignalsObservationOptions } from './page-signals';
 export { normalizePageSignals } from './page-signals';
