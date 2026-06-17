@@ -33,7 +33,13 @@ import {
 } from '../lib/lifecycle/observation';
 import { errorResponse, ok, type AppResult } from '../lib/shared/result';
 import { STORAGE_LIMITS, getAnalysisCacheKey } from '../lib/storage/contracts';
-import { getCachedAnalysis, getStatus, saveAnalysis } from '../lib/storage';
+import {
+	getCachedAnalysis,
+	getCachedReplayTrace,
+	getStatus,
+	saveAnalysis,
+	saveReplayTrace,
+} from '../lib/storage';
 
 type InspectableTab = {
 	id: number;
@@ -206,9 +212,8 @@ async function collectFromTab(
 /**
  * Create the background response returned to the popup after analysis.
  *
- * The replay trace stays optional because cache hits still return the persisted
- * `SiteAnalysis` record only. Fresh analysis passes can attach redacted replay
- * data without changing storage semantics.
+ * The replay trace stays optional because older cache entries may not have a
+ * paired trace. Fresh and cached responses attach it when storage has one.
  */
 function createAnalysisOutput(
 	analysis: SiteAnalysis,
@@ -337,6 +342,7 @@ async function analyzeFreshActiveTab(
 	});
 	const replayTrace = createDetectionReplayTrace({ result: pipelineResult });
 	const savedAnalysis = await saveAnalysis(pipelineResult.analysis);
+	const savedReplayTrace = await saveReplayTrace(replayTrace);
 	logAnalysisSummary(savedAnalysis);
 	logBackgroundEvent('analysis-pipeline-complete', {
 		...summarizeTab(tab),
@@ -366,7 +372,7 @@ async function analyzeFreshActiveTab(
 		sessionStatus: session?.status ?? 'none',
 	});
 
-	return ok(createAnalysisOutput(savedAnalysis, cacheStatus, session, replayTrace));
+	return ok(createAnalysisOutput(savedAnalysis, cacheStatus, session, savedReplayTrace));
 }
 
 /** Debug output is intentionally summary-only; never log raw page signals. */
@@ -404,12 +410,13 @@ export function createBackgroundApi(): BackgroundApi {
 				if (input.mode === 'cache-first') {
 					const cached = await getCachedAnalysis(tab.url);
 					if (cached) {
+						const replayTrace = await getCachedReplayTrace(tab.url);
 						logBackgroundEvent('analysis-cache-hit', {
 							...summarizeTab(tab),
 							resultCount: cached.results.length,
 							analyzedAt: cached.analyzedAt,
 						});
-						return ok(createAnalysisOutput(cached, 'hit'));
+						return ok(createAnalysisOutput(cached, 'hit', undefined, replayTrace ?? undefined));
 					}
 
 					logBackgroundEvent('analysis-cache-miss', summarizeTab(tab));

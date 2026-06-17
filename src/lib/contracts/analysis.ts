@@ -57,8 +57,8 @@ export type AnalyzeActiveTabInput = {
  * Response returned to the popup after active-tab analysis.
  *
  * `analysis` remains the stable rendering and cache shape. `replayTrace` is
- * sidecar diagnostic data from fresh analysis runs so the popup can show why a
- * technology was detected without widening `SiteAnalysis` itself.
+ * sidecar diagnostic data from fresh or cached analysis runs so the popup can
+ * show why a technology was detected without widening `SiteAnalysis` itself.
  */
 export type AnalyzeActiveTabOutput = {
 	/** Normalized detector output safe for popup rendering and cache storage. */
@@ -75,11 +75,11 @@ export type AnalyzeActiveTabOutput = {
 	/** Live observation state when the fresh analysis started page watching. */
 	session?: ObservationSessionState;
 	/**
-	 * Redacted sidecar trace for fresh analysis runs.
+	 * Redacted sidecar trace for fresh or cached analysis runs.
 	 *
-	 * Cache hits intentionally omit this field because the current storage cache
-	 * only persists `SiteAnalysis`. A later storage change can add replay retention
-	 * without changing the popup explanation view model.
+	 * Older cache entries can omit this field when they predate replay trace
+	 * retention. Callers should treat it as optional explanation data rather than
+	 * part of the stable `SiteAnalysis` envelope.
 	 */
 	replayTrace?: DetectionReplayTrace;
 };
