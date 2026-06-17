@@ -14,6 +14,20 @@ function makeState(overrides: Partial<ObservationSessionState> = {}): Observatio
 	};
 }
 
+function makeFlushOutput(session = makeState()) {
+	return {
+		stats: {
+			queuedCount: 0,
+			acceptedCount: 0,
+			duplicateDropCount: 0,
+			queueLimitDropCount: 0,
+			stormLimitDropCount: 0,
+			acceptedInStormWindow: 0,
+		},
+		session,
+	};
+}
+
 async function loadContentApiFactory() {
 	vi.resetModules();
 	vi.stubGlobal('defineContentScript', (options: unknown) => options);
@@ -58,6 +72,7 @@ describe.sequential('content API observation baseline', () => {
 			snapshot: vi.fn(),
 			beginObservationSession: vi.fn(() => observing),
 			stopObservationSession: vi.fn(() => makeState({ status: 'stopped', stopReason: 'manual' })),
+			flushObservationBatch: vi.fn(() => makeFlushOutput(observing)),
 			status: vi.fn(() => makeState()),
 			disconnect: vi.fn(),
 		} satisfies ObservedPageSignals;
@@ -86,6 +101,22 @@ describe.sequential('content API observation baseline', () => {
 		expect(observedSignals.stopObservationSession).toHaveBeenCalledWith('manual');
 	});
 
+	it('flushes queued observation batches through the content API', async () => {
+		const { createContentApi } = await loadContentApiFactory();
+		const session = makeState({ status: 'observing', sessionId: 'session-1' });
+		const observedSignals = {
+			snapshot: vi.fn(),
+			beginObservationSession: vi.fn(() => session),
+			stopObservationSession: vi.fn(() => makeState({ status: 'stopped' })),
+			flushObservationBatch: vi.fn(() => makeFlushOutput(session)),
+			status: vi.fn(() => session),
+			disconnect: vi.fn(),
+		} satisfies ObservedPageSignals;
+
+		await expect(createContentApi(observedSignals).flushObservationBatch()).resolves.toEqual({ ok: true, value: makeFlushOutput(session) });
+		expect(observedSignals.flushObservationBatch).toHaveBeenCalledOnce();
+	});
+
 	it('expires observation through the same stop path used by manual stops', async () => {
 		vi.useFakeTimers();
 		const { createContentApi } = await loadContentApiFactory();
@@ -93,6 +124,7 @@ describe.sequential('content API observation baseline', () => {
 			snapshot: vi.fn(),
 			beginObservationSession: vi.fn(() => makeState({ status: 'observing' })),
 			stopObservationSession: vi.fn(() => makeState({ status: 'stopped', stopReason: 'expired' })),
+			flushObservationBatch: vi.fn(),
 			status: vi.fn(() => makeState()),
 			disconnect: vi.fn(),
 		} satisfies ObservedPageSignals;
@@ -121,6 +153,7 @@ describe.sequential('content API observation baseline', () => {
 			snapshot: vi.fn(),
 			beginObservationSession: vi.fn(() => makeState({ status: 'observing' })),
 			stopObservationSession: vi.fn(() => makeState({ status: 'stopped', stopReason: 'manual' })),
+			flushObservationBatch: vi.fn(),
 			status: vi.fn(() => makeState()),
 			disconnect: vi.fn(),
 		} satisfies ObservedPageSignals;
@@ -150,6 +183,7 @@ describe.sequential('content API observation baseline', () => {
 			snapshot: vi.fn(),
 			beginObservationSession: vi.fn(() => makeState({ status: 'observing' })),
 			stopObservationSession: vi.fn(() => makeState({ status: 'stopped', stopReason: 'manual' })),
+			flushObservationBatch: vi.fn(),
 			status: vi.fn(() => makeState()),
 			disconnect: vi.fn(),
 		} satisfies ObservedPageSignals;
@@ -170,6 +204,22 @@ describe.sequential('content API observation baseline', () => {
 
 		expect(observedSignals.disconnect).toHaveBeenCalledWith('invalidated');
 		expect(observedSignals.stopObservationSession).not.toHaveBeenCalled();
+	});
+
+	it('flushes queued observation batches through the content API', async () => {
+		const { createContentApi } = await loadContentApiFactory();
+		const session = makeState({ status: 'observing', sessionId: 'session-1' });
+		const observedSignals = {
+			snapshot: vi.fn(),
+			beginObservationSession: vi.fn(() => session),
+			stopObservationSession: vi.fn(() => makeState({ status: 'stopped' })),
+			flushObservationBatch: vi.fn(() => makeFlushOutput(session)),
+			status: vi.fn(() => session),
+			disconnect: vi.fn(),
+		} satisfies ObservedPageSignals;
+
+		await expect(createContentApi(observedSignals).flushObservationBatch()).resolves.toEqual({ ok: true, value: makeFlushOutput(session) });
+		expect(observedSignals.flushObservationBatch).toHaveBeenCalledOnce();
 	});
 
 });

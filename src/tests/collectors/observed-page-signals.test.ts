@@ -180,4 +180,34 @@ describe('observed page signals', () => {
 			meta: { generator: ['Astro'] },
 		});
 	});
+
+	it('flushes normalized observations from the current observer snapshot', () => {
+		vi.stubGlobal('document', makeDocument());
+		vi.stubGlobal('location', { href: 'https://example.com/products' });
+		vi.stubGlobal('MutationObserver', FakeMutationObserver);
+		vi.stubGlobal('PerformanceObserver', undefined);
+		vi.stubGlobal('performance', {
+			getEntriesByType: vi.fn(() => [
+				{ name: 'https://example.com/assets/app.js', initiatorType: 'script' },
+			]),
+		});
+
+		const observedSignals = createObservedPageSignals({ throttleMs: 25 });
+		observedSignals.beginObservationSession({
+			sessionId: 'session-1',
+			expectedUrl: 'https://example.com/products',
+			durationMs: 1_000,
+			maxPendingNodes: 10,
+			maxMutations: 100,
+		});
+		observedSignals.snapshot();
+
+		const flushed = observedSignals.flushObservationBatch();
+
+		expect(flushed.session).toMatchObject({ status: 'observing' });
+		expect(flushed.batch?.target).toEqual({ url: 'https://example.com/products', hostname: 'example.com' });
+		expect(flushed.batch?.observations.map((observation) => observation.kind)).toEqual(
+			expect.arrayContaining(['scriptSrc', 'stylesheetHref', 'resourceUrl', 'requestUrl', 'scriptContent', 'stylesheetContent', 'meta']),
+		);
+	});
 });
