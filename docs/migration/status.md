@@ -19,7 +19,8 @@ The project is now past the first documentation pass, the first normalized-obser
 | 9 observation normalization | Complete | `src/lib/observations/` | The project has a normalized observation contract and a `PageSignals` adapter for tests and future evidence work. | The detector consumes observations or replay logs exist. |
 | 10 evidence repository | Complete | `src/lib/evidence/` | Evidence entries, compatibility evidence batches, and an in-memory repository exist for future pipeline tests. | Evidence is persisted, replay logs exist, or the detector consumes evidence entries. |
 | 11 observation pattern matching | Complete | `src/lib/detection/observation-matcher.ts` | Normalized observations can be matched against current registry rules to emit pattern-match events and evidence entries. | Observation matching is wired into background runtime, graph inference, or popup explanations. |
-| 12 evidence candidate aggregation | Complete after this patch stack | `src/lib/candidates/` | Evidence entries can be grouped into deterministic technology candidates with detector-compatible confidence weighting. | Candidate aggregation is the production detector path, graph refinement consumes candidates, or popup explanations render candidates. |
+| 12 evidence candidate aggregation | Complete | `src/lib/candidates/aggregate.ts` | Evidence entries can be grouped into deterministic technology candidates with detector-compatible confidence weighting. | Candidate aggregation is the production detector path or popup explanations render candidates. |
+| 13 candidate relationship refinement | Complete after this patch stack | `src/lib/candidates/refine.ts` | Evidence candidates can be refined through `implies`, `requires`, and `excludes` graph rules with rejection records. | Refined candidates replace `analyzeSite(...)`, emit final detections, or render in popup explanations. |
 
 ## Decision ledger
 
@@ -73,13 +74,16 @@ Phase 2: contracts and provider seams
                       │
                       ▼
               Phase 12: evidence candidate aggregation
+                      │
+                      ▼
+              Phase 13: candidate relationship refinement
 ```
 
-The order matters because the popup view model depends on stabilized analysis and lifecycle semantics, graph work depends on preserving registry order, and future observation/replay work depends on shared fixtures and a sidecar matcher that do not duplicate contract assumptions.
+The order matters because the popup view model depends on stabilized analysis and lifecycle semantics, graph work depends on preserving registry order, and future observation/replay work depends on shared fixtures and sidecar matcher/candidate stages that do not duplicate contract assumptions.
 
 ## Known validation limits
 
-Phase 12 records the current limitations rather than hiding them.
+Phase 13 records the current limitations rather than hiding them.
 
 - The full Vitest suite may still be slower or less stable in the sandbox than targeted suites.
 - `npm run compile` may continue to expose branch-wide TypeScript issues that predate a docs patch.

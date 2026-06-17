@@ -1,6 +1,6 @@
-# Architecture overview after phase 12
+# Architecture overview after phase 13
 
-This overview gives maintainers a single map for the current extension and the migration path toward the event-based detection engine. It describes verified repository shape after phases 1 through 12, not the earlier small-registry MVP narrative.
+This overview gives maintainers a single map for the current extension and the migration path toward the event-based detection engine. It describes verified repository shape after phases 1 through 13, not the earlier small-registry MVP narrative.
 
 The current extension is still a Chrome-first Manifest V3 extension. The popup asks the background service worker to analyze the active tab, the background coordinates content-script collection and enrichment, the detector turns `PageSignals` into `SiteAnalysis`, and storage keeps only normalized analysis results. The migration has not changed that user-visible flow. It has made the seams around that flow explicit so future work can replace snapshot-shaped internals with normalized observations, evidence, replay, and shared CLI-compatible engine behavior.
 
@@ -28,6 +28,7 @@ Popup extension page
       -> storage.saveAnalysis(...)
       -> createEvidenceBatchFromAnalysis(...) evidence seam
       -> createEvidenceCandidateBatch(...) candidate seam
+      -> refineEvidenceCandidateBatch(...) relationship refinement seam
   -> popup view model
   -> popup named regions
 ```
@@ -75,7 +76,7 @@ The extension collector and the future CLI collector will not collect the same r
 | Observations | `src/lib/observations/**` | `PageSignals` can be adapted into ordered normalized observation batches without changing detector output. | Feed pattern matching, replay, and future CLI fixtures through this shape. |
 | Evidence | `src/lib/evidence/**` | Observation-derived and compatibility evidence entries can be represented and grouped without changing detector output. | Feed candidate creation, replay persistence, and explanation output through this shape after equivalence tests. |
 | Observation matcher | `src/lib/detection/observation-match-types.ts`, `src/lib/detection/observation-matcher.ts` | Normalized observations can be matched against current registry rules to emit sidecar pattern-match events and evidence entries. | Compare observation-derived evidence with current detector output before runtime cutover. |
-| Candidates | `src/lib/candidates/**` | Evidence entries can be aggregated into deterministic candidate batches without running graph refinement. | Compare candidate confidence and version selection with current detector output before runtime cutover. |
+| Candidates | `src/lib/candidates/**` | Evidence entries can be aggregated into deterministic candidate batches and refined through registry relationships without replacing detector output. | Compare refined candidates with current graph output before runtime cutover. |
 | Detection and graph | `src/lib/detection/**` | `analyzeSite(...)` remains compatible while delegating through a compiled registry graph and candidates. | Make evidence and explanation outputs first-class after equivalence tests protect results. |
 | Storage | `src/lib/storage/**` | Per-origin `SiteAnalysis` cache semantics remain stable. | Keep evidence/replay persistence separate until the storage format is designed. |
 | Tests | `src/tests/**`, `src/tests/support/**` | Shared fixtures and browser mocks prevent duplicated contract assumptions. | Add observation and replay fixtures when the normalized pipeline exists. |
@@ -87,19 +88,19 @@ These rules are compatibility facts, not final product claims.
 - `BackgroundApi` still analyzes the current active inspectable tab.
 - Cache keys are still per origin, not per full URL.
 - Cache hits still return normalized analysis without starting live observation.
-- `PageSignals` remains the detector input; normalized observations, pattern-match events, evidence entries, and evidence candidates now exist beside it for future replay work.
+- `PageSignals` remains the detector input; normalized observations, pattern-match events, evidence entries, evidence candidates, and refined candidate batches now exist beside it for future replay work.
 - Registry order remains compatibility data because result ordering and graph conflict tie-breaks can depend on it.
 - Popup grouping still uses the primary category for each detection.
 - Popup named regions are layout seams, not a detector model.
 
 ## Open architecture decisions
 
-The following decisions are intentionally not resolved by phase 12.
+The following decisions are intentionally not resolved by phase 13.
 
 | Decision | Current answer | Why it stays open |
 | --- | --- | --- |
 | YAML or JSON registry source | Not active in runtime. TypeScript rules remain canonical. | The compiled graph seam exists, but source-format migration needs schema validation and order-preservation work. |
 | CLI package location | Not decided. | The shared engine boundary is being prepared before repository/package layout is chosen. |
-| Explanation output in popup | Not shown yet. | Candidate/evidence contracts now exist, but explanation view-models and disclosure rules still need a separate UI phase. |
+| Explanation output in popup | Not shown yet. | Evidence, candidate, and rejection contracts now exist, but explanation view-models and disclosure rules still need a separate UI phase. |
 | Replay persistence | Not stored yet. | Observation batches and evidence entries exist, but runtime event logs and storage format need separate privacy and size decisions. |
 | Broader extension permissions | Not added. | Phase 9 keeps current active-tab-first behavior without expanding the permission model. |
