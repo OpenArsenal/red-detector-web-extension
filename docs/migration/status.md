@@ -1,8 +1,8 @@
-# Migration status after phase 20
+# Migration status after phase 21
 
 This status page lets reviewers see which migration seams are complete, which seams are only compatibility wrappers, and which future architecture goals remain unimplemented. It should be updated whenever a phase changes a boundary that another maintainer would rely on.
 
-The project is now past the first documentation pass, the first normalized-observation seam, and the first evidence repository seam. Phases 1 through 8 established behavior baselines, contracts, collectors, lifecycle rules, graph seams, popup view-state boundaries, shared test fixtures, and architecture docs. Phase 9 adds the observation contract that future evidence and replay work can target without changing detector behavior. Phase 10 adds evidence entries and an in-memory repository while keeping detector output unchanged. Phase 11 adds a sidecar observation matcher that turns normalized observations into pattern-match events and evidence entries without replacing `analyzeSite(...)`. Phase 12 adds evidence candidate aggregation so those entries can become technology candidates before graph refinement. Phase 13 refines those candidates through registry relationships. Phase 14 emits the refined candidates back into `SiteAnalysis` and adds parity fixtures against `analyzeSite(...)`. Phase 15 makes that sidecar path runtime-capable behind an explicit active-tab pipeline switch. Phase 16 adds redacted replay traces and detection explanations from the pipeline result. Phase 17 renders compact replay explanation summaries in the popup. Phase 18 persists redacted replay traces beside the analysis cache so cache hits can return explanation data. Phase 19 adds compiler artifacts, matcher-index reuse, and bounded observation batch controls. Phase 20 connects initial and dirty content observations to the event pipeline.
+The project is now past the first documentation pass, the first normalized-observation seam, and the first evidence repository seam. Phases 1 through 8 established behavior baselines, contracts, collectors, lifecycle rules, graph seams, popup view-state boundaries, shared test fixtures, and architecture docs. Phase 9 adds the observation contract that future evidence and replay work can target without changing detector behavior. Phase 10 adds evidence entries and an in-memory repository while keeping detector output unchanged. Phase 11 adds a sidecar observation matcher that turns normalized observations into pattern-match events and evidence entries without replacing `analyzeSite(...)`. Phase 12 adds evidence candidate aggregation so those entries can become technology candidates before graph refinement. Phase 13 refines those candidates through registry relationships. Phase 14 emits the refined candidates back into `SiteAnalysis` and adds parity fixtures against `analyzeSite(...)`. Phase 15 makes that sidecar path runtime-capable behind an explicit active-tab pipeline switch. Phase 16 adds redacted replay traces and detection explanations from the pipeline result. Phase 17 renders compact replay explanation summaries in the popup. Phase 18 persists redacted replay traces beside the analysis cache so cache hits can return explanation data. Phase 19 adds compiler artifacts, matcher-index reuse, and bounded observation batch controls. Phase 20 connects initial and dirty content observations to the event pipeline. Phase 21 restores event-mode parity for background-only evidence surfaces and makes dirty refreshes rerun graph refinement over the current observation batch instead of merging final detections.
 
 ## Phase status matrix
 
@@ -25,9 +25,10 @@ The project is now past the first documentation pass, the first normalized-obser
 | 15 event pipeline runtime | Complete | `src/lib/pipeline/runtime.ts` and `src/tests/pipeline/event-pipeline.test.ts` | Fresh active-tab analysis can run through the event pipeline behind an explicit request switch with legacy fallback. | The event pipeline is the default detector path. |
 | 16 replay and explanations | Complete | `src/lib/pipeline/replay.ts` and `src/tests/pipeline/replay.test.ts` | Pipeline results can become redacted replay traces with per-detection explanations. | Replay timelines are streamed or inspected in full. |
 | 17 popup explanation summaries | Complete | `src/lib/popup/view-model.ts` and `src/components/TechnologyCard.tsx` | The popup can render compact replay-derived explanation summaries when a response includes a trace. | The popup has a full replay inspector. |
-| 18 replay trace storage | Complete after this patch stack | `src/lib/storage/index.ts` and `src/tests/storage/cache.test.ts` | Redacted replay traces are persisted beside analysis cache records and returned on cache hits when available. | Existing cache entries are migrated or replay traces are synced across devices. |
+| 18 replay trace storage | Complete | `src/lib/storage/index.ts` and `src/tests/storage/cache.test.ts` | Redacted replay traces are persisted beside analysis cache records and returned on cache hits when available. | Existing cache entries are migrated or replay traces are synced across devices. |
 | 19 registry compiler and batch controls | Complete | `src/lib/registry/compiler.ts` and `src/lib/observations/batch-controller.ts` | Compiled artifacts expose matcher indexes, relationship graphs, collection plans, source maps, diagnostics, and bounded batch controls. | Registry artifacts are exported to disk or YAML/JSON source files are active. |
 | 20 collector observation cutover | Complete | `src/lib/content/observed-page-signals.ts` and `src/entrypoints/background.ts` | Initial event-mode analysis and dirty observation refreshes can use normalized observation batches without exposing fresh `PageSignals` snapshots to the background event path. | Browser-level MV3 automation verifies service-worker suspension, real injection, and popup teardown. |
+| 21 event parity hardening | Complete | `src/lib/collectors/background-signals.ts`, `src/lib/collectors/extension-page-collector.ts`, and `src/entrypoints/background.ts` | Event-mode analysis includes background-only observations, and dirty refreshes rerun the event pipeline over current evidence before graph refinement. | Chrome-level QA has proven MV3 suspension, real MAIN-world global probing, and popup teardown across browser versions. |
 
 ## Decision ledger
 
@@ -38,10 +39,11 @@ The table records decisions that affect future phases. A decision can be reopene
 | Per-origin cache keys | Keep `analysis:<origin>` compatibility and store replay traces under `replay:<origin>`. | Do not change cache key semantics without storage tests and a migration note. |
 | Active-tab-first extension flow | Keep current active-tab analysis as the extension interaction model. | Do not introduce persistent host access or background crawling as incidental refactor fallout. |
 | TypeScript registry source | Keep the TypeScript rule tree as the runtime source for now. | Compiled registry work must preserve order and relationship equivalence before source-format changes. |
-| `PageSignals` detector input | Keep as the compatibility input. | Normalized observations, evidence entries, evidence candidates, replay traces, and popup summaries exist beside this input; replacing it still needs detector equivalence tests. |
+| `PageSignals` detector input | Keep as the compatibility input when `pipeline` is omitted. | Event-mode popup analysis can use normalized observations, while legacy remains the parity oracle for lower-level callers and regressions. |
 | Popup grouping | Keep primary-category grouping with compact explanation summaries. | Full replay inspection must be an intentional popup change with view-model and component tests. |
 | Browser mocks | Mock browser APIs, not production modules. | Runtime-adjacent tests should import production code after installing the API mock. |
 | Benchmarks | Add only for measured hot paths. | Docs, fixtures, storage retention, and UI composition changes do not need benchmark files. |
+| Dirty refresh graph semantics | Treat flushed observations as a change signal, then recollect current observations before event reanalysis. | Do not merge final detections when relationship refinement could change `requires`, `excludes`, or implied support. |
 
 ## Migration dependency map
 
@@ -99,16 +101,24 @@ Phase 2: contracts and provider seams
                        │
                        ▼
               Phase 18: replay trace storage
+                       │
+                       ▼
+              Phase 19: registry compiler and batch controls
+                       │
+                       ▼
+              Phase 20: collector observation cutover
+                       │
+                       ▼
+              Phase 21: event parity hardening
 ```
 
 The order matters because the popup view model depends on stabilized analysis and lifecycle semantics, graph work depends on preserving registry order, and replay storage depends on shared redaction and sidecar boundaries that do not widen `SiteAnalysis`.
 
 ## Known validation limits
 
-Phase 18 records the current limitations rather than hiding them.
+Phase 21 records the current limitations rather than hiding them.
 
 - The full Vitest suite may still be slower or less stable in the sandbox than targeted suites.
-- `npm run compile` may continue to expose branch-wide TypeScript issues that predate a docs patch.
 - Browser-level extension behavior still needs manual Chrome QA because Vitest does not exercise Manifest V3 service-worker suspension, real runtime injection, popup teardown, or isolated versus main-world execution.
 - There is no dedicated lint script in `package.json` at this point.
 

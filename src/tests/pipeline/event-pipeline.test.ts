@@ -172,6 +172,7 @@ describe('event pipeline runtime coordinator', () => {
 			results: [expect.objectContaining({ technologyId: 'batch-tech' })],
 		});
 		expect(result.events.map((event) => event.stage)).toEqual([
+			'normalized-observations',
 			'pattern-matched',
 			'evidence-created',
 			'candidates-created',

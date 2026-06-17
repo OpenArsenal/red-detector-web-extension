@@ -4,6 +4,7 @@ import type { CollectionPlan } from './planning';
 import { limitStringsByTotalChars, truncate, uniqueStrings } from '../detection/normalizers';
 import { SOURCE_LIMITS } from '../detection/rules';
 import type { PageSignals } from '../detection/types';
+import type { NormalizedObservation, ObservationBatch, ObservationTarget } from '../observations';
 import { getOrigin } from '../shared/url';
 
 /** Value shape stored for a page-owned JavaScript global. */
@@ -19,6 +20,18 @@ export type BackgroundSignalCollectorInput = {
 	tabId: number;
 	/** Page signals returned by the content script before background-only data is added. */
 	signals: PageSignals;
+	/** Rule-aware plan that tells the background which injected globals matter. */
+	collectionPlan: CollectionPlan;
+	/** Optional logger supplied by the background entrypoint. */
+	log?: CollectorLog;
+};
+
+/** Input for adding background-only observations to an event-mode batch. */
+export type BackgroundObservationCollectorInput = {
+	/** Active tab id used when an injected script reads page-owned JavaScript globals. */
+	tabId: number;
+	/** Content-emitted observation batch that background observations should extend. */
+	batch: ObservationBatch;
 	/** Rule-aware plan that tells the background which injected globals matter. */
 	collectionPlan: CollectionPlan;
 	/** Optional logger supplied by the background entrypoint. */
@@ -65,6 +78,235 @@ export async function collectBackgroundPageSignals(
 		),
 		jsGlobals,
 	};
+}
+
+/**
+ * Adds background-only facts to an already-normalized event batch.
+ *
+ * Event-mode fresh analysis starts with content-script observations, but the
+ * content script cannot see page-owned globals or response headers. This helper
+ * restores parity with the legacy enriched snapshot path by appending those
+ * facts as normal observations before pattern matching, evidence aggregation,
+ * and graph refinement run.
+ */
+export async function collectBackgroundObservationBatch(
+	input: BackgroundObservationCollectorInput,
+): Promise<ObservationBatch> {
+	const pageOrigin = getOrigin(input.batch.target.url);
+	const sourceBudget = summarizeSourceContentObservationBudget(input.batch);
+	const sourceUrls = collectSourceUrlsFromObservationBatch(input.batch);
+	const [jsGlobals, headers, fetchedSourceContents] = await Promise.all([
+		collectInjectedJsGlobals(input.tabId, input.collectionPlan.jsGlobalPropertyList, input.log),
+		collectResponseHeaders(input.batch.target.url),
+		collectSameOriginObservationSourceContents({
+			pageOrigin,
+			scriptUrls: sourceUrls.scriptUrls,
+			stylesheetUrls: sourceUrls.stylesheetUrls,
+			existingScriptContentCount: sourceBudget.scriptContentCount,
+			existingStylesheetContentCount: sourceBudget.stylesheetContentCount,
+			existingScriptContentChars: sourceBudget.scriptContentChars,
+			existingStylesheetContentChars: sourceBudget.stylesheetContentChars,
+		}),
+	]);
+	const observedAt = Date.now();
+	const backgroundObservations = createBackgroundObservations({
+		target: input.batch.target,
+		observedAt,
+		headers,
+		jsGlobals,
+		scriptContents: fetchedSourceContents.scriptContents,
+		stylesheetContents: fetchedSourceContents.stylesheetContents,
+	});
+
+	input.log?.('collect-background-observations-success', {
+		tabId: input.tabId,
+		hostname: input.batch.target.hostname,
+		backgroundObservationCount: backgroundObservations.length,
+		headerCount: Object.keys(headers).length,
+		jsGlobalCount: Object.keys(jsGlobals).length,
+		scriptContentCount: fetchedSourceContents.scriptContents.length,
+		stylesheetContentCount: fetchedSourceContents.stylesheetContents.length,
+	});
+
+	return {
+		...input.batch,
+		observations: [...input.batch.observations, ...backgroundObservations],
+	};
+}
+
+
+type SourceContentObservationBudget = {
+	/** Number of script-content observations already present before background fetches. */
+	scriptContentCount: number;
+	/** Number of stylesheet-content observations already present before background fetches. */
+	stylesheetContentCount: number;
+	/** Total script-content characters already present before background fetches. */
+	scriptContentChars: number;
+	/** Total stylesheet-content characters already present before background fetches. */
+	stylesheetContentChars: number;
+};
+
+type ObservationSourceUrls = {
+	/** Candidate script URLs observed by the content script or resource timings. */
+	scriptUrls: string[];
+	/** Candidate stylesheet URLs observed by the content script or resource timings. */
+	stylesheetUrls: string[];
+};
+
+type ObservationSourceContentInput = ObservationSourceUrls & {
+	/** Origin that passive background fetches must stay within. */
+	pageOrigin: string;
+	/** Number of script-content observations already present before background fetches. */
+	existingScriptContentCount: number;
+	/** Number of stylesheet-content observations already present before background fetches. */
+	existingStylesheetContentCount: number;
+	/** Total script-content characters already present before background fetches. */
+	existingScriptContentChars: number;
+	/** Total stylesheet-content characters already present before background fetches. */
+	existingStylesheetContentChars: number;
+};
+
+type BackgroundObservationInput = SourceContentSignals & {
+	/** Target shared by appended background observations. */
+	target: ObservationTarget;
+	/** Timestamp attached to background observations. */
+	observedAt: number;
+	/** Bounded response headers collected by the background. */
+	headers: Record<string, string>;
+	/** Bounded page-owned JavaScript globals collected from the main world. */
+	jsGlobals: Record<string, JsGlobalSignalValue>;
+};
+
+/** Count existing source-content observations so background fetches respect budgets. */
+function summarizeSourceContentObservationBudget(batch: ObservationBatch): SourceContentObservationBudget {
+	let scriptContentCount = 0;
+	let stylesheetContentCount = 0;
+	let scriptContentChars = 0;
+	let stylesheetContentChars = 0;
+
+	for (const observation of batch.observations) {
+		if (observation.kind === 'scriptContent') {
+			scriptContentCount += 1;
+			scriptContentChars += String(observation.value).length;
+			continue;
+		}
+		if (observation.kind === 'stylesheetContent') {
+			stylesheetContentCount += 1;
+			stylesheetContentChars += String(observation.value).length;
+		}
+	}
+
+	return {
+		scriptContentCount,
+		stylesheetContentCount,
+		scriptContentChars,
+		stylesheetContentChars,
+	};
+}
+
+/** Extract same-origin fetch candidates from normalized content observations. */
+function collectSourceUrlsFromObservationBatch(batch: ObservationBatch): ObservationSourceUrls {
+	const scriptUrls: string[] = [];
+	const stylesheetUrls: string[] = [];
+
+	for (const observation of batch.observations) {
+		if (typeof observation.value !== 'string') continue;
+
+		if (observation.kind === 'scriptSrc') {
+			scriptUrls.push(observation.value);
+			continue;
+		}
+		if (observation.kind === 'stylesheetHref') {
+			stylesheetUrls.push(observation.value);
+			continue;
+		}
+		if (observation.kind !== 'resourceUrl') continue;
+
+		const initiatorType = String(observation.attributes?.initiatorType ?? '');
+		if (initiatorType === 'script') {
+			scriptUrls.push(observation.value);
+		} else if (initiatorType === 'link' || initiatorType === 'css') {
+			stylesheetUrls.push(observation.value);
+		}
+	}
+
+	return {
+		scriptUrls: uniqueStrings(scriptUrls),
+		stylesheetUrls: uniqueStrings(stylesheetUrls),
+	};
+}
+
+/** Fetch source text for event observations without exceeding the same legacy budgets. */
+async function collectSameOriginObservationSourceContents(
+	input: ObservationSourceContentInput,
+): Promise<SourceContentSignals> {
+	const [scriptContents, stylesheetContents] = await Promise.all([
+		fetchBoundedTextSignals(
+			input.scriptUrls,
+			input.pageOrigin,
+			SOURCE_LIMITS.scriptContentItems - input.existingScriptContentCount,
+			SOURCE_LIMITS.scriptContentChars,
+			SOURCE_LIMITS.scriptContentTotalChars - input.existingScriptContentChars,
+		),
+		fetchBoundedTextSignals(
+			input.stylesheetUrls,
+			input.pageOrigin,
+			SOURCE_LIMITS.stylesheetContentItems - input.existingStylesheetContentCount,
+			SOURCE_LIMITS.stylesheetContentChars,
+			SOURCE_LIMITS.stylesheetContentTotalChars - input.existingStylesheetContentChars,
+		),
+	]);
+
+	return { scriptContents, stylesheetContents };
+}
+
+/** Convert background-only values into the same observation contract as content facts. */
+function createBackgroundObservations(input: BackgroundObservationInput): NormalizedObservation[] {
+	const observations: NormalizedObservation[] = [];
+	const appendTextObservation = (kind: NormalizedObservation['kind'], value: string, key?: string): void => {
+		if (!value) return;
+		observations.push(createBackgroundObservation(input.target, input.observedAt, kind, value, key));
+	};
+
+	for (const [key, value] of sortedEntries(input.headers)) {
+		appendTextObservation('header', value, key);
+	}
+	for (const content of input.scriptContents) {
+		appendTextObservation('scriptContent', content);
+	}
+	for (const content of input.stylesheetContents) {
+		appendTextObservation('stylesheetContent', content);
+	}
+	for (const [key, value] of sortedEntries(input.jsGlobals)) {
+		observations.push(createBackgroundObservation(input.target, input.observedAt, 'jsGlobal', value, key, 'page-main-world'));
+	}
+
+	return observations;
+}
+
+/** Create one replay-safe background observation with stable target metadata. */
+function createBackgroundObservation(
+	target: ObservationTarget,
+	observedAt: number,
+	kind: NormalizedObservation['kind'],
+	value: NormalizedObservation['value'],
+	key?: string,
+	collector: NormalizedObservation['collector'] = 'background-enrichment',
+): NormalizedObservation {
+	return {
+		kind,
+		interface: 'extension',
+		collector,
+		target,
+		observedAt,
+		value,
+		...(key ? { key } : {}),
+	};
+}
+
+/** Sort record entries for stable replay and test output. */
+function sortedEntries<T>(record: Record<string, T>): [string, T][] {
+	return Object.entries(record).sort(([left], [right]) => left.localeCompare(right));
 }
 
 /**

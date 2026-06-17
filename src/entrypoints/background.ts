@@ -300,6 +300,16 @@ async function flushObservationBatchForTab(
 	}
 }
 
+/**
+ * Refresh a dirty observation session without merging final detections.
+ *
+ * The flushed batch tells us a page changed, but it is not a complete truth set.
+ * After a non-empty flush, the background recollects the current normalized
+ * batch, appends background-only observations through the collector boundary,
+ * and reruns matching plus graph refinement over that current evidence. This
+ * preserves `requires` and `excludes` semantics that a result-level merge cannot
+ * safely maintain.
+ */
 async function analyzeObservationBatchRefresh(
 	tab: InspectableTab,
 	flush: FlushObservationBatchOutput,
@@ -317,58 +327,34 @@ async function analyzeObservationBatchRefresh(
 	}
 
 	const compiledRegistryArtifact = bundledTechnologyRegistryProvider.getCompiledRegistry();
+	const currentBatchResponse = await collectObservationBatchFromTab(
+		tab.id,
+		tab.url,
+		compiledRegistryArtifact.technologies,
+	);
+	if (!currentBatchResponse.ok) {
+		return currentBatchResponse;
+	}
+
 	const batchResult = runObservationBatchPipeline({
-		batch: flush.batch,
+		batch: currentBatchResponse.value,
 		registry: compiledRegistryArtifact.technologies,
 		compiledRegistryArtifact,
 		source: 'fresh',
 	});
-	const cached = await getCachedAnalysis(tab.url);
-	const analysis = mergeIncrementalAnalysis(cached, batchResult.analysis);
-	const replayTrace = createDetectionReplayTrace({
-		result: Object.assign({}, batchResult, { analysis }),
-	});
-	const savedAnalysis = await saveAnalysis(analysis);
+	const replayTrace = createDetectionReplayTrace({ result: batchResult });
+	const savedAnalysis = await saveAnalysis(batchResult.analysis);
 	const savedReplayTrace = await saveReplayTrace(replayTrace);
 
 	logBackgroundEvent('observation-batch-refresh-complete', {
 		...summarizeTab(tab),
-		observationCount: flush.batch.observations.length,
+		flushedObservationCount: flush.batch.observations.length,
+		currentObservationCount: currentBatchResponse.value.observations.length,
 		queuedCount: flush.stats.queuedCount,
 		resultCount: savedAnalysis.results.length,
 	});
 
 	return ok(createAnalysisOutput(savedAnalysis, 'bypassed', flush.session, savedReplayTrace));
-}
-
-/**
- * Merge late batch detections without treating missing late evidence as removal.
- *
- * A late observation batch is append-oriented. It can prove that a new script,
- * link, resource, or meta tag appeared, but it cannot prove that previously
- * collected evidence disappeared. Existing detections therefore survive unless
- * the batch emits the same technology with equal or stronger confidence.
- */
-function mergeIncrementalAnalysis(base: SiteAnalysis | null, incremental: SiteAnalysis): SiteAnalysis {
-	if (!base || base.url !== incremental.url || base.hostname !== incremental.hostname) return incremental;
-
-	const results = [...base.results];
-	const resultIndexById = new Map(results.map((result, index) => [result.technologyId, index]));
-	for (const result of incremental.results) {
-		const existingIndex = resultIndexById.get(result.technologyId);
-		if (existingIndex === undefined) {
-			resultIndexById.set(result.technologyId, results.length);
-			results.push(result);
-			continue;
-		}
-
-		if (result.confidence.value >= results[existingIndex]!.confidence.value) results[existingIndex] = result;
-	}
-
-	return Object.assign({}, incremental, {
-		results,
-		errors: [...base.errors, ...incremental.errors],
-	});
 }
 
 async function beginObservationSessionForTab(

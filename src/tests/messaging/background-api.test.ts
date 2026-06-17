@@ -414,8 +414,8 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 		});
 
 		expect(harness.mocks.getCachedAnalysis).toHaveBeenCalledWith(HTTP_TAB.url);
-		expect(harness.contentApi.collectObservationBatch).toHaveBeenCalledOnce();
-		expect(harness.contentApi.collectPageSignals).not.toHaveBeenCalled();
+		expect(harness.contentApi.collectPageSignals).toHaveBeenCalledOnce();
+		expect(harness.contentApi.collectObservationBatch).not.toHaveBeenCalled();
 		expect(harness.mocks.getCompiledRegistry).toHaveBeenCalledOnce();
 		expect(harness.mocks.analyzeSite).toHaveBeenCalledOnce();
 		expect(harness.mocks.saveAnalysis).toHaveBeenCalledWith(expect.objectContaining({ source: 'fresh' }));
@@ -589,6 +589,62 @@ describe.sequential('background observation session baseline', () => {
 		expect(harness.contentApi.beginObservationSession).toHaveBeenCalledOnce();
 	});
 
+	it('reruns the event pipeline against a current observation batch after dirty flushes', async () => {
+		const dirtySession = {
+			status: 'dirty' as const,
+			throttleMs: 1_500,
+			pendingMutationCount: 1,
+			sessionId: 'session-1',
+			expectedUrl: HTTP_TAB.url!,
+		};
+		const observingSession = {
+			...dirtySession,
+			status: 'observing' as const,
+			pendingMutationCount: 0,
+		};
+		const harness = await loadBackgroundApiHarness({
+			tab: HTTP_TAB,
+			contentApi: {
+				getObservationSessionState: vi.fn(async () => ok(dirtySession)),
+				flushObservationBatch: vi.fn(async () => ok({
+					batch: makeObservationBatch(),
+					stats: {
+						queuedCount: 1,
+						acceptedCount: 1,
+						duplicateDropCount: 0,
+						queueLimitDropCount: 0,
+						stormLimitDropCount: 0,
+						acceptedInStormWindow: 1,
+					},
+					session: observingSession,
+				})),
+			},
+		});
+
+		await expect(harness.api.refreshActiveObservationSession()).resolves.toMatchObject({
+			ok: true,
+			value: {
+				cache: {
+					status: 'bypassed',
+				},
+				session: {
+					status: 'observing',
+				},
+				replayTrace: {
+					completedMode: 'event',
+				},
+			},
+		});
+
+		expect(harness.contentApi.flushObservationBatch).toHaveBeenCalledOnce();
+		expect(harness.contentApi.collectObservationBatch).toHaveBeenCalledOnce();
+		expect(harness.contentApi.collectPageSignals).not.toHaveBeenCalled();
+		expect(harness.contentApi.beginObservationSession).not.toHaveBeenCalled();
+		expect(harness.mocks.saveAnalysis).toHaveBeenCalledOnce();
+		expect(harness.mocks.saveReplayTrace).toHaveBeenCalledWith(expect.objectContaining({
+			completedMode: 'event',
+		}));
+	});
 
 	it('rejects observation refresh when the session belongs to a previous page path', async () => {
 		const harness = await loadBackgroundApiHarness({

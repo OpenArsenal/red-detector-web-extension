@@ -1,4 +1,8 @@
-import { collectBackgroundPageSignals, type CollectorLog } from './background-signals';
+import {
+	collectBackgroundObservationBatch,
+	collectBackgroundPageSignals,
+	type CollectorLog,
+} from './background-signals';
 import { buildCollectionPlan, toCollectPageSignalsInput } from './planning';
 import type { CollectObservationBatchOutput, ContentApi } from '../contracts/analysis';
 import type { PageSignals, TechnologyDefinition } from '../detection/types';
@@ -141,14 +145,22 @@ export async function collectExtensionObservationBatch(
 			return validationError;
 		}
 
-		input.log?.('collect-observation-batch-success', {
+		const enrichedBatch = await collectBackgroundObservationBatch({
 			tabId: input.tabId,
-			hostname: response.value.batch.target.hostname,
-			observationCount: response.value.batch.observations.length,
-			observedAt: response.value.batch.observedAt,
+			batch: response.value.batch,
+			collectionPlan,
+			log: input.log,
 		});
 
-		return ok(response.value.batch);
+		input.log?.('collect-observation-batch-success', {
+			tabId: input.tabId,
+			hostname: enrichedBatch.target.hostname,
+			contentObservationCount: response.value.batch.observations.length,
+			observationCount: enrichedBatch.observations.length,
+			observedAt: enrichedBatch.observedAt,
+		});
+
+		return ok(enrichedBatch);
 	} catch (error) {
 		input.log?.('collect-observation-batch-failed', {
 			tabId: input.tabId,

@@ -10,7 +10,7 @@ import type {
 import {
 	DETECTION_REPLAY_TRACE_SCHEMA_VERSION,
 	type DetectionReplayTrace,
-} from '../../lib/pipeline';
+} from '../../lib/pipeline/replay';
 
 /**
  * Stable timestamp used by test factories that do not care about time itself.

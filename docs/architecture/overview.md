@@ -1,108 +1,110 @@
-# Architecture overview after phase 14
+# Architecture overview after phase 21
 
-This overview gives maintainers a single map for the current extension and the migration path toward the event-based detection engine. It describes verified repository shape after phases 1 through 14, not the earlier small-registry MVP narrative.
+The extension is now substantially aligned with the scoped event-based architecture for the browser-extension runtime, with the command-line interface still out of scope.
 
-The current extension is still a Chrome-first Manifest V3 extension. The popup asks the background service worker to analyze the active tab, the background coordinates content-script collection and enrichment, the detector turns `PageSignals` into `SiteAnalysis`, and storage keeps only normalized analysis results. The migration has not changed that user-visible flow. It has made the seams around that flow explicit so future work can replace snapshot-shaped internals with normalized observations, evidence, replay, and shared CLI-compatible engine behavior.
+The user-visible flow remains active-tab-first. The popup asks the background service worker to analyze the selected `http` or `https` tab, the background validates the tab and cache state, the content script collects bounded page-local facts, and the popup renders normalized analysis results. The architectural change is inside the detector path: event-mode analysis can now run from normalized observation batches through matching, evidence, candidate creation, graph refinement, emission, replay, and explanation summaries.
 
-## Runtime boundary map
+## Current runtime map
 
-This diagram shows the current runtime ownership. Read it from top to bottom. The popup owns user interaction, the background owns privileged orchestration, the content script owns page-local collection, and the detector/storage modules stay browser-agnostic where possible.
+Read this diagram from top to bottom. The popup owns the user workflow, the background owns privileged extension orchestration, the content script owns document-local collection, and the detector stages stay runtime-agnostic once observations enter the shared pipeline.
 
 ```text
 Popup extension page
-  -> BackgroundApi
-      -> active tab validation
-      -> per-origin cache lookup
-      -> content script readiness
+  -> BackgroundApi.analyzeActiveTab(...)
+      -> active-tab validation
+      -> per-origin analysis and replay cache lookup
+      -> content-script readiness
       -> ExtensionPageCollector
-          -> ContentApi.collectPageSignals()
-          -> background enrichment
-          -> MAIN-world js-global probe
-      -> normalizePageSignals(...) observation seam
-      -> matchObservationBatch(...) matcher seam
-      -> analyzeSite(...) compatibility entrypoint
-          -> compiled registry graph
+          -> legacy PageSignals path when pipeline is omitted
+          -> event ObservationBatch path when pipeline: "event"
+              -> ContentApi.collectObservationBatch(...)
+              -> background observation enrichment
+                  -> response headers
+                  -> MAIN-world JavaScript globals
+                  -> same-origin script text
+                  -> same-origin stylesheet text
+      -> runObservationBatchPipeline(...)
+          -> normalized-observations stage
+          -> indexed pattern matching
+          -> evidence entries
           -> candidates
-          -> relationship resolution
-          -> SiteAnalysis
-      -> storage.saveAnalysis(...)
-      -> createEvidenceBatchFromAnalysis(...) evidence seam
-      -> createEvidenceCandidateBatch(...) candidate seam
-      -> refineEvidenceCandidateBatch(...) relationship refinement seam
-      -> emitSiteAnalysisFromRefinedCandidates(...) emission parity seam
+          -> relationship refinement
+          -> SiteAnalysis emission
+      -> createDetectionReplayTrace(...)
+      -> storage.saveAnalysis(...) + storage.saveReplayTrace(...)
   -> popup view model
   -> popup named regions
 ```
 
-The important constraint is dependency direction. Popup code should not reach into collectors, graph internals, or storage. Content code should not know about the popup. The detector should keep accepting runtime-agnostic inputs so the future command-line interface can use the same engine with a different collector.
+The compatibility path still exists deliberately. Omitted `pipeline` means `legacy`, which keeps lower-level API callers stable and gives maintainers an oracle for parity checks. The popup can request event mode explicitly while the legacy analyzer remains available for regression review.
 
-## Target pipeline map
+## Event pipeline shape
 
-The target architecture is event-based, and phase 9 adds the first normalized-observation seam toward that pipeline. The repository still keeps the current detector path as the runtime source of truth so new changes can move in the same direction without forcing a flag-day rewrite.
+The shared pipeline follows the architecture target without requiring collectors to share implementation details:
 
 ```text
-extension collector       cli collector
-        │                    │
-        └────► normalized observations
-                    │
-                    ▼
-              pattern matches
-                    │
-                    ▼
-              evidence entries
-                    │
-                    ▼
-          candidate detections
-                    │
-                    ▼
-        relationship and scoring engine
-                    │
-                    ▼
-          final detections + explanations
-                    │
-                    ▼
-             storage, reports, replay
+extension observations
+        │
+        ▼
+indexed pattern matches
+        │
+        ▼
+evidence entries
+        │
+        ▼
+evidence candidates
+        │
+        ▼
+relationship refinement
+        │
+        ▼
+final detections + replay explanations
 ```
 
-The extension collector and the future CLI collector will not collect the same raw data. The extension is constrained by active-tab access, content-script isolation, and browser permissions. The CLI can use Playwright to capture deeper network and multi-page data. The shared boundary is therefore normalized observation and evidence shape, not identical collector implementation.
+The extension and a future command-line collector will not have identical capabilities. The browser extension is constrained by active-tab access, isolated content scripts, same-origin fetch limits, and Manifest V3 lifecycle behavior. The shared contract is the normalized observation and evidence model, not identical raw acquisition.
 
-## Current subsystem seams
+## Dirty refresh semantics
 
-| Subsystem | Current owner | Stable behavior after phase 8 | Future migration direction |
+Dirty observation refreshes are now graph-correct for the active document. The flushed batch tells the background that relevant page facts changed. When that batch is non-empty, the background recollects the current normalized observation batch and reruns the event pipeline over the current evidence set.
+
+```text
+dirty session
+  -> flush pending observations
+  -> recollect current normalized observations
+  -> append background-only observations
+  -> rerun graph refinement and emission
+```
+
+This is intentionally different from merging final `SiteAnalysis.results`. A result-level merge can preserve old detections and append new ones, but it cannot safely re-evaluate `requires`, `excludes`, and implied support. Re-running the pipeline makes the relationship phase see the current candidate graph as one unit.
+
+## Subsystem seams
+
+| Subsystem | Current owner | Current behavior | Boundary to preserve |
 | --- | --- | --- | --- |
-| Popup | `src/entrypoints/popup/App.tsx`, `PopupRegions.tsx`, `src/lib/popup/view-model.ts` | Background responses are translated into popup view state before rendering. Named regions own layout structure. | Add explanation or replay regions without coupling UI to detector internals. |
-| Messaging | `src/lib/messaging/**`, `src/lib/contracts/analysis.ts` | `BackgroundApi` and `ContentApi` remain the extension-facing runtime contracts. | Add runtime validation only at intentional boundaries. |
-| Lifecycle | `src/lib/lifecycle/observation.ts`, content observation store | Observation start, refresh, navigation, invalidation, and stop decisions have named helpers. | Keep MV3 state transient unless it is explicitly persisted. |
-| Collectors | `src/lib/collectors/**`, content signal modules | Extension collection is behind an extension collector boundary while still producing `PageSignals`. | Emit normalized observations beside or instead of whole snapshots. |
-| Observations | `src/lib/observations/**` | `PageSignals` can be adapted into ordered normalized observation batches without changing detector output. | Feed pattern matching, replay, and future CLI fixtures through this shape. |
-| Evidence | `src/lib/evidence/**` | Observation-derived and compatibility evidence entries can be represented and grouped without changing detector output. | Feed candidate creation, replay persistence, and explanation output through this shape after equivalence tests. |
-| Observation matcher | `src/lib/detection/observation-match-types.ts`, `src/lib/detection/observation-matcher.ts` | Normalized observations can be matched against current registry rules to emit sidecar pattern-match events and evidence entries. | Compare observation-derived evidence with current detector output before runtime cutover. |
-| Candidates | `src/lib/candidates/**` | Evidence entries can be aggregated into deterministic candidate batches and refined through registry relationships without replacing detector output. | Feed emitted `SiteAnalysis` through the event coordinator in phase 15. |
-| Emission | `src/lib/emission/**` | Refined evidence candidates can be emitted as `SiteAnalysis` and compared against `analyzeSite(...)` parity fixtures. | Use this as the final stage of the feature-flagged event pipeline runtime. |
-| Detection and graph | `src/lib/detection/**` | `analyzeSite(...)` remains compatible while delegating through a compiled registry graph and candidates. | Make evidence and explanation outputs first-class after equivalence tests protect results. |
-| Storage | `src/lib/storage/**` | Per-origin `SiteAnalysis` cache semantics remain stable. | Keep evidence/replay persistence separate until the storage format is designed. |
-| Tests | `src/tests/**`, `src/tests/support/**` | Shared fixtures and browser mocks prevent duplicated contract assumptions. | Add observation and replay fixtures when the normalized pipeline exists. |
+| Popup | `src/entrypoints/popup/App.tsx`, `PopupRegions.tsx`, `src/lib/popup/view-model.ts` | Requests event mode, renders grouped results, compact explanation summaries, and observation state. | Popup receives background contracts and does not read collectors, storage, or detector internals directly. |
+| Messaging | `src/lib/messaging/**`, `src/lib/contracts/analysis.ts` | `BackgroundApi` and `ContentApi` carry analysis, observation, and replay sidecar data. | Message names and response envelopes stay stable unless tests and docs move with them. |
+| Lifecycle | `src/lib/lifecycle/observation.ts`, content observation store | Observation start, dirty refresh, navigation blocking, manual stop, expiry, and invalidation have named paths. | Manifest V3 background memory stays transient; durable state must use storage intentionally. |
+| Collectors | `src/lib/collectors/**`, `src/lib/content/**` | Legacy snapshots and event batches share collection planning; event batches now receive background-only observations. | Collection policy stays outside the background entrypoint and does not expand permissions incidentally. |
+| Observations | `src/lib/observations/**` | `PageSignals` and observed deltas can become ordered normalized observation batches. | Raw page data stays out of replay traces unless a redaction contract explicitly allows it. |
+| Matching | `src/lib/detection/observation-matcher*.ts` | Observation matching uses a compiled matcher index when available. | Indexed and sequential matching must preserve observable evidence order. |
+| Evidence and candidates | `src/lib/evidence/**`, `src/lib/candidates/**` | Evidence entries aggregate into candidates before relationship refinement. | Confidence, version, and rule-order compatibility remain test-protected. |
+| Graph | `src/lib/candidates/refine.ts`, `src/lib/detection/registry-graph.ts` | `implies`, `requires`, and `excludes` refine candidates before final emission. | Requirements remain guards, implied support remains provenance, and exclusion choices remain deterministic. |
+| Emission and replay | `src/lib/emission/**`, `src/lib/pipeline/replay.ts` | Refined candidates emit `SiteAnalysis` and redacted replay explanations. | `SiteAnalysis` remains the storage/popup compatibility envelope. |
+| Storage | `src/lib/storage/**` | Per-origin analysis and replay traces are cached separately. | Cache key compatibility and replay redaction stay explicit. |
 
-## Compatibility rules to preserve
+## Compatibility rules
 
-These rules are compatibility facts, not final product claims.
+- Active-tab analysis remains user-invoked.
+- Cache keys remain per origin.
+- Cache hits return cached analysis and replay traces without content-script collection.
+- Omitted `pipeline` remains legacy at the background API boundary.
+- Event-mode fresh analysis uses normalized observation batches plus background-only observations.
+- Dirty refreshes rerun the event pipeline over current observations instead of merging final detections.
+- Registry order remains compatibility data because graph tie-breaks and evidence ordering can depend on it.
+- The CLI remains out of scope for the current browser-extension completion target.
 
-- `BackgroundApi` still analyzes the current active inspectable tab.
-- Cache keys are still per origin, not per full URL.
-- Cache hits still return normalized analysis without starting live observation.
-- `PageSignals` remains the detector input; normalized observations, pattern-match events, evidence entries, evidence candidates, refined candidate batches, and emitted sidecar `SiteAnalysis` now exist beside it for future runtime cutover work.
-- Registry order remains compatibility data because result ordering and graph conflict tie-breaks can depend on it.
-- Popup grouping still uses the primary category for each detection.
-- Popup named regions are layout seams, not a detector model.
+## Remaining validation limits
 
-## Open architecture decisions
+The architecture is implemented enough for code review as the scoped extension architecture, but validation still has two layers.
 
-The following decisions are intentionally not resolved by phase 14.
-
-| Decision | Current answer | Why it stays open |
-| --- | --- | --- |
-| YAML or JSON registry source | Not active in runtime. TypeScript rules remain canonical. | The compiled graph seam exists, but source-format migration needs schema validation and order-preservation work. |
-| CLI package location | Not decided. | The shared engine boundary is being prepared before repository/package layout is chosen. |
-| Explanation output in popup | Not shown yet. | Evidence, candidate, and rejection contracts now exist, but explanation view-models and disclosure rules still need a separate UI phase. |
-| Replay persistence | Not stored yet. | Observation batches and evidence entries exist, but runtime event logs and storage format need separate privacy and size decisions. |
-| Broader extension permissions | Not added. | Phase 9 keeps current active-tab-first behavior without expanding the permission model. |
+Unit tests cover the core detector, matching, candidates, graph refinement, storage, messaging, popup view model, background observation enrichment, and dirty-refresh orchestration. Browser-level QA still needs Chrome because Vitest does not prove service-worker suspension behavior, runtime script injection, isolated-world versus main-world execution, popup teardown, or actual active-tab permission timing.
