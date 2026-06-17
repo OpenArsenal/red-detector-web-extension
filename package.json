@@ -15,7 +15,8 @@
   "dependencies": {
     "@dagrejs/graphlib": "^4.0.1",
     "comctx": "latest",
-    "solid-js": "latest"
+    "solid-js": "latest",
+    "zod": "^4.0.0"
   },
   "devDependencies": {
     "@fast-check/vitest": "latest",
