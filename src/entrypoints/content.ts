@@ -12,6 +12,7 @@ import {
   createContentServerAdapter,
 } from "../lib/messaging";
 import type { ObservationStopReason } from "../lib/contracts/analysis";
+import { normalizePageSignals } from "../lib/observations";
 import { errorResponse, ok } from "../lib/shared/result";
 
 const DOM_MUTATION_THROTTLE_MS = 1_500;
@@ -124,6 +125,31 @@ async function collectSignals(
 }
 
 /**
+ * Collect the current document and return the event-pipeline input shape.
+ *
+ * The content script still uses the bounded DOM collector internally because it
+ * owns safe access to the document. The RPC contract no longer exposes the
+ * snapshot when the background asks for event-mode analysis.
+ */
+async function collectInitialObservationBatch(
+  input: Parameters<ContentApi["collectObservationBatch"]>[0],
+  observedSignals: ObservedPageSignals,
+) {
+  const response = await collectSignals(input, observedSignals);
+  if (!response.ok) {
+    return response;
+  }
+
+  return ok({
+    batch: normalizePageSignals(response.value, {
+      collector: "content-snapshot",
+      interface: "extension",
+      observedAt: response.value.collectedAt,
+    }),
+  });
+}
+
+/**
  * Build the content-script runtime around one observation store.
  *
  * Tests and the WXT entrypoint both use this factory so timer cleanup follows the
@@ -144,6 +170,10 @@ export function createContentRuntime(observedSignals: ObservedPageSignals): Cont
   const contentApi: ContentApi = {
     async collectPageSignals(input) {
       return collectSignals(input, observedSignals);
+    },
+
+    async collectObservationBatch(input) {
+      return collectInitialObservationBatch(input, observedSignals);
     },
 
     async beginObservationSession(input) {

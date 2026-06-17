@@ -1,8 +1,9 @@
 import { collectBackgroundPageSignals, type CollectorLog } from './background-signals';
 import { buildCollectionPlan, toCollectPageSignalsInput } from './planning';
-import type { ContentApi } from '../contracts/analysis';
+import type { CollectObservationBatchOutput, ContentApi } from '../contracts/analysis';
 import type { PageSignals, TechnologyDefinition } from '../detection/types';
 import { validatePageSignals } from '../detection/validate';
+import type { ObservationBatch } from '../observations';
 import {
 	CONTENT_SCRIPT_TIMEOUT_MS,
 	contentScriptFailure,
@@ -98,6 +99,79 @@ export async function collectExtensionPageSignals(
 		});
 		return contentScriptFailure(error);
 	}
+}
+
+/**
+ * Collects the active tab directly as normalized observations for event analysis.
+ *
+ * This is the initial-scan counterpart to the live observer batch flush. It lets
+ * the background run the event pipeline without moving a full `PageSignals`
+ * snapshot across the fresh-analysis boundary. The compatibility collector stays
+ * available for legacy analysis and for event fallbacks that still need
+ * background-only enrichment.
+ */
+export async function collectExtensionObservationBatch(
+	input: ExtensionPageCollectorInput,
+): Promise<AppResult<ObservationBatch>> {
+	input.log?.('collect-observation-batch-start', {
+		tabId: input.tabId,
+		hostname: new URL(input.expectedUrl).hostname,
+	});
+
+	const collectionPlan = buildCollectionPlan(input.registry);
+
+	try {
+		const response = await withTimeout(
+			input.contentApi.collectObservationBatch(toCollectPageSignalsInput(collectionPlan)),
+			CONTENT_SCRIPT_TIMEOUT_MS,
+			'Content script did not respond before the messaging timeout.',
+		);
+
+		if (!response.ok) {
+			return response;
+		}
+
+		const validationError = validateObservationBatchTarget(response.value, input.expectedUrl);
+		if (validationError) {
+			input.log?.('collect-observation-batch-mismatch', {
+				tabId: input.tabId,
+				expectedUrl: input.expectedUrl,
+				actualUrl: response.value.batch.target.url,
+			});
+			return validationError;
+		}
+
+		input.log?.('collect-observation-batch-success', {
+			tabId: input.tabId,
+			hostname: response.value.batch.target.hostname,
+			observationCount: response.value.batch.observations.length,
+			observedAt: response.value.batch.observedAt,
+		});
+
+		return ok(response.value.batch);
+	} catch (error) {
+		input.log?.('collect-observation-batch-failed', {
+			tabId: input.tabId,
+			hostname: new URL(input.expectedUrl).hostname,
+			message: error instanceof Error ? error.message : 'Unknown content collection failure',
+		});
+		return contentScriptFailure(error);
+	}
+}
+
+/** Validate that a content-emitted batch still belongs to the active document. */
+function validateObservationBatchTarget(
+	output: CollectObservationBatchOutput,
+	expectedUrl: string,
+): AppResult<never> | null {
+	if (isSameDocumentUrl(output.batch.target.url, expectedUrl)) {
+		return null;
+	}
+
+	return errorResponse(
+		'VALIDATION_ERROR',
+		`Collected observations do not match the active tab URL. Expected ${expectedUrl}, got ${output.batch.target.url}.`,
+	);
 }
 
 /** Return counts that are safe to log without exposing raw page contents. */

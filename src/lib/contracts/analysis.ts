@@ -109,6 +109,12 @@ export type BeginObservationSessionInput = {
 	};
 };
 
+/** Content-script response for collecting the active document as observations. */
+export type CollectObservationBatchOutput = {
+	/** Bounded normalized observations emitted from the current document scan. */
+	batch: ObservationBatch;
+};
+
 /** Content-script response for flushing queued late observation events. */
 export type FlushObservationBatchOutput = {
 	/** Next bounded batch when late evidence-bearing facts are queued. */
@@ -161,6 +167,8 @@ export interface BackgroundApi {
 export interface ContentApi {
 	/** Collect bounded page signals from the current content script document. */
 	collectPageSignals(input: CollectPageSignalsInput): Promise<AppResult<PageSignals>>;
+	/** Collect the current content script document as normalized observations. */
+	collectObservationBatch(input: CollectPageSignalsInput): Promise<AppResult<CollectObservationBatchOutput>>;
 	/** Start watching late-added scripts, links, styles, and metadata. */
 	beginObservationSession(input: BeginObservationSessionInput): Promise<AppResult<ObservationSessionState>>;
 	/** Stop the current observation session manually. */
