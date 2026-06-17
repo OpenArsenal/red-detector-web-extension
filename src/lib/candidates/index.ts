@@ -15,3 +15,7 @@ export type {
 	RefineEvidenceCandidateBatchInput,
 	RefinedEvidenceCandidateBatch,
 } from './refinement-types';
+export {
+	DEFAULT_EVIDENCE_CANDIDATE_REFINEMENT_POLICY,
+	refineEvidenceCandidateBatch,
+} from './refine';
