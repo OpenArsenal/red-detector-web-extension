@@ -3,7 +3,7 @@ import type {
 	PageSignalPollingState as ObservationSessionState,
 } from '../content/observed-page-signals';
 import type { AnalysisStatus, PageSignals, SiteAnalysis } from '../detection/types';
-import type { DetectionPipelineMode } from '../pipeline';
+import type { DetectionPipelineMode, DetectionReplayTrace } from '../pipeline';
 import type { AppResult } from '../shared/result';
 
 /**
@@ -48,7 +48,7 @@ export type AnalyzeActiveTabInput = {
 	 *
 	 * The field defaults to `legacy` so existing popup requests keep the current
 	 * production behavior. Tests and migration-only callers can pass `event` to
-	 * run the Phase 15 coordinator through final emission.
+	 * run the event coordinator through final emission.
 	 */
 	pipeline?: DetectionPipelineMode;
 };
@@ -56,9 +56,9 @@ export type AnalyzeActiveTabInput = {
 /**
  * Response returned to the popup after active-tab analysis.
  *
- * This is the UI-facing result shape. Future evidence or replay data can be
- * added behind storage or detector seams, but the popup still receives this
- * normalized `SiteAnalysis` until a deliberate UI migration changes it.
+ * `analysis` remains the stable rendering and cache shape. `replayTrace` is
+ * sidecar diagnostic data from fresh analysis runs so the popup can show why a
+ * technology was detected without widening `SiteAnalysis` itself.
  */
 export type AnalyzeActiveTabOutput = {
 	/** Normalized detector output safe for popup rendering and cache storage. */
@@ -74,6 +74,14 @@ export type AnalyzeActiveTabOutput = {
 	};
 	/** Live observation state when the fresh analysis started page watching. */
 	session?: ObservationSessionState;
+	/**
+	 * Redacted sidecar trace for fresh analysis runs.
+	 *
+	 * Cache hits intentionally omit this field because the current storage cache
+	 * only persists `SiteAnalysis`. A later storage change can add replay retention
+	 * without changing the popup explanation view model.
+	 */
+	replayTrace?: DetectionReplayTrace;
 };
 
 /** Reason a content-script observation session stopped. */

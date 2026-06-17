@@ -4,7 +4,7 @@ import { browser } from 'wxt/browser';
 import { canInspectTab, getActiveTab } from '../lib/browser/active-tab';
 import { collectExtensionPageSignals } from '../lib/collectors/extension-page-collector';
 import { bundledTechnologyRegistryProvider } from '../lib/detection/registry-provider';
-import { runDetectionPipeline } from '../lib/pipeline';
+import { createDetectionReplayTrace, runDetectionPipeline } from '../lib/pipeline';
 
 import type { ObservationSessionState } from '../lib/content/observed-page-signals';
 import type { PageSignals, SiteAnalysis, TechnologyDefinition } from '../lib/detection/types';
@@ -203,10 +203,18 @@ async function collectFromTab(
 	});
 }
 
+/**
+ * Create the background response returned to the popup after analysis.
+ *
+ * The replay trace stays optional because cache hits still return the persisted
+ * `SiteAnalysis` record only. Fresh analysis passes can attach redacted replay
+ * data without changing storage semantics.
+ */
 function createAnalysisOutput(
 	analysis: SiteAnalysis,
 	cacheStatus: AnalyzeActiveTabOutput['cache']['status'],
 	session?: ObservationSessionState,
+	replayTrace?: AnalyzeActiveTabOutput['replayTrace'],
 ): AnalyzeActiveTabOutput {
 	return {
 		analysis,
@@ -216,6 +224,7 @@ function createAnalysisOutput(
 			expiresAt: analysis.analyzedAt + STORAGE_LIMITS.analysisTtlMs,
 		},
 		session,
+		...(replayTrace ? { replayTrace } : {}),
 	};
 }
 
@@ -326,6 +335,7 @@ async function analyzeFreshActiveTab(
 		registry,
 		mode: input.pipeline ?? 'legacy',
 	});
+	const replayTrace = createDetectionReplayTrace({ result: pipelineResult });
 	const savedAnalysis = await saveAnalysis(pipelineResult.analysis);
 	logAnalysisSummary(savedAnalysis);
 	logBackgroundEvent('analysis-pipeline-complete', {
@@ -356,7 +366,7 @@ async function analyzeFreshActiveTab(
 		sessionStatus: session?.status ?? 'none',
 	});
 
-	return ok(createAnalysisOutput(savedAnalysis, cacheStatus, session));
+	return ok(createAnalysisOutput(savedAnalysis, cacheStatus, session, replayTrace));
 }
 
 /** Debug output is intentionally summary-only; never log raw page signals. */
