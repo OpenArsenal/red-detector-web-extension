@@ -510,7 +510,7 @@ describe.sequential('background observation session baseline', () => {
 			tab: HTTP_TAB,
 			contentApi: {
 				getObservationSessionState: vi.fn(async () => ok({
-					status: 'dirty',
+					status: 'dirty' as const,
 					throttleMs: 1_500,
 					pendingMutationCount: 2,
 					sessionId: 'session-1',
@@ -541,7 +541,7 @@ describe.sequential('background observation session baseline', () => {
 			tab: { id: 7, url: 'https://example.com/pricing' },
 			contentApi: {
 				getObservationSessionState: vi.fn(async () => ok({
-					status: 'dirty',
+					status: 'dirty' as const,
 					throttleMs: 1_500,
 					pendingMutationCount: 2,
 					sessionId: 'session-1',

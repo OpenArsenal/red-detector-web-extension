@@ -91,17 +91,20 @@ describe('indexed observation matcher', () => {
 			id: 'server-tech',
 			name: 'Server Tech',
 			website: 'https://server-tech.example',
-			categories: ['hosting'],
+			categories: ['infrastructure-hosting'],
 			rules: [{ kind: 'responseHeader', key: 'server', valuePattern: /Server Tech/i, confidence: 95 }],
 		}];
 		const batch = normalizePageSignals(makePageSignals({
 			headers: { Server: 'Server Tech' },
 		}));
+		const sequentialEntries = matchObservationBatch({ registry, batch }).evidenceBatch.entries;
+		const indexedEntries = matchIndexedObservationBatch({ registry, batch }).evidenceBatch.entries;
 
-		expect(matchIndexedObservationBatch({ registry, batch }).evidenceBatch.entries).toEqual([
+		expect(indexedEntries).toEqual(sequentialEntries);
+		expect(indexedEntries).toEqual([
 			expect.objectContaining({
 				technologyId: 'server-tech',
-				kind: 'responseHeader',
+				kind: 'header',
 			}),
 		]);
 	});

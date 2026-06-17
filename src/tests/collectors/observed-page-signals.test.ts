@@ -31,7 +31,7 @@ function makeStylesheetLink(href: string): HTMLLinkElement {
 			if (name === 'rel') return 'stylesheet';
 			return null;
 		},
-	} as HTMLLinkElement;
+	} as unknown as HTMLLinkElement;
 }
 
 function makeMeta(name: string, content: string): HTMLMetaElement {
