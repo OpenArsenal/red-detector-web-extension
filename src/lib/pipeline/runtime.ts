@@ -1,6 +1,6 @@
 import { createEvidenceCandidateBatch, refineEvidenceCandidateBatch } from '../candidates';
 import { analyzeSite } from '../detection/engine';
-import { matchObservationBatch } from '../detection/observation-matcher';
+import { matchIndexedObservationBatch } from '../detection/observation-matcher-index';
 import { createCompiledDetectionRegistry } from '../detection/registry-graph';
 import type {
 	DetectionRunOptions,
@@ -182,7 +182,7 @@ function runEventPipeline(
 	});
 	record('normalized-observations', observations.observations.length);
 
-	const matches = matchObservationBatch({
+	const matches = matchIndexedObservationBatch({
 		registry: input.registry,
 		batch: observations,
 		options: input.options,
