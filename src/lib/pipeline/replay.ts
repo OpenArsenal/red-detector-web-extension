@@ -102,7 +102,7 @@ export interface DetectionExplanation {
 /**
  * Redacted replay trace for one detector pipeline run.
  *
- * The trace combines Phase 15 coordinator events with emitted `SiteAnalysis`
+ * The trace combines coordinator events with emitted `SiteAnalysis`
  * output. It is intentionally sidecar data: storage and popup contracts can adopt
  * it later without widening `SiteAnalysis` in this phase.
  */

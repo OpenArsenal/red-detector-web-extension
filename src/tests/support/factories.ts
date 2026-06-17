@@ -63,6 +63,7 @@ export function makeDetection(
 		version: overrides.version,
 		description: overrides.description,
 		inferred: overrides.inferred,
+		warnings: overrides.warnings,
 	};
 }
 
