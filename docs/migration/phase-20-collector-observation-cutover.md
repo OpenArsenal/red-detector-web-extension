@@ -6,6 +6,10 @@ content observer already knows what changed.” The old snapshot path remains as
 fallback because some evidence surfaces still require a full collector pass or
 background enrichment.
 
+Fresh popup analysis now requests event mode explicitly. In that path, the
+content script emits the initial document as `ObservationBatch` data and the
+background routes it through `runObservationBatchPipeline(...)`.
+
 ```text
 MutationObserver / PerformanceObserver
         │
@@ -27,7 +31,7 @@ merged SiteAnalysis + replay trace
 
 ## What changed
 
-Late content observations now have a dedicated adapter that converts observer
+Initial and late content observations now have adapters that convert content
 snapshots into normalized observation batches. The adapter only emits surfaces
 the content observer can truthfully see after the initial scan: script URLs,
 stylesheet URLs, link tags, resource URLs, request URLs derived from resource
@@ -38,11 +42,13 @@ resource updates are queued into that controller as normalized observations. The
 background can flush the next bounded batch through content RPC instead of
 asking for a full page snapshot every time the popup notices a dirty session.
 
-The background refresh path now tries the queued observation batch first. When a
-batch exists, it runs `runObservationBatchPipeline(...)`, merges the emitted
-results into the latest cached analysis, persists the merged analysis, and writes
-a replay trace. When no batch exists or no cached baseline exists, the background
-falls back to the existing fresh analysis path.
+The background fresh-analysis path now uses content-emitted observation batches
+when the caller requests event mode. The dirty refresh path tries the queued
+observation batch first. When a batch exists, it runs
+`runObservationBatchPipeline(...)`, merges the emitted results into the latest
+cached analysis, persists the merged analysis, and writes a replay trace. When no
+late batch exists or no cached baseline exists, the background falls back to the
+existing fresh analysis path.
 
 ## Compatibility rules
 
@@ -60,9 +66,10 @@ falls back to the existing fresh analysis path.
 
 ## Tests added
 
-The tests cover observer snapshot normalization, content API batch flushing,
-background refresh from a queued observation batch, and fallback refresh behavior
-when the content observer has no queued batch.
+The tests cover initial observation batch collection, observer snapshot
+normalization, content API batch flushing, background fresh analysis from an
+initial observation batch, background refresh from a queued observation batch,
+and fallback refresh behavior when the content observer has no queued batch.
 
 ## Non-goals
 
