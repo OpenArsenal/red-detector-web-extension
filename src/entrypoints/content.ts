@@ -6,7 +6,7 @@ import {
   type ObservedPageSignals,
 } from "../lib/content/observed-page-signals";
 import { validatePageSignals } from "../lib/detection/validate";
-import type { ContentApi } from "../lib/messaging";
+import type { CollectPageSignalsInput, ContentApi } from "../lib/messaging";
 import {
   CONTENT_RPC_NAMESPACE,
   createContentServerAdapter,
@@ -61,7 +61,7 @@ function logContentEvent(event: string, details?: Record<string, unknown>): void
   console.log(CONTENT_LOG_PREFIX, event);
 }
 
-function summarizeSignals(signals: Awaited<ReturnType<typeof collectPageSignals>>) {
+function summarizeSignals(signals: Awaited<ReturnType<typeof collectPageSignals>>): Record<string, unknown> {
   return {
     hostname: signals.hostname,
     scriptCount: signals.scripts.length,
@@ -88,7 +88,7 @@ function summarizeSignals(signals: Awaited<ReturnType<typeof collectPageSignals>
  * background service worker. Detection stays out of the page context.
  */
 async function collectSignals(
-  input: Parameters<ContentApi["collectPageSignals"]>[0],
+  input: CollectPageSignalsInput,
   observedSignals: ObservedPageSignals,
 ) {
   try {
@@ -132,7 +132,7 @@ async function collectSignals(
  * snapshot when the background asks for event-mode analysis.
  */
 async function collectInitialObservationBatch(
-  input: Parameters<ContentApi["collectObservationBatch"]>[0],
+  input: CollectPageSignalsInput,
   observedSignals: ObservedPageSignals,
 ) {
   const response = await collectSignals(input, observedSignals);
@@ -168,10 +168,6 @@ export function createContentRuntime(observedSignals: ObservedPageSignals): Cont
   }
 
   const contentApi: ContentApi = {
-    async collectPageSignals(input) {
-      return collectSignals(input, observedSignals);
-    },
-
     async collectObservationBatch(input) {
       return collectInitialObservationBatch(input, observedSignals);
     },

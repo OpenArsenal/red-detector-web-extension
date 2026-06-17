@@ -2,20 +2,15 @@ import { defineProxy } from 'comctx';
 import { browser } from 'wxt/browser';
 
 import { canInspectTab, getActiveTab } from '../lib/browser/active-tab';
-import {
-	collectExtensionObservationBatch,
-	collectExtensionPageSignals,
-} from '../lib/collectors/extension-page-collector';
+import { collectExtensionObservationBatch } from '../lib/collectors/extension-page-collector';
 import { bundledTechnologyRegistryProvider } from '../lib/detection/registry-provider';
 import {
 	createDetectionReplayTrace,
-	runDetectionPipeline,
 	runObservationBatchPipeline,
 } from '../lib/pipeline';
 
 import type { ObservationSessionState } from '../lib/content/observed-page-signals';
-import type { PageSignals, SiteAnalysis, TechnologyDefinition } from '../lib/detection/types';
-
+import type { SiteAnalysis } from '../lib/detection/types';
 import type {
 	AnalyzeActiveTabInput,
 	AnalyzeActiveTabOutput,
@@ -23,7 +18,7 @@ import type {
 	ContentApi,
 	FlushObservationBatchOutput,
 } from '../lib/messaging';
-import type { ObservationBatch } from '../lib/observations';
+import type { NormalizedObservation, ObservationBatch } from '../lib/observations';
 import {
 	CONTENT_SCRIPT_TIMEOUT_MS,
 	contentScriptFailure,
@@ -50,16 +45,39 @@ import {
 	saveReplayTrace,
 } from '../lib/storage';
 
+/** Active tab shape after unsupported URLs and missing ids have been rejected. */
 type InspectableTab = {
+	/** Browser tab id used for content-script RPC and MAIN-world injection. */
 	id: number;
+	/** Active document URL observed by the background before collection starts. */
 	url: string;
 };
+
+/** Compiled registry artifact reused across collection planning and matching. */
+type CompiledRegistry = ReturnType<typeof bundledTechnologyRegistryProvider.getCompiledRegistry>;
 
 const CONTENT_SCRIPT_FILE = '/content-scripts/content.js';
 const CONTENT_SCRIPT_PING_TIMEOUT_MS = 750;
 const BACKGROUND_LOG_PREFIX = '[red-detector][background]';
 
+/**
+ * In-flight runtime injections are deduplicated per tab.
+ *
+ * Popup refreshes and polling can ask for the content runtime at nearly the same
+ * time. The first request owns the injection; later requests await the same
+ * promise instead of injecting duplicate runtime scripts into the page.
+ */
 const contentScriptInjectionByTab = new Map<number, Promise<AppResult<void>>>();
+
+/**
+ * Event observations collected during the current active popup session.
+ *
+ * Dirty refreshes use this in-memory batch as the baseline and append late
+ * observer facts before rerunning graph refinement. If the Manifest V3 service
+ * worker is suspended and this memory disappears, the refresh path recollects
+ * the current document instead of merging final detections.
+ */
+const eventObservationBatchByTab = new Map<number, ObservationBatch>();
 
 function logBackgroundEvent(event: string, details?: Record<string, unknown>): void {
 	if (details) {
@@ -70,14 +88,14 @@ function logBackgroundEvent(event: string, details?: Record<string, unknown>): v
 	console.log(BACKGROUND_LOG_PREFIX, event);
 }
 
-function summarizeTab(tab: InspectableTab) {
+function summarizeTab(tab: InspectableTab): Record<string, unknown> {
 	return {
 		tabId: tab.id,
 		hostname: new URL(tab.url).hostname,
 	};
 }
 
-function summarizeSession(session: ObservationSessionState) {
+function summarizeSession(session: ObservationSessionState): Record<string, unknown> {
 	return {
 		sessionId: session.sessionId,
 		status: session.status,
@@ -195,40 +213,16 @@ async function ensureContentScript(tabId: number): Promise<AppResult<void>> {
 }
 
 /**
- * Ask the extension collector for the active tab's PageSignals. Content-script
- * readiness still belongs to the background lifecycle path; raw acquisition now
- * lives behind the collector boundary.
- */
-async function collectFromTab(
-	tabId: number,
-	expectedUrl: string,
-	registry: readonly TechnologyDefinition[],
-): Promise<AppResult<PageSignals>> {
-	const contentScriptResponse = await ensureContentScript(tabId);
-	if (!contentScriptResponse.ok) {
-		return contentScriptResponse;
-	}
-
-	return collectExtensionPageSignals({
-		tabId,
-		expectedUrl,
-		registry,
-		contentApi: createContentApiClient(tabId, 0),
-		log: logBackgroundEvent,
-	});
-}
-
-/**
  * Ask the extension collector for normalized observations from the active tab.
  *
- * This path is used only by event-mode fresh analysis. The legacy path continues
- * to request `PageSignals` so cache parity and old analyzer fallback remain
- * reviewable while the extension runtime finishes its event cutover.
+ * Fresh analysis no longer exposes the old page-snapshot detector path to the
+ * background. The content script collects document facts, background enrichment
+ * appends privileged facts, and the event pipeline consumes the enriched batch.
  */
 async function collectObservationBatchFromTab(
 	tabId: number,
 	expectedUrl: string,
-	registry: readonly TechnologyDefinition[],
+	compiledRegistryArtifact: CompiledRegistry,
 ): Promise<AppResult<ObservationBatch>> {
 	const contentScriptResponse = await ensureContentScript(tabId);
 	if (!contentScriptResponse.ok) {
@@ -238,18 +232,13 @@ async function collectObservationBatchFromTab(
 	return collectExtensionObservationBatch({
 		tabId,
 		expectedUrl,
-		registry,
+		registry: compiledRegistryArtifact.technologies,
 		contentApi: createContentApiClient(tabId, 0),
 		log: logBackgroundEvent,
 	});
 }
 
-/**
- * Create the background response returned to the popup after analysis.
- *
- * The replay trace stays optional because older cache entries may not have a
- * paired trace. Fresh and cached responses attach it when storage has one.
- */
+/** Create the background response returned to the popup after analysis. */
 function createAnalysisOutput(
 	analysis: SiteAnalysis,
 	cacheStatus: AnalyzeActiveTabOutput['cache']['status'],
@@ -300,16 +289,6 @@ async function flushObservationBatchForTab(
 	}
 }
 
-/**
- * Refresh a dirty observation session without merging final detections.
- *
- * The flushed batch tells us a page changed, but it is not a complete truth set.
- * After a non-empty flush, the background recollects the current normalized
- * batch, appends background-only observations through the collector boundary,
- * and reruns matching plus graph refinement over that current evidence. This
- * preserves `requires` and `excludes` semantics that a result-level merge cannot
- * safely maintain.
- */
 async function analyzeObservationBatchRefresh(
 	tab: InspectableTab,
 	flush: FlushObservationBatchOutput,
@@ -317,44 +296,40 @@ async function analyzeObservationBatchRefresh(
 	if (!flush.batch || flush.batch.observations.length === 0) {
 		const cached = await getCachedAnalysis(tab.url);
 		const replayTrace = await getCachedReplayTrace(tab.url);
-		if (cached) return ok(createAnalysisOutput(cached, 'hit', flush.session, replayTrace ?? undefined));
+		if (cached) {
+			return ok(createAnalysisOutput(cached, 'hit', flush.session, replayTrace ?? undefined));
+		}
 
-		return analyzeFreshActiveTab(tab, {
-			mode: 'refresh',
-			observe: 'while-popup-open',
-			pipeline: 'event',
-		}, 'bypassed');
+		return analyzeFreshActiveTab(tab, { mode: 'refresh', observe: 'while-popup-open' }, 'bypassed');
 	}
 
+	const baseBatch = eventObservationBatchByTab.get(tab.id);
 	const compiledRegistryArtifact = bundledTechnologyRegistryProvider.getCompiledRegistry();
-	const currentBatchResponse = await collectObservationBatchFromTab(
-		tab.id,
-		tab.url,
-		compiledRegistryArtifact.technologies,
-	);
-	if (!currentBatchResponse.ok) {
-		return currentBatchResponse;
+	const batchResponse = baseBatch && isSameObservationTarget(baseBatch, flush.batch)
+		? ok(mergeObservationBatches(baseBatch, flush.batch))
+		: await recoverObservationBatchForRefresh(tab, flush.batch, compiledRegistryArtifact);
+	if (!batchResponse.ok) {
+		return batchResponse;
 	}
 
-	const batchResult = runObservationBatchPipeline({
-		batch: currentBatchResponse.value,
-		registry: compiledRegistryArtifact.technologies,
-		compiledRegistryArtifact,
-		source: 'fresh',
-	});
-	const replayTrace = createDetectionReplayTrace({ result: batchResult });
-	const savedAnalysis = await saveAnalysis(batchResult.analysis);
-	const savedReplayTrace = await saveReplayTrace(replayTrace);
-
-	logBackgroundEvent('observation-batch-refresh-complete', {
-		...summarizeTab(tab),
-		flushedObservationCount: flush.batch.observations.length,
-		currentObservationCount: currentBatchResponse.value.observations.length,
+	return analyzeAndPersistObservationBatch(tab, batchResponse.value, compiledRegistryArtifact, 'bypassed', flush.session, {
+		refreshKind: baseBatch ? 'incremental' : 'recovered',
 		queuedCount: flush.stats.queuedCount,
-		resultCount: savedAnalysis.results.length,
+		lateObservationCount: flush.batch.observations.length,
+	});
+}
+
+async function recoverObservationBatchForRefresh(
+	tab: InspectableTab,
+	lateBatch: ObservationBatch,
+	compiledRegistryArtifact: CompiledRegistry,
+): Promise<AppResult<ObservationBatch>> {
+	logBackgroundEvent('observation-refresh-recollect', {
+		...summarizeTab(tab),
+		lateObservationCount: lateBatch.observations.length,
 	});
 
-	return ok(createAnalysisOutput(savedAnalysis, 'bypassed', flush.session, savedReplayTrace));
+	return collectObservationBatchFromTab(tab.id, tab.url, compiledRegistryArtifact);
 }
 
 async function beginObservationSessionForTab(
@@ -434,41 +409,14 @@ async function analyzeFreshActiveTab(
 		mode: input.mode,
 		observe: input.observe,
 		cacheStatus,
-		pipeline: input.pipeline ?? 'legacy',
+		pipeline: 'event',
 	});
 
 	const compiledRegistryArtifact = bundledTechnologyRegistryProvider.getCompiledRegistry();
-	const requestedPipeline = input.pipeline ?? 'legacy';
-	const pipelineResult = requestedPipeline === 'event'
-		? (() => {
-			return collectObservationBatchFromTab(tab.id, tab.url, compiledRegistryArtifact.technologies)
-				.then((batchResponse) => {
-					if (!batchResponse.ok) return batchResponse;
-
-					return ok(runObservationBatchPipeline({
-						batch: batchResponse.value,
-						registry: compiledRegistryArtifact.technologies,
-						compiledRegistryArtifact,
-						source: 'fresh',
-					}));
-				});
-		})()
-		: runLegacyOrSnapshotEventPipeline(tab, compiledRegistryArtifact, requestedPipeline);
-	const resolvedPipelineResult = await pipelineResult;
-	if (!resolvedPipelineResult.ok) {
-		return resolvedPipelineResult;
+	const batchResponse = await collectObservationBatchFromTab(tab.id, tab.url, compiledRegistryArtifact);
+	if (!batchResponse.ok) {
+		return batchResponse;
 	}
-	const replayTrace = createDetectionReplayTrace({ result: resolvedPipelineResult.value });
-	const savedAnalysis = await saveAnalysis(resolvedPipelineResult.value.analysis);
-	const savedReplayTrace = await saveReplayTrace(replayTrace);
-	logAnalysisSummary(savedAnalysis);
-	logBackgroundEvent('analysis-pipeline-complete', {
-		...summarizeTab(tab),
-		requestedMode: resolvedPipelineResult.value.requestedMode,
-		completedMode: resolvedPipelineResult.value.completedMode,
-		eventCount: resolvedPipelineResult.value.events.length,
-		fallbackReason: resolvedPipelineResult.value.fallback?.reason ?? 'none',
-	});
 
 	let session: ObservationSessionState | undefined;
 	if (shouldStartObservationForAnalysis(input)) {
@@ -483,37 +431,93 @@ async function analyzeFreshActiveTab(
 		}
 	}
 
-	logBackgroundEvent('analysis-fresh-complete', {
+	return analyzeAndPersistObservationBatch(tab, batchResponse.value, compiledRegistryArtifact, cacheStatus, session, {
+		refreshKind: 'fresh',
+	});
+}
+
+async function analyzeAndPersistObservationBatch(
+	tab: InspectableTab,
+	batch: ObservationBatch,
+	compiledRegistryArtifact: CompiledRegistry,
+	cacheStatus: AnalyzeActiveTabOutput['cache']['status'],
+	session?: ObservationSessionState,
+	details: Record<string, unknown> = {},
+): Promise<AppResult<AnalyzeActiveTabOutput>> {
+	const pipelineResult = runObservationBatchPipeline({
+		batch,
+		registry: compiledRegistryArtifact.technologies,
+		compiledRegistryArtifact,
+		source: 'fresh',
+	});
+	const replayTrace = createDetectionReplayTrace({ result: pipelineResult });
+	const savedAnalysis = await saveAnalysis(pipelineResult.analysis);
+	const savedReplayTrace = await saveReplayTrace(replayTrace);
+
+	eventObservationBatchByTab.set(tab.id, batch);
+	logAnalysisSummary(savedAnalysis);
+	logBackgroundEvent('analysis-event-complete', {
 		...summarizeTab(tab),
 		cacheStatus,
 		resultCount: savedAnalysis.results.length,
+		observationCount: batch.observations.length,
+		eventCount: pipelineResult.events.length,
 		sessionStatus: session?.status ?? 'none',
+		...details,
 	});
 
 	return ok(createAnalysisOutput(savedAnalysis, cacheStatus, session, savedReplayTrace));
 }
 
-/** Run the compatibility snapshot collector for legacy mode and fallback checks. */
-async function runLegacyOrSnapshotEventPipeline(
-	tab: InspectableTab,
-	compiledRegistryArtifact: ReturnType<typeof bundledTechnologyRegistryProvider.getCompiledRegistry>,
-	requestedPipeline: AnalyzeActiveTabInput['pipeline'] | 'legacy',
-) {
-	const signalsResponse = await collectFromTab(tab.id, tab.url, compiledRegistryArtifact.technologies);
-	if (!signalsResponse.ok) {
-		return signalsResponse;
+/**
+ * Append late observations to the baseline batch and remove duplicate facts.
+ *
+ * Graph refinement needs one candidate set built from everything known about the
+ * page, not a final-result merge. The key deliberately ignores timestamps so a
+ * repeated script URL observed later does not create a second evidence record.
+ */
+function mergeObservationBatches(base: ObservationBatch, next: ObservationBatch): ObservationBatch {
+	const observations: NormalizedObservation[] = [];
+	const seen = new Set<string>();
+	for (const observation of [...base.observations, ...next.observations]) {
+		const key = createObservationDeduplicationKey(observation);
+		if (seen.has(key)) {
+			continue;
+		}
+
+		seen.add(key);
+		observations.push(observation);
 	}
 
-	return ok(runDetectionPipeline({
-		signals: signalsResponse.value,
-		registry: compiledRegistryArtifact.technologies,
-		compiledRegistryArtifact,
-		mode: requestedPipeline,
-	}));
+	return Object.assign({}, base, {
+		observedAt: Math.max(base.observedAt, next.observedAt),
+		observations,
+	});
 }
 
-/** Debug output is intentionally summary-only; never log raw page signals. */
-function logAnalysisSummary(analysis: SiteAnalysis) {
+function createObservationDeduplicationKey(observation: NormalizedObservation): string {
+	const attributes = observation.attributes
+		? Object.entries(observation.attributes)
+			.sort(([left], [right]) => left.localeCompare(right))
+			.map(([key, value]) => `${key}:${String(value)}`)
+			.join('|')
+		: '';
+
+	return [
+		observation.kind,
+		observation.collector,
+		observation.key ?? '',
+		String(observation.value),
+		attributes,
+	].join('\u001f');
+}
+
+function isSameObservationTarget(left: ObservationBatch, right: ObservationBatch): boolean {
+	return left.target.hostname === right.target.hostname && left.target.url === right.target.url;
+}
+
+/** Debug output is intentionally summary-only; never log raw page observations. */
+function logAnalysisSummary(analysis: SiteAnalysis): void {
 	console.log('[red-detector] analysis summary', {
 		hostname: analysis.hostname,
 		resultCount: analysis.results.length,
@@ -528,9 +532,7 @@ export function createBackgroundApi(): BackgroundApi {
 			return ok(await getStatus());
 		},
 
-		async analyzeActiveTab(
-			input,
-		): Promise<AppResult<AnalyzeActiveTabOutput>> {
+		async analyzeActiveTab(input): Promise<AppResult<AnalyzeActiveTabOutput>> {
 			try {
 				const tabResponse = await getInspectableActiveTab();
 				if (!tabResponse.ok) {
@@ -542,7 +544,7 @@ export function createBackgroundApi(): BackgroundApi {
 					...summarizeTab(tab),
 					mode: input.mode,
 					observe: input.observe,
-					pipeline: input.pipeline ?? 'legacy',
+					pipeline: 'event',
 				});
 				if (input.mode === 'cache-first') {
 					const cached = await getCachedAnalysis(tab.url);
@@ -614,7 +616,7 @@ export function createBackgroundApi(): BackgroundApi {
 					error instanceof Error ? error.message : 'Unexpected runtime error';
 				return errorResponse('UNKNOWN', message, stack);
 			}
-    },
+		},
 
 		async stopActiveObservationSession() {
 			const tabResponse = await getInspectableActiveTab();
@@ -623,8 +625,9 @@ export function createBackgroundApi(): BackgroundApi {
 			}
 
 			logBackgroundEvent('observation-stop-api', summarizeTab(tabResponse.value));
+			eventObservationBatchByTab.delete(tabResponse.value.id);
 			return stopObservationSessionForTab(tabResponse.value.id);
-    },
+		},
 
 		async getActiveObservationSessionState() {
 			const tabResponse = await getInspectableActiveTab();
@@ -633,7 +636,7 @@ export function createBackgroundApi(): BackgroundApi {
 			}
 
 			return getObservationSessionStateForTab(tabResponse.value.id);
-    },
+		},
 	};
 }
 

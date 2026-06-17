@@ -1,109 +1,94 @@
 # Phase 15 event pipeline runtime
 
-Phase 15 turns the sidecar event pipeline into a runtime-capable path without
-making it the default detector path yet.
+Phase 15 turned the sidecar event pipeline into a runtime-capable detector path.
+Later cleanup removed the active-tab fallback to the old direct analyzer, so this note now records the
+current steady state rather than the temporary migration switch.
 
-The important migration step is that the background runtime can now ask one
-coordinator to run a collected `PageSignals` snapshot through the same stages
-that Phase 14 used manually in parity tests.
+The runtime story is:
 
 ```text
-PageSignals
+facts from the page
         │
         ▼
-runDetectionPipeline(...)
+normalized observations
         │
-        ├────► legacy analyzeSite(...)
+        ▼
+rules that matched those facts
         │
-        └────► normalized observations
-                  │
-                  ▼
-              pattern matches
-                  │
-                  ▼
-              evidence entries
-                  │
-                  ▼
-              evidence candidates
-                  │
-                  ▼
-              relationship refinement
-                  │
-                  ▼
-              SiteAnalysis emission
+        ▼
+candidate technologies
+        │
+        ▼
+relationship rules clean up the list
+        │
+        ▼
+final detections shown to the user
 ```
+
+The implementation vocabulary is:
+
+```text
+PageSignals adapter or ObservationBatch
+        │
+        ▼
+runDetectionPipeline(...) or runObservationBatchPipeline(...)
+        │
+        ▼
+pattern matches -> evidence -> candidates -> graph refinement -> emission
+```
+
+`PageSignals` still appears in compatibility fixtures and in the content-side DOM
+reader because it is a convenient way to collect a bounded document snapshot. The
+background-facing extension path no longer exposes that snapshot as a detector
+input. It asks for normalized observations and runs the event pipeline.
 
 ## What changed
 
-The phase adds `src/lib/pipeline/` as the runtime coordination boundary. The
-coordinator owns stage order and returns the same public `SiteAnalysis` shape
-that storage, messaging, and the popup already consume.
-
-The active-tab request contract gets an optional pipeline switch:
-
-```ts
-pipeline?: 'legacy' | 'event'
-```
-
-Omitting the field keeps the current behavior:
+`src/lib/pipeline/` owns the deterministic stage order. It emits the same public
+`SiteAnalysis` shape that storage, messaging, and the popup already consume, but
+it records public-safe stage counts for replay and explanation sidecars.
 
 ```text
-popup request
-  └─► background
-        └─► pipeline omitted
-              └─► legacy analyzeSite(...)
+normalized observations
+  -> indexed matching
+  -> evidence batch
+  -> candidate batch
+  -> relationship refinement
+  -> SiteAnalysis emission
 ```
 
-Passing `pipeline: "event"` runs the Phase 15 event coordinator:
+Replay metadata stays outside `SiteAnalysis`. That keeps the popup and storage
+contract stable while still letting users see why a technology was detected.
 
-```text
-popup or test request
-  └─► background
-        └─► pipeline: "event"
-              └─► event pipeline
-                    └─► SiteAnalysis
-```
+## Extension runtime behavior
 
-## Fallback behavior
+Active-tab analysis is event-only. The background collects an enriched
+observation batch, runs `runObservationBatchPipeline(...)`, saves `SiteAnalysis`,
+and saves a redacted replay trace.
 
-The event path keeps a legacy fallback while it is behind the migration switch.
-If the event coordinator cannot complete, the background can still return the
-legacy detector output.
-
-```text
-event pipeline error
-        │
-        ▼
-legacy analyzeSite(...)
-        │
-        ▼
-SiteAnalysis
-```
-
-Fallback metadata stays outside `SiteAnalysis`. That keeps the current storage
-and popup contract stable until replay and explanation have their own public
-contracts.
+Dirty observation refreshes no longer merge final detections. Late facts are
+combined with the current session's baseline observation batch when available,
+then graph refinement runs again over the whole fact set. If the Manifest V3
+service worker lost the in-memory baseline, the background recollects the current
+document instead of pretending it can safely merge final results.
 
 ## Tests added
 
 `src/tests/pipeline/event-pipeline.test.ts` covers:
 
-- default legacy execution
-- event-path execution
-- ordered coordinator events
+- snapshot inputs defaulting to the event pipeline
+- event-path execution from `PageSignals`
+- ordered public-safe coordinator events
 - emission metadata
-- fallback to legacy output
-- strict event-path failure when fallback is disabled
+- precompiled registry artifact reuse
+- direct execution from normalized observation batches
 
-`src/tests/messaging/background-api.test.ts` covers the active-tab request
-switch and confirms that `pipeline: "event"` skips the direct legacy analyzer
-while still saving `SiteAnalysis` output.
+`src/tests/messaging/background-api.test.ts` covers active-tab analysis and
+confirms that fresh analysis collects normalized observation batches, saves
+`SiteAnalysis`, saves replay traces, and does not call the old direct analyzer.
 
 ## Non-goals
 
-Phase 15 does not add replay trace storage, explanation output, popup detection
-details, registry source compilation, indexed matching, collector event cutover,
-or privacy/storage migrations.
-
-Those belong to later phases. Phase 15 only makes the pipeline executable from
-the current extension collection output and keeps the runtime switch reviewable.
+Phase 15 did not add the full replay inspector, registry source-file migration,
+collector event cutover, or privacy/storage migrations. Later work completed the
+extension observation cutover and removed the active-tab fallback.

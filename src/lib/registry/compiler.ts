@@ -78,16 +78,16 @@ export type CompiledRegistryPatternTableSummary = Readonly<Record<string, number
 /**
  * Compiler artifact consumed by runtime and future build-time checks.
  *
- * The artifact deliberately keeps the current ordered technology definitions so
- * `analyzeSite(...)` compatibility remains testable while optimized indexes and
- * graph structures are introduced beside it.
+ * The artifact deliberately keeps the ordered technology definitions so result
+ * sorting, rule metadata lookup, optimized indexes, and graph structures all
+ * come from one compiled registry product.
  */
 export interface CompiledTechnologyRegistryArtifact {
 	/** Compiler output schema version. */
 	readonly artifactVersion: RegistryCompilerArtifactVersion;
 	/** Source schema version validated before artifact generation. */
 	readonly sourceSchemaVersion: RegistrySourceSchemaVersion;
-	/** Ordered technology definitions preserved for legacy compatibility. */
+	/** Ordered technology definitions preserved for result sorting and rule metadata lookup. */
 	readonly technologies: readonly TechnologyDefinition[];
 	/** Metadata table that can be inspected without walking full rule objects. */
 	readonly technologyMetadata: readonly CompiledRegistryTechnologyMetadata[];

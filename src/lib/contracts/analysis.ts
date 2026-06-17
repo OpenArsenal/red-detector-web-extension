@@ -2,8 +2,8 @@ import type {
 	ObservationStopReason as ContentObservationStopReason,
 	PageSignalPollingState as ObservationSessionState,
 } from '../content/observed-page-signals';
-import type { AnalysisStatus, PageSignals, SiteAnalysis } from '../detection/types';
-import type { DetectionPipelineMode, DetectionReplayTrace } from '../pipeline';
+import type { AnalysisStatus, SiteAnalysis } from '../detection/types';
+import type { DetectionReplayTrace } from '../pipeline';
 import type { ObservationBatch, ObservationBatchControllerStats } from '../observations';
 import type { AppResult } from '../shared/result';
 
@@ -21,9 +21,10 @@ export type AnalyzeActiveTabMode = typeof ANALYSIS_MODES[number];
 /**
  * Observation choices accepted by the background API.
  *
- * Phase 2 keeps the current behavior: every value except `none` asks the
- * content script to watch the page after fresh analysis. A later lifecycle phase
- * can give `bounded` separate behavior without changing the request field.
+ * Every value except `none` asks the content script to keep watching the page
+ * after event analysis. The same bounded observation policy is used today for
+ * `while-popup-open` and `bounded`; callers use the names to describe intent,
+ * while the lifecycle policy owns the actual duration and event-storm limits.
  */
 export const OBSERVATION_MODES = ['none', 'while-popup-open', 'bounded'] as const;
 
@@ -44,14 +45,6 @@ export type AnalyzeActiveTabInput = {
 	mode: AnalyzeActiveTabMode;
 	/** Whether the content script should watch the page after a fresh analysis. */
 	observe: ActiveTabObservationMode;
-	/**
-	 * Runtime detector path for fresh analysis.
-	 *
-	 * The field defaults to `legacy` so existing popup requests keep the current
-	 * production behavior. Tests and migration-only callers can pass `event` to
-	 * run the event coordinator through final emission.
-	 */
-	pipeline?: DetectionPipelineMode;
 };
 
 /**
@@ -138,7 +131,11 @@ export type HtmlProbe = {
 };
 
 /**
- * Request sent from the background to the content script for page signal capture.
+ * Request sent from the background to the content script for event observation capture.
+ *
+ * The content collector still uses the older DOM snapshot reader internally
+ * because that is the safest way to read document facts in one synchronous pass.
+ * The RPC response is early normalized observations.
  */
 export type CollectPageSignalsInput = {
 	/** Whether the content script should include bounded page HTML text. */
@@ -165,8 +162,6 @@ export interface BackgroundApi {
 
 /** Background-to-content API exposed through the content-script messaging adapter. */
 export interface ContentApi {
-	/** Collect bounded page signals from the current content script document. */
-	collectPageSignals(input: CollectPageSignalsInput): Promise<AppResult<PageSignals>>;
 	/** Collect the current content script document as normalized observations. */
 	collectObservationBatch(input: CollectPageSignalsInput): Promise<AppResult<CollectObservationBatchOutput>>;
 	/** Start watching late-added scripts, links, styles, and metadata. */

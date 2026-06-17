@@ -38,9 +38,9 @@ export interface PageSignalsObservationOptions {
 /**
  * Convert today's `PageSignals` snapshot into the target normalized observation shape.
  *
- * This adapter does not change detector execution. It lets tests, docs, and future
- * evidence work inspect the same collected facts as event-like observations while
- * `analyzeSite(...)` continues to consume `PageSignals` for compatibility.
+ * The content collector still knows how to gather a bounded page snapshot. This
+ * adapter turns that snapshot into event-pipeline facts so tests, docs, and
+ * extension runtime code reason over the same normalized observation shape.
  */
 export function normalizePageSignals(
 	signals: PageSignals,

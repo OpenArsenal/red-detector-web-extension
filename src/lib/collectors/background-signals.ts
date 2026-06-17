@@ -3,8 +3,7 @@ import { browser } from 'wxt/browser';
 import type { CollectionPlan } from './planning';
 import { limitStringsByTotalChars, truncate, uniqueStrings } from '../detection/normalizers';
 import { SOURCE_LIMITS } from '../detection/rules';
-import type { PageSignals } from '../detection/types';
-import type { NormalizedObservation, ObservationBatch, ObservationTarget } from '../observations';
+import type { NormalizedObservation, ObservationBatch } from '../observations';
 import { getOrigin } from '../shared/url';
 
 /** Value shape stored for a page-owned JavaScript global. */
@@ -13,300 +12,59 @@ export type JsGlobalSignalValue = string | boolean | number;
 /** Summary logger used by the background entrypoint without coupling collectors to console output. */
 export type CollectorLog = (event: string, details?: Record<string, unknown>) => void;
 
-export type SourceContentSignals = Pick<PageSignals, 'scriptContents' | 'stylesheetContents'>;
-
-export type BackgroundSignalCollectorInput = {
-	/** Active tab id used when an injected script reads page-owned JavaScript globals. */
-	tabId: number;
-	/** Page signals returned by the content script before background-only data is added. */
-	signals: PageSignals;
-	/** Rule-aware plan that tells the background which injected globals matter. */
-	collectionPlan: CollectionPlan;
-	/** Optional logger supplied by the background entrypoint. */
-	log?: CollectorLog;
-};
-
-/** Input for adding background-only observations to an event-mode batch. */
+/** Input needed to add privileged extension observations to a content batch. */
 export type BackgroundObservationCollectorInput = {
 	/** Active tab id used when an injected script reads page-owned JavaScript globals. */
-	tabId: number;
-	/** Content-emitted observation batch that background observations should extend. */
-	batch: ObservationBatch;
+	readonly tabId: number;
+	/** Normalized facts returned by the content script for the analyzed document. */
+	readonly batch: ObservationBatch;
 	/** Rule-aware plan that tells the background which injected globals matter. */
-	collectionPlan: CollectionPlan;
+	readonly collectionPlan: CollectionPlan;
 	/** Optional logger supplied by the background entrypoint. */
-	log?: CollectorLog;
+	readonly log?: CollectorLog;
 };
 
 const PASSIVE_FETCH_TIMEOUT_MS = 1_500;
 const BACKGROUND_FETCH_CONCURRENCY = 4;
 
 /**
- * Adds signals the content script cannot collect on its own.
+ * Add observations the content script cannot collect on its own.
  *
- * The content script can read the DOM, storage keys, visible cookie names, and
- * performance entries. The background adds the pieces that need extension-only
- * APIs: an injected script for JavaScript globals, a bounded HEAD request for
- * page headers, and bounded same-origin fetches for external script and CSS
- * text. This keeps those extension-only behaviors behind one collector module.
- */
-export async function collectBackgroundPageSignals(
-	input: BackgroundSignalCollectorInput,
-): Promise<PageSignals> {
-	const pageOrigin = getOrigin(input.signals.url);
-	const [jsGlobals, headers, fetchedSourceContents] = await Promise.all([
-		collectInjectedJsGlobals(input.tabId, input.collectionPlan.jsGlobalPropertyList, input.log),
-		collectResponseHeaders(input.signals.url),
-		collectSameOriginSourceContents(input.signals, pageOrigin),
-	]);
-
-	return {
-		...input.signals,
-		headers: {
-			...input.signals.headers,
-			...headers,
-		},
-		scriptContents: limitStringsByTotalChars(
-			[...input.signals.scriptContents, ...fetchedSourceContents.scriptContents],
-			SOURCE_LIMITS.scriptContentItems,
-			SOURCE_LIMITS.scriptContentTotalChars,
-		),
-		stylesheetContents: limitStringsByTotalChars(
-			[...input.signals.stylesheetContents, ...fetchedSourceContents.stylesheetContents],
-			SOURCE_LIMITS.stylesheetContentItems,
-			SOURCE_LIMITS.stylesheetContentTotalChars,
-		),
-		jsGlobals,
-	};
-}
-
-/**
- * Adds background-only facts to an already-normalized event batch.
- *
- * Event-mode fresh analysis starts with content-script observations, but the
- * content script cannot see page-owned globals or response headers. This helper
- * restores parity with the legacy enriched snapshot path by appending those
- * facts as normal observations before pattern matching, evidence aggregation,
- * and graph refinement run.
+ * The content script sees the DOM, storage keys, readable cookie names, and
+ * resource timing entries. The background contributes facts that require
+ * extension-only access: page-owned JavaScript globals, the analyzed document's
+ * response headers, and bounded same-origin script or stylesheet text. Those
+ * facts are appended as normal observations so the event pipeline has one input
+ * shape regardless of which extension context collected each value.
  */
 export async function collectBackgroundObservationBatch(
 	input: BackgroundObservationCollectorInput,
 ): Promise<ObservationBatch> {
 	const pageOrigin = getOrigin(input.batch.target.url);
-	const sourceBudget = summarizeSourceContentObservationBudget(input.batch);
-	const sourceUrls = collectSourceUrlsFromObservationBatch(input.batch);
 	const [jsGlobals, headers, fetchedSourceContents] = await Promise.all([
 		collectInjectedJsGlobals(input.tabId, input.collectionPlan.jsGlobalPropertyList, input.log),
 		collectResponseHeaders(input.batch.target.url),
-		collectSameOriginObservationSourceContents({
-			pageOrigin,
-			scriptUrls: sourceUrls.scriptUrls,
-			stylesheetUrls: sourceUrls.stylesheetUrls,
-			existingScriptContentCount: sourceBudget.scriptContentCount,
-			existingStylesheetContentCount: sourceBudget.stylesheetContentCount,
-			existingScriptContentChars: sourceBudget.scriptContentChars,
-			existingStylesheetContentChars: sourceBudget.stylesheetContentChars,
-		}),
+		collectSameOriginSourceContents(input.batch, pageOrigin),
 	]);
-	const observedAt = Date.now();
-	const backgroundObservations = createBackgroundObservations({
-		target: input.batch.target,
-		observedAt,
-		headers,
-		jsGlobals,
-		scriptContents: fetchedSourceContents.scriptContents,
-		stylesheetContents: fetchedSourceContents.stylesheetContents,
-	});
+	const observations = [
+		...input.batch.observations,
+		...createJsGlobalObservations(input.batch, jsGlobals),
+		...createHeaderObservations(input.batch, headers),
+		...createTextObservations(input.batch, 'scriptContent', fetchedSourceContents.scriptContents),
+		...createTextObservations(input.batch, 'stylesheetContent', fetchedSourceContents.stylesheetContents),
+	];
 
 	input.log?.('collect-background-observations-success', {
 		tabId: input.tabId,
 		hostname: input.batch.target.hostname,
-		backgroundObservationCount: backgroundObservations.length,
-		headerCount: Object.keys(headers).length,
 		jsGlobalCount: Object.keys(jsGlobals).length,
+		headerCount: Object.keys(headers).length,
 		scriptContentCount: fetchedSourceContents.scriptContents.length,
 		stylesheetContentCount: fetchedSourceContents.stylesheetContents.length,
+		observationCount: observations.length,
 	});
 
-	return {
-		...input.batch,
-		observations: [...input.batch.observations, ...backgroundObservations],
-	};
-}
-
-
-type SourceContentObservationBudget = {
-	/** Number of script-content observations already present before background fetches. */
-	scriptContentCount: number;
-	/** Number of stylesheet-content observations already present before background fetches. */
-	stylesheetContentCount: number;
-	/** Total script-content characters already present before background fetches. */
-	scriptContentChars: number;
-	/** Total stylesheet-content characters already present before background fetches. */
-	stylesheetContentChars: number;
-};
-
-type ObservationSourceUrls = {
-	/** Candidate script URLs observed by the content script or resource timings. */
-	scriptUrls: string[];
-	/** Candidate stylesheet URLs observed by the content script or resource timings. */
-	stylesheetUrls: string[];
-};
-
-type ObservationSourceContentInput = ObservationSourceUrls & {
-	/** Origin that passive background fetches must stay within. */
-	pageOrigin: string;
-	/** Number of script-content observations already present before background fetches. */
-	existingScriptContentCount: number;
-	/** Number of stylesheet-content observations already present before background fetches. */
-	existingStylesheetContentCount: number;
-	/** Total script-content characters already present before background fetches. */
-	existingScriptContentChars: number;
-	/** Total stylesheet-content characters already present before background fetches. */
-	existingStylesheetContentChars: number;
-};
-
-type BackgroundObservationInput = SourceContentSignals & {
-	/** Target shared by appended background observations. */
-	target: ObservationTarget;
-	/** Timestamp attached to background observations. */
-	observedAt: number;
-	/** Bounded response headers collected by the background. */
-	headers: Record<string, string>;
-	/** Bounded page-owned JavaScript globals collected from the main world. */
-	jsGlobals: Record<string, JsGlobalSignalValue>;
-};
-
-/** Count existing source-content observations so background fetches respect budgets. */
-function summarizeSourceContentObservationBudget(batch: ObservationBatch): SourceContentObservationBudget {
-	let scriptContentCount = 0;
-	let stylesheetContentCount = 0;
-	let scriptContentChars = 0;
-	let stylesheetContentChars = 0;
-
-	for (const observation of batch.observations) {
-		if (observation.kind === 'scriptContent') {
-			scriptContentCount += 1;
-			scriptContentChars += String(observation.value).length;
-			continue;
-		}
-		if (observation.kind === 'stylesheetContent') {
-			stylesheetContentCount += 1;
-			stylesheetContentChars += String(observation.value).length;
-		}
-	}
-
-	return {
-		scriptContentCount,
-		stylesheetContentCount,
-		scriptContentChars,
-		stylesheetContentChars,
-	};
-}
-
-/** Extract same-origin fetch candidates from normalized content observations. */
-function collectSourceUrlsFromObservationBatch(batch: ObservationBatch): ObservationSourceUrls {
-	const scriptUrls: string[] = [];
-	const stylesheetUrls: string[] = [];
-
-	for (const observation of batch.observations) {
-		if (typeof observation.value !== 'string') continue;
-
-		if (observation.kind === 'scriptSrc') {
-			scriptUrls.push(observation.value);
-			continue;
-		}
-		if (observation.kind === 'stylesheetHref') {
-			stylesheetUrls.push(observation.value);
-			continue;
-		}
-		if (observation.kind !== 'resourceUrl') continue;
-
-		const initiatorType = String(observation.attributes?.initiatorType ?? '');
-		if (initiatorType === 'script') {
-			scriptUrls.push(observation.value);
-		} else if (initiatorType === 'link' || initiatorType === 'css') {
-			stylesheetUrls.push(observation.value);
-		}
-	}
-
-	return {
-		scriptUrls: uniqueStrings(scriptUrls),
-		stylesheetUrls: uniqueStrings(stylesheetUrls),
-	};
-}
-
-/** Fetch source text for event observations without exceeding the same legacy budgets. */
-async function collectSameOriginObservationSourceContents(
-	input: ObservationSourceContentInput,
-): Promise<SourceContentSignals> {
-	const [scriptContents, stylesheetContents] = await Promise.all([
-		fetchBoundedTextSignals(
-			input.scriptUrls,
-			input.pageOrigin,
-			SOURCE_LIMITS.scriptContentItems - input.existingScriptContentCount,
-			SOURCE_LIMITS.scriptContentChars,
-			SOURCE_LIMITS.scriptContentTotalChars - input.existingScriptContentChars,
-		),
-		fetchBoundedTextSignals(
-			input.stylesheetUrls,
-			input.pageOrigin,
-			SOURCE_LIMITS.stylesheetContentItems - input.existingStylesheetContentCount,
-			SOURCE_LIMITS.stylesheetContentChars,
-			SOURCE_LIMITS.stylesheetContentTotalChars - input.existingStylesheetContentChars,
-		),
-	]);
-
-	return { scriptContents, stylesheetContents };
-}
-
-/** Convert background-only values into the same observation contract as content facts. */
-function createBackgroundObservations(input: BackgroundObservationInput): NormalizedObservation[] {
-	const observations: NormalizedObservation[] = [];
-	const appendTextObservation = (kind: NormalizedObservation['kind'], value: string, key?: string): void => {
-		if (!value) return;
-		observations.push(createBackgroundObservation(input.target, input.observedAt, kind, value, key));
-	};
-
-	for (const [key, value] of sortedEntries(input.headers)) {
-		appendTextObservation('header', value, key);
-	}
-	for (const content of input.scriptContents) {
-		appendTextObservation('scriptContent', content);
-	}
-	for (const content of input.stylesheetContents) {
-		appendTextObservation('stylesheetContent', content);
-	}
-	for (const [key, value] of sortedEntries(input.jsGlobals)) {
-		observations.push(createBackgroundObservation(input.target, input.observedAt, 'jsGlobal', value, key, 'page-main-world'));
-	}
-
-	return observations;
-}
-
-/** Create one replay-safe background observation with stable target metadata. */
-function createBackgroundObservation(
-	target: ObservationTarget,
-	observedAt: number,
-	kind: NormalizedObservation['kind'],
-	value: NormalizedObservation['value'],
-	key?: string,
-	collector: NormalizedObservation['collector'] = 'background-enrichment',
-): NormalizedObservation {
-	return {
-		kind,
-		interface: 'extension',
-		collector,
-		target,
-		observedAt,
-		value,
-		...(key ? { key } : {}),
-	};
-}
-
-/** Sort record entries for stable replay and test output. */
-function sortedEntries<T>(record: Record<string, T>): [string, T][] {
-	return Object.entries(record).sort(([left], [right]) => left.localeCompare(right));
+	return Object.assign({}, input.batch, { observations });
 }
 
 /**
@@ -360,42 +118,131 @@ async function collectResponseHeaders(pageUrl: string): Promise<Record<string, s
 }
 
 async function collectSameOriginSourceContents(
-	signals: PageSignals,
+	batch: ObservationBatch,
 	pageOrigin: string,
-): Promise<SourceContentSignals> {
-	const scriptUrls = uniqueStrings([
-		...signals.scripts,
-		...signals.resources
-			.filter((resource) => resource.initiatorType === 'script')
-			.map((resource) => resource.url),
-	]);
-	const stylesheetUrls = uniqueStrings([
-		...signals.stylesheets,
-		...signals.resources
-			.filter((resource) =>
-				resource.initiatorType === 'link' ||
-				resource.initiatorType === 'css',
-			)
-			.map((resource) => resource.url),
-	]);
+): Promise<{ scriptContents: string[]; stylesheetContents: string[] }> {
+	const scriptContentsAlreadyCollected = countObservations(batch, 'scriptContent');
+	const stylesheetContentsAlreadyCollected = countObservations(batch, 'stylesheetContent');
 	const [scriptContents, stylesheetContents] = await Promise.all([
 		fetchBoundedTextSignals(
-			scriptUrls,
+			extractScriptUrls(batch),
 			pageOrigin,
-			SOURCE_LIMITS.scriptContentItems - signals.scriptContents.length,
+			SOURCE_LIMITS.scriptContentItems - scriptContentsAlreadyCollected,
 			SOURCE_LIMITS.scriptContentChars,
-			SOURCE_LIMITS.scriptContentTotalChars - totalChars(signals.scriptContents),
+			SOURCE_LIMITS.scriptContentTotalChars - totalObservationTextChars(batch, 'scriptContent'),
 		),
 		fetchBoundedTextSignals(
-			stylesheetUrls,
+			extractStylesheetUrls(batch),
 			pageOrigin,
-			SOURCE_LIMITS.stylesheetContentItems - signals.stylesheetContents.length,
+			SOURCE_LIMITS.stylesheetContentItems - stylesheetContentsAlreadyCollected,
 			SOURCE_LIMITS.stylesheetContentChars,
-			SOURCE_LIMITS.stylesheetContentTotalChars - totalChars(signals.stylesheetContents),
+			SOURCE_LIMITS.stylesheetContentTotalChars - totalObservationTextChars(batch, 'stylesheetContent'),
 		),
 	]);
 
 	return { scriptContents, stylesheetContents };
+}
+
+function extractScriptUrls(batch: ObservationBatch): string[] {
+	return uniqueStrings(
+		batch.observations.flatMap((observation) => {
+			if (observation.kind === 'scriptSrc') {
+				return [String(observation.value)];
+			}
+			if (observation.kind === 'resourceUrl' && observation.attributes?.initiatorType === 'script') {
+				return [String(observation.value)];
+			}
+
+			return [];
+		}),
+	);
+}
+
+function extractStylesheetUrls(batch: ObservationBatch): string[] {
+	return uniqueStrings(
+		batch.observations.flatMap((observation) => {
+			if (observation.kind === 'stylesheetHref') {
+				return [String(observation.value)];
+			}
+			if (
+				observation.kind === 'resourceUrl' &&
+				(observation.attributes?.initiatorType === 'link' || observation.attributes?.initiatorType === 'css')
+			) {
+				return [String(observation.value)];
+			}
+
+			return [];
+		}),
+	);
+}
+
+function createJsGlobalObservations(
+	batch: ObservationBatch,
+	values: Record<string, JsGlobalSignalValue>,
+): NormalizedObservation[] {
+	return Object.entries(values)
+		.sort(([left], [right]) => left.localeCompare(right))
+		.map(([key, value]) => createObservation(batch, {
+			kind: 'jsGlobal',
+			collector: 'page-main-world',
+			key,
+			value,
+		}));
+}
+
+function createHeaderObservations(
+	batch: ObservationBatch,
+	values: Record<string, string>,
+): NormalizedObservation[] {
+	return Object.entries(values)
+		.sort(([left], [right]) => left.localeCompare(right))
+		.map(([key, value]) => createObservation(batch, {
+			kind: 'header',
+			collector: 'background-enrichment',
+			key,
+			value,
+		}));
+}
+
+function createTextObservations(
+	batch: ObservationBatch,
+	kind: Extract<NormalizedObservation['kind'], 'scriptContent' | 'stylesheetContent'>,
+	values: readonly string[],
+): NormalizedObservation[] {
+	return values.map((value) => createObservation(batch, {
+		kind,
+		collector: 'background-enrichment',
+		value,
+	}));
+}
+
+function createObservation(
+	batch: ObservationBatch,
+	input: Pick<NormalizedObservation, 'kind' | 'collector' | 'value'> & Partial<Pick<NormalizedObservation, 'key'>>,
+): NormalizedObservation {
+	return {
+		kind: input.kind,
+		interface: batch.interface,
+		collector: input.collector,
+		target: batch.target,
+		observedAt: batch.observedAt,
+		value: input.value,
+		...(input.key !== undefined ? { key: input.key } : {}),
+	};
+}
+
+function countObservations(batch: ObservationBatch, kind: NormalizedObservation['kind']): number {
+	return batch.observations.filter((observation) => observation.kind === kind).length;
+}
+
+function totalObservationTextChars(batch: ObservationBatch, kind: NormalizedObservation['kind']): number {
+	return batch.observations.reduce((total, observation) => {
+		if (observation.kind !== kind || typeof observation.value !== 'string') {
+			return total;
+		}
+
+		return total + observation.value.length;
+	}, 0);
 }
 
 async function fetchBoundedTextSignals(
@@ -432,10 +279,6 @@ async function fetchBoundedTextSignals(
 	}
 
 	return limitStringsByTotalChars(fetched, maxItems, maxTotalChars);
-}
-
-function totalChars(values: readonly string[]): number {
-	return values.reduce((total, value) => total + value.length, 0);
 }
 
 async function fetchBoundedText(url: string, maxChars: number): Promise<string> {

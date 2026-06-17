@@ -39,10 +39,10 @@ interface RejectionRecorder {
 /**
  * Apply compiled registry relationships to an evidence candidate batch.
  *
- * This mirrors the current detector's graph semantics without replacing
- * `analyzeSite(...)`: implications create relationship candidates, requirements
- * must be satisfied by direct evidence, and exclusions deterministically remove
- * the weaker side of a conflict.
+ * Relationship rules run after direct evidence has created candidates.
+ * Implications create relationship-supported candidates, requirements must be
+ * satisfied by independent evidence, and exclusions deterministically remove the
+ * weaker side of a conflict until the accepted candidate set stabilizes.
  */
 export function refineEvidenceCandidateBatch(
 	input: RefineEvidenceCandidateBatchInput,

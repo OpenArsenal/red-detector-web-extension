@@ -138,7 +138,7 @@ describe.sequential('analysis cache baseline', () => {
 			target: {
 				url: 'https://example.com/products',
 			},
-			completedMode: 'legacy',
+			completedMode: 'event',
 		});
 		expect(cached).not.toBe(trace);
 	});

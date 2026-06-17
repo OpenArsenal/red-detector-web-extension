@@ -80,9 +80,10 @@ export function analyzeSite(
 /**
  * Run detection against a compiled registry graph.
  *
- * `analyzeSite` remains the compatibility wrapper for callers that still pass a
- * raw technology array. This entrypoint lets registry-compiler work prove graph
- * equivalence before switching the runtime source format.
+ * Some tests and compatibility callers still provide a raw technology array.
+ * The compiled entrypoint lets registry-compiler work prove graph equivalence
+ * while the extension runtime consumes compiled artifacts through the event
+ * pipeline.
  */
 export function analyzeCompiledSite(
 	signals: PageSignals,

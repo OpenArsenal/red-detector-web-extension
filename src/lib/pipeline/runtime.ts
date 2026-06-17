@@ -1,5 +1,4 @@
 import { createEvidenceCandidateBatch, refineEvidenceCandidateBatch } from '../candidates';
-import { analyzeSite } from '../detection/engine';
 import { matchIndexedObservationBatch } from '../detection/observation-matcher-index';
 import { createCompiledDetectionRegistry } from '../detection/registry-graph';
 import type {
@@ -19,42 +18,30 @@ import {
 } from '../observations';
 import type { CompiledTechnologyRegistryArtifact } from '../registry';
 
-/** Runtime detector paths available during the event-pipeline migration. */
-export const DETECTION_PIPELINE_MODES = ['legacy', 'event'] as const;
+/** Runtime detector paths available to extension callers. */
+export const DETECTION_PIPELINE_MODES = ['event'] as const;
 
 /** Runtime detector path selected for one analysis pass. */
 export type DetectionPipelineMode = typeof DETECTION_PIPELINE_MODES[number];
 
-/** Stable stage names emitted by the Phase 15 runtime coordinator. */
+/** Stable stage names emitted by the event runtime coordinator. */
 export type DetectionPipelineStage =
-	| 'legacy-analyzed'
 	| 'normalized-observations'
 	| 'pattern-matched'
 	| 'evidence-created'
 	| 'candidates-created'
 	| 'candidates-refined'
-	| 'detections-emitted'
-	| 'fallback-analyzed';
-
-/** Reason the coordinator returned legacy output after trying the event pipeline. */
-export type DetectionPipelineFallbackReason = 'event-pipeline-error';
+	| 'detections-emitted';
 
 /** Scalar diagnostics attached to coordinator events without storing page content. */
 export type DetectionPipelineEventDetails = Record<string, string | number | boolean>;
-
-/** Legacy analyzer compatible with the current `analyzeSite(...)` signature. */
-export type DetectionPipelineLegacyAnalyzer = (
-	signals: PageSignals,
-	registry: TechnologyDefinition[],
-	options?: DetectionRunOptions,
-) => SiteAnalysis;
 
 /**
  * Public-safe event emitted by the deterministic runtime coordinator.
  *
  * These events describe stage progress and counts only. They intentionally avoid
- * raw observations, matched values, HTML, cookies, and source contents because
- * Phase 16 will define the redacted replay trace contract separately.
+ * raw observations, matched values, HTML, cookies, and source contents. Replay
+ * traces can persist this shape without copying private page payloads.
  */
 export interface DetectionPipelineRuntimeEvent {
 	/** Stage that produced this coordinator event. */
@@ -69,30 +56,14 @@ export interface DetectionPipelineRuntimeEvent {
 	readonly details?: DetectionPipelineEventDetails;
 }
 
-/**
- * Fallback summary returned when the event path cannot complete.
- *
- * The fallback exists only around the Phase 15 runtime switch. It keeps the
- * extension safe while the event pipeline is still being compared with the old
- * detector path.
- */
-export interface DetectionPipelineFallback {
-	/** Stable fallback reason for tests and migration diagnostics. */
-	readonly reason: DetectionPipelineFallbackReason;
-	/** Human-readable error summary from the failed event path. */
-	readonly message: string;
-}
-
-/** Input for running one detector pass through the selected runtime path. */
+/** Input for adapting a page-signal snapshot into the event pipeline. */
 export interface RunDetectionPipelineInput {
-	/** Page signal snapshot collected by the extension or a fixture. */
+	/** Page signal snapshot collected by an adapter or fixture. */
 	readonly signals: PageSignals;
 	/** Ordered technology registry used for matching and relationship reasoning. */
 	readonly registry: readonly TechnologyDefinition[];
-	/** Optional compiler artifact that lets the event path reuse prebuilt indexes. */
+	/** Optional compiler artifact that lets matching and refinement reuse prebuilt indexes. */
 	readonly compiledRegistryArtifact?: Pick<CompiledTechnologyRegistryArtifact, 'matcherIndex' | 'relationshipGraph'>;
-	/** Runtime path to execute. Defaults to `legacy` until the event path is promoted. */
-	readonly mode?: DetectionPipelineMode;
 	/** Optional detector compatibility flags shared with matching stages. */
 	readonly options?: DetectionRunOptions;
 	/** Timestamp override used by deterministic tests and replay fixtures. */
@@ -101,84 +72,43 @@ export interface RunDetectionPipelineInput {
 	readonly source?: SiteAnalysis['source'];
 	/** Interface label assigned while adapting `PageSignals` into observations. */
 	readonly observationInterface?: ObservationInterface;
-	/** Test or compatibility override for the legacy analyzer. */
-	readonly legacyAnalyzer?: DetectionPipelineLegacyAnalyzer;
-	/** Disable automatic legacy fallback when the event path throws. */
-	readonly fallbackOnEventPipelineError?: boolean;
-	/** Optional event sink used by tests and later runtime instrumentation. */
+	/** Optional event sink used by tests and runtime instrumentation. */
 	readonly onEvent?: (event: DetectionPipelineRuntimeEvent) => void;
 }
 
-/** Output from one runtime detector pass. */
+/** Output from one event detector pass. */
 export interface DetectionPipelineRuntimeResult {
 	/** Final analysis object compatible with storage, messaging, and popup rendering. */
 	readonly analysis: SiteAnalysis;
 	/** Path the caller asked the coordinator to use. */
 	readonly requestedMode: DetectionPipelineMode;
-	/** Path that actually produced the final analysis. */
+	/** Path that produced the final analysis. */
 	readonly completedMode: DetectionPipelineMode;
 	/** Ordered public-safe coordinator events for this analysis pass. */
 	readonly events: readonly DetectionPipelineRuntimeEvent[];
-	/** Emission metadata when the event path completed final emission. */
-	readonly emission?: FinalDetectionEmissionMetadata;
-	/** Fallback summary when event execution failed and legacy output was returned. */
-	readonly fallback?: DetectionPipelineFallback;
+	/** Emission metadata from final detection emission. */
+	readonly emission: FinalDetectionEmissionMetadata;
 }
 
-/**
- * Internal callback used by the coordinator to append a stage event.
- *
- * The helper keeps event construction in one place so every stage uses the same
- * target, timestamp, privacy boundary, and optional caller-facing sink.
- */
+/** Internal callback used by the coordinator to append a stage event. */
 interface DetectionPipelineEventRecorder {
 	/** Record a public-safe stage count with optional scalar diagnostics. */
 	(stage: DetectionPipelineStage, count: number, details?: DetectionPipelineEventDetails): void;
 }
 
 /**
- * Run one detector pass through either the legacy analyzer or the event pipeline.
+ * Run one detector pass through the event pipeline from a snapshot adapter.
  *
- * The default remains `legacy` so existing background calls keep their current
- * behavior. Passing `mode: "event"` executes the Phase 15 coordinator from
- * normalized observations through final emission, with legacy fallback enabled
- * unless the caller disables it for strict tests.
+ * Some tests and compatibility fixtures still start with `PageSignals` because
+ * that is the shape the content collector already knows how to produce safely.
+ * The old direct analyzer is no longer part of this coordinator: snapshots are
+ * immediately normalized into observations, then rule matches become evidence,
+ * evidence becomes candidates, graph rules refine those candidates, and final
+ * detections are emitted for storage and popup rendering.
  */
 export function runDetectionPipeline(input: RunDetectionPipelineInput): DetectionPipelineRuntimeResult {
-	const requestedMode = input.mode ?? 'legacy';
 	const events: DetectionPipelineRuntimeEvent[] = [];
 	const record = createEventRecorder(input, events);
-
-	if (requestedMode === 'legacy') {
-		return runLegacyPipeline(input, record, events, 'legacy-analyzed', requestedMode);
-	}
-
-	try {
-		return runEventPipeline(input, record, events, requestedMode);
-	} catch (error) {
-		if (input.fallbackOnEventPipelineError === false) {
-			throw error;
-		}
-
-		const fallback = createFallback(error);
-		const legacy = runLegacyPipeline(input, record, events, 'fallback-analyzed', requestedMode);
-		return Object.assign({}, legacy, { fallback });
-	}
-}
-
-/**
- * Execute the sidecar event stages from snapshot normalization through emission.
- *
- * This is intentionally synchronous because the Phase 15 input is still one
- * already-collected `PageSignals` snapshot. Later collector phases can wrap this
- * boundary with async acquisition without changing the detector stage order.
- */
-function runEventPipeline(
-	input: RunDetectionPipelineInput,
-	record: DetectionPipelineEventRecorder,
-	events: readonly DetectionPipelineRuntimeEvent[],
-	requestedMode: DetectionPipelineMode,
-): DetectionPipelineRuntimeResult {
 	const observations = normalizePageSignals(input.signals, {
 		interface: input.observationInterface ?? 'extension',
 		observedAt: input.signals.collectedAt,
@@ -220,7 +150,7 @@ function runEventPipeline(
 
 	return {
 		analysis: emitted.analysis,
-		requestedMode,
+		requestedMode: 'event',
 		completedMode: 'event',
 		events,
 		emission: emitted.metadata,
@@ -228,39 +158,11 @@ function runEventPipeline(
 }
 
 /**
- * Execute the current analyzer while preserving the coordinator result shape.
+ * Create the stage recorder shared by the snapshot adapter stages.
  *
- * The legacy branch uses the same event list as failed event runs, so fallback
- * diagnostics can show the attempted event stages followed by fallback analysis.
- */
-function runLegacyPipeline(
-	input: RunDetectionPipelineInput,
-	record: DetectionPipelineEventRecorder,
-	events: readonly DetectionPipelineRuntimeEvent[],
-	stage: Extract<DetectionPipelineStage, 'legacy-analyzed' | 'fallback-analyzed'>,
-	requestedMode: DetectionPipelineMode,
-): DetectionPipelineRuntimeResult {
-	const analyzer = input.legacyAnalyzer ?? analyzeSite;
-	const analysis = applyAnalysisOverrides(
-		analyzer(input.signals, [...input.registry], input.options),
-		input,
-	);
-	record(stage, analysis.results.length);
-
-	return {
-		analysis,
-		requestedMode,
-		completedMode: 'legacy',
-		events,
-	};
-}
-
-/**
- * Create the stage recorder shared by legacy, event, and fallback paths.
- *
- * Raw collected values are deliberately excluded here. The coordinator is allowed
- * to expose counts and scalar stage metadata only until replay redaction rules
- * exist in Phase 16.
+ * Raw collected values are deliberately excluded here. The coordinator is
+ * allowed to expose counts and scalar stage metadata only, preserving the same
+ * privacy rule used by stored replay traces.
  */
 function createEventRecorder(
 	input: RunDetectionPipelineInput,
@@ -276,34 +178,6 @@ function createEventRecorder(
 
 		events.push(event);
 		input.onEvent?.(event);
-	};
-}
-
-/**
- * Apply deterministic metadata overrides without mutating analyzer output.
- *
- * Tests and later replay fixtures need stable timestamps, while production calls
- * should keep the analyzer's original timestamp and source marker.
- */
-function applyAnalysisOverrides(
-	analysis: SiteAnalysis,
-	input: Pick<RunDetectionPipelineInput, 'analyzedAt' | 'source'>,
-): SiteAnalysis {
-	if (input.analyzedAt === undefined && input.source === undefined) {
-		return analysis;
-	}
-
-	return Object.assign({}, analysis, {
-		analyzedAt: input.analyzedAt ?? analysis.analyzedAt,
-		source: input.source ?? analysis.source,
-	});
-}
-
-/** Convert unknown thrown values into stable fallback metadata. */
-function createFallback(error: unknown): DetectionPipelineFallback {
-	return {
-		reason: 'event-pipeline-error',
-		message: error instanceof Error ? error.message : 'Event pipeline failed with a non-error value.',
 	};
 }
 

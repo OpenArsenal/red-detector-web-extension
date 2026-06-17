@@ -71,7 +71,7 @@ Phase 19 keeps these compatibility rules:
 
 - TypeScript technology definitions remain the runtime source.
 - JSON/YAML registry loading is still deferred.
-- `analyzeSite(...)` remains available as the legacy pipeline path.
+- `runObservationBatchPipeline(...)` is the extension runtime path, while snapshot adapters remain available for parity tests.
 - Event pipeline output still emits `SiteAnalysis` through the existing emission bridge.
 - Source maps do not require file coordinates yet.
 - Observation batches are supported as an event-pipeline input, but content/background collection can still use `PageSignals` snapshots.

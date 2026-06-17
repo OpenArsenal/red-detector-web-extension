@@ -1,8 +1,5 @@
 export type {
-	DetectionPipelineFallback,
-	DetectionPipelineFallbackReason,
 	DetectionPipelineEventDetails,
-	DetectionPipelineLegacyAnalyzer,
 	DetectionPipelineMode,
 	DetectionPipelineRuntimeEvent,
 	DetectionPipelineRuntimeResult,

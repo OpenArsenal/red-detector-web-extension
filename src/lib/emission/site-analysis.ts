@@ -16,10 +16,9 @@ export const DEFAULT_FINAL_DETECTION_EMISSION_POLICY: FinalDetectionEmissionPoli
 /**
  * Emit current `SiteAnalysis` output from relationship-refined candidates.
  *
- * This is the last compatibility bridge before the event pipeline can replace
- * `analyzeSite(...)`. It deliberately emits the same public shape that storage,
- * messaging, and popup rendering already understand while keeping richer
- * emission metadata outside the cached analysis object.
+ * Refined candidates become the same public shape that storage, messaging, and
+ * popup rendering already understand. Richer emission metadata stays outside the
+ * cached analysis object so replay can grow without changing `SiteAnalysis`.
  */
 export function emitSiteAnalysisFromRefinedCandidates(
 	input: EmitSiteAnalysisFromCandidatesInput,

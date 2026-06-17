@@ -122,9 +122,9 @@ interface MatchedObservationValue {
  * Preserve detector rule order after observations become evidence entries.
  *
  * The observation matcher loops over observations first so it can stream facts
- * later. Current `analyzeSite(...)` loops over rules first. Carrying the rule
- * index as scalar evidence context lets candidate aggregation restore current
- * evidence and version order without changing the public `Evidence` shape.
+ * later. Carrying the rule index as scalar evidence context lets candidate
+ * aggregation restore registry order for evidence, version selection, and replay
+ * without widening the public `Evidence` shape.
  */
 function withRuleOrder(
 	attributes: ObservationAttributes | undefined,

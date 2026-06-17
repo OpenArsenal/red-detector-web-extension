@@ -33,7 +33,6 @@ export interface RunObservationBatchPipelineInput {
 /** Event stages produced by an already-normalized observation batch. */
 type ObservationBatchPipelineStage = Extract<
 	DetectionPipelineStage,
-	| 'normalized-observations'
 	| 'pattern-matched'
 	| 'evidence-created'
 	| 'candidates-created'
@@ -49,21 +48,12 @@ interface ObservationBatchEventRecorder {
 
 /**
  * Run the event detector stages from an already-normalized observation batch.
- *
- * This is the entry point collector phases need once they stop sending complete
- * `PageSignals` snapshots. It records a `normalized-observations` stage even
- * though normalization already happened so replay can still show the full event
- * pipeline shape. It intentionally has no legacy fallback because a caller that
- * already has observations cannot be faithfully converted back into the old
- * snapshot shape.
  */
 export function runObservationBatchPipeline(
 	input: RunObservationBatchPipelineInput,
 ): DetectionPipelineRuntimeResult {
 	const events: DetectionPipelineRuntimeEvent[] = [];
 	const record = createObservationBatchEventRecorder(input, events);
-	record('normalized-observations', input.batch.observations.length);
-
 	const matches = matchIndexedObservationBatch({
 		registry: input.registry,
 		batch: input.batch,

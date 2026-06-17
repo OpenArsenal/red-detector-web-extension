@@ -46,7 +46,7 @@ Phase 18 keeps these compatibility rules:
 - popup explanation rendering continues to work when no replay trace is available.
 - the extension does not store raw observations, HTML, cookies, request bodies, script contents, or stylesheet contents.
 - cache-first mode still avoids contacting the content script when analysis is cached.
-- the event pipeline is still behind the explicit pipeline switch.
+- the extension runtime now returns replay traces from the event pipeline for fresh runs and cache hits.
 
 ## Tests added
 

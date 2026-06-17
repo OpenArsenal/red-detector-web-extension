@@ -4,7 +4,6 @@ vi.mock('../../lib/detection/rules', () => ({
 	SOURCE_LIMITS: { evidenceValueChars: 160 },
 }));
 
-import type { DetectionPipelineRuntimeResult } from '../../lib/pipeline';
 import type { SiteAnalysis, TechnologyDefinition } from '../../lib/detection/types';
 import {
 	DETECTION_REPLAY_TRACE_SCHEMA_VERSION,
@@ -52,7 +51,6 @@ describe('pipeline replay trace', () => {
 				categories: ['ui-library'],
 				rules: [{ kind: 'scriptSrc', pattern: /react/i, confidence: 90 }],
 			})],
-			mode: 'event',
 			analyzedAt: TEST_NOW,
 		});
 
@@ -127,44 +125,6 @@ describe('pipeline replay trace', () => {
 				'Inferred from direct-tech',
 				'Registry metadata emitted warnings',
 			],
-		});
-	});
-
-	it('copies fallback metadata from event pipeline fallbacks', () => {
-		const legacyAnalysis = makeAnalysis([makeDetection('legacy-fallback')]);
-		const result: DetectionPipelineRuntimeResult = {
-			analysis: legacyAnalysis,
-			requestedMode: 'event',
-			completedMode: 'legacy',
-			events: [{
-				stage: 'fallback-analyzed',
-				target: {
-					url: legacyAnalysis.url,
-					hostname: legacyAnalysis.hostname,
-				},
-				occurredAt: TEST_NOW,
-				count: 1,
-				details: { recovered: true },
-			}],
-			fallback: {
-				reason: 'event-pipeline-error',
-				message: 'event path failed',
-			},
-		};
-
-		const trace = createDetectionReplayTrace({ result });
-
-		expect(trace).toMatchObject({
-			requestedMode: 'event',
-			completedMode: 'legacy',
-			fallback: {
-				reason: 'event-pipeline-error',
-				message: 'event path failed',
-			},
-			events: [expect.objectContaining({
-				sequence: 0,
-				details: { recovered: true },
-			})],
 		});
 	});
 

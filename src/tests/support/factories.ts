@@ -10,7 +10,7 @@ import type {
 import {
 	DETECTION_REPLAY_TRACE_SCHEMA_VERSION,
 	type DetectionReplayTrace,
-} from '../../lib/pipeline/replay';
+} from '../../lib/pipeline';
 
 /**
  * Stable timestamp used by test factories that do not care about time itself.
@@ -89,21 +89,20 @@ export function makeDetectionReplayTrace(
 	return {
 		schemaVersion: overrides.schemaVersion ?? DETECTION_REPLAY_TRACE_SCHEMA_VERSION,
 		target,
-		requestedMode: overrides.requestedMode ?? 'legacy',
-		completedMode: overrides.completedMode ?? 'legacy',
+		requestedMode: overrides.requestedMode ?? 'event',
+		completedMode: overrides.completedMode ?? 'event',
 		analyzedAt,
 		resultCount: overrides.resultCount ?? 0,
 		events: overrides.events ?? [
 			{
 				sequence: 0,
-				stage: 'legacy-analyzed',
+				stage: 'detections-emitted',
 				target,
 				occurredAt: analyzedAt,
 				count: 0,
 			},
 		],
 		explanations: overrides.explanations ?? [],
-		fallback: overrides.fallback,
 		emission: overrides.emission,
 	};
 }

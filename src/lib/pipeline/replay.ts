@@ -1,7 +1,6 @@
 import type { CategoryId, ConfidenceScore, DetectionKind, Evidence, SiteAnalysis } from '../detection/types';
 import type {
 	DetectionPipelineEventDetails,
-	DetectionPipelineFallback,
 	DetectionPipelineMode,
 	DetectionPipelineRuntimeEvent,
 	DetectionPipelineRuntimeResult,
@@ -123,8 +122,6 @@ export interface DetectionReplayTrace {
 	readonly events: readonly DetectionReplayTraceEvent[];
 	/** Explanation records derived from emitted detection results. */
 	readonly explanations: readonly DetectionExplanation[];
-	/** Fallback metadata when an event run returned legacy output. */
-	readonly fallback?: DetectionPipelineFallback;
 	/** Final emission metadata from event runs, when available. */
 	readonly emission?: DetectionPipelineRuntimeResult['emission'];
 }
@@ -153,7 +150,6 @@ export function createDetectionReplayTrace(
 
 	return {
 		...baseTrace,
-		...(result.fallback ? { fallback: cloneFallback(result.fallback) } : {}),
 		...(result.emission ? { emission: { ...result.emission } } : {}),
 	};
 }
@@ -261,13 +257,6 @@ function cloneEventDetails(details: DetectionPipelineEventDetails): DetectionPip
 	return Object.fromEntries(Object.entries(details));
 }
 
-/** Copy fallback metadata so replay traces own their diagnostic object. */
-function cloneFallback(fallback: DetectionPipelineFallback): DetectionPipelineFallback {
-	return {
-		reason: fallback.reason,
-		message: fallback.message,
-	};
-}
 
 /** Return unique string values while preserving first-seen order. */
 function uniqueStrings(values: readonly string[]): string[] {

@@ -4,11 +4,11 @@ vi.mock('../../lib/detection/rules', () => ({
 	SOURCE_LIMITS: { evidenceValueChars: 160 },
 }));
 
-import type { SiteAnalysis, TechnologyDefinition } from '../../lib/detection/types';
+import type { TechnologyDefinition } from '../../lib/detection/types';
 import { runDetectionPipeline, runObservationBatchPipeline } from '../../lib/pipeline';
 import { normalizePageSignals } from '../../lib/observations';
 import { compileTechnologyRegistry } from '../../lib/registry';
-import { makeAnalysis, makeDetection, makePageSignals, TEST_NOW } from '../support/factories';
+import { makePageSignals, TEST_NOW } from '../support/factories';
 
 /**
  * Build a compact technology definition for pipeline coordinator tests.
@@ -37,28 +37,24 @@ function makeTechnology(
 }
 
 describe('event pipeline runtime coordinator', () => {
-	it('defaults to the legacy analyzer path', () => {
-		const legacyAnalysis = makeAnalysis([makeDetection('legacy-tech')]);
-		const legacyAnalyzer = vi.fn((): SiteAnalysis => legacyAnalysis);
-
+	it('defaults snapshot inputs to the event pipeline', () => {
 		const result = runDetectionPipeline({
 			signals: makePageSignals(),
 			registry: [],
-			legacyAnalyzer,
 		});
 
 		expect(result).toMatchObject({
-			analysis: legacyAnalysis,
-			requestedMode: 'legacy',
-			completedMode: 'legacy',
-			events: [
-				expect.objectContaining({
-					stage: 'legacy-analyzed',
-					count: 1,
-				}),
-			],
+			requestedMode: 'event',
+			completedMode: 'event',
 		});
-		expect(legacyAnalyzer).toHaveBeenCalledOnce();
+		expect(result.events.map((event) => event.stage)).toEqual([
+			'normalized-observations',
+			'pattern-matched',
+			'evidence-created',
+			'candidates-created',
+			'candidates-refined',
+			'detections-emitted',
+		]);
 	});
 
 	it('runs PageSignals through the event pipeline and emits SiteAnalysis output', () => {
@@ -84,7 +80,6 @@ describe('event pipeline runtime coordinator', () => {
 		const result = runDetectionPipeline({
 			signals,
 			registry,
-			mode: 'event',
 			analyzedAt: TEST_NOW,
 		});
 
@@ -129,7 +124,6 @@ describe('event pipeline runtime coordinator', () => {
 			signals: makePageSignals({ meta: { generator: ['Artifact Tech'] } }),
 			registry,
 			compiledRegistryArtifact: artifact,
-			mode: 'event',
 			analyzedAt: TEST_NOW,
 		});
 
@@ -172,7 +166,6 @@ describe('event pipeline runtime coordinator', () => {
 			results: [expect.objectContaining({ technologyId: 'batch-tech' })],
 		});
 		expect(result.events.map((event) => event.stage)).toEqual([
-			'normalized-observations',
 			'pattern-matched',
 			'evidence-created',
 			'candidates-created',
@@ -193,7 +186,6 @@ describe('event pipeline runtime coordinator', () => {
 		const result = runDetectionPipeline({
 			signals: makePageSignals({ scripts: ['https://example.com/@vite/client'] }),
 			registry,
-			mode: 'event',
 			analyzedAt: TEST_NOW,
 			onEvent: (event) => observedEvents.push(event.stage),
 		});
@@ -212,32 +204,4 @@ describe('event pipeline runtime coordinator', () => {
 		expect(result.events.every((event) => !('observation' in event))).toBe(true);
 	});
 
-	it('falls back to legacy analysis when the event path cannot complete', () => {
-		const brokenRegistry = [{ id: 'broken' }] as unknown as TechnologyDefinition[];
-		const legacyAnalysis = makeAnalysis([makeDetection('legacy-fallback')]);
-
-		const result = runDetectionPipeline({
-			signals: makePageSignals(),
-			registry: brokenRegistry,
-			mode: 'event',
-			legacyAnalyzer: () => legacyAnalysis,
-			analyzedAt: TEST_NOW,
-		});
-
-		expect(result.completedMode).toBe('legacy');
-		expect(result.fallback).toMatchObject({ reason: 'event-pipeline-error' });
-		expect(result.analysis.results).toEqual(legacyAnalysis.results);
-		expect(result.events.at(-1)).toMatchObject({ stage: 'fallback-analyzed' });
-	});
-
-	it('rethrows event pipeline errors when fallback is disabled', () => {
-		const brokenRegistry = [{ id: 'broken' }] as unknown as TechnologyDefinition[];
-
-		expect(() => runDetectionPipeline({
-			signals: makePageSignals(),
-			registry: brokenRegistry,
-			mode: 'event',
-			fallbackOnEventPipelineError: false,
-		})).toThrow();
-	});
 });

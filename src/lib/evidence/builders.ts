@@ -89,9 +89,9 @@ export function createEvidenceEntryFromObservation(
 /**
  * Adapt existing `SiteAnalysis` evidence into the new evidence-entry shape.
  *
- * The adapter is intentionally lossy in the same places as current cached
- * analysis: it records detector evidence already chosen by `analyzeSite(...)`,
- * not raw page payloads or all possible rule matches.
+ * The adapter is intentionally lossy in the same places as cached analysis: it
+ * records public detector evidence already chosen for display, not raw page
+ * payloads or all possible rule matches.
  */
 export function createEvidenceBatchFromAnalysis(
 	input: CreateEvidenceBatchFromAnalysisInput,

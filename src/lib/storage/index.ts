@@ -194,7 +194,6 @@ function cloneReplayTrace(trace: DetectionReplayTrace): DetectionReplayTrace {
 			evidence: explanation.evidence.map((evidence) => ({ ...evidence })),
 			warnings: [...explanation.warnings],
 		})),
-		...(trace.fallback ? { fallback: { ...trace.fallback } } : {}),
 		...(trace.emission ? { emission: { ...trace.emission } } : {}),
 	};
 }

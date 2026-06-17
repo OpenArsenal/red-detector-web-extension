@@ -35,8 +35,6 @@ import "./App.css";
 
 const POPUP_POLL_INTERVAL_MS = 1_500;
 const POPUP_LOG_PREFIX = "[red-detector][popup]";
-const ACTIVE_TAB_PIPELINE = "event" satisfies AnalyzeActiveTabInput["pipeline"];
-
 const [, injectBackgroundApi] = defineProxy(() => ({}) as BackgroundApi, {
   namespace: BACKGROUND_RPC_NAMESPACE,
   heartbeatCheck: false,
@@ -75,6 +73,7 @@ export default function App() {
   const [lateAddedIds, setLateAddedIds] = createSignal<string[]>([]);
   const [explanationsByTechnologyId, setExplanationsByTechnologyId] =
     createSignal<PopupExplanationLookup>({});
+  const [pipelineMode, setPipelineMode] = createSignal("event");
   let pollTimer: ReturnType<typeof globalThis.setInterval> | undefined;
   let refreshInFlight = false;
   let pollingCheckInFlight = false;
@@ -186,6 +185,7 @@ export default function App() {
     setAnalysis(update.analysis);
     setLateAddedIds(update.lateDetectionIds);
     setExplanationsByTechnologyId(update.explanationsByTechnologyId);
+    setPipelineMode(response.replayTrace?.completedMode ?? "event");
 
     logPopupEvent("analysis-applied", {
       source: options.source,
@@ -273,7 +273,7 @@ export default function App() {
         source: options.source,
         mode: options.input.mode,
         observe: options.input.observe,
-        pipeline: options.input.pipeline ?? "legacy",
+        pipeline: "event",
       });
 
       const response = await backgroundApi.analyzeActiveTab(options.input);
@@ -376,7 +376,6 @@ export default function App() {
       input: {
         mode: "refresh",
         observe: "while-popup-open",
-        pipeline: ACTIVE_TAB_PIPELINE,
       },
       resetLateMarkers: true,
       source: "manual",
@@ -391,7 +390,6 @@ export default function App() {
         input: {
           mode: "cache-first",
           observe: "while-popup-open",
-          pipeline: ACTIVE_TAB_PIPELINE,
         },
         resetLateMarkers: true,
         source: "initial",
@@ -457,6 +455,7 @@ export default function App() {
           <p>Source: {analysis()?.source ?? "none"}</p>
           <p>Host: {analysis()?.hostname ?? "not analyzed"}</p>
           <p>Polling: {pollingChipLabel().toLowerCase()}</p>
+          <p>Pipeline: {pipelineMode()}</p>
         </PopupShell.Metrics>
       </PopupShell.Hero>
 

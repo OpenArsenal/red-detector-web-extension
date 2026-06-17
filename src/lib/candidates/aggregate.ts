@@ -1,4 +1,3 @@
-import { from } from 'solid-js';
 import type {
 	CategoryId,
 	ConfidenceScore,
@@ -48,11 +47,11 @@ export interface CreateEvidenceCandidateBatchInput {
 /**
  * Aggregate evidence entries into candidate detections without graph inference.
  *
- * This function is the sidecar implementation of the target candidate-creation
- * stage. It groups evidence by technology, computes detector-compatible
- * confidence, attaches registry metadata, and keeps relationship resolution out
- * of scope so the current `analyzeSite(...)` output remains the runtime source
- * of truth.
+ * Raw evidence becomes candidate technologies before graph refinement. The
+ * matcher can find several pieces of evidence for the same technology, such as
+ * React from a script URL and a page global. Those matches are grouped into one
+ * candidate with confidence, version clues, category metadata, and registry
+ * order preserved for deterministic emission.
  */
 export function createEvidenceCandidateBatch(
 	input: CreateEvidenceCandidateBatchInput,
