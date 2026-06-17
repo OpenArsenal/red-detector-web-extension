@@ -35,6 +35,7 @@ import "./App.css";
 
 const POPUP_POLL_INTERVAL_MS = 1_500;
 const POPUP_LOG_PREFIX = "[red-detector][popup]";
+const ACTIVE_TAB_PIPELINE = "event" satisfies AnalyzeActiveTabInput["pipeline"];
 
 const [, injectBackgroundApi] = defineProxy(() => ({}) as BackgroundApi, {
   namespace: BACKGROUND_RPC_NAMESPACE,
@@ -272,6 +273,7 @@ export default function App() {
         source: options.source,
         mode: options.input.mode,
         observe: options.input.observe,
+        pipeline: options.input.pipeline ?? "legacy",
       });
 
       const response = await backgroundApi.analyzeActiveTab(options.input);
@@ -374,6 +376,7 @@ export default function App() {
       input: {
         mode: "refresh",
         observe: "while-popup-open",
+        pipeline: ACTIVE_TAB_PIPELINE,
       },
       resetLateMarkers: true,
       source: "manual",
@@ -388,6 +391,7 @@ export default function App() {
         input: {
           mode: "cache-first",
           observe: "while-popup-open",
+          pipeline: ACTIVE_TAB_PIPELINE,
         },
         resetLateMarkers: true,
         source: "initial",
