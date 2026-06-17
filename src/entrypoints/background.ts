@@ -4,7 +4,11 @@ import { browser } from 'wxt/browser';
 import { canInspectTab, getActiveTab } from '../lib/browser/active-tab';
 import { collectExtensionPageSignals } from '../lib/collectors/extension-page-collector';
 import { bundledTechnologyRegistryProvider } from '../lib/detection/registry-provider';
-import { createDetectionReplayTrace, runDetectionPipeline } from '../lib/pipeline';
+import {
+	createDetectionReplayTrace,
+	runDetectionPipeline,
+	runObservationBatchPipeline,
+} from '../lib/pipeline';
 
 import type { ObservationSessionState } from '../lib/content/observed-page-signals';
 import type { PageSignals, SiteAnalysis, TechnologyDefinition } from '../lib/detection/types';
@@ -14,6 +18,7 @@ import type {
 	AnalyzeActiveTabOutput,
 	BackgroundApi,
 	ContentApi,
+	FlushObservationBatchOutput,
 } from '../lib/messaging';
 import {
 	CONTENT_SCRIPT_TIMEOUT_MS,
@@ -249,6 +254,93 @@ async function getObservationSessionStateForTab(
 	}
 }
 
+async function flushObservationBatchForTab(
+	tabId: number,
+): Promise<AppResult<FlushObservationBatchOutput>> {
+	const contentApi = createContentApiClient(tabId, 0);
+
+	try {
+		return await withTimeout(
+			contentApi.flushObservationBatch(),
+			CONTENT_SCRIPT_TIMEOUT_MS,
+			'Content script did not respond before the messaging timeout.',
+		);
+	} catch (error) {
+		return contentScriptFailure(error);
+	}
+}
+
+async function analyzeObservationBatchRefresh(
+	tab: InspectableTab,
+	flush: FlushObservationBatchOutput,
+): Promise<AppResult<AnalyzeActiveTabOutput>> {
+	if (!flush.batch || flush.batch.observations.length === 0) {
+		const cached = await getCachedAnalysis(tab.url);
+		const replayTrace = await getCachedReplayTrace(tab.url);
+		if (cached) return ok(createAnalysisOutput(cached, 'hit', flush.session, replayTrace ?? undefined));
+
+		return analyzeFreshActiveTab(tab, {
+			mode: 'refresh',
+			observe: 'while-popup-open',
+			pipeline: 'event',
+		}, 'bypassed');
+	}
+
+	const compiledRegistryArtifact = bundledTechnologyRegistryProvider.getCompiledRegistry();
+	const batchResult = runObservationBatchPipeline({
+		batch: flush.batch,
+		registry: compiledRegistryArtifact.technologies,
+		compiledRegistryArtifact,
+		source: 'fresh',
+	});
+	const cached = await getCachedAnalysis(tab.url);
+	const analysis = mergeIncrementalAnalysis(cached, batchResult.analysis);
+	const replayTrace = createDetectionReplayTrace({
+		result: Object.assign({}, batchResult, { analysis }),
+	});
+	const savedAnalysis = await saveAnalysis(analysis);
+	const savedReplayTrace = await saveReplayTrace(replayTrace);
+
+	logBackgroundEvent('observation-batch-refresh-complete', {
+		...summarizeTab(tab),
+		observationCount: flush.batch.observations.length,
+		queuedCount: flush.stats.queuedCount,
+		resultCount: savedAnalysis.results.length,
+	});
+
+	return ok(createAnalysisOutput(savedAnalysis, 'bypassed', flush.session, savedReplayTrace));
+}
+
+/**
+ * Merge late batch detections without treating missing late evidence as removal.
+ *
+ * A late observation batch is append-oriented. It can prove that a new script,
+ * link, resource, or meta tag appeared, but it cannot prove that previously
+ * collected evidence disappeared. Existing detections therefore survive unless
+ * the batch emits the same technology with equal or stronger confidence.
+ */
+function mergeIncrementalAnalysis(base: SiteAnalysis | null, incremental: SiteAnalysis): SiteAnalysis {
+	if (!base || base.url !== incremental.url || base.hostname !== incremental.hostname) return incremental;
+
+	const results = [...base.results];
+	const resultIndexById = new Map(results.map((result, index) => [result.technologyId, index]));
+	for (const result of incremental.results) {
+		const existingIndex = resultIndexById.get(result.technologyId);
+		if (existingIndex === undefined) {
+			resultIndexById.set(result.technologyId, results.length);
+			results.push(result);
+			continue;
+		}
+
+		if (result.confidence.value >= results[existingIndex]!.confidence.value) results[existingIndex] = result;
+	}
+
+	return Object.assign({}, incremental, {
+		results,
+		errors: [...base.errors, ...incremental.errors],
+	});
+}
+
 async function beginObservationSessionForTab(
 	tabId: number,
 	expectedUrl: string,
@@ -470,10 +562,8 @@ export function createBackgroundApi(): BackgroundApi {
 					);
 				}
 
-				return analyzeFreshActiveTab(tab, {
-					mode: 'refresh',
-					observe: 'while-popup-open',
-				}, 'bypassed');
+				const batchResponse = await flushObservationBatchForTab(tab.id);
+				return batchResponse.ok ? analyzeObservationBatchRefresh(tab, batchResponse.value) : batchResponse;
 			} catch (error) {
 				const stack = error instanceof Error ? error.stack : undefined;
 				const message =
