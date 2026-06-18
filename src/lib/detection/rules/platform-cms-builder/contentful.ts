@@ -47,6 +47,14 @@ export const contentfulTechnologyDefinition = {
 			pattern: new RegExp("www.contentful.com"),
 			description: "Script content contains a bounded technology signature.",
 		},
+		{
+			id: "contentful:header:6",
+			kind: "header",
+			key: "content-security-policy",
+			valuePattern: new RegExp("(?:contentful\\.com|ctfassets\\.net)", "i"),
+			confidence: 60,
+			description: "Content Security Policy allows Contentful API or asset hosts.",
+		},
 	],
 	metadata: {
 		saas: true,

@@ -177,6 +177,13 @@ export const opentelemetryTechnologyDefinition = {
 			confidence: 75,
 			description: "Resource filename or URL matches a modern tooling marker.",
 		},
+		{
+			id: "opentelemetry:requestUrl:modern:22",
+			kind: "requestUrl",
+			pattern: new RegExp("/\\.well-known/otel/(?:metrics|traces|logs)(?:\\?|$)", "i"),
+			confidence: 85,
+			description: "Observed request URL targets the OpenTelemetry well-known collection endpoint.",
+		},
 	],
 	metadata: {
 		oss: true,

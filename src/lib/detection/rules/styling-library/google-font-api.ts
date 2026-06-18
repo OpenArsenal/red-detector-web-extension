@@ -34,5 +34,13 @@ export const googleFontApiTechnologyDefinition = {
 			property: "WebFonts",
 			description: "Page-owned global matches a known technology marker.",
 		},
+		{
+			id: "google-font-api:header:4",
+			kind: "header",
+			key: "content-security-policy",
+			valuePattern: new RegExp("(?:fonts\\.googleapis\\.com|fonts\\.gstatic\\.com)", "i"),
+			confidence: 60,
+			description: "Content Security Policy allows Google Font API hosts.",
+		},
 	],
 } as const satisfies TechnologyDefinition;

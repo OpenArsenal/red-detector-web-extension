@@ -22,6 +22,14 @@ export const pusherTechnologyDefinition = {
 			property: "Pusher.Runtime",
 			description: "Page-owned global matches a known technology marker.",
 		},
+		{
+			id: "pusher:header:2",
+			kind: "header",
+			key: "content-security-policy",
+			valuePattern: new RegExp("(?:ws-[a-z0-9-]+\\.pusher\\.com|sockjs-[a-z0-9-]+\\.pusher\\.com|\\.pusher\\.com)", "i"),
+			confidence: 65,
+			description: "Content Security Policy allows Pusher realtime connection hosts.",
+		},
 	],
 	metadata: {
 		saas: true,

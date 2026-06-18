@@ -14,8 +14,15 @@ export const priorityHintsTechnologyDefinition = {
 			id: "priority-hints:dom:0",
 			kind: "dom",
 			selector: "iframe[fetchpriority], img[fetchpriority], script[fetchpriority], link[fetchpriority]",
-			confidence: 45,
+			confidence: 60,
 			description: "DOM uses the fetchpriority attribute as a resource scheduling hint.",
+		},
+		{
+			id: "priority-hints:html:1",
+			kind: "html",
+			pattern: new RegExp("\\sfetchpriority=", "i"),
+			confidence: 60,
+			description: "Document markup contains the fetchpriority attribute used by Priority Hints.",
 		},
 	],
 } as const satisfies TechnologyDefinition;
