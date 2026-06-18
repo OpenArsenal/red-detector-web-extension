@@ -141,6 +141,7 @@ export function buildCollectionPlan(
 export function toCollectPageSignalsInput(
 	plan: CollectionPlan | CollectionTierPlan,
 	tier: CollectionTier = plan.tier,
+	timingTraceId?: string,
 ): CollectPageSignalsInput {
 	const tierPlan = getCollectionTierPlan(plan, tier);
 	return {
@@ -152,6 +153,7 @@ export function toCollectPageSignalsInput(
 		includeStorageKeys: tierPlan.needsStorage,
 		selectorProbeList: tierPlan.selectorProbeList,
 		htmlProbeList: tierPlan.htmlProbeList,
+		...(timingTraceId ? { timingTraceId } : {}),
 	};
 }
 

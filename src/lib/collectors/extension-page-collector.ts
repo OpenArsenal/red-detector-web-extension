@@ -12,6 +12,7 @@ import {
 	contentScriptFailure,
 	withTimeout,
 } from '../messaging/rpc';
+import { timeAsyncSpan, type TimingContext } from '../diagnostics/timing';
 import { errorResponse, ok, type AppResult } from '../shared/result';
 import { isSameDocumentUrl } from '../shared/url';
 
@@ -29,6 +30,8 @@ export type ExtensionPageCollectorInput = {
 	contentApi: ContentApi;
 	/** Optional summary logger supplied by the background entrypoint. */
 	log?: CollectorLog;
+	/** Optional debug id used only to correlate summary timing logs. */
+	timingTraceId?: string;
 };
 
 /**
@@ -43,6 +46,15 @@ export async function collectExtensionObservationBatch(
 ): Promise<AppResult<ObservationBatch>> {
 	const tier = input.tier ?? 'initial';
 	const collectionPlan = getCollectionTierPlan(input.collectionPlan, tier);
+	const timingContext: TimingContext = {
+		traceId: input.timingTraceId,
+		surface: 'collector',
+		details: {
+			tabId: input.tabId,
+			hostname: new URL(input.expectedUrl).hostname,
+			tier,
+		},
+	};
 	input.log?.('collect-observation-batch-start', {
 		tabId: input.tabId,
 		hostname: new URL(input.expectedUrl).hostname,
@@ -63,10 +75,18 @@ export async function collectExtensionObservationBatch(
 	});
 
 	try {
-		const response = await withTimeout(
-			input.contentApi.collectObservationBatch(toCollectPageSignalsInput(collectionPlan, tier)),
-			CONTENT_SCRIPT_TIMEOUT_MS,
-			'Content script did not respond before the messaging timeout.',
+		const response = await timeAsyncSpan(
+			'collector.content-rpc.collect-observation-batch',
+			timingContext,
+			() => withTimeout(
+				input.contentApi.collectObservationBatch(toCollectPageSignalsInput(collectionPlan, tier, input.timingTraceId)),
+				CONTENT_SCRIPT_TIMEOUT_MS,
+				'Content script did not respond before the messaging timeout.',
+			),
+			(result) => ({
+				ok: result.ok,
+				observationCount: result.ok ? result.value.batch.observations.length : 0,
+			}),
 		);
 
 		if (!response.ok) {
@@ -83,12 +103,18 @@ export async function collectExtensionObservationBatch(
 			return validationError;
 		}
 
-		const enrichedBatch = await collectBackgroundObservationBatch({
-			tabId: input.tabId,
-			batch: response.value.batch,
-			collectionPlan,
-			log: input.log,
-		});
+		const enrichedBatch = await timeAsyncSpan(
+			'collector.background-enrichment.collect',
+			timingContext,
+			() => collectBackgroundObservationBatch({
+				tabId: input.tabId,
+				batch: response.value.batch,
+				collectionPlan,
+				log: input.log,
+				timingTraceId: input.timingTraceId,
+			}),
+			(batch) => ({ observationCount: batch.observations.length }),
+		);
 
 		input.log?.('collect-observation-batch-success', {
 			tabId: input.tabId,

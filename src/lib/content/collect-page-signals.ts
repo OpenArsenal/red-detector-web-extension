@@ -1,5 +1,6 @@
 import { limitStringsByTotalChars, normalizeMetaMap, truncate, uniqueStrings } from '../detection/normalizers';
 import { SOURCE_LIMITS } from '../detection/source-limits';
+import { timeSyncSpan, type TimingContext } from '../diagnostics/timing';
 import type {
 	CookieSignals,
 	HtmlMatchSignal,
@@ -19,6 +20,7 @@ export type CollectPageSignalsInput = {
 	includeScriptContent?: boolean;
 	includeStylesheetContent?: boolean;
 	includeStorageKeys?: boolean;
+	timingTraceId?: string;
 };
 
 /**
@@ -57,34 +59,132 @@ export function collectPageSignals(
 	input: CollectPageSignalsInput,
 	runtime: RuntimePageSignals = {},
 ): PageSignals {
-	const selectorProbeList = uniqueStrings(input.selectorProbeList);
-	const fullHtml = input.includeHtml ? document.documentElement.outerHTML : '';
+	const timingContext: TimingContext = {
+		traceId: input.timingTraceId,
+		surface: 'content',
+		details: {
+			hostname: location.hostname,
+			tier: input.tier ?? 'initial',
+		},
+	};
+	const selectorProbeList = timeSyncSpan(
+		'content.collect-page-signals.dedupe-selector-probes',
+		timingContext,
+		() => uniqueStrings(input.selectorProbeList),
+		(values) => ({ selectorProbeCount: values.length }),
+	);
+	const fullHtml = timeSyncSpan(
+		'content.collect-page-signals.read-html',
+		timingContext,
+		() => input.includeHtml ? document.documentElement.outerHTML : '',
+		(value) => ({ includeHtml: Boolean(input.includeHtml), htmlChars: value.length }),
+	);
 	const htmlProbeList = input.htmlProbeList ?? [];
-	const htmlMatches = fullHtml ? collectHtmlProbeMatches(fullHtml, htmlProbeList) : {};
-	const resources = runtime.resources ?? collectResourceTimings();
+	const htmlMatches = timeSyncSpan(
+		'content.collect-page-signals.html-probes',
+		timingContext,
+		() => fullHtml ? collectHtmlProbeMatches(fullHtml, htmlProbeList) : {},
+		(values) => ({ htmlProbeCount: htmlProbeList.length, htmlMatchCount: Object.keys(values).length }),
+	);
+	const resources = timeSyncSpan(
+		'content.collect-page-signals.resources',
+		timingContext,
+		() => runtime.resources ?? collectResourceTimings(),
+		(values) => ({ resourceCount: values.length }),
+	);
+	const scripts = timeSyncSpan(
+		'content.collect-page-signals.scripts',
+		timingContext,
+		() => runtime.scripts ?? collectScriptSources(),
+		(values) => ({ scriptCount: values.length }),
+	);
+	const stylesheets = timeSyncSpan(
+		'content.collect-page-signals.stylesheets',
+		timingContext,
+		() => runtime.stylesheets ?? collectStylesheetSources(),
+		(values) => ({ stylesheetCount: values.length }),
+	);
+	const links = timeSyncSpan(
+		'content.collect-page-signals.links',
+		timingContext,
+		() => runtime.links ?? collectLinkTags(),
+		(values) => ({ linkCount: values.length }),
+	);
+	const scriptContents = timeSyncSpan(
+		'content.collect-page-signals.script-contents',
+		timingContext,
+		() => runtime.scriptContents ?? (input.includeScriptContent ? collectScriptContents() : []),
+		(values) => ({ includeScriptContent: Boolean(input.includeScriptContent), scriptContentCount: values.length }),
+	);
+	const stylesheetContents = timeSyncSpan(
+		'content.collect-page-signals.stylesheet-contents',
+		timingContext,
+		() => runtime.stylesheetContents ?? (input.includeStylesheetContent ? collectStylesheetContents() : []),
+		(values) => ({
+			includeStylesheetContent: Boolean(input.includeStylesheetContent),
+			stylesheetContentCount: values.length,
+		}),
+	);
+	const meta = timeSyncSpan(
+		'content.collect-page-signals.meta',
+		timingContext,
+		() => runtime.meta ?? collectMetaTags(),
+		(values) => ({ metaKeyCount: Object.keys(values).length }),
+	);
+	const domSelectors = timeSyncSpan(
+		'content.collect-page-signals.selector-probes',
+		timingContext,
+		() => Object.fromEntries(
+			selectorProbeList.map((selector) => [selector, safeQuerySelector(selector)]),
+		),
+		(values) => ({
+			selectorProbeCount: selectorProbeList.length,
+			selectorMatchCount: Object.values(values).filter(Boolean).length,
+		}),
+	);
+	const storage = timeSyncSpan(
+		'content.collect-page-signals.storage-keys',
+		timingContext,
+		() => input.includeStorageKeys !== false ? collectStorageKeys() : { localStorage: {}, sessionStorage: {} },
+		(values) => ({
+			includeStorageKeys: input.includeStorageKeys !== false,
+			localStorageKeyCount: Object.keys(values.localStorage).length,
+			sessionStorageKeyCount: Object.keys(values.sessionStorage).length,
+		}),
+	);
+	const text = timeSyncSpan(
+		'content.collect-page-signals.visible-text',
+		timingContext,
+		() => input.includeText ? collectVisibleText() : '',
+		(value) => ({ includeText: Boolean(input.includeText), textChars: value.length }),
+	);
+	const html = timeSyncSpan(
+		'content.collect-page-signals.bounded-html',
+		timingContext,
+		() => input.includeHtml ? boundedHtml(fullHtml, htmlProbeList) : '',
+		(value) => ({ includeHtml: Boolean(input.includeHtml), boundedHtmlChars: value.length }),
+	);
 
 	return {
 		url: location.href,
 		hostname: location.hostname,
-		html: input.includeHtml ? boundedHtml(fullHtml, htmlProbeList) : '',
+		html,
 		htmlMatches,
-		text: input.includeText ? collectVisibleText() : '',
-		scripts: runtime.scripts ?? collectScriptSources(),
-		stylesheets: runtime.stylesheets ?? collectStylesheetSources(),
-		links: runtime.links ?? collectLinkTags(),
+		text,
+		scripts,
+		stylesheets,
+		links,
 		resources,
 		requests: runtime.requests ?? resources.map(resourceToRequestSignal),
-		scriptContents: runtime.scriptContents ?? (input.includeScriptContent ? collectScriptContents() : []),
-		stylesheetContents: runtime.stylesheetContents ?? (input.includeStylesheetContent ? collectStylesheetContents() : []),
+		scriptContents,
+		stylesheetContents,
 		cookies: collectCookieNames(document.cookie),
 		headers: runtime.headers ?? {},
-		meta: runtime.meta ?? collectMetaTags(),
+		meta,
 		dom: {
-			selectors: Object.fromEntries(
-				selectorProbeList.map((selector) => [selector, safeQuerySelector(selector)]),
-			),
+			selectors: domSelectors,
 		},
-		storage: input.includeStorageKeys !== false ? collectStorageKeys() : { localStorage: {}, sessionStorage: {} },
+		storage,
 		// JavaScript globals are populated by injected JS context collection.
 		// Content scripts cannot read page-owned globals directly, so callers pass
 		// those injected values through RuntimePageSignals after the injection step.

@@ -8,6 +8,7 @@ import {
 	collectStylesheetSources,
 } from './collect-page-signals';
 import { SOURCE_LIMITS } from '../detection/source-limits';
+import { getRedDetectorLogger } from '../diagnostics/logging';
 import type { PageSignals } from '../detection/types';
 import { isObservationSessionForUrl } from '../lifecycle/observation';
 import {
@@ -81,7 +82,7 @@ export type ObservedPageSignalsOptions = {
 };
 
 const MAX_PENDING_MUTATION_NODES = 100;
-const OBSERVER_LOG_PREFIX = '[red-detector][content][observer]';
+const observerLogger = getRedDetectorLogger('content', 'observer');
 
 type ActiveObservationSession = {
 	sessionId: string;
@@ -93,12 +94,10 @@ type ActiveObservationSession = {
 };
 
 function logObserverEvent(event: string, details?: Record<string, unknown>): void {
-	if (details) {
-		console.log(OBSERVER_LOG_PREFIX, event, details);
-		return;
-	}
-
-	console.log(OBSERVER_LOG_PREFIX, event);
+	observerLogger.debug('[red-detector][content][observer] {event}', {
+		event,
+		...(details ?? {}),
+	});
 }
 
 export function createObservedPageSignals(

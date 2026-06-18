@@ -198,6 +198,8 @@ export type CollectPageSignalsInput = {
 	selectorProbeList: string[];
 	/** HTML regex probes serialized for the content script. */
 	htmlProbeList?: HtmlProbe[];
+	/** Optional debug id used only to correlate summary timing logs. */
+	timingTraceId?: string;
 };
 
 /** Popup-to-background API exposed through the messaging adapter. */

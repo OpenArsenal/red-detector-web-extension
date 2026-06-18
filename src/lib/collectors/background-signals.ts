@@ -3,6 +3,7 @@ import { browser } from 'wxt/browser';
 import type { CollectionTierPlan } from './planning';
 import { limitStringsByTotalChars, truncate, uniqueStrings } from '../detection/normalizers';
 import { SOURCE_LIMITS } from '../detection/source-limits';
+import { timeAsyncSpan, type TimingContext } from '../diagnostics/timing';
 import type { NormalizedObservation, ObservationBatch } from '../observations';
 import { getOrigin } from '../shared/url';
 
@@ -22,6 +23,8 @@ export type BackgroundObservationCollectorInput = {
 	readonly collectionPlan: CollectionTierPlan;
 	/** Optional logger supplied by the background entrypoint. */
 	readonly log?: CollectorLog;
+	/** Optional debug id used only to correlate summary timing logs. */
+	readonly timingTraceId?: string;
 };
 
 const PASSIVE_FETCH_TIMEOUT_MS = 1_500;
@@ -41,10 +44,40 @@ export async function collectBackgroundObservationBatch(
 	input: BackgroundObservationCollectorInput,
 ): Promise<ObservationBatch> {
 	const pageOrigin = getOrigin(input.batch.target.url);
+	const timingContext: TimingContext = {
+		traceId: input.timingTraceId,
+		surface: 'collector',
+		details: {
+			tabId: input.tabId,
+			hostname: input.batch.target.hostname,
+			tier: input.collectionPlan.tier,
+		},
+	};
 	const [jsGlobals, headers, fetchedSourceContents] = await Promise.all([
-		collectInjectedJsGlobals(input.tabId, input.collectionPlan.jsGlobalPropertyList, input.log),
-		input.collectionPlan.needsHeaders ? collectResponseHeaders(input.batch.target.url) : {},
-		collectSameOriginSourceContents(input.batch, pageOrigin, input.collectionPlan),
+		timeAsyncSpan(
+			'collector.background.js-globals',
+			timingContext,
+			() => collectInjectedJsGlobals(input.tabId, input.collectionPlan.jsGlobalPropertyList, input.log),
+			(values) => ({
+				requestedGlobalCount: input.collectionPlan.jsGlobalPropertyList.length,
+				matchedGlobalCount: Object.keys(values).length,
+			}),
+		),
+		timeAsyncSpan(
+			'collector.background.headers',
+			timingContext,
+			() => input.collectionPlan.needsHeaders ? collectResponseHeaders(input.batch.target.url) : Promise.resolve<Record<string, string>>({}),
+			(values) => ({ headerCount: Object.keys(values).length }),
+		),
+		timeAsyncSpan(
+			'collector.background.same-origin-source-content',
+			timingContext,
+			() => collectSameOriginSourceContents(input.batch, pageOrigin, input.collectionPlan),
+			(values) => ({
+				scriptContentCount: values.scriptContents.length,
+				stylesheetContentCount: values.stylesheetContents.length,
+			}),
+		),
 	]);
 	const observations = [
 		...input.batch.observations,

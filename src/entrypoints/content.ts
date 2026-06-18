@@ -6,18 +6,22 @@ import {
   type ObservedPageSignals,
 } from "../lib/content/observed-page-signals";
 import { validatePageSignals } from "../lib/detection/validate";
+import { configureRedDetectorLogging, getRedDetectorLogger } from "../lib/diagnostics/logging";
 import type { CollectPageSignalsInput, ContentApi } from "../lib/messaging";
 import {
   CONTENT_RPC_NAMESPACE,
   createContentServerAdapter,
 } from "../lib/messaging";
 import type { ObservationStopReason } from "../lib/contracts/analysis";
+import { timeAsyncSpan, timeSyncSpan, type TimingContext } from "../lib/diagnostics/timing";
 import { normalizePageSignals } from "../lib/observations";
 import { errorResponse, ok } from "../lib/shared/result";
 
+configureRedDetectorLogging("content");
+
+const contentLogger = getRedDetectorLogger("content");
 const DOM_MUTATION_THROTTLE_MS = 1_500;
 const CONTENT_RUNTIME_KEY = '__redDetectorContentRuntimeV1';
-const CONTENT_LOG_PREFIX = '[red-detector][content]';
 
 type ContentRuntimeState = {
   dispose(): void;
@@ -53,12 +57,10 @@ function clearRuntimeState(state: ContentRuntimeState): void {
 }
 
 function logContentEvent(event: string, details?: Record<string, unknown>): void {
-  if (details) {
-    console.log(CONTENT_LOG_PREFIX, event, details);
-    return;
-  }
-
-  console.log(CONTENT_LOG_PREFIX, event);
+  contentLogger.debug("[red-detector][content] {event}", {
+    event,
+    ...(details ?? {}),
+  });
 }
 
 function summarizeSignals(signals: Awaited<ReturnType<typeof collectPageSignals>>): Record<string, unknown> {
@@ -92,6 +94,14 @@ async function collectSignals(
   observedSignals: ObservedPageSignals,
 ) {
   try {
+    const timingContext: TimingContext = {
+      traceId: input.timingTraceId,
+      surface: 'content',
+      details: {
+        hostname: globalThis.location?.hostname,
+        tier: input.tier ?? 'initial',
+      },
+    };
     logContentEvent("collect-start", {
       hostname: globalThis.location?.hostname,
       includeHtml: Boolean(input.includeHtml),
@@ -100,10 +110,31 @@ async function collectSignals(
       includeStylesheetContent: Boolean(input.includeStylesheetContent),
       selectorProbeCount: input.selectorProbeList.length,
       htmlProbeCount: input.htmlProbeList?.length ?? 0,
+      timingTraceId: input.timingTraceId,
     });
 
-    const signals = collectPageSignals(input, observedSignals.snapshot());
-    const validationError = validatePageSignals(signals);
+    const snapshot = timeSyncSpan(
+      'content.observed-signals.snapshot',
+      timingContext,
+      () => observedSignals.snapshot(),
+      (value) => ({
+        scriptCount: value.scripts?.length ?? 0,
+        stylesheetCount: value.stylesheets?.length ?? 0,
+        resourceCount: value.resources?.length ?? 0,
+      }),
+    );
+    const signals = timeSyncSpan(
+      'content.collect-signals.collect-page-signals',
+      timingContext,
+      () => collectPageSignals(input, snapshot),
+      (value) => summarizeSignals(value),
+    );
+    const validationError = timeSyncSpan(
+      'content.collect-signals.validate-page-signals',
+      timingContext,
+      () => validatePageSignals(signals),
+      (value) => ({ valid: value === null }),
+    );
 
     if (validationError) {
       logContentEvent("collect-validation-failed", {
@@ -138,17 +169,35 @@ async function collectInitialObservationBatch(
   input: CollectPageSignalsInput,
   observedSignals: ObservedPageSignals,
 ) {
-  const response = await collectSignals(input, observedSignals);
+  const timingContext: TimingContext = {
+    traceId: input.timingTraceId,
+    surface: 'content',
+    details: {
+      hostname: globalThis.location?.hostname,
+      tier: input.tier ?? 'initial',
+    },
+  };
+  const response = await timeAsyncSpan(
+    'content.collect-observation-batch.collect-signals',
+    timingContext,
+    () => collectSignals(input, observedSignals),
+    (value) => ({ ok: value.ok }),
+  );
   if (!response.ok) {
     return response;
   }
 
   return ok({
-    batch: normalizePageSignals(response.value, {
-      collector: "content-snapshot",
-      interface: "extension",
-      observedAt: response.value.collectedAt,
-    }),
+    batch: timeSyncSpan(
+      'content.collect-observation-batch.normalize-page-signals',
+      timingContext,
+      () => normalizePageSignals(response.value, {
+        collector: "content-snapshot",
+        interface: "extension",
+        observedAt: response.value.collectedAt,
+      }),
+      (value) => ({ observationCount: value.observations.length }),
+    ),
   });
 }
 

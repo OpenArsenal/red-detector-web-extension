@@ -4,10 +4,19 @@ import { browser } from 'wxt/browser';
 import { canInspectTab, getActiveTab } from '../lib/browser/active-tab';
 import { collectExtensionObservationBatch } from '../lib/collectors/extension-page-collector';
 import { bundledTechnologyRegistryProvider } from '../lib/detection/registry-provider';
+import { configureRedDetectorLogging, getRedDetectorLogger } from '../lib/diagnostics/logging';
 import {
 	createDetectionReplayTrace,
 	runObservationBatchPipeline,
 } from '../lib/pipeline';
+import {
+	createTimingTraceId,
+	endTimingSpan,
+	startTimingSpan,
+	timeAsyncSpan,
+	timeSyncSpan,
+	type TimingContext,
+} from '../lib/diagnostics/timing';
 
 import type { ObservationSessionState } from '../lib/content/observed-page-signals';
 import type { SiteAnalysis } from '../lib/detection/types';
@@ -62,9 +71,11 @@ type InspectableTab = {
 /** Compiled registry artifact reused across collection planning and matching. */
 type CompiledRegistry = ReturnType<typeof bundledTechnologyRegistryProvider.getCompiledRegistry>;
 
+configureRedDetectorLogging('background');
+
+const backgroundLogger = getRedDetectorLogger('background');
 const CONTENT_SCRIPT_FILE = '/content-scripts/content.js';
 const CONTENT_SCRIPT_PING_TIMEOUT_MS = 750;
-const BACKGROUND_LOG_PREFIX = '[red-detector][background]';
 
 /**
  * In-flight runtime injections are deduplicated per tab.
@@ -96,12 +107,10 @@ const eventObservationBatchByTab = new Map<number, ObservationBatch>();
 const completedEnrichmentBySession = new Map<string, { readonly tabId: number; readonly completedAt: number }>();
 
 function logBackgroundEvent(event: string, details?: Record<string, unknown>): void {
-	if (details) {
-		console.log(BACKGROUND_LOG_PREFIX, event, details);
-		return;
-	}
-
-	console.log(BACKGROUND_LOG_PREFIX, event);
+	backgroundLogger.debug('[red-detector][background] {event}', {
+		event,
+		...(details ?? {}),
+	});
 }
 
 function summarizeTab(tab: InspectableTab): Record<string, unknown> {
@@ -119,6 +128,18 @@ function summarizeSession(session: ObservationSessionState): Record<string, unkn
 		expiresAt: session.expiresAt,
 		pendingMutationCount: session.pendingMutationCount,
 		stopReason: session.stopReason,
+	};
+}
+
+function summarizeCompiledRegistryArtifact(artifact: CompiledRegistry): Record<string, unknown> {
+	const ruleCount = Object.values(artifact.patternTables).reduce((total, count) => total + count, 0);
+	return {
+		technologyCount: artifact.technologies.length,
+		ruleCount,
+		diagnosticCount: artifact.diagnostics.length,
+		initialSelectorProbeCount: artifact.collectionPlan.initial.selectorProbeList.length,
+		initialJsGlobalProbeCount: artifact.collectionPlan.initial.jsGlobalPropertyList.length,
+		enrichmentHtmlProbeCount: artifact.collectionPlan.enrichment.htmlProbeList.length,
 	};
 }
 
@@ -240,20 +261,44 @@ async function collectObservationBatchFromTab(
 	expectedUrl: string,
 	compiledRegistryArtifact: CompiledRegistry,
 	tier: 'initial' | 'enrichment' = 'initial',
+	timingTraceId?: string,
 ): Promise<AppResult<ObservationBatch>> {
-	const contentScriptResponse = await ensureContentScript(tabId);
+	const timingContext: TimingContext = {
+		traceId: timingTraceId,
+		surface: 'background',
+		details: {
+			tabId,
+			hostname: new URL(expectedUrl).hostname,
+			tier,
+		},
+	};
+	const contentScriptResponse = await timeAsyncSpan(
+		'background.content-runtime.ensure',
+		timingContext,
+		() => ensureContentScript(tabId),
+		(response) => ({ ok: response.ok }),
+	);
 	if (!contentScriptResponse.ok) {
 		return contentScriptResponse;
 	}
 
-	return collectExtensionObservationBatch({
-		tabId,
-		expectedUrl,
-		collectionPlan: compiledRegistryArtifact.collectionPlan,
-		tier,
-		contentApi: createContentApiClient(tabId, 0),
-		log: logBackgroundEvent,
-	});
+	return timeAsyncSpan(
+		'background.collect-extension-observation-batch',
+		timingContext,
+		() => collectExtensionObservationBatch({
+			tabId,
+			expectedUrl,
+			collectionPlan: compiledRegistryArtifact.collectionPlan,
+			tier,
+			contentApi: createContentApiClient(tabId, 0),
+			log: logBackgroundEvent,
+			timingTraceId,
+		}),
+		(response) => ({
+			ok: response.ok,
+			observationCount: response.ok ? response.value.observations.length : 0,
+		}),
+	);
 }
 
 /** Create the background response returned to the popup after analysis. */
@@ -362,12 +407,38 @@ async function analyzeObservationBatchRefresh(
 	tab: InspectableTab,
 	flush: FlushObservationBatchOutput,
 	enrichment?: AnalysisEnrichmentState,
+	timingTraceId = createTimingTraceId(enrichment?.status === 'complete' ? 'refresh-enrichment' : 'refresh'),
 ): Promise<AppResult<AnalyzeActiveTabOutput>> {
+	const timingContext: TimingContext = {
+		traceId: timingTraceId,
+		surface: 'background',
+		details: {
+			...summarizeTab(tab),
+			enrichmentStatus: enrichment?.status ?? 'none',
+		},
+	};
+	const totalSpan = startTimingSpan('background.observation-refresh.total', timingContext);
 	if (!flush.batch || flush.batch.observations.length === 0) {
-		const cached = await getCachedAnalysis(tab.url);
-		const replayTrace = await getCachedReplayTrace(tab.url);
+		const cached = await timeAsyncSpan(
+			'storage.get-cached-analysis',
+			timingContext,
+			() => getCachedAnalysis(tab.url),
+			(value) => ({ cacheHit: Boolean(value) }),
+		);
+		const replayTrace = await timeAsyncSpan(
+			'storage.get-cached-replay-trace',
+			timingContext,
+			() => getCachedReplayTrace(tab.url),
+			(value) => ({ replayTraceHit: Boolean(value) }),
+		);
 		if (cached) {
-			const replayHistory = await getCachedReplayTraceHistory(tab.url);
+			const replayHistory = await timeAsyncSpan(
+				'storage.get-replay-history',
+				timingContext,
+				() => getCachedReplayTraceHistory(tab.url),
+				(value) => ({ replayHistoryCount: value.length }),
+			);
+			endTimingSpan(totalSpan, { ok: true, cacheHit: true, lateObservationCount: 0 });
 			return ok(createAnalysisOutput(
 				cached,
 				'hit',
@@ -379,36 +450,57 @@ async function analyzeObservationBatchRefresh(
 			));
 		}
 
-		return analyzeFreshActiveTab(tab, { mode: 'refresh', observe: 'while-popup-open' }, 'bypassed');
+		const response = await analyzeFreshActiveTab(tab, { mode: 'refresh', observe: 'while-popup-open' }, 'bypassed');
+		endTimingSpan(totalSpan, { ok: response.ok, cacheHit: false, fallback: 'fresh' });
+		return response;
 	}
 
+	const lateBatch = flush.batch;
 	const baseBatch = eventObservationBatchByTab.get(tab.id);
-	const compiledRegistryArtifact = bundledTechnologyRegistryProvider.getCompiledRegistry();
-	const batchResponse = baseBatch && isSameObservationTarget(baseBatch, flush.batch)
-		? ok(mergeObservationBatches(baseBatch, flush.batch))
-		: await recoverObservationBatchForRefresh(tab, flush.batch, compiledRegistryArtifact);
+	const compiledRegistryArtifact = timeSyncSpan(
+		'background.registry.get-compiled',
+		timingContext,
+		() => bundledTechnologyRegistryProvider.getCompiledRegistry(),
+		summarizeCompiledRegistryArtifact,
+	);
+	const batchResponse = baseBatch && isSameObservationTarget(baseBatch, lateBatch)
+		? ok(timeSyncSpan(
+			'background.observation-refresh.merge-late-batch',
+			timingContext,
+			() => mergeObservationBatches(baseBatch, lateBatch),
+			(batch) => ({ observationCount: batch.observations.length }),
+		))
+		: await recoverObservationBatchForRefresh(tab, lateBatch, compiledRegistryArtifact, timingTraceId);
 	if (!batchResponse.ok) {
+		endTimingSpan(totalSpan, { ok: false, failedAt: 'recover-or-merge' });
 		return batchResponse;
 	}
 
-	return analyzeAndPersistObservationBatch(tab, batchResponse.value, compiledRegistryArtifact, 'bypassed', flush.session, {
+	const response = await analyzeAndPersistObservationBatch(tab, batchResponse.value, compiledRegistryArtifact, 'bypassed', flush.session, {
 		refreshKind: enrichment?.status === 'complete' ? 'enrichment' : baseBatch ? 'incremental' : 'recovered',
 		queuedCount: flush.stats.queuedCount,
-		lateObservationCount: flush.batch.observations.length,
-	}, enrichment);
+		lateObservationCount: lateBatch.observations.length,
+	}, enrichment, timingTraceId);
+	endTimingSpan(totalSpan, {
+		ok: response.ok,
+		resultCount: response.ok ? response.value.analysis.results.length : 0,
+		lateObservationCount: lateBatch.observations.length,
+	});
+	return response;
 }
 
 async function recoverObservationBatchForRefresh(
 	tab: InspectableTab,
 	lateBatch: ObservationBatch,
 	compiledRegistryArtifact: CompiledRegistry,
+	timingTraceId?: string,
 ): Promise<AppResult<ObservationBatch>> {
 	logBackgroundEvent('observation-refresh-recollect', {
 		...summarizeTab(tab),
 		lateObservationCount: lateBatch.observations.length,
 	});
 
-	return collectObservationBatchFromTab(tab.id, tab.url, compiledRegistryArtifact);
+	return collectObservationBatchFromTab(tab.id, tab.url, compiledRegistryArtifact, 'initial', timingTraceId);
 }
 
 async function beginObservationSessionForTab(
@@ -483,23 +575,55 @@ async function analyzeFreshActiveTab(
 	input: AnalyzeActiveTabInput,
 	cacheStatus: AnalyzeActiveTabOutput['cache']['status'],
 ): Promise<AppResult<AnalyzeActiveTabOutput>> {
+	const timingTraceId = createTimingTraceId(input.mode === 'refresh' ? 'refresh' : 'analysis');
+	const totalSpan = startTimingSpan('background.analysis-fresh.total', {
+		traceId: timingTraceId,
+		surface: 'background',
+		details: {
+			...summarizeTab(tab),
+			mode: input.mode,
+			observe: input.observe,
+			cacheStatus,
+		},
+	});
 	logBackgroundEvent('analysis-fresh-start', {
 		...summarizeTab(tab),
 		mode: input.mode,
 		observe: input.observe,
 		cacheStatus,
 		pipeline: 'event',
+		timingTraceId,
 	});
 
-	const compiledRegistryArtifact = bundledTechnologyRegistryProvider.getCompiledRegistry();
-	const batchResponse = await collectObservationBatchFromTab(tab.id, tab.url, compiledRegistryArtifact);
+	const timingContext: TimingContext = {
+		traceId: timingTraceId,
+		surface: 'background',
+		details: {
+			...summarizeTab(tab),
+			mode: input.mode,
+			observe: input.observe,
+		},
+	};
+	const compiledRegistryArtifact = timeSyncSpan(
+		'background.registry.get-compiled',
+		timingContext,
+		() => bundledTechnologyRegistryProvider.getCompiledRegistry(),
+		summarizeCompiledRegistryArtifact,
+	);
+	const batchResponse = await collectObservationBatchFromTab(tab.id, tab.url, compiledRegistryArtifact, 'initial', timingTraceId);
 	if (!batchResponse.ok) {
+		endTimingSpan(totalSpan, { ok: false, failedAt: 'collect-initial' });
 		return batchResponse;
 	}
 
 	let session: ObservationSessionState | undefined;
 	if (shouldStartObservationForAnalysis(input)) {
-		const sessionResponse = await beginObservationSessionForTab(tab.id, tab.url);
+		const sessionResponse = await timeAsyncSpan(
+			'background.observation-session.begin',
+			timingContext,
+			() => beginObservationSessionForTab(tab.id, tab.url),
+			(response) => ({ ok: response.ok, status: response.ok ? response.value.status : undefined }),
+		);
 		if (sessionResponse.ok) {
 			session = sessionResponse.value;
 		} else {
@@ -513,12 +637,17 @@ async function analyzeFreshActiveTab(
 	const enrichment = getInitialEnrichmentState(tab, compiledRegistryArtifact, session);
 	const response = await analyzeAndPersistObservationBatch(tab, batchResponse.value, compiledRegistryArtifact, cacheStatus, session, {
 		refreshKind: 'fresh',
-	}, enrichment);
+	}, enrichment, timingTraceId);
 
 	if (response.ok && enrichment.status === 'pending') {
-		scheduleDeferredEnrichment(tab, batchResponse.value, compiledRegistryArtifact, session);
+		scheduleDeferredEnrichment(tab, batchResponse.value, compiledRegistryArtifact, session, timingTraceId);
 	}
 
+	endTimingSpan(totalSpan, {
+		ok: response.ok,
+		resultCount: response.ok ? response.value.analysis.results.length : 0,
+		enrichmentStatus: enrichment.status,
+	});
 	return response;
 }
 
@@ -557,15 +686,27 @@ function scheduleDeferredEnrichment(
 	initialBatch: ObservationBatch,
 	compiledRegistryArtifact: CompiledRegistry,
 	session?: ObservationSessionState,
+	initialTimingTraceId?: string,
 ): void {
 	if (!session?.sessionId || tab.incognito) {
 		return;
 	}
 
 	void (async () => {
+		const timingTraceId = initialTimingTraceId ? `${initialTimingTraceId}:enrichment` : createTimingTraceId('enrichment');
+		const timingContext: TimingContext = {
+			traceId: timingTraceId,
+			surface: 'background',
+			details: {
+				...summarizeTab(tab),
+				sessionId: session.sessionId,
+			},
+		};
+		const enrichmentSpan = startTimingSpan('background.analysis-enrichment.total', timingContext);
 		logBackgroundEvent('analysis-enrichment-start', {
 			...summarizeTab(tab),
 			sessionId: session.sessionId,
+			timingTraceId,
 		});
 
 		const enrichmentBatch = await collectObservationBatchFromTab(
@@ -573,6 +714,7 @@ function scheduleDeferredEnrichment(
 			tab.url,
 			compiledRegistryArtifact,
 			'enrichment',
+			timingTraceId,
 		);
 		if (!enrichmentBatch.ok) {
 			logBackgroundEvent('analysis-enrichment-failed', {
@@ -581,6 +723,7 @@ function scheduleDeferredEnrichment(
 				code: enrichmentBatch.error.code,
 				message: enrichmentBatch.error.message,
 			});
+			endTimingSpan(enrichmentSpan, { ok: false, failedAt: 'collect-enrichment' });
 			return;
 		}
 
@@ -598,6 +741,7 @@ function scheduleDeferredEnrichment(
 			session,
 			{ refreshKind: 'enrichment' },
 			{ status: 'complete', completedAt },
+			timingTraceId,
 		);
 		if (!response.ok) {
 			logBackgroundEvent('analysis-enrichment-persist-failed', {
@@ -606,6 +750,7 @@ function scheduleDeferredEnrichment(
 				code: response.error.code,
 				message: response.error.message,
 			});
+			endTimingSpan(enrichmentSpan, { ok: false, failedAt: 'persist-enrichment' });
 			return;
 		}
 
@@ -614,6 +759,11 @@ function scheduleDeferredEnrichment(
 			...summarizeTab(tab),
 			sessionId,
 			completedAt,
+			resultCount: response.value.analysis.results.length,
+			timingTraceId,
+		});
+		endTimingSpan(enrichmentSpan, {
+			ok: true,
 			resultCount: response.value.analysis.results.length,
 		});
 	})();
@@ -627,19 +777,58 @@ async function analyzeAndPersistObservationBatch(
 	session?: ObservationSessionState,
 	details: Record<string, unknown> = {},
 	enrichment?: AnalysisEnrichmentState,
+	timingTraceId?: string,
 ): Promise<AppResult<AnalyzeActiveTabOutput>> {
-	const pipelineResult = runObservationBatchPipeline({
-		batch,
-		registry: compiledRegistryArtifact.technologies,
-		compiledRegistryArtifact,
-		source: 'fresh',
-	});
-	const replayTrace = createDetectionReplayTrace({ result: pipelineResult });
-	const savedAnalysis = tab.incognito
-		? Object.assign({}, pipelineResult.analysis, { source: 'fresh' as const })
-		: await saveAnalysis(pipelineResult.analysis);
-	const savedReplayTrace = tab.incognito ? replayTrace : await saveReplayTrace(replayTrace);
-	const replayHistory = tab.incognito ? [] : await getCachedReplayTraceHistory(tab.url);
+	const timingContext: TimingContext = {
+		traceId: timingTraceId,
+		surface: 'pipeline',
+		details: {
+			...summarizeTab(tab),
+			cacheStatus,
+			observationCount: batch.observations.length,
+			refreshKind: details.refreshKind,
+		},
+	};
+	const pipelineResult = timeSyncSpan(
+		'pipeline.run-observation-batch',
+		timingContext,
+		() => runObservationBatchPipeline({
+			batch,
+			registry: compiledRegistryArtifact.technologies,
+			compiledRegistryArtifact,
+			source: 'fresh',
+		}),
+		(result) => ({
+			resultCount: result.analysis.results.length,
+			eventCount: result.events.length,
+		}),
+	);
+	const replayTrace = timeSyncSpan(
+		'pipeline.create-replay-trace',
+		timingContext,
+		() => createDetectionReplayTrace({ result: pipelineResult }),
+		(trace) => ({ eventCount: trace.events.length }),
+	);
+	const savedAnalysis = await timeAsyncSpan(
+		'storage.save-analysis',
+		timingContext,
+		async () => tab.incognito
+			? Object.assign({}, pipelineResult.analysis, { source: 'fresh' as const })
+			: await saveAnalysis(pipelineResult.analysis),
+		(analysis) => ({ resultCount: analysis.results.length, incognito: tab.incognito }),
+	);
+	const savedReplayTrace = await timeAsyncSpan(
+		'storage.save-replay-trace',
+		timingContext,
+		async () => tab.incognito ? replayTrace : await saveReplayTrace(replayTrace),
+		() => ({ incognito: tab.incognito }),
+	);
+	const replayHistory = await timeAsyncSpan(
+		'storage.get-replay-history',
+		timingContext,
+		async () => tab.incognito ? [] : await getCachedReplayTraceHistory(tab.url),
+		(history) => ({ replayHistoryCount: history.length, incognito: tab.incognito }),
+	);
 	const sessionTarget = createObservationSessionTarget(tab, session);
 
 	eventObservationBatchByTab.set(tab.id, batch);
@@ -651,6 +840,7 @@ async function analyzeAndPersistObservationBatch(
 		observationCount: batch.observations.length,
 		eventCount: pipelineResult.events.length,
 		sessionStatus: session?.status ?? 'none',
+		timingTraceId,
 		...details,
 	});
 
@@ -709,8 +899,27 @@ async function refreshObservationSessionTarget(
 	knownSession?: ObservationSessionState,
 ): Promise<AppResult<AnalyzeActiveTabOutput>> {
 	const tab = tabFromObservationSessionTarget(target);
-	logBackgroundEvent('observation-refresh-requested', summarizeTab(tab));
-	const sessionResponse = knownSession ? ok(knownSession) : await getObservationSessionStateForTab(tab.id);
+	const timingTraceId = createTimingTraceId('refresh-session');
+	const timingContext: TimingContext = {
+		traceId: timingTraceId,
+		surface: 'background',
+		details: {
+			...summarizeTab(tab),
+			sessionId: target.sessionId,
+		},
+	};
+	logBackgroundEvent('observation-refresh-requested', {
+		...summarizeTab(tab),
+		timingTraceId,
+	});
+	const sessionResponse = knownSession
+		? ok(knownSession)
+		: await timeAsyncSpan(
+			'background.observation-refresh.get-session-state',
+			timingContext,
+			() => getObservationSessionStateForTab(tab.id),
+			(response) => ({ ok: response.ok, status: response.ok ? response.value.status : undefined }),
+		);
 	if (!sessionResponse.ok) {
 		return sessionResponse;
 	}
@@ -743,7 +952,16 @@ async function refreshObservationSessionTarget(
 	const completedEnrichment = target.sessionId
 		? completedEnrichmentBySession.get(target.sessionId)
 		: undefined;
-	const batchResponse = await flushObservationBatchForTab(tab.id);
+	const batchResponse = await timeAsyncSpan(
+		'background.observation-refresh.flush-batch',
+		timingContext,
+		() => flushObservationBatchForTab(tab.id),
+		(response) => ({
+			ok: response.ok,
+			queuedCount: response.ok ? response.value.stats.queuedCount : undefined,
+			lateObservationCount: response.ok ? (response.value.batch?.observations.length ?? 0) : undefined,
+		}),
+	);
 	if (!batchResponse.ok) {
 		return batchResponse;
 	}
@@ -752,6 +970,7 @@ async function refreshObservationSessionTarget(
 		tab,
 		batchResponse.value,
 		completedEnrichment ? { status: 'complete', completedAt: completedEnrichment.completedAt } : undefined,
+		timingTraceId,
 	);
 	if (response.ok && target.sessionId) {
 		completedEnrichmentBySession.delete(target.sessionId);
@@ -820,7 +1039,7 @@ async function getObservationSessionStateForTarget(
 
 /** Debug output is intentionally summary-only; never log raw page observations. */
 function logAnalysisSummary(analysis: SiteAnalysis): void {
-	console.log('[red-detector] analysis summary', {
+	backgroundLogger.info('[red-detector] analysis summary', {
 		hostname: analysis.hostname,
 		resultCount: analysis.results.length,
 		technologyIds: analysis.results.map((result) => result.technologyId),
@@ -842,26 +1061,56 @@ export function createBackgroundApi(): BackgroundApi {
 				}
 
 				const tab = tabResponse.value;
+				const requestTimingTraceId = createTimingTraceId(input.mode === 'cache-first' ? 'popup-open' : 'popup-refresh');
+				const requestTimingContext: TimingContext = {
+					traceId: requestTimingTraceId,
+					surface: 'background',
+					details: {
+						...summarizeTab(tab),
+						mode: input.mode,
+						observe: input.observe,
+					},
+				};
 				logBackgroundEvent('analysis-requested', {
 					...summarizeTab(tab),
 					mode: input.mode,
 					observe: input.observe,
 					pipeline: 'event',
+					timingTraceId: requestTimingTraceId,
 				});
 				if (input.mode === 'cache-first' && !tab.incognito) {
-					const cached = await getCachedAnalysis(tab.url);
+					const cached = await timeAsyncSpan(
+						'storage.get-cached-analysis',
+						requestTimingContext,
+						() => getCachedAnalysis(tab.url),
+						(value) => ({ cacheHit: Boolean(value) }),
+					);
 					if (cached) {
-						const replayTrace = await getCachedReplayTrace(tab.url);
-						const replayHistory = await getCachedReplayTraceHistory(tab.url);
+						const replayTrace = await timeAsyncSpan(
+							'storage.get-cached-replay-trace',
+							requestTimingContext,
+							() => getCachedReplayTrace(tab.url),
+							(value) => ({ replayTraceHit: Boolean(value) }),
+						);
+						const replayHistory = await timeAsyncSpan(
+							'storage.get-replay-history',
+							requestTimingContext,
+							() => getCachedReplayTraceHistory(tab.url),
+							(value) => ({ replayHistoryCount: value.length }),
+						);
 						logBackgroundEvent('analysis-cache-hit', {
 							...summarizeTab(tab),
 							resultCount: cached.results.length,
 							analyzedAt: cached.analyzedAt,
+							timingTraceId: requestTimingTraceId,
 						});
 						return ok(createAnalysisOutput(cached, 'hit', undefined, replayTrace ?? undefined, replayHistory));
 					}
 
-					logBackgroundEvent('analysis-cache-miss', summarizeTab(tab));
+					logBackgroundEvent('analysis-cache-miss', {
+						...summarizeTab(tab),
+						timingTraceId: requestTimingTraceId,
+					});
 				}
 
 				return analyzeFreshActiveTab(

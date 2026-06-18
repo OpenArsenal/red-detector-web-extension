@@ -6,6 +6,7 @@ import { CategoryGroup } from "../../components/CategoryGroup";
 import { EmptyState } from "../../components/EmptyState";
 import { ErrorState } from "../../components/ErrorState";
 import { PopupShell } from "./PopupRegions";
+import { getRedDetectorLogger } from "../../lib/diagnostics/logging";
 import type {
   AnalysisStatus,
   SiteAnalysis,
@@ -36,7 +37,7 @@ import {
 import "./App.css";
 
 const POPUP_POLL_INTERVAL_MS = 1_500;
-const POPUP_LOG_PREFIX = "[red-detector][popup]";
+const popupLogger = getRedDetectorLogger("popup");
 const [, injectBackgroundApi] = defineProxy(() => ({}) as BackgroundApi, {
   namespace: BACKGROUND_RPC_NAMESPACE,
   heartbeatCheck: false,
@@ -48,12 +49,10 @@ const backgroundApi = injectBackgroundApi(
 );
 
 function logPopupEvent(event: string, details?: Record<string, unknown>): void {
-  if (details) {
-    console.log(POPUP_LOG_PREFIX, event, details);
-    return;
-  }
-
-  console.log(POPUP_LOG_PREFIX, event);
+  popupLogger.debug("[red-detector][popup] {event}", {
+    event,
+    ...(details ?? {}),
+  });
 }
 
 function normalizeError(error: unknown): string {
