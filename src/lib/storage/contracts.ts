@@ -6,6 +6,9 @@ export const ANALYSIS_CACHE_PREFIX = 'analysis:';
 /** Prefix used for every origin-level replay trace cache record. */
 export const REPLAY_TRACE_CACHE_PREFIX = 'replay:';
 
+/** Prefix used for bounded origin-level replay run history. */
+export const REPLAY_TRACE_HISTORY_CACHE_PREFIX = 'replay-history:';
+
 /**
  * Storage limits for normalized analysis and replay records.
  *
@@ -18,6 +21,7 @@ export const STORAGE_LIMITS = {
 	replayTraceTtlMs: 1000 * 60 * 60 * 24,
 	maxAnalyses: 250,
 	maxReplayTraces: 250,
+	maxReplayHistoryRunsPerOrigin: 10,
 } as const;
 
 /**
@@ -40,6 +44,11 @@ export function getReplayTraceCacheKey(url: string): string {
 	return `${REPLAY_TRACE_CACHE_PREFIX}${getOrigin(url)}`;
 }
 
+/** Build the storage key for bounded replay history on one origin. */
+export function getReplayTraceHistoryCacheKey(url: string): string {
+	return `${REPLAY_TRACE_HISTORY_CACHE_PREFIX}${getOrigin(url)}`;
+}
+
 /**
  * Convert an analysis cache key into its paired replay trace key.
  *
@@ -48,4 +57,9 @@ export function getReplayTraceCacheKey(url: string): string {
  */
 export function getReplayTraceCacheKeyForAnalysisCacheKey(key: string): string {
 	return `${REPLAY_TRACE_CACHE_PREFIX}${key.slice(ANALYSIS_CACHE_PREFIX.length)}`;
+}
+
+/** Convert an analysis cache key into its paired replay history key. */
+export function getReplayTraceHistoryCacheKeyForAnalysisCacheKey(key: string): string {
+	return `${REPLAY_TRACE_HISTORY_CACHE_PREFIX}${key.slice(ANALYSIS_CACHE_PREFIX.length)}`;
 }

@@ -57,9 +57,8 @@ export interface FinalDetectionEmissionMetadata {
 /**
  * Output of the emission stage.
  *
- * `analysis` is intentionally compatible with today's cached and rendered
- * detector output. `metadata` remains sidecar-only so later pipeline diagnostics
- * can inspect the emission pass without widening `SiteAnalysis` yet.
+ * `analysis` stays compatible with cached and rendered detector output.
+ * `metadata` carries pipeline diagnostics without widening `SiteAnalysis`.
  */
 export interface FinalDetectionEmissionResult {
 	/** Site analysis compatible with the existing background, storage, and popup contracts. */

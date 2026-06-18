@@ -148,6 +148,7 @@ describe('popup view model', () => {
 			headline: 'Matched 2 direct signals.',
 			primaryEvidenceKind: 'scriptSrc',
 			reasons: ['Matched scriptSrc evidence', 'Selected version 18.3.1'],
+			evidence: [{ kind: 'scriptSrc', direct: true, matchedValue: 'react.js' }],
 		});
 	});
 

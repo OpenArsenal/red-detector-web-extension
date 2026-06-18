@@ -101,9 +101,9 @@ export interface DetectionExplanation {
 /**
  * Redacted replay trace for one detector pipeline run.
  *
- * The trace combines coordinator events with emitted `SiteAnalysis`
- * output. It is intentionally sidecar data: storage and popup contracts can adopt
- * it later without widening `SiteAnalysis` in this phase.
+ * The trace combines coordinator events with emitted `SiteAnalysis` output.
+ * Storage and popup contracts keep it separate from detector output so replay
+ * detail can evolve without widening `SiteAnalysis`.
  */
 export interface DetectionReplayTrace {
 	/** Replay schema version for future migrations. */

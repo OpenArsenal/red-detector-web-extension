@@ -41,8 +41,8 @@ export interface EvidenceCandidateRelationshipContext {
 /**
  * Candidate removed from the accepted candidate set during graph refinement.
  *
- * Keeping rejections separate from accepted candidates makes the sidecar stage
- * explainable without changing today's `SiteAnalysis` shape or popup output.
+ * Keeping rejections separate from accepted candidates makes graph decisions
+ * explainable without changing the stable `SiteAnalysis` shape.
  */
 export interface EvidenceCandidateRejection {
 	/** Candidate that was removed or skipped. */

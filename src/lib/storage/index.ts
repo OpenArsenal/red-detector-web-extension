@@ -6,10 +6,13 @@ import { tryGetOrigin } from '../shared/url';
 import {
 	ANALYSIS_CACHE_PREFIX,
 	REPLAY_TRACE_CACHE_PREFIX,
+	REPLAY_TRACE_HISTORY_CACHE_PREFIX,
 	STORAGE_LIMITS,
 	getAnalysisCacheKey,
 	getReplayTraceCacheKey,
+	getReplayTraceHistoryCacheKey,
 	getReplayTraceCacheKeyForAnalysisCacheKey,
+	getReplayTraceHistoryCacheKeyForAnalysisCacheKey,
 } from './contracts';
 
 /**
@@ -49,6 +52,11 @@ function isDetectionReplayTrace(value: unknown): value is DetectionReplayTrace {
 	);
 }
 
+/** Return whether an unknown storage value looks like a replay history list. */
+function isDetectionReplayTraceHistory(value: unknown): value is DetectionReplayTrace[] {
+	return Array.isArray(value) && value.every(isDetectionReplayTrace);
+}
+
 /** Return the current age of a cache record in milliseconds. */
 function getCacheRecordAge(record: Pick<SiteAnalysis | DetectionReplayTrace, 'analyzedAt'>): number {
 	return Date.now() - record.analyzedAt;
@@ -66,7 +74,11 @@ export async function getCachedAnalysis(url: string): Promise<SiteAnalysis | nul
 
 	const isExpired = getCacheRecordAge(value) > STORAGE_LIMITS.analysisTtlMs;
 	if (isExpired) {
-		await browser.storage.local.remove([key, getReplayTraceCacheKeyForAnalysisCacheKey(key)]);
+		await browser.storage.local.remove([
+			key,
+			getReplayTraceCacheKeyForAnalysisCacheKey(key),
+			getReplayTraceHistoryCacheKeyForAnalysisCacheKey(key),
+		]);
 		return null;
 	}
 
@@ -92,6 +104,33 @@ export async function getCachedReplayTrace(url: string): Promise<DetectionReplay
 	return cloneReplayTrace(value);
 }
 
+/** Return bounded fresh replay traces for the requested origin, newest first. */
+export async function getCachedReplayTraceHistory(url: string): Promise<DetectionReplayTrace[]> {
+	const key = getReplayTraceHistoryCacheKey(url);
+	const raw = await browser.storage.local.get(key);
+	const value = raw[key];
+
+	if (!isDetectionReplayTraceHistory(value)) {
+		return [];
+	}
+
+	const freshTraces = value
+		.filter((trace) => getCacheRecordAge(trace) <= STORAGE_LIMITS.replayTraceTtlMs)
+		.sort((left, right) => right.analyzedAt - left.analyzedAt)
+		.slice(0, STORAGE_LIMITS.maxReplayHistoryRunsPerOrigin)
+		.map(cloneReplayTrace);
+
+	if (freshTraces.length !== value.length) {
+		if (freshTraces.length) {
+			await browser.storage.local.set({ [key]: freshTraces });
+		} else {
+			await browser.storage.local.remove(key);
+		}
+	}
+
+	return freshTraces;
+}
+
 /** Persist only normalized detector output and trim stale/overflow cache entries. */
 export async function saveAnalysis(analysis: SiteAnalysis): Promise<SiteAnalysis> {
 	const normalized: SiteAnalysis = { ...analysis, source: 'fresh' };
@@ -104,6 +143,7 @@ export async function saveAnalysis(analysis: SiteAnalysis): Promise<SiteAnalysis
 export async function saveReplayTrace(trace: DetectionReplayTrace): Promise<DetectionReplayTrace> {
 	const normalized = cloneReplayTrace(trace);
 	await browser.storage.local.set({ [getReplayTraceCacheKey(normalized.target.url)]: normalized });
+	await appendReplayTraceHistory(normalized);
 	await trimReplayTraceCache();
 	return normalized;
 }
@@ -144,7 +184,8 @@ async function trimAnalysisCache(): Promise<void> {
 	const overflowKeys = analyses.slice(STORAGE_LIMITS.maxAnalyses).map(({ key }) => key);
 	const analysisKeysToRemove = Array.from(new Set([...expiredKeys, ...overflowKeys]));
 	const replayKeysToRemove = analysisKeysToRemove.map(getReplayTraceCacheKeyForAnalysisCacheKey);
-	const keysToRemove = [...analysisKeysToRemove, ...replayKeysToRemove];
+	const replayHistoryKeysToRemove = analysisKeysToRemove.map(getReplayTraceHistoryCacheKeyForAnalysisCacheKey);
+	const keysToRemove = [...analysisKeysToRemove, ...replayKeysToRemove, ...replayHistoryKeysToRemove];
 
 	if (keysToRemove.length) {
 		await browser.storage.local.remove(keysToRemove);
@@ -163,11 +204,44 @@ async function trimReplayTraceCache(): Promise<void> {
 		.filter(({ trace }) => getCacheRecordAge(trace) > STORAGE_LIMITS.replayTraceTtlMs)
 		.map(({ key }) => key);
 	const overflowKeys = traces.slice(STORAGE_LIMITS.maxReplayTraces).map(({ key }) => key);
-	const keysToRemove = Array.from(new Set([...expiredKeys, ...overflowKeys]));
+	const historyEntries = Object.entries(all)
+		.filter(([key, value]) => key.startsWith(REPLAY_TRACE_HISTORY_CACHE_PREFIX) && isDetectionReplayTraceHistory(value));
+	const historyKeysToRemove: string[] = [];
+
+	for (const [key, value] of historyEntries) {
+		const freshHistory = (value as DetectionReplayTrace[])
+			.filter((trace) => getCacheRecordAge(trace) <= STORAGE_LIMITS.replayTraceTtlMs)
+			.sort((left, right) => right.analyzedAt - left.analyzedAt)
+			.slice(0, STORAGE_LIMITS.maxReplayHistoryRunsPerOrigin)
+			.map(cloneReplayTrace);
+
+		if (freshHistory.length) {
+			await browser.storage.local.set({ [key]: freshHistory });
+		} else {
+			historyKeysToRemove.push(key);
+		}
+	}
+
+	const keysToRemove = Array.from(new Set([...expiredKeys, ...overflowKeys, ...historyKeysToRemove]));
 
 	if (keysToRemove.length) {
 		await browser.storage.local.remove(keysToRemove);
 	}
+}
+
+
+/** Append one trace to the bounded per-origin history list. */
+async function appendReplayTraceHistory(trace: DetectionReplayTrace): Promise<void> {
+	const key = getReplayTraceHistoryCacheKey(trace.target.url);
+	const raw = await browser.storage.local.get(key);
+	const existing = isDetectionReplayTraceHistory(raw[key]) ? raw[key] : [];
+	const history = [trace, ...existing]
+		.sort((left, right) => right.analyzedAt - left.analyzedAt)
+		.filter((item, index, values) => values.findIndex((candidate) => candidate.analyzedAt === item.analyzedAt && candidate.target.url === item.target.url) === index)
+		.slice(0, STORAGE_LIMITS.maxReplayHistoryRunsPerOrigin)
+		.map(cloneReplayTrace);
+
+	await browser.storage.local.set({ [key]: history });
 }
 
 /**

@@ -217,21 +217,19 @@ function htmlProbeKey(technologyId: string, ruleIndex: number): string {
 }
 
 export function collectMetaTags(input: MetaTagInput = document): Record<string, string[]> {
-	const entries = Array.from(iterateMetaTags(input))
-		.map((node) => {
-			const key = node.getAttribute('name') ?? node.getAttribute('property') ?? node.getAttribute('http-equiv');
-			const value = node.getAttribute('content');
-			return key && value ? ([key, value] as const) : null;
-		})
-		.filter((entry): entry is readonly [string, string] => entry !== null);
+	const grouped: Record<string, string[]> = Object.create(null) as Record<string, string[]>;
 
-	const grouped = entries.reduce<Record<string, string[]>>((acc, [key, value]) => {
+	for (const node of iterateMetaTags(input)) {
+		const key = node.getAttribute('name') ?? node.getAttribute('property') ?? node.getAttribute('http-equiv');
+		const value = node.getAttribute('content');
+		if (!key || !value) {
+			continue;
+		}
+
 		const normalizedKey = key.toLowerCase();
-		return {
-			...acc,
-			[normalizedKey]: [...(acc[normalizedKey] ?? []), value],
-		};
-	}, {});
+		const values = grouped[normalizedKey] ?? (grouped[normalizedKey] = []);
+		values.push(value);
+	}
 
 	return normalizeMetaMap(grouped);
 }
@@ -307,22 +305,26 @@ export function collectResourceTimings(): ResourceSignal[] {
 		return [];
 	}
 
-	return uniqueStrings(
-		performance
-			.getEntriesByType('resource')
-			.map((entry) => entry.name)
-			.filter(Boolean),
-	)
-		.slice(0, SOURCE_LIMITS.resourceUrls)
-		.map((url) => {
-			const entry = performance
-				.getEntriesByType('resource')
-				.find((item) => item.name === url) as PerformanceResourceTiming | undefined;
-			return {
-				url,
-				initiatorType: entry?.initiatorType,
-			};
+	const resources: ResourceSignal[] = [];
+	const seenUrls = new Set<string>();
+
+	for (const entry of performance.getEntriesByType('resource')) {
+		if (!entry.name || seenUrls.has(entry.name)) {
+			continue;
+		}
+
+		seenUrls.add(entry.name);
+		resources.push({
+			url: entry.name,
+			initiatorType: isPerformanceResourceTiming(entry) ? entry.initiatorType : undefined,
 		});
+
+		if (resources.length >= SOURCE_LIMITS.resourceUrls) {
+			break;
+		}
+	}
+
+	return resources;
 }
 
 export function collectCookieNames(cookieString: string): CookieSignals {
@@ -338,6 +340,10 @@ export function collectCookieNames(cookieString: string): CookieSignals {
 			})
 			.slice(0, SOURCE_LIMITS.cookieNames),
 	);
+}
+
+function isPerformanceResourceTiming(entry: PerformanceEntry): entry is PerformanceResourceTiming {
+	return 'initiatorType' in entry;
 }
 
 function collectVisibleText(): string {

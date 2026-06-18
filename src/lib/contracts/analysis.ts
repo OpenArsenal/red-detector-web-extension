@@ -50,9 +50,9 @@ export type AnalyzeActiveTabInput = {
 /**
  * Response returned to the popup after active-tab analysis.
  *
- * `analysis` remains the stable rendering and cache shape. `replayTrace` is
- * sidecar diagnostic data from fresh or cached analysis runs so the popup can
- * show why a technology was detected without widening `SiteAnalysis` itself.
+ * `analysis` remains the stable rendering and cache shape. `replayTrace` and
+ * `replayHistory` carry redacted pipeline details that let the popup explain
+ * detections without widening `SiteAnalysis` itself.
  */
 export type AnalyzeActiveTabOutput = {
 	/** Normalized detector output safe for popup rendering and cache storage. */
@@ -69,13 +69,15 @@ export type AnalyzeActiveTabOutput = {
 	/** Live observation state when the fresh analysis started page watching. */
 	session?: ObservationSessionState;
 	/**
-	 * Redacted sidecar trace for fresh or cached analysis runs.
+	 * Redacted pipeline trace for fresh or cached analysis runs.
 	 *
 	 * Older cache entries can omit this field when they predate replay trace
 	 * retention. Callers should treat it as optional explanation data rather than
 	 * part of the stable `SiteAnalysis` envelope.
 	 */
 	replayTrace?: DetectionReplayTrace;
+	/** Bounded newest-first replay traces saved for the active origin. */
+	replayHistory?: readonly DetectionReplayTrace[];
 };
 
 /** Reason a content-script observation session stopped. */
@@ -158,6 +160,8 @@ export interface BackgroundApi {
 	stopActiveObservationSession(): Promise<AppResult<ObservationSessionState>>;
 	/** Read the active tab's current content-script observation state. */
 	getActiveObservationSessionState(): Promise<AppResult<ObservationSessionState>>;
+	/** Return bounded replay history for the active tab's origin. */
+	getActiveReplayTraceHistory(): Promise<AppResult<readonly DetectionReplayTrace[]>>;
 }
 
 /** Background-to-content API exposed through the content-script messaging adapter. */

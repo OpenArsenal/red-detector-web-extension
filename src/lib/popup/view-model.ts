@@ -2,7 +2,7 @@ import { categories } from '../../data/categories';
 import type { ObservationSessionState } from '../content/observed-page-signals';
 import type { AnalyzeActiveTabOutput } from '../contracts/analysis';
 import type { CategoryId, ConfidenceScore, DetectionResult, SiteAnalysis } from '../detection/types';
-import type { DetectionExplanation, DetectionReplayTrace } from '../pipeline';
+import type { DetectionExplanation, DetectionExplanationEvidenceSummary, DetectionReplayTrace } from '../pipeline';
 import type { AppError } from '../shared/errors';
 
 /**
@@ -73,6 +73,23 @@ export type PopupDetectionExplanationSummary = {
 	primaryEvidenceKind: string | null;
 	/** Whether the detection was inferred through graph relationships. */
 	inferred: boolean;
+	/** Public evidence rows rendered below explanation reasons. */
+	evidence: readonly PopupEvidencePreview[];
+};
+
+
+/** Public evidence row shown inside a technology card. */
+export type PopupEvidencePreview = {
+	/** Detector surface that supplied the proof. */
+	kind: string;
+	/** Bounded value that matched the detector rule, when available. */
+	matchedValue?: string;
+	/** Version captured from this evidence row, when available. */
+	version?: string;
+	/** Relationship source for inferred evidence, when available. */
+	sourceTechnologyId?: string;
+	/** Whether this proof came from direct page evidence rather than graph support. */
+	direct: boolean;
 };
 
 /** Lookup table keyed by technology id for explanation rendering. */
@@ -256,9 +273,9 @@ export function buildPopupExplanationLookup(
 /**
  * Create the compact explanation shape consumed by detection cards.
  *
- * Reasons are intentionally capped so explanation cards stay scannable inside
- * the extension popup. The full replay explanation remains available on the
- * trace for later dedicated replay UI.
+ * Reasons and evidence previews are intentionally capped so explanation cards stay
+ * scannable inside the extension popup. Full replay traces remain available in
+ * bounded history for users who need to inspect past runs.
  */
 function createPopupExplanationSummary(
 	explanation: DetectionExplanation,
@@ -271,6 +288,7 @@ function createPopupExplanationSummary(
 		evidenceCount: explanation.evidenceCount,
 		primaryEvidenceKind: getPrimaryEvidenceKind(explanation),
 		inferred: explanation.inferred,
+		evidence: explanation.evidence.slice(0, 5).map(createPopupEvidencePreview),
 	};
 }
 
@@ -281,6 +299,16 @@ function createExplanationHeadline(explanation: DetectionExplanation): string {
 	}
 
 	return `Matched ${explanation.directEvidenceCount} direct signal${explanation.directEvidenceCount === 1 ? '' : 's'}.`;
+}
+
+function createPopupEvidencePreview(evidence: DetectionExplanationEvidenceSummary): PopupEvidencePreview {
+	return {
+		kind: evidence.kind,
+		direct: evidence.direct,
+		...(evidence.matchedValue ? { matchedValue: evidence.matchedValue } : {}),
+		...(evidence.version ? { version: evidence.version } : {}),
+		...(evidence.sourceTechnologyId ? { sourceTechnologyId: evidence.sourceTechnologyId } : {}),
+	};
 }
 
 /** Pick the first public evidence kind because replay preserves detector order. */

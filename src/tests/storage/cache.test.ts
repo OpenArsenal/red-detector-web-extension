@@ -7,6 +7,7 @@ import {
 	STORAGE_LIMITS,
 	getAnalysisCacheKey,
 	getReplayTraceCacheKey,
+	getReplayTraceHistoryCacheKey,
 } from '../../lib/storage/contracts';
 import { makeAnalysis, makeDetectionReplayTrace } from '../support/factories';
 import { createMockBrowserStorageArea } from '../support/mock-browser';
@@ -43,6 +44,9 @@ describe.sequential('analysis cache baseline', () => {
 		);
 		expect(getReplayTraceCacheKey('https://example.com/products')).toBe(
 			'replay:https://example.com',
+		);
+		expect(getReplayTraceHistoryCacheKey('https://example.com/products')).toBe(
+			'replay-history:https://example.com',
 		);
 	});
 
@@ -118,6 +122,7 @@ describe.sequential('analysis cache baseline', () => {
 		expect(storage.local.remove).toHaveBeenCalledWith([
 			'analysis:https://example.com',
 			'replay:https://example.com',
+			'replay-history:https://example.com',
 		]);
 	});
 
@@ -141,6 +146,32 @@ describe.sequential('analysis cache baseline', () => {
 			completedMode: 'event',
 		});
 		expect(cached).not.toBe(trace);
+	});
+
+
+	it('keeps bounded replay history for the active origin', async () => {
+		const storage = await loadStorageHarness();
+		const firstTrace = makeDetectionReplayTrace({ analyzedAt: 1_700_000_000_001, resultCount: 1 });
+		const secondTrace = makeDetectionReplayTrace({ analyzedAt: 1_700_000_000_002, resultCount: 2 });
+
+		await storage.saveReplayTrace(firstTrace);
+		await storage.saveReplayTrace(secondTrace);
+		const history = await storage.getCachedReplayTraceHistory('https://example.com/pricing');
+
+		expect(history.map((trace) => trace.resultCount)).toEqual([2, 1]);
+		expect(history[0]).not.toBe(secondTrace);
+	});
+
+	it('removes expired replay history records without returning stale runs', async () => {
+		vi.useFakeTimers({ now: 1_700_000_000_000 });
+		const storage = await loadStorageHarness();
+
+		await storage.saveReplayTrace(makeDetectionReplayTrace({ analyzedAt: 1_700_000_000_000 }));
+		vi.setSystemTime(1_700_000_000_000 + STORAGE_LIMITS.replayTraceTtlMs + 1);
+		const history = await storage.getCachedReplayTraceHistory('https://example.com/products');
+
+		expect(history).toEqual([]);
+		expect(storage.local.remove).toHaveBeenCalledWith('replay-history:https://example.com');
 	});
 
 	it('removes expired replay traces without removing fresh analysis records', async () => {

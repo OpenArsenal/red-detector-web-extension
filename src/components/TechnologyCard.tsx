@@ -1,7 +1,7 @@
 import { For, Show } from 'solid-js';
 
-import type { DetectionResult } from '../lib/detection/types';
-import type { PopupDetectionExplanationSummary } from '../lib/popup/view-model';
+import type { Evidence, DetectionResult } from '../lib/detection/types';
+import type { PopupDetectionExplanationSummary, PopupEvidencePreview } from '../lib/popup/view-model';
 
 export function TechnologyCard(props: {
 	/** Detection result rendered by this card. */
@@ -10,9 +10,14 @@ export function TechnologyCard(props: {
 	isNew?: boolean;
 	/** Whether this card represents a live pending observation state. */
 	isPending?: boolean;
-	/** Optional explanation summary derived from the replay sidecar. */
+	/** Optional explanation summary derived from redacted replay data. */
 	explanation?: PopupDetectionExplanationSummary;
 }) {
+	const evidencePreview = () => props.explanation?.evidence.length
+		? props.explanation.evidence
+		: props.result.evidence.slice(0, 5).map(createEvidencePreviewFromResult);
+	const evidenceCount = () => props.explanation?.evidenceCount ?? props.result.evidence.length;
+
 	return (
 		<article
 			class={`stat-card accent-slate technology-card${props.isNew ? ' is-new' : ''}${props.isPending ? ' is-pending' : ''}`}
@@ -50,21 +55,38 @@ export function TechnologyCard(props: {
 					</section>
 				)}
 			</Show>
-			<Show when={props.result.evidence.length && !props.explanation}>
-				<p class="result-meta">Evidence: {props.result.evidence.length} signal(s)</p>
-				<ul class="evidence-list">
-					<For each={props.result.evidence.slice(0, 3)}>
-						{(item) => (
-							<li>
-								{item.kind}
-								{item.matchedValue ? ` · ${item.matchedValue}` : ''}
-							</li>
-						)}
-					</For>
-				</ul>
+			<Show when={evidencePreview().length > 0}>
+				<section class="evidence-preview" aria-label={`Evidence for ${props.result.name}`}>
+					<p class="result-meta">Evidence: {evidenceCount()} signal(s)</p>
+					<ul class="evidence-list evidence-detail-list">
+						<For each={evidencePreview()}>
+							{(item) => <li>{formatEvidencePreview(item)}</li>}
+						</For>
+					</ul>
+				</section>
 			</Show>
 		</article>
 	);
+}
+
+function createEvidencePreviewFromResult(evidence: Evidence): PopupEvidencePreview {
+	return {
+		kind: evidence.kind,
+		direct: evidence.direct !== false,
+		...(evidence.matchedValue ? { matchedValue: evidence.matchedValue } : {}),
+		...(evidence.version ? { version: evidence.version } : {}),
+		...(evidence.sourceTechnologyId ? { sourceTechnologyId: evidence.sourceTechnologyId } : {}),
+	};
+}
+
+function formatEvidencePreview(item: PopupEvidencePreview): string {
+	const value = item.matchedValue ?? item.sourceTechnologyId;
+	const source = item.direct ? '' : ' inferred';
+	const version = item.version ? ` version ${item.version}` : '';
+
+	return value
+		? `${item.kind}${source}: ${value}${version}`
+		: `${item.kind}${source}${version}`;
 }
 
 export default TechnologyCard;

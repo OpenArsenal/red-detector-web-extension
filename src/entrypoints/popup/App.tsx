@@ -10,6 +10,7 @@ import type {
   AnalysisStatus,
   SiteAnalysis,
 } from "../../lib/detection/types";
+import type { DetectionReplayTrace } from "../../lib/pipeline";
 import type {
   AnalyzeActiveTabInput,
   AnalyzeActiveTabOutput,
@@ -74,6 +75,7 @@ export default function App() {
   const [explanationsByTechnologyId, setExplanationsByTechnologyId] =
     createSignal<PopupExplanationLookup>({});
   const [pipelineMode, setPipelineMode] = createSignal("event");
+  const [replayHistory, setReplayHistory] = createSignal<readonly DetectionReplayTrace[]>([]);
   let pollTimer: ReturnType<typeof globalThis.setInterval> | undefined;
   let refreshInFlight = false;
   let pollingCheckInFlight = false;
@@ -93,6 +95,14 @@ export default function App() {
   function pollingChipLabel() {
     return getPopupObservationLabel(pollingMode());
   }
+  function formatReplayTime(trace: DetectionReplayTrace) {
+    return new Date(trace.analyzedAt).toLocaleString();
+  }
+
+  function formatReplaySummary(trace: DetectionReplayTrace) {
+    return `${trace.resultCount} detection${trace.resultCount === 1 ? "" : "s"} · ${trace.completedMode} pipeline`;
+  }
+
 
   function clearPopupPolling() {
     if (pollTimer !== undefined) {
@@ -186,6 +196,7 @@ export default function App() {
     setLateAddedIds(update.lateDetectionIds);
     setExplanationsByTechnologyId(update.explanationsByTechnologyId);
     setPipelineMode(response.replayTrace?.completedMode ?? "event");
+    setReplayHistory(response.replayHistory ?? []);
 
     logPopupEvent("analysis-applied", {
       source: options.source,
@@ -511,6 +522,39 @@ export default function App() {
                   />
                 )}
               </For>
+              <Show when={replayHistory().length > 0}>
+                <section class="replay-history" aria-label="Detection replay history">
+                  <div class="replay-history-heading">
+                    <h3>Replay History</h3>
+                    <p class="result-meta">
+                      Recent stored runs for this origin. Open a run to inspect the pipeline stages and saved explanation count.
+                    </p>
+                  </div>
+                  <ol class="replay-history-list">
+                    <For each={replayHistory().slice(0, 5)}>
+                      {(trace) => (
+                        <li>
+                          <details>
+                            <summary>
+                              <span>{formatReplayTime(trace)}</span>
+                              <span>{formatReplaySummary(trace)}</span>
+                            </summary>
+                            <ul class="evidence-list replay-event-list">
+                              <For each={trace.events}>
+                                {(event) => (
+                                  <li>
+                                    {event.sequence + 1}. {event.stage}: {event.count}
+                                  </li>
+                                )}
+                              </For>
+                            </ul>
+                          </details>
+                        </li>
+                      )}
+                    </For>
+                  </ol>
+                </section>
+              </Show>
             </Show>
           )}
         </Show>

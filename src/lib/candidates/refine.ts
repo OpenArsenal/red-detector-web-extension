@@ -11,12 +11,13 @@ import type {
 	RefinedEvidenceCandidateBatch,
 } from './refinement-types';
 
-/** Default policy for sidecar candidate relationship refinement. */
+/** Default policy for evidence candidate relationship refinement. */
 export const DEFAULT_EVIDENCE_CANDIDATE_REFINEMENT_POLICY: EvidenceCandidateRefinementPolicy = Object.freeze({
 	impliedConfidence: 55,
 });
 
 const UNKNOWN_CATEGORIES: readonly CategoryId[] = ['unknown'];
+const MAX_EXACT_CONFLICT_COMPONENT_SIZE = 14;
 
 interface CandidateNode {
 	candidate: EvidenceCandidate;
@@ -148,16 +149,6 @@ function expandImpliedCandidates(input: ResolveRelationshipsInput): boolean {
 				inferred: true,
 				registryOrder: input.registryOrderById.get(impliedId) ?? Number.MAX_SAFE_INTEGER,
 			};
-			const conflictWinnerId = getAcceptedExclusionConflictWinner(impliedId, candidateNode, input);
-			if (conflictWinnerId && conflictWinnerId !== impliedId) {
-				recordRejection(input.recorder, {
-					candidate,
-					reason: 'excluded',
-					relationship: createRelationshipContext('excludes', conflictWinnerId, impliedId),
-					rejectedByTechnologyId: conflictWinnerId,
-				});
-				continue;
-			}
 
 			input.accepted.set(impliedId, candidateNode);
 			input.relationshipEvidence.push(...candidate.evidence);
@@ -221,63 +212,306 @@ function pruneOrphanedRelationshipCandidates(input: ResolveRelationshipsInput): 
 
 function applyExclusions(input: ResolveRelationshipsInput): boolean {
 	let changed = false;
-	let localChange = true;
+	const components = getExclusionConflictComponents(input);
 
-	while (localChange) {
-		localChange = false;
+	for (const component of components) {
+		const selectedIds = component.length <= MAX_EXACT_CONFLICT_COMPONENT_SIZE
+			? solveExactConflictComponent(component, input)
+			: solveGreedyConflictComponent(component, input);
 
-		for (const [sourceId, sourceNode] of Array.from(input.accepted.entries())) {
-			for (const excludedId of input.relationships.excludesBySource.get(sourceId) ?? []) {
-				const excludedNode = input.accepted.get(excludedId);
-				if (!excludedNode) {
-					continue;
-				}
-
-				const loserId = chooseConflictLoser(sourceId, sourceNode, excludedId, excludedNode);
-				const winnerId = loserId === sourceId ? excludedId : sourceId;
-				const loserNode = input.accepted.get(loserId);
-				if (!loserNode) {
-					continue;
-				}
-
-				input.accepted.delete(loserId);
-				recordRejection(input.recorder, {
-					candidate: loserNode.candidate,
-					reason: 'excluded',
-					relationship: createRelationshipContext('excludes', sourceId, excludedId),
-					rejectedByTechnologyId: winnerId,
-				});
-				changed = true;
-				localChange = true;
-
-				if (loserId === sourceId) {
-					break;
-				}
+		for (const technologyId of component) {
+			if (selectedIds.has(technologyId)) {
+				continue;
 			}
+
+			const node = input.accepted.get(technologyId);
+			if (!node) {
+				continue;
+			}
+
+			input.accepted.delete(technologyId);
+			recordRejection(input.recorder, {
+				candidate: node.candidate,
+				reason: 'excluded',
+				relationship: createExclusionRejectionRelationship(technologyId, selectedIds, input.relationships),
+				rejectedByTechnologyId: getExclusionRejectionWinner(technologyId, selectedIds, input),
+			});
+			changed = true;
 		}
 	}
 
 	return changed;
 }
 
-function getAcceptedExclusionConflictWinner(
-	technologyId: string,
-	node: CandidateNode,
-	input: ResolveRelationshipsInput,
-): string | null {
-	for (const [acceptedId, acceptedNode] of input.accepted.entries()) {
-		if (hasExclusionEdge(input.relationships, acceptedId, technologyId)) {
-			const loserId = chooseConflictLoser(acceptedId, acceptedNode, technologyId, node);
-			return loserId === technologyId ? acceptedId : technologyId;
+/**
+ * Exclusion conflicts are solved per connected component.
+ *
+ * Pairwise removal is deterministic but can keep a weaker overall explanation
+ * when one candidate conflicts with a small cluster. Solving the component asks
+ * a better question: which surviving subset keeps the most supported evidence
+ * while obeying hard rules such as excludes, requirements, and live implication
+ * sources?
+ */
+function getExclusionConflictComponents(input: ResolveRelationshipsInput): string[][] {
+	const adjacency = new Map<string, Set<string>>();
+
+	for (const [sourceId, excludedIds] of input.relationships.excludesBySource.entries()) {
+		if (!input.accepted.has(sourceId)) {
+			continue;
 		}
 
-		if (hasExclusionEdge(input.relationships, technologyId, acceptedId)) {
-			const loserId = chooseConflictLoser(technologyId, node, acceptedId, acceptedNode);
-			return loserId === technologyId ? acceptedId : technologyId;
+		for (const excludedId of excludedIds) {
+			if (!input.accepted.has(excludedId)) {
+				continue;
+			}
+
+			pushConflictNeighbor(adjacency, sourceId, excludedId);
+			pushConflictNeighbor(adjacency, excludedId, sourceId);
 		}
 	}
 
-	return null;
+	const components: string[][] = [];
+	const visited = new Set<string>();
+
+	for (const technologyId of adjacency.keys()) {
+		if (visited.has(technologyId)) {
+			continue;
+		}
+
+		const component: string[] = [];
+		const pending = [technologyId];
+		visited.add(technologyId);
+
+		while (pending.length > 0) {
+			const currentId = pending.pop()!;
+			component.push(currentId);
+
+			for (const nextId of adjacency.get(currentId) ?? []) {
+				if (visited.has(nextId)) {
+					continue;
+				}
+
+				visited.add(nextId);
+				pending.push(nextId);
+			}
+		}
+
+		components.push(component.sort((left, right) => compareRegistryOrder(input.registryOrderById, left, right)));
+	}
+
+	return components;
+}
+
+function pushConflictNeighbor(adjacency: Map<string, Set<string>>, sourceId: string, targetId: string): void {
+	const neighbors = adjacency.get(sourceId) ?? new Set<string>();
+	neighbors.add(targetId);
+	adjacency.set(sourceId, neighbors);
+}
+
+function solveExactConflictComponent(
+	component: readonly string[],
+	input: ResolveRelationshipsInput,
+): Set<string> {
+	let bestIds = new Set<string>();
+	let bestScore: ConflictSubsetScore | null = null;
+	const variantCount = 2 ** component.length;
+
+	for (let mask = 1; mask < variantCount; mask += 1) {
+		const selectedIds = new Set<string>();
+		for (let index = 0; index < component.length; index += 1) {
+			if ((mask & (1 << index)) !== 0) {
+				selectedIds.add(component[index]!);
+			}
+		}
+
+		if (!isValidConflictSubset(selectedIds, input)) {
+			continue;
+		}
+
+		const score = scoreConflictSubset(selectedIds, input);
+		if (!bestScore || compareConflictSubsetScore(score, bestScore) > 0) {
+			bestIds = selectedIds;
+			bestScore = score;
+		}
+	}
+
+	return bestIds.size > 0 ? bestIds : new Set([component[0]!]);
+}
+
+function solveGreedyConflictComponent(
+	component: readonly string[],
+	input: ResolveRelationshipsInput,
+): Set<string> {
+	const selectedIds = new Set(component);
+	let changed = true;
+
+	while (changed) {
+		changed = false;
+		for (const sourceId of component) {
+			if (!selectedIds.has(sourceId)) {
+				continue;
+			}
+
+			for (const excludedId of input.relationships.excludesBySource.get(sourceId) ?? []) {
+				if (!selectedIds.has(excludedId)) {
+					continue;
+				}
+
+				const sourceNode = input.accepted.get(sourceId);
+				const excludedNode = input.accepted.get(excludedId);
+				if (!sourceNode || !excludedNode) {
+					continue;
+				}
+
+				selectedIds.delete(chooseConflictLoser(sourceId, sourceNode, excludedId, excludedNode));
+				changed = true;
+			}
+		}
+	}
+
+	for (const technologyId of [...selectedIds]) {
+		if (!candidateHasValidDependencies(technologyId, selectedIds, input)) {
+			selectedIds.delete(technologyId);
+		}
+	}
+
+	return selectedIds.size > 0 ? selectedIds : new Set([component[0]!]);
+}
+
+interface ConflictSubsetScore {
+	/** Direct candidates are weighted heavily so inferred support cannot replace observed evidence without stronger surrounding support. */
+	directCount: number;
+	/** Sum of detector confidence across the selected set. */
+	confidence: number;
+	/** Number of selected candidates, used after evidence strength to keep compatible technologies together. */
+	candidateCount: number;
+	/** Stable registry-order fingerprint for deterministic tie breaks. */
+	orderFingerprint: string;
+}
+
+function scoreConflictSubset(
+	selectedIds: ReadonlySet<string>,
+	input: ResolveRelationshipsInput,
+): ConflictSubsetScore {
+	let directCount = 0;
+	let confidence = 0;
+	const orderedIds = [...selectedIds].sort((left, right) => compareRegistryOrder(input.registryOrderById, left, right));
+
+	for (const technologyId of orderedIds) {
+		const node = input.accepted.get(technologyId);
+		if (!node) {
+			continue;
+		}
+
+		if (!node.inferred) {
+			directCount += 1;
+		}
+		confidence += node.candidate.confidence.value;
+	}
+
+	return {
+		directCount,
+		confidence,
+		candidateCount: selectedIds.size,
+		orderFingerprint: orderedIds.map((id) => String(input.registryOrderById.get(id) ?? Number.MAX_SAFE_INTEGER).padStart(8, '0')).join(':'),
+	};
+}
+
+function compareConflictSubsetScore(left: ConflictSubsetScore, right: ConflictSubsetScore): number {
+	return (
+		left.directCount - right.directCount ||
+		left.confidence - right.confidence ||
+		left.candidateCount - right.candidateCount ||
+		right.orderFingerprint.localeCompare(left.orderFingerprint)
+	);
+}
+
+function isValidConflictSubset(
+	selectedIds: ReadonlySet<string>,
+	input: ResolveRelationshipsInput,
+): boolean {
+	for (const technologyId of selectedIds) {
+		for (const excludedId of input.relationships.excludesBySource.get(technologyId) ?? []) {
+			if (selectedIds.has(excludedId)) {
+				return false;
+			}
+		}
+
+		if (!candidateHasValidDependencies(technologyId, selectedIds, input)) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+function candidateHasValidDependencies(
+	technologyId: string,
+	selectedIds: ReadonlySet<string>,
+	input: ResolveRelationshipsInput,
+): boolean {
+	const node = input.accepted.get(technologyId);
+	if (!node) {
+		return false;
+	}
+
+	for (const requiredId of input.relationships.requiresBySource.get(technologyId) ?? []) {
+		const requiredNode = input.accepted.get(requiredId);
+		if (!selectedIds.has(requiredId) || !requiredNode || requiredNode.inferred || requiredNode.candidate.directEvidenceCount === 0) {
+			return false;
+		}
+	}
+
+	if (!node.inferred) {
+		return true;
+	}
+
+	return (input.relationships.impliedSourcesByTarget.get(technologyId) ?? [])
+		.some((sourceId) => selectedIds.has(sourceId));
+}
+
+function createExclusionRejectionRelationship(
+	technologyId: string,
+	selectedIds: ReadonlySet<string>,
+	relationships: RelationshipIndex,
+): EvidenceCandidateRelationshipContext | undefined {
+	for (const selectedId of selectedIds) {
+		if (hasExclusionEdge(relationships, selectedId, technologyId)) {
+			return createRelationshipContext('excludes', selectedId, technologyId);
+		}
+		if (hasExclusionEdge(relationships, technologyId, selectedId)) {
+			return createRelationshipContext('excludes', technologyId, selectedId);
+		}
+	}
+
+	return undefined;
+}
+
+function getExclusionRejectionWinner(
+	technologyId: string,
+	selectedIds: ReadonlySet<string>,
+	input: ResolveRelationshipsInput,
+): string | undefined {
+	let winnerId: string | undefined;
+	let winnerNode: CandidateNode | undefined;
+
+	for (const selectedId of selectedIds) {
+		if (!hasExclusionEdge(input.relationships, selectedId, technologyId) && !hasExclusionEdge(input.relationships, technologyId, selectedId)) {
+			continue;
+		}
+
+		const selectedNode = input.accepted.get(selectedId);
+		if (!selectedNode) {
+			continue;
+		}
+
+		if (!winnerNode || chooseConflictLoser(winnerId!, winnerNode, selectedId, selectedNode) === winnerId) {
+			winnerId = selectedId;
+			winnerNode = selectedNode;
+		}
+	}
+
+	return winnerId;
 }
 
 function createInitialCandidateNodes(

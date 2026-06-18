@@ -17,7 +17,7 @@ import { makeAnalysis, makeDetection, makePageSignals, TEST_NOW } from '../suppo
  * Build a minimal technology definition for replay tests.
  *
  * The trace builder should be exercised through the same public coordinator path
- * that Phase 15 introduced, while each test keeps registry setup focused on the
+ * used by the event pipeline, while each test keeps registry setup focused on the
  * rule or relationship detail that matters for replay output.
  */
 function makeTechnology(

@@ -9,9 +9,9 @@ import type {
 /**
  * Input for creating direct evidence from a normalized observation.
  *
- * Future pattern matching can call this after a registry rule matches an
- * observation. Phase 10 does not perform that matching yet, but this builder
- * gives the eventual matcher a stable entry shape to produce.
+ * Pattern matching calls this after a registry rule matches an observation. The
+ * builder keeps evidence records stable across direct observations, replay
+ * traces, and final explanation summaries.
  */
 export interface CreateObservationEvidenceEntryInput {
 	/** Technology that the matched observation supports. */

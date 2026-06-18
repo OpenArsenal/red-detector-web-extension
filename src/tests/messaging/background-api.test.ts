@@ -123,6 +123,7 @@ async function loadBackgroundApi(input: {
 	contentApi?: Partial<ContentApi>;
 	cachedAnalysis?: SiteAnalysis | null;
 	cachedReplayTrace?: DetectionReplayTrace | null;
+	cachedReplayHistory?: DetectionReplayTrace[];
 }) {
 	return (await loadBackgroundApiHarness(input)).api;
 }
@@ -132,6 +133,7 @@ async function loadBackgroundApiHarness(input: {
 	contentApi?: Partial<ContentApi>;
 	cachedAnalysis?: SiteAnalysis | null;
 	cachedReplayTrace?: DetectionReplayTrace | null;
+	cachedReplayHistory?: DetectionReplayTrace[];
 }) {
 	vi.resetModules();
 	vi.stubGlobal('defineBackground', (setup: () => void) => setup);
@@ -239,12 +241,16 @@ async function loadBackgroundApiHarness(input: {
 
 	const getCachedAnalysis = vi.fn(async () => input.cachedAnalysis ?? null);
 	const getCachedReplayTrace = vi.fn(async () => input.cachedReplayTrace ?? null);
+	const getCachedReplayTraceHistory = vi.fn(async () =>
+		input.cachedReplayHistory ?? (input.cachedReplayTrace ? [input.cachedReplayTrace] : []),
+	);
 	const getStatus = vi.fn(async () => ({ totalAnalyses: 0, trackedOrigins: 0 }));
 	const saveAnalysis = vi.fn(async (analysis: SiteAnalysis) => analysis);
 	const saveReplayTrace = vi.fn(async (trace: DetectionReplayTrace) => trace);
 	vi.doMock('../../lib/storage', () => ({
 		getCachedAnalysis,
 		getCachedReplayTrace,
+		getCachedReplayTraceHistory,
 		getStatus,
 		saveAnalysis,
 		saveReplayTrace,
@@ -259,6 +265,7 @@ async function loadBackgroundApiHarness(input: {
 			executeScript,
 			getCachedAnalysis,
 			getCachedReplayTrace,
+			getCachedReplayTraceHistory,
 			getStatus,
 			getCompiledRegistry,
 			listTechnologies,
@@ -531,6 +538,22 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 				},
 			},
 		});
+	});
+
+	it('returns replay history for the active origin', async () => {
+		const trace = makeDetectionReplayTrace({ resultCount: 2 });
+		const harness = await loadBackgroundApiHarness({
+			tab: HTTP_TAB,
+			cachedReplayHistory: [trace],
+		});
+
+		await expect(harness.api.getActiveReplayTraceHistory()).resolves.toMatchObject({
+			ok: true,
+			value: [
+				expect.objectContaining({ resultCount: 2 }),
+			],
+		});
+		expect(harness.mocks.getCachedReplayTraceHistory).toHaveBeenCalledWith(HTTP_TAB.url);
 	});
 
 	it('currently treats bounded observation as a fresh observation request', async () => {

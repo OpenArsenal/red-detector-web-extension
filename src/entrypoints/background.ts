@@ -40,6 +40,7 @@ import { STORAGE_LIMITS, getAnalysisCacheKey } from '../lib/storage/contracts';
 import {
 	getCachedAnalysis,
 	getCachedReplayTrace,
+	getCachedReplayTraceHistory,
 	getStatus,
 	saveAnalysis,
 	saveReplayTrace,
@@ -232,7 +233,7 @@ async function collectObservationBatchFromTab(
 	return collectExtensionObservationBatch({
 		tabId,
 		expectedUrl,
-		registry: compiledRegistryArtifact.technologies,
+		collectionPlan: compiledRegistryArtifact.collectionPlan,
 		contentApi: createContentApiClient(tabId, 0),
 		log: logBackgroundEvent,
 	});
@@ -244,6 +245,7 @@ function createAnalysisOutput(
 	cacheStatus: AnalyzeActiveTabOutput['cache']['status'],
 	session?: ObservationSessionState,
 	replayTrace?: AnalyzeActiveTabOutput['replayTrace'],
+	replayHistory?: AnalyzeActiveTabOutput['replayHistory'],
 ): AnalyzeActiveTabOutput {
 	return {
 		analysis,
@@ -254,6 +256,7 @@ function createAnalysisOutput(
 		},
 		session,
 		...(replayTrace ? { replayTrace } : {}),
+		...(replayHistory ? { replayHistory } : {}),
 	};
 }
 
@@ -297,7 +300,8 @@ async function analyzeObservationBatchRefresh(
 		const cached = await getCachedAnalysis(tab.url);
 		const replayTrace = await getCachedReplayTrace(tab.url);
 		if (cached) {
-			return ok(createAnalysisOutput(cached, 'hit', flush.session, replayTrace ?? undefined));
+			const replayHistory = await getCachedReplayTraceHistory(tab.url);
+			return ok(createAnalysisOutput(cached, 'hit', flush.session, replayTrace ?? undefined, replayHistory));
 		}
 
 		return analyzeFreshActiveTab(tab, { mode: 'refresh', observe: 'while-popup-open' }, 'bypassed');
@@ -453,6 +457,7 @@ async function analyzeAndPersistObservationBatch(
 	const replayTrace = createDetectionReplayTrace({ result: pipelineResult });
 	const savedAnalysis = await saveAnalysis(pipelineResult.analysis);
 	const savedReplayTrace = await saveReplayTrace(replayTrace);
+	const replayHistory = await getCachedReplayTraceHistory(tab.url);
 
 	eventObservationBatchByTab.set(tab.id, batch);
 	logAnalysisSummary(savedAnalysis);
@@ -466,7 +471,7 @@ async function analyzeAndPersistObservationBatch(
 		...details,
 	});
 
-	return ok(createAnalysisOutput(savedAnalysis, cacheStatus, session, savedReplayTrace));
+	return ok(createAnalysisOutput(savedAnalysis, cacheStatus, session, savedReplayTrace, replayHistory));
 }
 
 /**
@@ -550,12 +555,13 @@ export function createBackgroundApi(): BackgroundApi {
 					const cached = await getCachedAnalysis(tab.url);
 					if (cached) {
 						const replayTrace = await getCachedReplayTrace(tab.url);
+						const replayHistory = await getCachedReplayTraceHistory(tab.url);
 						logBackgroundEvent('analysis-cache-hit', {
 							...summarizeTab(tab),
 							resultCount: cached.results.length,
 							analyzedAt: cached.analyzedAt,
 						});
-						return ok(createAnalysisOutput(cached, 'hit', undefined, replayTrace ?? undefined));
+						return ok(createAnalysisOutput(cached, 'hit', undefined, replayTrace ?? undefined, replayHistory));
 					}
 
 					logBackgroundEvent('analysis-cache-miss', summarizeTab(tab));
@@ -636,6 +642,15 @@ export function createBackgroundApi(): BackgroundApi {
 			}
 
 			return getObservationSessionStateForTab(tabResponse.value.id);
+		},
+
+		async getActiveReplayTraceHistory() {
+			const tabResponse = await getInspectableActiveTab();
+			if (!tabResponse.ok) {
+				return tabResponse;
+			}
+
+			return ok(await getCachedReplayTraceHistory(tabResponse.value.url));
 		},
 	};
 }

@@ -31,9 +31,9 @@ export type RefreshableObservationSessionStatus =
 /**
  * Returns whether a fresh analysis should open page watching afterwards.
  *
- * Phase 4 keeps the current product behavior: `bounded` and `while-popup-open`
- * both start the same content-script observation session. The helper makes that
- * choice explicit so a later phase can split those modes in one place.
+ * `bounded` and `while-popup-open` both start the same content-script observation
+ * session today. The helper keeps that product choice in one place so the modes
+ * can diverge without changing every active-tab call site.
  */
 export function shouldStartObservation(mode: ActiveTabObservationMode): boolean {
 	return mode !== 'none';

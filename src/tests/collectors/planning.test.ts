@@ -64,6 +64,29 @@ describe('collection planning', () => {
 		expect(plan.jsGlobalPropertyList.at(0)).toBe('Global0');
 	});
 
+
+	it('summarizes cheap expensive and unsupported rule surfaces', () => {
+		const plan = buildCollectionPlan([
+			makeTechnology('mixed', [
+				{ kind: 'scriptSrc', pattern: /app.js/ },
+				{ kind: 'header', key: 'server', valuePattern: /nginx/ },
+				{ kind: 'scriptContent', pattern: /createApp/ },
+				{ kind: 'dns', recordType: 'TXT', valuePattern: /spf/ },
+			]),
+		]);
+
+		expect(plan).toMatchObject({
+			needsHeaders: true,
+			needsScriptContent: true,
+			needsStylesheetContent: false,
+			costSummary: {
+				cheap: 2,
+				expensive: 1,
+				unsupported: 1,
+			},
+		});
+	});
+
 	it('keeps content-script collection input separate from injected script globals', () => {
 		const plan = buildCollectionPlan([
 			makeTechnology('globals', [
@@ -73,7 +96,7 @@ describe('collection planning', () => {
 		]);
 
 		expect(toCollectPageSignalsInput(plan)).toEqual({
-			includeHtml: true,
+			includeHtml: false,
 			selectorProbeList: ['script[src]'],
 			htmlProbeList: [],
 		});

@@ -15,11 +15,10 @@ import type {
 } from '../observations';
 
 /**
- * Single observation-to-rule match event emitted by the sidecar matcher.
+ * Single observation-to-rule match event emitted by the observation matcher.
  *
- * The target architecture eventually records `PatternMatched` events before
- * evidence aggregation. This shape gives that event a stable TypeScript contract
- * while the production detector still runs through `PageSignals`.
+ * Pattern matching records which normalized page fact satisfied which registry
+ * rule before evidence aggregation turns that match into technology support.
  */
 export interface ObservationPatternMatch {
 	/** Target document or request that produced the source observation. */

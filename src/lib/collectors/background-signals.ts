@@ -43,8 +43,8 @@ export async function collectBackgroundObservationBatch(
 	const pageOrigin = getOrigin(input.batch.target.url);
 	const [jsGlobals, headers, fetchedSourceContents] = await Promise.all([
 		collectInjectedJsGlobals(input.tabId, input.collectionPlan.jsGlobalPropertyList, input.log),
-		collectResponseHeaders(input.batch.target.url),
-		collectSameOriginSourceContents(input.batch, pageOrigin),
+		input.collectionPlan.needsHeaders ? collectResponseHeaders(input.batch.target.url) : {},
+		collectSameOriginSourceContents(input.batch, pageOrigin, input.collectionPlan),
 	]);
 	const observations = [
 		...input.batch.observations,
@@ -120,24 +120,29 @@ async function collectResponseHeaders(pageUrl: string): Promise<Record<string, s
 async function collectSameOriginSourceContents(
 	batch: ObservationBatch,
 	pageOrigin: string,
+	collectionPlan: CollectionPlan,
 ): Promise<{ scriptContents: string[]; stylesheetContents: string[] }> {
 	const scriptContentsAlreadyCollected = countObservations(batch, 'scriptContent');
 	const stylesheetContentsAlreadyCollected = countObservations(batch, 'stylesheetContent');
 	const [scriptContents, stylesheetContents] = await Promise.all([
-		fetchBoundedTextSignals(
-			extractScriptUrls(batch),
-			pageOrigin,
-			SOURCE_LIMITS.scriptContentItems - scriptContentsAlreadyCollected,
-			SOURCE_LIMITS.scriptContentChars,
-			SOURCE_LIMITS.scriptContentTotalChars - totalObservationTextChars(batch, 'scriptContent'),
-		),
-		fetchBoundedTextSignals(
-			extractStylesheetUrls(batch),
-			pageOrigin,
-			SOURCE_LIMITS.stylesheetContentItems - stylesheetContentsAlreadyCollected,
-			SOURCE_LIMITS.stylesheetContentChars,
-			SOURCE_LIMITS.stylesheetContentTotalChars - totalObservationTextChars(batch, 'stylesheetContent'),
-		),
+		collectionPlan.needsScriptContent
+			? fetchBoundedTextSignals(
+				extractScriptUrls(batch),
+				pageOrigin,
+				SOURCE_LIMITS.scriptContentItems - scriptContentsAlreadyCollected,
+				SOURCE_LIMITS.scriptContentChars,
+				SOURCE_LIMITS.scriptContentTotalChars - totalObservationTextChars(batch, 'scriptContent'),
+			)
+			: [],
+		collectionPlan.needsStylesheetContent
+			? fetchBoundedTextSignals(
+				extractStylesheetUrls(batch),
+				pageOrigin,
+				SOURCE_LIMITS.stylesheetContentItems - stylesheetContentsAlreadyCollected,
+				SOURCE_LIMITS.stylesheetContentChars,
+				SOURCE_LIMITS.stylesheetContentTotalChars - totalObservationTextChars(batch, 'stylesheetContent'),
+			)
+			: [],
 	]);
 
 	return { scriptContents, stylesheetContents };

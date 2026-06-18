@@ -141,6 +141,38 @@ describe('evidence candidate relationship refinement', () => {
 		]));
 	});
 
+
+	it('resolves exclusion components by strongest consistent candidate set', () => {
+		const registry = [
+			makeTechnology({ id: 'cms-a', excludes: ['cms-b'] }),
+			makeTechnology({ id: 'cms-b', excludes: ['plugin-c'] }),
+			makeTechnology({ id: 'plugin-c' }),
+		];
+		const batch = createEvidenceCandidateBatch({
+			registry,
+			evidence: [
+				makeEvidenceEntry({ id: 'cms-a', technologyId: 'cms-a', confidence: 70 }),
+				makeEvidenceEntry({ id: 'cms-b', technologyId: 'cms-b', confidence: 95 }),
+				makeEvidenceEntry({ id: 'plugin-c', technologyId: 'plugin-c', confidence: 70 }),
+			],
+		});
+
+		const refined = refineEvidenceCandidateBatch({
+			batch,
+			compiledRegistry: createCompiledDetectionRegistry(registry),
+		});
+
+		expect(refined.candidates.map((candidate) => candidate.technology.id)).toEqual(['cms-a', 'plugin-c']);
+		expect(refined.rejections).toEqual(expect.arrayContaining([
+			expect.objectContaining({
+				reason: 'excluded',
+				candidate: expect.objectContaining({
+					technology: expect.objectContaining({ id: 'cms-b' }),
+				}),
+			}),
+		]));
+	});
+
 	it('prevents inferred candidates from replacing conflicting direct candidates', () => {
 		const registry = [
 			makeTechnology({ id: 'react', name: 'React', implies: ['preact'] }),

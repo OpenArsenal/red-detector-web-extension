@@ -1,7 +1,6 @@
 import { collectBackgroundObservationBatch, type CollectorLog } from './background-signals';
-import { buildCollectionPlan, toCollectPageSignalsInput } from './planning';
+import { toCollectPageSignalsInput, type CollectionPlan } from './planning';
 import type { CollectObservationBatchOutput, ContentApi } from '../contracts/analysis';
-import type { TechnologyDefinition } from '../detection/types';
 import type { ObservationBatch } from '../observations';
 import {
 	CONTENT_SCRIPT_TIMEOUT_MS,
@@ -17,8 +16,8 @@ export type ExtensionPageCollectorInput = {
 	tabId: number;
 	/** URL the background saw before contacting the content script. */
 	expectedUrl: string;
-	/** Active technology registry used only to plan what the collectors should look for. */
-	registry: readonly TechnologyDefinition[];
+	/** Precompiled collection plan from the active registry artifact. */
+	collectionPlan: CollectionPlan;
 	/** RPC client for the content script running in the active tab. */
 	contentApi: ContentApi;
 	/** Optional summary logger supplied by the background entrypoint. */
@@ -43,7 +42,20 @@ export async function collectExtensionObservationBatch(
 		hostname: new URL(input.expectedUrl).hostname,
 	});
 
-	const collectionPlan = buildCollectionPlan(input.registry);
+	const collectionPlan = input.collectionPlan;
+
+	input.log?.('collection-plan-selected', {
+		tabId: input.tabId,
+		selectorProbeCount: collectionPlan.selectorProbeList.length,
+		htmlProbeCount: collectionPlan.htmlProbeList.length,
+		jsGlobalProbeCount: collectionPlan.jsGlobalPropertyList.length,
+		needsHeaders: collectionPlan.needsHeaders,
+		needsScriptContent: collectionPlan.needsScriptContent,
+		needsStylesheetContent: collectionPlan.needsStylesheetContent,
+		cheapRuleCount: collectionPlan.costSummary.cheap,
+		expensiveRuleCount: collectionPlan.costSummary.expensive,
+		unsupportedRuleCount: collectionPlan.costSummary.unsupported,
+	});
 
 	try {
 		const response = await withTimeout(

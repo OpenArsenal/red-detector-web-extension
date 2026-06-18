@@ -180,5 +180,6 @@ export function makeAnalyzeActiveTabOutput(
 		},
 		session: overrides.session,
 		replayTrace: overrides.replayTrace,
+		replayHistory: overrides.replayHistory,
 	};
 }

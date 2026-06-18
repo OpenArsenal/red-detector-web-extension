@@ -5,9 +5,9 @@ import type { TechnologyDefinition } from './types';
 /**
  * Read-only source of technology definitions for detector calls and collection planning.
  *
- * The current implementation still reads the bundled TypeScript registry. The provider
- * keeps that detail out of callers so a later registry compiler can replace the backing
- * source without changing popup, background, or collector code.
+ * Callers receive detector-ordered definitions and compiled artifacts without
+ * knowing how the bundled registry is backed. That keeps popup, background, and
+ * collector code focused on the active registry contract.
  */
 export interface TechnologyRegistryProvider {
 	/** Return the active technology definitions in detector order. */
