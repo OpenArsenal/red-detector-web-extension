@@ -14,7 +14,7 @@ export const priorityHintsTechnologyDefinition = {
 			id: "priority-hints:dom:0",
 			kind: "dom",
 			selector: "iframe[fetchpriority], img[fetchpriority], script[fetchpriority], link[fetchpriority]",
-			confidence: 40,
+			confidence: 80,
 			description: "DOM uses the fetchpriority attribute as a resource scheduling hint.",
 		},
 		{
