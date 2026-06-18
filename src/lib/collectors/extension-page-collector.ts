@@ -52,6 +52,7 @@ export async function collectExtensionObservationBatch(
 		needsHeaders: collectionPlan.needsHeaders,
 		needsScriptContent: collectionPlan.needsScriptContent,
 		needsStylesheetContent: collectionPlan.needsStylesheetContent,
+		needsText: collectionPlan.needsText,
 		cheapRuleCount: collectionPlan.costSummary.cheap,
 		expensiveRuleCount: collectionPlan.costSummary.expensive,
 		unsupportedRuleCount: collectionPlan.costSummary.unsupported,

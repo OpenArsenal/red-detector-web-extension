@@ -1,6 +1,6 @@
 import type { PageSignals } from './types';
 import { estimateBytes } from './normalizers';
-import { SOURCE_LIMITS } from './rules';
+import { SOURCE_LIMITS } from './source-limits';
 
 const MAX_SIGNAL_BYTES = 1024 * 1024;
 

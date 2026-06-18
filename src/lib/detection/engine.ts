@@ -24,7 +24,7 @@ import {
 	detectionCandidateToResult,
 	type DetectionCandidate,
 } from './candidates';
-import { SOURCE_LIMITS } from './rules';
+import { SOURCE_LIMITS } from './source-limits';
 import {
 	createCompiledDetectionRegistry,
 	type CompiledDetectionRegistry,

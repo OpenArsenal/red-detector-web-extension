@@ -15,6 +15,7 @@ import type {
   AnalyzeActiveTabInput,
   AnalyzeActiveTabOutput,
   BackgroundApi,
+  ObservationSessionTarget,
 } from "../../lib/messaging";
 import {
   BACKGROUND_RPC_NAMESPACE,
@@ -76,9 +77,11 @@ export default function App() {
     createSignal<PopupExplanationLookup>({});
   const [pipelineMode, setPipelineMode] = createSignal("event");
   const [replayHistory, setReplayHistory] = createSignal<readonly DetectionReplayTrace[]>([]);
+  const [sessionTarget, setSessionTarget] = createSignal<ObservationSessionTarget | null>(null);
   let pollTimer: ReturnType<typeof globalThis.setInterval> | undefined;
   let refreshInFlight = false;
   let pollingCheckInFlight = false;
+  let pendingManualRefresh = false;
 
   function resultCount() {
     return analysis()?.results.length ?? 0;
@@ -118,6 +121,30 @@ export default function App() {
     }, POPUP_POLL_INTERVAL_MS);
   }
 
+  function schedulePendingManualRefresh() {
+    if (!pendingManualRefresh || refreshInFlight) {
+      return;
+    }
+
+    pendingManualRefresh = false;
+    void refreshAndRestartPolling();
+  }
+
+  function queueManualRefresh(): void {
+    pendingManualRefresh = true;
+    setNotice({
+      variant: "warning",
+      text: "Refresh will run after the current analysis finishes.",
+    });
+  }
+
+  async function readObservationSessionState() {
+    const target = sessionTarget();
+    return target
+      ? backgroundApi.getObservationSessionState(target)
+      : backgroundApi.getActiveObservationSessionState();
+  }
+
   async function refreshIfPageSignalsChanged() {
     if (refreshInFlight || pollingCheckInFlight) {
       return;
@@ -125,7 +152,7 @@ export default function App() {
 
     pollingCheckInFlight = true;
     try {
-      const response = await backgroundApi.getActiveObservationSessionState();
+      const response = await readObservationSessionState();
       if (!response.ok) {
         logPopupEvent("observation-state-unavailable", {
           code: response.error.code,
@@ -197,6 +224,7 @@ export default function App() {
     setExplanationsByTechnologyId(update.explanationsByTechnologyId);
     setPipelineMode(response.replayTrace?.completedMode ?? "event");
     setReplayHistory(response.replayHistory ?? []);
+    setSessionTarget(response.sessionTarget ?? null);
 
     logPopupEvent("analysis-applied", {
       source: options.source,
@@ -229,7 +257,7 @@ export default function App() {
 
   async function syncObservationState() {
     try {
-      const response = await backgroundApi.getActiveObservationSessionState();
+      const response = await readObservationSessionState();
       if (!response.ok) {
         logPopupEvent("observation-sync-unavailable", {
           code: response.error.code,
@@ -263,6 +291,9 @@ export default function App() {
     source: "initial" | "manual" | "auto";
   }) {
     if (refreshInFlight) {
+      if (options.source === "manual") {
+        queueManualRefresh();
+      }
       return;
     }
 
@@ -317,6 +348,7 @@ export default function App() {
         setBusy(false);
       }
       refreshInFlight = false;
+      schedulePendingManualRefresh();
     }
   }
 
@@ -325,10 +357,17 @@ export default function App() {
       return;
     }
 
+    const target = sessionTarget();
+    if (!target) {
+      setPollingMode("stopped");
+      clearPopupPolling();
+      return;
+    }
+
     refreshInFlight = true;
     try {
-      logPopupEvent("observation-refresh-requested");
-      const response = await backgroundApi.refreshActiveObservationSession();
+      logPopupEvent("observation-refresh-requested", { sessionId: target.sessionId, tabId: target.tabId });
+      const response = await backgroundApi.refreshObservationSession(target);
       if (!response.ok) {
         logPopupEvent("observation-refresh-failed", {
           code: response.error.code,
@@ -345,6 +384,7 @@ export default function App() {
       await refreshStatus();
     } finally {
       refreshInFlight = false;
+      schedulePendingManualRefresh();
     }
   }
 
@@ -353,8 +393,11 @@ export default function App() {
     setErrorMessage("");
     setNotice(null);
     try {
-      logPopupEvent("observation-stop-requested");
-      const response = await backgroundApi.stopActiveObservationSession();
+      const target = sessionTarget();
+      logPopupEvent("observation-stop-requested", target ? { sessionId: target.sessionId, tabId: target.tabId } : undefined);
+      const response = target
+        ? await backgroundApi.stopObservationSession(target)
+        : await backgroundApi.stopActiveObservationSession();
       if (!response.ok) {
         logPopupEvent("observation-stop-failed", {
           code: response.error.code,
@@ -370,6 +413,7 @@ export default function App() {
       });
 
       clearPopupPolling();
+      setSessionTarget(null);
       setPollingMode("stopped");
       setNotice({
         variant: "warning",
@@ -383,6 +427,11 @@ export default function App() {
   }
 
   async function refreshAndRestartPolling() {
+    if (refreshInFlight) {
+      queueManualRefresh();
+      return;
+    }
+
     await loadLatestAnalysis({
       input: {
         mode: "refresh",
@@ -412,7 +461,10 @@ export default function App() {
   onCleanup(() => {
     logPopupEvent("cleanup-stop-observation");
     clearPopupPolling();
-    void backgroundApi.stopActiveObservationSession();
+    const target = sessionTarget();
+    void (target
+      ? backgroundApi.stopObservationSession(target)
+      : backgroundApi.stopActiveObservationSession());
   });
 
   return (

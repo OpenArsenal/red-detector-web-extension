@@ -1,5 +1,5 @@
 import { limitStringsByTotalChars, normalizeMetaMap, truncate, uniqueStrings } from '../detection/normalizers';
-import { SOURCE_LIMITS } from '../detection/rules';
+import { SOURCE_LIMITS } from '../detection/source-limits';
 import type {
 	CookieSignals,
 	HtmlMatchSignal,
@@ -14,6 +14,9 @@ export type CollectPageSignalsInput = {
 	selectorProbeList: string[];
 	htmlProbeList?: HtmlProbe[];
 	includeHtml?: boolean;
+	includeText?: boolean;
+	includeScriptContent?: boolean;
+	includeStylesheetContent?: boolean;
 };
 
 /**
@@ -63,14 +66,14 @@ export function collectPageSignals(
 		hostname: location.hostname,
 		html: input.includeHtml ? boundedHtml(fullHtml, htmlProbeList) : '',
 		htmlMatches,
-		text: collectVisibleText(),
+		text: input.includeText ? collectVisibleText() : '',
 		scripts: runtime.scripts ?? collectScriptSources(),
 		stylesheets: runtime.stylesheets ?? collectStylesheetSources(),
 		links: runtime.links ?? collectLinkTags(),
 		resources,
 		requests: runtime.requests ?? resources.map(resourceToRequestSignal),
-		scriptContents: runtime.scriptContents ?? collectScriptContents(),
-		stylesheetContents: runtime.stylesheetContents ?? collectStylesheetContents(),
+		scriptContents: runtime.scriptContents ?? (input.includeScriptContent ? collectScriptContents() : []),
+		stylesheetContents: runtime.stylesheetContents ?? (input.includeStylesheetContent ? collectStylesheetContents() : []),
 		cookies: collectCookieNames(document.cookie),
 		headers: runtime.headers ?? {},
 		meta: runtime.meta ?? collectMetaTags(),

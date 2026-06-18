@@ -5,6 +5,8 @@ export type {
 	AnalyzeActiveTabMode,
 	AnalyzeActiveTabOutput,
 	BackgroundApi,
+	ObservationSessionTarget,
+	ObservationSessionTargetInput,
 	BeginObservationSessionInput,
 	CollectObservationBatchOutput,
 	CollectPageSignalsInput,

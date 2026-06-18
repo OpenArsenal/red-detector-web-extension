@@ -7,7 +7,7 @@ import {
 	collectStylesheetContents,
 	collectStylesheetSources,
 } from './collect-page-signals';
-import { SOURCE_LIMITS } from '../detection/rules';
+import { SOURCE_LIMITS } from '../detection/source-limits';
 import type { PageSignals } from '../detection/types';
 import { isObservationSessionForUrl } from '../lifecycle/observation';
 import {

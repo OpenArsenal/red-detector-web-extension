@@ -2,7 +2,7 @@ import { browser } from 'wxt/browser';
 
 import type { CollectionPlan } from './planning';
 import { limitStringsByTotalChars, truncate, uniqueStrings } from '../detection/normalizers';
-import { SOURCE_LIMITS } from '../detection/rules';
+import { SOURCE_LIMITS } from '../detection/source-limits';
 import type { NormalizedObservation, ObservationBatch } from '../observations';
 import { getOrigin } from '../shared/url';
 

@@ -14,16 +14,16 @@
   },
   "dependencies": {
     "@dagrejs/graphlib": "^4.0.1",
-    "comctx": "latest",
-    "solid-js": "latest",
+    "comctx": "1.7.5",
+    "solid-js": "1.9.13",
     "zod": "^4.0.0"
   },
   "devDependencies": {
-    "@fast-check/vitest": "latest",
-    "@wxt-dev/module-solid": "latest",
-    "typescript": "latest",
-    "vitest": "latest",
-    "wxt": "latest"
+    "@fast-check/vitest": "0.4.1",
+    "@wxt-dev/module-solid": "1.1.4",
+    "typescript": "6.0.3",
+    "vitest": "4.1.9",
+    "wxt": "0.20.26"
   },
   "aube": {
     "allowBuilds": {

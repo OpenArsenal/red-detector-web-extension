@@ -95,6 +95,9 @@ async function collectSignals(
     logContentEvent("collect-start", {
       hostname: globalThis.location?.hostname,
       includeHtml: Boolean(input.includeHtml),
+      includeText: Boolean(input.includeText),
+      includeScriptContent: Boolean(input.includeScriptContent),
+      includeStylesheetContent: Boolean(input.includeStylesheetContent),
       selectorProbeCount: input.selectorProbeList.length,
       htmlProbeCount: input.htmlProbeList?.length ?? 0,
     });

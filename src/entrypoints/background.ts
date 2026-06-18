@@ -17,6 +17,7 @@ import type {
 	BackgroundApi,
 	ContentApi,
 	FlushObservationBatchOutput,
+	ObservationSessionTarget,
 } from '../lib/messaging';
 import type { NormalizedObservation, ObservationBatch } from '../lib/observations';
 import {
@@ -36,6 +37,7 @@ import {
 	shouldStartObservationForAnalysis,
 } from '../lib/lifecycle/observation';
 import { errorResponse, ok, type AppResult } from '../lib/shared/result';
+import { isSameDocumentUrl } from '../lib/shared/url';
 import { STORAGE_LIMITS, getAnalysisCacheKey } from '../lib/storage/contracts';
 import {
 	getCachedAnalysis,
@@ -52,6 +54,8 @@ type InspectableTab = {
 	id: number;
 	/** Active document URL observed by the background before collection starts. */
 	url: string;
+	/** Whether analysis and replay results must avoid persistent storage. */
+	incognito: boolean;
 };
 
 /** Compiled registry artifact reused across collection planning and matching. */
@@ -136,7 +140,7 @@ async function getInspectableActiveTab(): Promise<AppResult<InspectableTab>> {
 		);
 	}
 
-	return ok({ id: tab.id, url: tab.url });
+	return ok({ id: tab.id, url: tab.url, incognito: tab.incognito === true });
 }
 
 async function pingContentScript(tabId: number): Promise<boolean> {
@@ -246,6 +250,7 @@ function createAnalysisOutput(
 	session?: ObservationSessionState,
 	replayTrace?: AnalyzeActiveTabOutput['replayTrace'],
 	replayHistory?: AnalyzeActiveTabOutput['replayHistory'],
+	sessionTarget?: ObservationSessionTarget,
 ): AnalyzeActiveTabOutput {
 	return {
 		analysis,
@@ -255,8 +260,54 @@ function createAnalysisOutput(
 			expiresAt: analysis.analyzedAt + STORAGE_LIMITS.analysisTtlMs,
 		},
 		session,
+		...(sessionTarget ? { sessionTarget } : {}),
 		...(replayTrace ? { replayTrace } : {}),
 		...(replayHistory ? { replayHistory } : {}),
+	};
+}
+
+function createObservationSessionTarget(
+	tab: InspectableTab,
+	session?: ObservationSessionState,
+): ObservationSessionTarget | undefined {
+	if (!session?.sessionId || !session.expectedUrl) {
+		return undefined;
+	}
+
+	return {
+		tabId: tab.id,
+		sessionId: session.sessionId,
+		expectedUrl: tab.url,
+		...(tab.incognito ? { incognito: true } : {}),
+	};
+}
+
+function validateObservationSessionTarget(
+	actual: ObservationSessionState,
+	expected: ObservationSessionTarget,
+): AppResult<void> {
+	if (actual.sessionId !== expected.sessionId) {
+		return errorResponse(
+			'OBSERVATION_SESSION_UNAVAILABLE',
+			'The requested observation session is no longer active in the target tab.',
+		);
+	}
+
+	if (!actual.expectedUrl || !isSameDocumentUrl(actual.expectedUrl, expected.expectedUrl)) {
+		return errorResponse(
+			'OBSERVATION_SESSION_UNAVAILABLE',
+			'The active tab navigated away from the observed document.',
+		);
+	}
+
+	return ok(undefined);
+}
+
+function tabFromObservationSessionTarget(target: ObservationSessionTarget): InspectableTab {
+	return {
+		id: target.tabId,
+		url: target.expectedUrl,
+		incognito: target.incognito === true,
 	};
 }
 
@@ -455,9 +506,12 @@ async function analyzeAndPersistObservationBatch(
 		source: 'fresh',
 	});
 	const replayTrace = createDetectionReplayTrace({ result: pipelineResult });
-	const savedAnalysis = await saveAnalysis(pipelineResult.analysis);
-	const savedReplayTrace = await saveReplayTrace(replayTrace);
-	const replayHistory = await getCachedReplayTraceHistory(tab.url);
+	const savedAnalysis = tab.incognito
+		? Object.assign({}, pipelineResult.analysis, { source: 'fresh' as const })
+		: await saveAnalysis(pipelineResult.analysis);
+	const savedReplayTrace = tab.incognito ? replayTrace : await saveReplayTrace(replayTrace);
+	const replayHistory = tab.incognito ? [] : await getCachedReplayTraceHistory(tab.url);
+	const sessionTarget = createObservationSessionTarget(tab, session);
 
 	eventObservationBatchByTab.set(tab.id, batch);
 	logAnalysisSummary(savedAnalysis);
@@ -471,7 +525,7 @@ async function analyzeAndPersistObservationBatch(
 		...details,
 	});
 
-	return ok(createAnalysisOutput(savedAnalysis, cacheStatus, session, savedReplayTrace, replayHistory));
+	return ok(createAnalysisOutput(savedAnalysis, cacheStatus, session, savedReplayTrace, replayHistory, sessionTarget));
 }
 
 /**
@@ -521,6 +575,77 @@ function isSameObservationTarget(left: ObservationBatch, right: ObservationBatch
 	return left.target.hostname === right.target.hostname && left.target.url === right.target.url;
 }
 
+async function refreshObservationSessionTarget(
+	target: ObservationSessionTarget,
+	knownSession?: ObservationSessionState,
+): Promise<AppResult<AnalyzeActiveTabOutput>> {
+	const tab = tabFromObservationSessionTarget(target);
+	logBackgroundEvent('observation-refresh-requested', summarizeTab(tab));
+	const sessionResponse = knownSession ? ok(knownSession) : await getObservationSessionStateForTab(tab.id);
+	if (!sessionResponse.ok) {
+		return sessionResponse;
+	}
+
+	const targetValidation = validateObservationSessionTarget(sessionResponse.value, target);
+	if (!targetValidation.ok) {
+		return targetValidation;
+	}
+
+	logBackgroundEvent('observation-refresh-session-state', {
+		...summarizeTab(tab),
+		...summarizeSession(sessionResponse.value),
+	});
+
+	const blockReason = getObservationRefreshBlockReason(sessionResponse.value, tab.url);
+	if (blockReason) {
+		logBackgroundEvent('observation-refresh-unavailable', {
+			...summarizeTab(tab),
+			reason: blockReason,
+			sessionExpectedUrl: sessionResponse.value.expectedUrl,
+		});
+		return errorResponse(
+			'OBSERVATION_SESSION_UNAVAILABLE',
+			blockReason === 'navigation'
+				? 'The active tab navigated away from the observed document.'
+				: 'No active observation session exists for the analyzed tab.',
+		);
+	}
+
+	const batchResponse = await flushObservationBatchForTab(tab.id);
+	return batchResponse.ok ? analyzeObservationBatchRefresh(tab, batchResponse.value) : batchResponse;
+}
+
+async function stopObservationSessionTarget(
+	target: ObservationSessionTarget,
+): Promise<AppResult<ObservationSessionState>> {
+	const tab = tabFromObservationSessionTarget(target);
+	logBackgroundEvent('observation-stop-api', summarizeTab(tab));
+	const sessionResponse = await getObservationSessionStateForTab(tab.id);
+	if (!sessionResponse.ok) {
+		return sessionResponse;
+	}
+
+	const targetValidation = validateObservationSessionTarget(sessionResponse.value, target);
+	if (!targetValidation.ok) {
+		return targetValidation;
+	}
+
+	eventObservationBatchByTab.delete(tab.id);
+	return stopObservationSessionForTab(tab.id);
+}
+
+async function getObservationSessionStateForTarget(
+	target: ObservationSessionTarget,
+): Promise<AppResult<ObservationSessionState>> {
+	const response = await getObservationSessionStateForTab(target.tabId);
+	if (!response.ok) {
+		return response;
+	}
+
+	const targetValidation = validateObservationSessionTarget(response.value, target);
+	return targetValidation.ok ? response : targetValidation;
+}
+
 /** Debug output is intentionally summary-only; never log raw page observations. */
 function logAnalysisSummary(analysis: SiteAnalysis): void {
 	console.log('[red-detector] analysis summary', {
@@ -551,7 +676,7 @@ export function createBackgroundApi(): BackgroundApi {
 					observe: input.observe,
 					pipeline: 'event',
 				});
-				if (input.mode === 'cache-first') {
+				if (input.mode === 'cache-first' && !tab.incognito) {
 					const cached = await getCachedAnalysis(tab.url);
 					if (cached) {
 						const replayTrace = await getCachedReplayTrace(tab.url);
@@ -580,48 +705,38 @@ export function createBackgroundApi(): BackgroundApi {
 			}
 		},
 
-		async refreshActiveObservationSession() {
+		async refreshObservationSession(target) {
 			try {
-				const tabResponse = await getInspectableActiveTab();
-				if (!tabResponse.ok) {
-					return tabResponse;
-				}
-
-				const tab = tabResponse.value;
-				logBackgroundEvent('observation-refresh-requested', summarizeTab(tab));
-				const sessionResponse = await getObservationSessionStateForTab(tab.id);
-				if (!sessionResponse.ok) {
-					return sessionResponse;
-				}
-
-				logBackgroundEvent('observation-refresh-session-state', {
-					...summarizeTab(tab),
-					...summarizeSession(sessionResponse.value),
-				});
-
-				const blockReason = getObservationRefreshBlockReason(sessionResponse.value, tab.url);
-				if (blockReason) {
-					logBackgroundEvent('observation-refresh-unavailable', {
-						...summarizeTab(tab),
-						reason: blockReason,
-						sessionExpectedUrl: sessionResponse.value.expectedUrl,
-					});
-					return errorResponse(
-						'OBSERVATION_SESSION_UNAVAILABLE',
-						blockReason === 'navigation'
-							? 'The active tab navigated away from the observed document.'
-							: 'No active observation session exists for the current tab.',
-					);
-				}
-
-				const batchResponse = await flushObservationBatchForTab(tab.id);
-				return batchResponse.ok ? analyzeObservationBatchRefresh(tab, batchResponse.value) : batchResponse;
+				return await refreshObservationSessionTarget(target);
 			} catch (error) {
 				const stack = error instanceof Error ? error.stack : undefined;
 				const message =
 					error instanceof Error ? error.message : 'Unexpected runtime error';
 				return errorResponse('UNKNOWN', message, stack);
 			}
+		},
+
+		async refreshActiveObservationSession() {
+			const tabResponse = await getInspectableActiveTab();
+			if (!tabResponse.ok) {
+				return tabResponse;
+			}
+
+			const sessionResponse = await getObservationSessionStateForTab(tabResponse.value.id);
+			if (!sessionResponse.ok) {
+				return sessionResponse;
+			}
+
+			const target = createObservationSessionTarget(tabResponse.value, sessionResponse.value);
+			if (!target) {
+				return errorResponse('OBSERVATION_SESSION_UNAVAILABLE', 'No active observation session exists for the current tab.');
+			}
+
+			return refreshObservationSessionTarget(target, sessionResponse.value);
+		},
+
+		async stopObservationSession(target) {
+			return stopObservationSessionTarget(target);
 		},
 
 		async stopActiveObservationSession() {
@@ -633,6 +748,10 @@ export function createBackgroundApi(): BackgroundApi {
 			logBackgroundEvent('observation-stop-api', summarizeTab(tabResponse.value));
 			eventObservationBatchByTab.delete(tabResponse.value.id);
 			return stopObservationSessionForTab(tabResponse.value.id);
+		},
+
+		async getObservationSessionState(target) {
+			return getObservationSessionStateForTarget(target);
 		},
 
 		async getActiveObservationSessionState() {

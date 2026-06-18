@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { buildCollectionPlan, toCollectPageSignalsInput } from '../../lib/collectors/planning';
-import { SOURCE_LIMITS } from '../../lib/detection/rules';
+import { SOURCE_LIMITS } from '../../lib/detection/source-limits';
 import type { TechnologyDefinition } from '../../lib/detection/types';
 
 function makeTechnology(
@@ -79,6 +79,7 @@ describe('collection planning', () => {
 			needsHeaders: true,
 			needsScriptContent: true,
 			needsStylesheetContent: false,
+			needsText: false,
 			costSummary: {
 				cheap: 2,
 				expensive: 1,
@@ -97,6 +98,9 @@ describe('collection planning', () => {
 
 		expect(toCollectPageSignalsInput(plan)).toEqual({
 			includeHtml: false,
+			includeText: false,
+			includeScriptContent: false,
+			includeStylesheetContent: false,
 			selectorProbeList: ['script[src]'],
 			htmlProbeList: [],
 		});

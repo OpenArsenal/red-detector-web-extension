@@ -1,5 +1,5 @@
 import type { CollectPageSignalsInput, HtmlProbe } from '../contracts/analysis';
-import { SOURCE_LIMITS } from '../detection/rules';
+import { SOURCE_LIMITS } from '../detection/source-limits';
 import type { DetectionRule, TechnologyDefinition } from '../detection/types';
 
 /**
@@ -66,6 +66,8 @@ export type CollectionPlan = {
 	needsScriptContent: boolean;
 	/** Whether same-origin stylesheet text can contribute evidence for the active registry. */
 	needsStylesheetContent: boolean;
+	/** Whether visible text can contribute evidence for the active registry. */
+	needsText: boolean;
 	/** Rule count summary that explains how much work can stay on the cheap path. */
 	costSummary: CollectionPlanCostSummary;
 };
@@ -81,6 +83,7 @@ export function buildCollectionPlan(
 		needsHeaders: hasRegistryRuleKind(registry, 'header') || hasRegistryRuleKind(registry, 'responseHeader'),
 		needsScriptContent: hasRegistryRuleKind(registry, 'scriptContent'),
 		needsStylesheetContent: hasRegistryRuleKind(registry, 'stylesheetContent'),
+		needsText: hasRegistryRuleKind(registry, 'text'),
 		costSummary: createCollectionPlanCostSummary(registry),
 	};
 }
@@ -89,6 +92,9 @@ export function buildCollectionPlan(
 export function toCollectPageSignalsInput(plan: CollectionPlan): CollectPageSignalsInput {
 	return {
 		includeHtml: plan.htmlProbeList.length > 0,
+		includeText: plan.needsText,
+		includeScriptContent: plan.needsScriptContent,
+		includeStylesheetContent: plan.needsStylesheetContent,
 		selectorProbeList: plan.selectorProbeList,
 		htmlProbeList: plan.htmlProbeList,
 	};

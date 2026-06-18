@@ -63,6 +63,7 @@ export function refineEvidenceCandidateBatch(
 		policy,
 		recorder,
 		relationshipEvidence,
+		suppressedImpliedCandidateIds: new Set(),
 	});
 
 	return {
@@ -83,6 +84,7 @@ interface ResolveRelationshipsInput {
 	policy: EvidenceCandidateRefinementPolicy;
 	recorder: RejectionRecorder;
 	relationshipEvidence: EvidenceEntry[];
+	suppressedImpliedCandidateIds: Set<string>;
 }
 
 function resolveCandidateRelationshipsToFixedPoint(input: ResolveRelationshipsInput): void {
@@ -107,6 +109,10 @@ function expandImpliedCandidates(input: ResolveRelationshipsInput): boolean {
 		}
 
 		for (const impliedId of input.relationships.impliesBySource.get(sourceId) ?? []) {
+			if (input.suppressedImpliedCandidateIds.has(impliedId)) {
+				continue;
+			}
+
 			if (input.accepted.has(impliedId)) {
 				continue;
 			}
@@ -230,6 +236,10 @@ function applyExclusions(input: ResolveRelationshipsInput): boolean {
 			}
 
 			input.accepted.delete(technologyId);
+			if (node.inferred) {
+				input.suppressedImpliedCandidateIds.add(technologyId);
+			}
+
 			recordRejection(input.recorder, {
 				candidate: node.candidate,
 				reason: 'excluded',

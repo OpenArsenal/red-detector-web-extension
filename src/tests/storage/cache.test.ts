@@ -150,6 +150,7 @@ describe.sequential('analysis cache baseline', () => {
 
 
 	it('keeps bounded replay history for the active origin', async () => {
+		vi.useFakeTimers({ now: 1_700_000_000_010 });
 		const storage = await loadStorageHarness();
 		const firstTrace = makeDetectionReplayTrace({ analyzedAt: 1_700_000_000_001, resultCount: 1 });
 		const secondTrace = makeDetectionReplayTrace({ analyzedAt: 1_700_000_000_002, resultCount: 2 });

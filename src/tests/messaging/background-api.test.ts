@@ -14,6 +14,7 @@ vi.setConfig({ testTimeout: 20_000 });
 type TestTab = {
 	id?: number;
 	url?: string;
+	incognito?: boolean;
 };
 
 const HTTP_TAB: TestTab = {
@@ -429,6 +430,37 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 			completedMode: 'event',
 		}));
 		expect(harness.contentApi.beginObservationSession).not.toHaveBeenCalled();
+	});
+
+	it('skips persistent analysis and replay writes for incognito active tabs', async () => {
+		const harness = await loadBackgroundApiHarness({
+			tab: { ...HTTP_TAB, incognito: true },
+		});
+
+		await expect(
+			harness.api.analyzeActiveTab({ mode: 'cache-first', observe: 'while-popup-open' }),
+		).resolves.toMatchObject({
+			ok: true,
+			value: {
+				analysis: {
+					source: 'fresh',
+				},
+				cache: {
+					status: 'miss',
+				},
+				sessionTarget: {
+					tabId: HTTP_TAB.id,
+					sessionId: 'session-1',
+					incognito: true,
+				},
+				replayHistory: [],
+			},
+		});
+
+		expect(harness.mocks.getCachedAnalysis).not.toHaveBeenCalled();
+		expect(harness.mocks.saveAnalysis).not.toHaveBeenCalled();
+		expect(harness.mocks.saveReplayTrace).not.toHaveBeenCalled();
+		expect(harness.contentApi.beginObservationSession).toHaveBeenCalledOnce();
 	});
 
 	it('bypasses cached analysis when refresh mode is requested', async () => {

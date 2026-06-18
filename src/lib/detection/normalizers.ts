@@ -1,4 +1,4 @@
-import { SOURCE_LIMITS } from './rules';
+import { SOURCE_LIMITS } from './source-limits';
 
 export function uniqueStrings(values: string[]): string[] {
 	return Array.from(new Set(values.filter(Boolean)));
