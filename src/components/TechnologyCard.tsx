@@ -76,17 +76,44 @@ function createEvidencePreviewFromResult(evidence: Evidence): PopupEvidencePrevi
 		...(evidence.matchedValue ? { matchedValue: evidence.matchedValue } : {}),
 		...(evidence.version ? { version: evidence.version } : {}),
 		...(evidence.sourceTechnologyId ? { sourceTechnologyId: evidence.sourceTechnologyId } : {}),
+		...(evidence.observationKey ? { observationKey: evidence.observationKey } : {}),
+		...(evidence.attributes ? { attributes: { ...evidence.attributes } } : {}),
 	};
 }
 
 function formatEvidencePreview(item: PopupEvidencePreview): string {
-	const value = item.matchedValue ?? item.sourceTechnologyId;
+	const value = formatEvidenceValue(item);
 	const source = item.direct ? '' : ' inferred';
 	const version = item.version ? ` version ${item.version}` : '';
 
 	return value
 		? `${item.kind}${source}: ${value}${version}`
 		: `${item.kind}${source}${version}`;
+}
+
+function formatEvidenceValue(item: PopupEvidencePreview): string | undefined {
+	if (item.kind === 'relationship') {
+		return item.matchedValue ?? item.sourceTechnologyId;
+	}
+
+	const value = item.matchedValue;
+	if (item.observationKey && (value === undefined || value === '' || value === 'true')) {
+		return `${item.observationKey}${formatEvidenceAttributes(item)}`;
+	}
+	if (item.observationKey && value) {
+		return `${item.observationKey} = ${value}${formatEvidenceAttributes(item)}`;
+	}
+
+	return value ?? item.sourceTechnologyId;
+}
+
+function formatEvidenceAttributes(item: PopupEvidencePreview): string {
+	const entries = Object.entries(item.attributes ?? {}).filter(([key]) => key !== 'ruleIndex');
+	if (entries.length === 0) {
+		return '';
+	}
+
+	return ` (${entries.map(([key, value]) => `${key}: ${String(value)}`).join(', ')})`;
 }
 
 export default TechnologyCard;

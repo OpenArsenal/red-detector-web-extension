@@ -586,6 +586,10 @@ function scheduleDeferredEnrichment(
 
 		const mergedBatch = mergeObservationBatches(initialBatch, enrichmentBatch.value);
 		const completedAt = Date.now();
+		const sessionId = session.sessionId;
+		if (!sessionId) {
+			return;
+		}
 		const response = await analyzeAndPersistObservationBatch(
 			tab,
 			mergedBatch,
@@ -605,10 +609,10 @@ function scheduleDeferredEnrichment(
 			return;
 		}
 
-		completedEnrichmentBySession.set(session.sessionId, { tabId: tab.id, completedAt });
+		completedEnrichmentBySession.set(sessionId, { tabId: tab.id, completedAt });
 		logBackgroundEvent('analysis-enrichment-complete', {
 			...summarizeTab(tab),
-			sessionId: session.sessionId,
+			sessionId,
 			completedAt,
 			resultCount: response.value.analysis.results.length,
 		});

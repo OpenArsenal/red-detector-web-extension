@@ -88,6 +88,10 @@ export type PopupEvidencePreview = {
 	version?: string;
 	/** Relationship source for inferred evidence, when available. */
 	sourceTechnologyId?: string;
+	/** Observation lookup key, such as a header name, meta name, global path, or storage key. */
+	observationKey?: string;
+	/** Scalar observation context that helps explain property-based evidence. */
+	attributes?: Readonly<Record<string, string | number | boolean>>;
 	/** Whether this proof came from direct page evidence rather than graph support. */
 	direct: boolean;
 };
@@ -308,6 +312,8 @@ function createPopupEvidencePreview(evidence: DetectionExplanationEvidenceSummar
 		...(evidence.matchedValue ? { matchedValue: evidence.matchedValue } : {}),
 		...(evidence.version ? { version: evidence.version } : {}),
 		...(evidence.sourceTechnologyId ? { sourceTechnologyId: evidence.sourceTechnologyId } : {}),
+		...(evidence.observationKey ? { observationKey: evidence.observationKey } : {}),
+		...(evidence.attributes ? { attributes: { ...evidence.attributes } } : {}),
 	};
 }
 

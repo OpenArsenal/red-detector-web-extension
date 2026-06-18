@@ -1,4 +1,4 @@
-import { precompiledRegistryArtifact } from '../../generated/compiled-registry';
+import { precompiledRegistryArtifact } from '#/compiled-registry';
 import { compileTechnologyRegistry, createPrecompiledTechnologyRegistryProvider, type CompiledTechnologyRegistryArtifact } from '../registry';
 import type { TechnologyDefinition } from './types';
 

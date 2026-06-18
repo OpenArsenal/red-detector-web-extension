@@ -206,8 +206,10 @@ async function trimReplayTraceCache(): Promise<void> {
 		.filter(({ trace }) => getCacheRecordAge(trace) > STORAGE_LIMITS.replayTraceTtlMs)
 		.map(({ key }) => key);
 	const overflowKeys = traces.slice(STORAGE_LIMITS.maxReplayTraces).map(({ key }) => key);
-	const historyEntries = Object.entries(all)
-		.filter(([key, value]) => key.startsWith(REPLAY_TRACE_HISTORY_CACHE_PREFIX) && isDetectionReplayTraceHistory(value));
+	const historyEntries: [string, DetectionReplayTrace[]][] = Object.entries(all)
+		.filter((entry): entry is [string, DetectionReplayTrace[]] =>
+			entry[0].startsWith(REPLAY_TRACE_HISTORY_CACHE_PREFIX) && isDetectionReplayTraceHistory(entry[1])
+		);
 	const historyKeysToRemove: string[] = [];
 
 	for (const [key, value] of historyEntries) {

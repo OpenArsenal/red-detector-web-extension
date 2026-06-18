@@ -68,6 +68,10 @@ export interface DetectionExplanationEvidenceSummary {
 	readonly version?: string;
 	/** Relationship source technology for graph-derived evidence. */
 	readonly sourceTechnologyId?: string;
+	/** Observation lookup key, such as a header name, meta name, global path, or storage key. */
+	readonly observationKey?: string;
+	/** Scalar observation context that helps explain property-based evidence. */
+	readonly attributes?: Readonly<Record<string, string | number | boolean>>;
 }
 
 /** Human-readable explanation for one emitted detection result. */
@@ -214,6 +218,8 @@ function createEvidenceSummary(evidence: Evidence): DetectionExplanationEvidence
 		...(evidence.ruleDescription ? { ruleDescription: evidence.ruleDescription } : {}),
 		...(evidence.version ? { version: evidence.version } : {}),
 		...(evidence.sourceTechnologyId ? { sourceTechnologyId: evidence.sourceTechnologyId } : {}),
+		...(evidence.observationKey ? { observationKey: evidence.observationKey } : {}),
+		...(evidence.attributes ? { attributes: { ...evidence.attributes } } : {}),
 	};
 }
 

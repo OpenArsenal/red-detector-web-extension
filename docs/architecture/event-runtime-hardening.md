@@ -36,7 +36,7 @@ That lets the extension skip broad text collection, inline source collection, ba
 
 Shared source limits now live in a small standalone module. Hot-path collectors, validation helpers, and focused tests can read safety caps without importing the generated registry tree.
 
-The generated artifact now lives at `src/generated/compiled-registry.ts` and is refreshed by `modules/compile-registry.ts` through WXT's build lifecycle. Normal extension bundles import matcher buckets, relationship tables, technology metadata, and collection plans from that generated module instead of rebuilding those structures when the popup opens.
+The generated artifact now lives under WXT's generated directory at `.wxt/compiled-registry.js`. The module in `modules/compile-registry.ts` adds the `#/compiled-registry` alias and refreshes the artifact through WXT's build lifecycle. Normal extension bundles import matcher buckets, relationship tables, technology metadata, and collection plans from that alias instead of rebuilding those structures when the popup opens. If generation fails, the generated module falls back to compiling the bundled TypeScript registry once at runtime so development does not fail closed.
 
 Initial collection now uses the cheap tier only. Deeper HTML, text, headers, script-content, and stylesheet-content evidence runs as deferred enrichment after the first analysis response when an observation session is active. The popup can render the first useful detections while deeper evidence is still being checked.
 
@@ -98,28 +98,23 @@ The literal greenfield architecture still contains work outside this browser-ext
 
 ## Commands run in this workspace
 
-Dependency installation created `node_modules` and WXT generated files in this archive workspace, but `npm install` and a standalone `npx wxt prepare` did not exit before the execution timeout. The focused validation commands below completed after dependencies were available:
+Dependency installation created `node_modules` and WXT generated files in this archive workspace. `aube run postinstall` completed and generated `.wxt/compiled-registry.js`, then TypeScript compilation completed successfully. The focused validation commands below also completed:
 
 ```text
-npx vitest --run src/tests/messaging/background-api.test.ts --reporter=dot
-npx vitest --run src/tests/storage/cache.test.ts --reporter=dot
-npx vitest --run src/tests/collectors/planning.test.ts --reporter=dot
-npx vitest --run src/tests/content/content-api.test.ts src/tests/messaging/background-api.test.ts src/tests/popup/view-model.test.ts src/tests/storage/cache.test.ts --reporter=dot
-npx vitest --run src/tests/registry src/tests/detection/observation-matcher-index.test.ts src/tests/detection/observation-matcher.test.ts src/tests/candidates src/tests/graph --reporter=dot
+aube run postinstall
+aube run compile -- --pretty false
+aube run build
+aubr vitest --run src/tests/collectors/planning.test.ts --reporter=dot
+aubr vitest --run src/tests/content/content-api.test.ts src/tests/messaging/background-api.test.ts src/tests/popup/view-model.test.ts src/tests/storage/cache.test.ts --reporter=dot
+aubr vitest --run src/tests/registry src/tests/detection/observation-matcher-index.test.ts src/tests/detection/observation-matcher.test.ts src/tests/candidates src/tests/graph --reporter=dot
+aubr vitest --run src/tests/collectors/capabilities.test.ts src/tests/collectors/collect-page-signals.test.ts src/tests/collectors/observed-page-signals.test.ts src/tests/contracts/analysis.test.ts src/tests/contracts/registry-provider.test.ts src/tests/detection/engine.test.ts --reporter=dot --silent
+aubr vitest --run src/tests/emission/site-analysis.test.ts src/tests/evidence/builders.test.ts src/tests/evidence/repository.test.ts src/tests/lifecycle/observation.test.ts src/tests/messaging/messages.test.ts src/tests/observations/batch-controller.test.ts src/tests/observations/page-signals.test.ts src/tests/pipeline/event-pipeline.test.ts src/tests/pipeline/replay.test.ts --reporter=dot --silent
 ```
 
 Focused single-file suites also passed for contracts, popup view-model, replay, emission, registry compiler/source schema, lifecycle, observations, evidence, messaging contracts, collector capabilities, page-signal collection, and observed page signals.
 
 The generated registry artifact was also imported through an esbuild smoke check, which reported 7,989 technologies, 20,501 rules, 1,887 initial DOM selectors, no initial HTML probes, and 880 enrichment HTML probes. `src/entrypoints/background.ts`, `src/entrypoints/popup/App.tsx`, `src/lib/collectors/extension-page-collector.ts`, and `src/lib/registry/precompiled-module.ts` were bundled through esbuild as syntax/import checks.
 
-These commands did not complete in this constrained archive workspace before the execution timeout:
+The full test suite was also attempted with `aubr vitest --run --reporter=dot --silent`, but it did not complete before the execution timeout in this archive workspace. The focused suites above cover the changed registry provider, collection planning, content API, background messaging, popup view model, storage, matcher, candidate, graph, direct detection, emission, evidence, lifecycle, observation, and replay behavior.
 
-```text
-npx wxt prepare
-npx tsc --noEmit --pretty false
-npm run build
-npm run bench -- --run
-npx vitest --run --reporter=dot
-```
-
-The timeouts were dominated by WXT preparation, the generated rules tree, and WXT/Vite production bundling. No assertion failure was observed before the timeout-bound commands stopped, but they still need to be rerun in the normal branch workspace before release.
+`aube run bench -- --run` started successfully and completed the observation-matcher benchmark scenarios before the execution timeout stopped the broader benchmark run. The benchmark command should be rerun in the normal branch workspace before making new performance claims beyond the measured matcher-index win.

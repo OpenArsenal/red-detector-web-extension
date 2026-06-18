@@ -76,12 +76,20 @@ function createDetectionEvidenceFromEntry(entry: EvidenceEntry): Evidence {
 		ruleDescription: entry.ruleDescription,
 		matchedValue: stringifyMatchedValue(entry.matchedValue),
 		confidence: entry.confidence,
-		version: entry.version,
 		direct: entry.direct,
 	};
 
+	if (entry.version !== undefined) {
+		evidence.version = entry.version;
+	}
 	if (entry.sourceTechnologyId !== undefined) {
 		evidence.sourceTechnologyId = entry.sourceTechnologyId;
+	}
+	if (entry.observation?.key !== undefined) {
+		evidence.observationKey = entry.observation.key;
+	}
+	if (entry.attributes !== undefined) {
+		evidence.attributes = Object.assign({}, entry.attributes);
 	}
 
 	return evidence;

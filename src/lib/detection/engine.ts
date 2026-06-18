@@ -175,7 +175,7 @@ function matchRule(
 	}
 
 	const confidence = rule.confidence ?? 100;
-	const metadata = ruleEvidenceMetadata(rule);
+	const metadata = ruleEvidenceMetadata(rule, ruleIndex);
 
 	switch (rule.kind) {
 		case 'dom': {
@@ -295,9 +295,11 @@ function canExecuteRule(
 	return true;
 }
 
-function ruleEvidenceMetadata(_rule: DetectionRule): Pick<Evidence, 'direct'> {
-	return { direct: true };
+function ruleEvidenceMetadata(_rule: DetectionRule, ruleIndex: number): EvidenceMatchMetadata {
+	return { direct: true, attributes: { ruleIndex } };
 }
+
+type EvidenceMatchMetadata = Pick<Evidence, 'direct' | 'attributes'>;
 
 type PatternMatchRule = {
 	kind: DetectionKind;
@@ -310,7 +312,7 @@ function matchStringList(
 	rule: PatternMatchRule,
 	values: readonly string[],
 	confidence: number,
-	metadata: Pick<Evidence, 'direct'>,
+	metadata: EvidenceMatchMetadata,
 ): Evidence | null {
 	for (const value of values) {
 		const match = matchPattern(rule, value, confidence, metadata);
@@ -325,7 +327,7 @@ function matchResourceSignals(
 	rule: PatternMatchRule,
 	resources: readonly ResourceSignal[],
 	confidence: number,
-	metadata: Pick<Evidence, 'direct'>,
+	metadata: EvidenceMatchMetadata,
 ): Evidence | null {
 	return matchStringList(rule, resources.map((resource) => resource.url), confidence, metadata);
 }
@@ -334,7 +336,7 @@ function matchRequestSignals(
 	rule: PatternMatchRule,
 	requests: readonly RequestSignal[],
 	confidence: number,
-	metadata: Pick<Evidence, 'direct'>,
+	metadata: EvidenceMatchMetadata,
 ): Evidence | null {
 	return matchStringList(rule, requests.map((request) => request.url), confidence, metadata);
 }
@@ -343,7 +345,7 @@ function matchCookieRule(
 	rule: Extract<DetectionRule, { kind: 'cookie' }>,
 	cookies: Record<string, true>,
 	confidence: number,
-	metadata: Pick<Evidence, 'direct'>,
+	metadata: EvidenceMatchMetadata,
 ): Evidence | null {
 	for (const cookieName of Object.keys(cookies)) {
 		if (rule.key && cookieName === rule.key) {
@@ -352,6 +354,7 @@ function matchCookieRule(
 				matchedValue: safeMatchedValue(cookieName),
 				confidence,
 				ruleDescription: rule.description,
+				observationKey: rule.key,
 				...metadata,
 			};
 		}
@@ -374,29 +377,33 @@ function matchHeaderRule(
 	rule: HeaderDetectionRule,
 	headers: Record<string, string>,
 	confidence: number,
-	metadata: Pick<Evidence, 'direct'>,
+	metadata: EvidenceMatchMetadata,
 ): Evidence | null {
 	const value = headers[rule.key.toLowerCase()];
 	if (value === undefined) {
 		return null;
 	}
 
-	return rule.valuePattern
-		? matchPattern({ ...rule, pattern: rule.valuePattern }, value, confidence, metadata)
-		: {
-				kind: rule.kind,
-				matchedValue: safeMatchedValue(rule.key),
-				confidence,
-				ruleDescription: rule.description,
-				...metadata,
-			};
+	if (rule.valuePattern) {
+		const match = matchPattern({ ...rule, pattern: rule.valuePattern }, value, confidence, metadata);
+		return match ? { ...match, observationKey: rule.key } : null;
+	}
+
+	return {
+		kind: rule.kind,
+		matchedValue: safeMatchedValue(rule.key),
+		confidence,
+		ruleDescription: rule.description,
+		observationKey: rule.key,
+		...metadata,
+	};
 }
 
 function matchRequestHeaderRule(
 	rule: HeaderDetectionRule,
 	requests: readonly RequestSignal[],
 	confidence: number,
-	metadata: Pick<Evidence, 'direct'>,
+	metadata: EvidenceMatchMetadata,
 ): Evidence | null {
 	for (const request of requests) {
 		const value = request.requestHeaders?.[rule.key.toLowerCase()];
@@ -404,15 +411,19 @@ function matchRequestHeaderRule(
 			continue;
 		}
 
-		return rule.valuePattern
-			? matchPattern({ ...rule, pattern: rule.valuePattern }, value, confidence, metadata)
-			: {
-					kind: 'requestHeader',
-					matchedValue: safeMatchedValue(rule.key),
-					confidence,
-					ruleDescription: rule.description,
-					...metadata,
-				};
+		if (rule.valuePattern) {
+			const match = matchPattern({ ...rule, pattern: rule.valuePattern }, value, confidence, metadata);
+			return match ? { ...match, observationKey: rule.key } : null;
+		}
+
+		return {
+			kind: 'requestHeader',
+			matchedValue: safeMatchedValue(rule.key),
+			confidence,
+			ruleDescription: rule.description,
+			observationKey: rule.key,
+			...metadata,
+		};
 	}
 
 	return null;
@@ -422,7 +433,7 @@ function matchMetaRule(
 	rule: Extract<DetectionRule, { kind: 'meta' }>,
 	signals: PageSignals,
 	confidence: number,
-	metadata: Pick<Evidence, 'direct'>,
+	metadata: EvidenceMatchMetadata,
 ): Evidence | null {
 	const values = signals.meta[rule.key.toLowerCase()] ?? [];
 	const pattern = rule.valuePattern ?? rule.pattern;
@@ -434,13 +445,14 @@ function matchMetaRule(
 				matchedValue: safeMatchedValue(value),
 				confidence,
 				ruleDescription: rule.description,
+				observationKey: rule.key,
 				...metadata,
 			};
 		}
 
 		const match = matchPattern({ ...rule, pattern }, value, confidence, metadata);
 		if (match) {
-			return match;
+			return { ...match, observationKey: rule.key };
 		}
 	}
 	return null;
@@ -450,7 +462,7 @@ function matchGlobalRule(
 	rule: Extract<DetectionRule, { kind: 'jsGlobal' }>,
 	globals: Record<string, unknown>,
 	confidence: number,
-	metadata: Pick<Evidence, 'direct'>,
+	metadata: EvidenceMatchMetadata,
 ): Evidence | null {
 	const value = globals[rule.property];
 	if (value === undefined || value === null) {
@@ -459,7 +471,8 @@ function matchGlobalRule(
 
 	const valueString = String(value);
 	if (rule.valuePattern) {
-		return matchPattern({ ...rule, pattern: rule.valuePattern }, valueString, confidence, metadata);
+		const match = matchPattern({ ...rule, pattern: rule.valuePattern }, valueString, confidence, metadata);
+		return match ? { ...match, observationKey: rule.property } : null;
 	}
 
 	return {
@@ -467,6 +480,7 @@ function matchGlobalRule(
 		matchedValue: safeMatchedValue(rule.property),
 		confidence,
 		ruleDescription: rule.description,
+		observationKey: rule.property,
 		...metadata,
 	};
 }
@@ -475,7 +489,7 @@ function matchLinkRule(
 	rule: Extract<DetectionRule, { kind: 'link' }>,
 	links: readonly LinkSignal[],
 	confidence: number,
-	metadata: Pick<Evidence, 'direct'>,
+	metadata: EvidenceMatchMetadata,
 ): Evidence | null {
 	for (const link of links) {
 		if (rule.rel && !link.rel.toLowerCase().split(/\s+/).includes(rule.rel.toLowerCase())) {
@@ -532,7 +546,7 @@ function matchStorageRule(
 	rule: Extract<DetectionRule, { kind: 'storage' }>,
 	storage: StorageSignals,
 	confidence: number,
-	metadata: Pick<Evidence, 'direct'>,
+	metadata: EvidenceMatchMetadata,
 ): Evidence | null {
 	const areas = rule.area ? [rule.area] : (['localStorage', 'sessionStorage'] as const);
 
@@ -544,6 +558,8 @@ function matchStorageRule(
 					matchedValue: safeMatchedValue(`${area}:${key}`),
 					confidence,
 					ruleDescription: rule.description,
+					observationKey: key,
+					attributes: { ...metadata.attributes, area },
 					...metadata,
 				};
 			}
@@ -557,7 +573,7 @@ function matchDnsRule(
 	rule: Extract<DetectionRule, { kind: 'dns' }>,
 	dnsRecords: PageSignals['dnsRecords'],
 	confidence: number,
-	metadata: Pick<Evidence, 'direct'>,
+	metadata: EvidenceMatchMetadata,
 ): Evidence | null {
 	const values = dnsRecords[rule.recordType] ?? [];
 	for (const value of values) {
@@ -582,7 +598,7 @@ function matchPattern(
 	rule: PatternMatchRule,
 	value: string,
 	confidence: number,
-	metadata: Pick<Evidence, 'direct'>,
+	metadata: EvidenceMatchMetadata,
 ): Evidence | null {
 	if (!rule.pattern) {
 		return null;

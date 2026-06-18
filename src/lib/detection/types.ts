@@ -282,6 +282,10 @@ export type Evidence = {
 	version?: string;
 	direct?: boolean;
 	sourceTechnologyId?: string;
+	/** Observation lookup key, such as a header name, meta name, global path, or storage key. */
+	observationKey?: string;
+	/** Scalar observation context that helps users understand property-based evidence. */
+	attributes?: Record<string, string | number | boolean>;
 	scope?: EvidenceScope;
 };
 
