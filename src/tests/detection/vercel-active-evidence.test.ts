@@ -7,10 +7,14 @@ import { pusherTechnologyDefinition } from '../../lib/detection/rules/email-mess
 import { opentelemetryTechnologyDefinition } from '../../lib/detection/rules/monitoring-error-tracking/opentelemetry';
 import { amazonS3TechnologyDefinition } from '../../lib/detection/rules/infrastructure-hosting/amazon-s3';
 import { amazonWebServicesTechnologyDefinition } from '../../lib/detection/rules/infrastructure-hosting/amazon-web-services';
+import { fidesTechnologyDefinition } from '../../lib/detection/rules/privacy-compliance/fides';
 import { contentfulTechnologyDefinition } from '../../lib/detection/rules/platform-cms-builder/contentful';
 import { kasadaTechnologyDefinition } from '../../lib/detection/rules/security/kasada';
 import { googleFontApiTechnologyDefinition } from '../../lib/detection/rules/styling-library/google-font-api';
 import { priorityHintsTechnologyDefinition } from '../../lib/detection/rules/widgets-misc/priority-hints';
+import { nextJsTechnologyDefinition } from '../../lib/detection/rules/ui-library/next-js';
+import { turbopackTechnologyDefinition } from '../../lib/detection/rules/bundler/turbopack';
+import { webpackTechnologyDefinition } from '../../lib/detection/rules/bundler/webpack';
 import { makePageSignals, TEST_NOW } from '../support/factories';
 
 const VERCEL_CSP = [
@@ -43,6 +47,7 @@ describe('vercel active-tab evidence parity', () => {
 			amazonS3TechnologyDefinition,
 			amazonWebServicesTechnologyDefinition,
 			priorityHintsTechnologyDefinition,
+			fidesTechnologyDefinition,
 		];
 		const batch = normalizePageSignals(makePageSignals({
 			url: 'https://vercel.com/',
@@ -50,7 +55,7 @@ describe('vercel active-tab evidence parity', () => {
 			headers: {
 				'content-security-policy': VERCEL_CSP,
 			},
-			html: '<link rel="preload" as="script" fetchpriority="low" href="/_next/static/chunk.js">',
+			html: '<link rel="preload" as="script" fetchpriority="low" href="/_next/static/chunk.js"><button id="fides-modal-link">Cookie settings</button>',
 			requests: [{
 				url: 'https://vercel.com/.well-known/otel/metrics',
 				method: 'POST',
@@ -80,6 +85,7 @@ describe('vercel active-tab evidence parity', () => {
 			'amazon-s3',
 			'amazon-web-services',
 			'priority-hints',
+			'fides',
 		]));
 		expect(result.analysis.results.find((detection) => detection.technologyId === 'kasada')?.evidence)
 			.toEqual(expect.arrayContaining([
@@ -90,4 +96,32 @@ describe('vercel active-tab evidence parity', () => {
 				expect.objectContaining({ kind: 'requestUrl' }),
 			]));
 	});
+
+	// Next.js can be built with Turbopack or Webpack, but the framework alone
+	// no longer proves Webpack now that Turbopack is production-visible.
+	it('does not infer webpack from next-js when turbopack is directly detected', () => {
+		const registry = [
+			nextJsTechnologyDefinition,
+			turbopackTechnologyDefinition,
+			webpackTechnologyDefinition,
+		];
+		const batch = normalizePageSignals(makePageSignals({
+			url: 'https://vercel.com/',
+			hostname: 'vercel.com',
+			scripts: ['/vc-ap-vercel-marketing/_next/static/immutable/chunks/turbopack-0593f40j2-_d6.js'],
+			scriptContents: ['globalThis["TURBOPACK_remote_chunk_loading_global_vercel-marketing"] = [];'],
+		}), { observedAt: TEST_NOW });
+
+		const result = runObservationBatchPipeline({
+			batch,
+			registry,
+			source: 'fresh',
+		});
+		const detectedIds = result.analysis.results.map((detection) => detection.technologyId);
+
+		expect(detectedIds).toContain('next-js');
+		expect(detectedIds).toContain('turbopack');
+		expect(detectedIds).not.toContain('webpack');
+	});
+
 });

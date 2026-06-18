@@ -76,6 +76,5 @@ export const nextJsTechnologyDefinition = {
 	implies: [
 		"node-js",
 		"react",
-		"webpack",
 	],
 } as const satisfies TechnologyDefinition;

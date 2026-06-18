@@ -39,6 +39,7 @@ import { efilliTechnologyDefinition } from './efilli';
 import { enzuzoTechnologyDefinition } from './enzuzo';
 import { eucookieEuTechnologyDefinition } from './eucookie-eu';
 import { evidonTechnologyDefinition } from './evidon';
+import { fidesTechnologyDefinition } from './fides';
 import { fundingChoicesTechnologyDefinition } from './funding-choices';
 import { gdprCookieConsentPluginByWebtoffeeTechnologyDefinition } from './gdpr-cookie-consent-plugin-by-webtoffee';
 import { getcompliedTechnologyDefinition } from './getcomplied';
@@ -124,6 +125,7 @@ export const privacyComplianceTechnologyDefinitions = [
 	enzuzoTechnologyDefinition,
 	eucookieEuTechnologyDefinition,
 	evidonTechnologyDefinition,
+	fidesTechnologyDefinition,
 	fundingChoicesTechnologyDefinition,
 	gdprCookieConsentPluginByWebtoffeeTechnologyDefinition,
 	getcompliedTechnologyDefinition,
