@@ -8,6 +8,7 @@ import { autoanimateTechnologyDefinition } from './autoanimate';
 import { lottieTechnologyDefinition } from './lottie';
 import { motionOneTechnologyDefinition } from './motion-one';
 import { reactSpringTechnologyDefinition } from './react-spring';
+import { viewTransitionsApiTechnologyDefinition } from './view-transitions-api';
 
 export const animationTechnologyDefinitions = [
 	animateCssTechnologyDefinition,
@@ -19,4 +20,5 @@ export const animationTechnologyDefinitions = [
 	lottieTechnologyDefinition,
 	motionOneTechnologyDefinition,
 	reactSpringTechnologyDefinition,
+	viewTransitionsApiTechnologyDefinition,
 ] as const satisfies readonly TechnologyDefinition[];

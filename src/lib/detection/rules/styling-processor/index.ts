@@ -16,6 +16,13 @@ import { styledComponentsTechnologyDefinition } from './styled-components';
 import { stylusTechnologyDefinition } from './stylus';
 import { perceptualColorSpacesTechnologyDefinition } from './perceptual-color-spaces';
 import { variableFontsTechnologyDefinition } from './variable-fonts';
+import { cssCascadeLayersTechnologyDefinition } from './css-cascade-layers';
+import { cssPropertyRuleTechnologyDefinition } from './css-property-rule';
+import { cssSubgridTechnologyDefinition } from './css-subgrid';
+import { cssHasSelectorTechnologyDefinition } from './css-has-selector';
+import { cssStartingStyleTechnologyDefinition } from './css-starting-style';
+import { cssContentVisibilityTechnologyDefinition } from './css-content-visibility';
+import { cssContainerQueryUnitsTechnologyDefinition } from './css-container-query-units';
 
 export const stylingProcessorTechnologyDefinitions = [
 	colorSchemeTechnologyDefinition,
@@ -35,4 +42,11 @@ export const stylingProcessorTechnologyDefinitions = [
 	stylusTechnologyDefinition,
 	perceptualColorSpacesTechnologyDefinition,
 	variableFontsTechnologyDefinition,
+	cssCascadeLayersTechnologyDefinition,
+	cssPropertyRuleTechnologyDefinition,
+	cssSubgridTechnologyDefinition,
+	cssHasSelectorTechnologyDefinition,
+	cssStartingStyleTechnologyDefinition,
+	cssContentVisibilityTechnologyDefinition,
+	cssContainerQueryUnitsTechnologyDefinition,
 ] as const satisfies readonly TechnologyDefinition[];

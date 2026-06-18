@@ -200,6 +200,8 @@ import { yalinhostTechnologyDefinition } from './yalinhost';
 import { yandexCloudCdnTechnologyDefinition } from './yandex-cloud-cdn';
 import { yandexCloudTechnologyDefinition } from './yandex-cloud';
 import { zeaburTechnologyDefinition } from './zeabur';
+import { vercelBlobStorageTechnologyDefinition } from './vercel-blob-storage';
+import { vercelMicrofrontendsTechnologyDefinition } from './vercel-microfrontends';
 
 export const infrastructureHostingTechnologyDefinitions = [
 	technology34spComTechnologyDefinition,
@@ -401,4 +403,6 @@ export const infrastructureHostingTechnologyDefinitions = [
 	yandexCloudCdnTechnologyDefinition,
 	yandexCloudTechnologyDefinition,
 	zeaburTechnologyDefinition,
+	vercelBlobStorageTechnologyDefinition,
+	vercelMicrofrontendsTechnologyDefinition,
 ] as const satisfies readonly TechnologyDefinition[];

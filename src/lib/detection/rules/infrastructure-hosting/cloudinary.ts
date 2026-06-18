@@ -43,6 +43,21 @@ export const cloudinaryTechnologyDefinition = {
 			valuePattern: new RegExp("player\\.cloudinary\\.com", "i"),
 			description: "Response header matches a known technology marker.",
 		},
+		{
+			id: "cloudinary:resourceUrl:asset-host",
+			kind: "resourceUrl",
+			pattern: new RegExp("https?://[^/]+\\.cloudinary\\.com/|/image/upload/", "i"),
+			confidence: 85,
+			description: "Loaded resource URL uses Cloudinary asset-delivery path conventions.",
+		},
+		{
+			id: "cloudinary:responseHeader:server",
+			kind: "responseHeader",
+			key: "server",
+			valuePattern: new RegExp("\\bCloudinary\\b", "i"),
+			confidence: 95,
+			description: "Captured response server header identifies Cloudinary.",
+		},
 	],
 	metadata: {
 		pricing: [

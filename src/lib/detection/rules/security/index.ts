@@ -121,6 +121,11 @@ import { ventryshieldTechnologyDefinition } from './ventryshield';
 import { veryGoodSecurityTechnologyDefinition } from './very-good-security';
 import { warPeTechnologyDefinition } from './war-pe';
 import { yandexSmartcaptchaTechnologyDefinition } from './yandex-smartcaptcha';
+import { featurePolicyTechnologyDefinition } from './feature-policy';
+import { crossOriginResourcePolicyTechnologyDefinition } from './cross-origin-resource-policy';
+import { referrerPolicyHeaderTechnologyDefinition } from './referrer-policy-header';
+import { xFrameOptionsTechnologyDefinition } from './x-frame-options';
+import { xContentTypeOptionsTechnologyDefinition } from './x-content-type-options';
 
 export const securityTechnologyDefinitions = [
 	accertifyTechnologyDefinition,
@@ -245,4 +250,9 @@ export const securityTechnologyDefinitions = [
 	veryGoodSecurityTechnologyDefinition,
 	warPeTechnologyDefinition,
 	yandexSmartcaptchaTechnologyDefinition,
+	featurePolicyTechnologyDefinition,
+	crossOriginResourcePolicyTechnologyDefinition,
+	referrerPolicyHeaderTechnologyDefinition,
+	xFrameOptionsTechnologyDefinition,
+	xContentTypeOptionsTechnologyDefinition,
 ] as const satisfies readonly TechnologyDefinition[];

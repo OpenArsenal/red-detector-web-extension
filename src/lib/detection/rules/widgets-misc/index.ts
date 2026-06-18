@@ -559,6 +559,16 @@ import { yuiTechnologyDefinition } from './yui';
 import { zabbixTechnologyDefinition } from './zabbix';
 import { zeptoTechnologyDefinition } from './zepto';
 import { ziggyTechnologyDefinition } from './ziggy';
+import { clientHintsTechnologyDefinition } from './client-hints';
+import { criticalClientHintsTechnologyDefinition } from './critical-client-hints';
+import { htmlInertAttributeTechnologyDefinition } from './html-inert-attribute';
+import { beaconApiTechnologyDefinition } from './beacon-api';
+import { performanceObserverApiTechnologyDefinition } from './performance-observer-api';
+import { resizeObserverApiTechnologyDefinition } from './resize-observer-api';
+import { mutationObserverApiTechnologyDefinition } from './mutation-observer-api';
+import { streamsApiTechnologyDefinition } from './streams-api';
+import { abortControllerApiTechnologyDefinition } from './abortcontroller-api';
+import { paymentRequestApiTechnologyDefinition } from './payment-request-api';
 
 export const widgetsMiscTechnologyDefinitions = [
 	accuweatherTechnologyDefinition,
@@ -1121,4 +1131,14 @@ export const widgetsMiscTechnologyDefinitions = [
 	zabbixTechnologyDefinition,
 	zeptoTechnologyDefinition,
 	ziggyTechnologyDefinition,
+	clientHintsTechnologyDefinition,
+	criticalClientHintsTechnologyDefinition,
+	htmlInertAttributeTechnologyDefinition,
+	beaconApiTechnologyDefinition,
+	performanceObserverApiTechnologyDefinition,
+	resizeObserverApiTechnologyDefinition,
+	mutationObserverApiTechnologyDefinition,
+	streamsApiTechnologyDefinition,
+	abortControllerApiTechnologyDefinition,
+	paymentRequestApiTechnologyDefinition,
 ] as const satisfies readonly TechnologyDefinition[];

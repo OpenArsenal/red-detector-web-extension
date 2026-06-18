@@ -84,6 +84,8 @@ import { xzeroJsTechnologyDefinition } from './xzero-js';
 import { youcamMakeupTechnologyDefinition } from './youcam-makeup';
 import { zienyTechnologyDefinition } from './zieny';
 import { zingchartTechnologyDefinition } from './zingchart';
+import { offscreenCanvasTechnologyDefinition } from './offscreen-canvas';
+import { webglApiTechnologyDefinition } from './webgl-api';
 
 export const graphicsVisualizationTechnologyDefinitions = [
 	modelViewerTechnologyDefinition,
@@ -171,4 +173,6 @@ export const graphicsVisualizationTechnologyDefinitions = [
 	youcamMakeupTechnologyDefinition,
 	zienyTechnologyDefinition,
 	zingchartTechnologyDefinition,
+	offscreenCanvasTechnologyDefinition,
+	webglApiTechnologyDefinition,
 ] as const satisfies readonly TechnologyDefinition[];

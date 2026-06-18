@@ -130,6 +130,8 @@ import { docusaurusTechnologyDefinition } from './docusaurus';
 import { nextJsTechnologyDefinition } from './next-js';
 import { nuxtTechnologyDefinition } from './nuxt';
 import { tanstackStartTechnologyDefinition } from './tanstack-start';
+import { reactServerComponentsTechnologyDefinition } from './react-server-components';
+import { nextJsPrerenderCacheTechnologyDefinition } from './next-js-prerender-cache';
 
 export const frameworkTechnologyDefinitions = [
 	abpFrameworkTechnologyDefinition,
@@ -263,4 +265,6 @@ export const frameworkTechnologyDefinitions = [
 	nextJsTechnologyDefinition,
 	nuxtTechnologyDefinition,
 	tanstackStartTechnologyDefinition,
+	reactServerComponentsTechnologyDefinition,
+	nextJsPrerenderCacheTechnologyDefinition,
 ] as const satisfies readonly TechnologyDefinition[];

@@ -22,6 +22,13 @@ export const rudderstackTechnologyDefinition = {
 			property: "rudderanalytics",
 			description: "Page-owned global matches a known technology marker.",
 		},
+		{
+			id: "rudderstack:scriptContent:global-queue",
+			kind: "scriptContent",
+			pattern: new RegExp("window\\.rudderanalytics|\\brudderanalytics\\.(?:load|track|identify|page|group|alias)\\b", "i"),
+			confidence: 80,
+			description: "Bundled script content initializes or calls the RudderStack analytics queue.",
+		},
 	],
 	metadata: {
 		saas: true,

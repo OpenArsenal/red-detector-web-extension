@@ -182,6 +182,7 @@ import { ybugTechnologyDefinition } from './ybug';
 import { yourgptTechnologyDefinition } from './yourgpt';
 import { youtrackTechnologyDefinition } from './youtrack';
 import { zammadTechnologyDefinition } from './zammad';
+import { shikiTechnologyDefinition } from './shiki';
 
 export const developerToolingTechnologyDefinitions = [
 	acquiaCloudIdeTechnologyDefinition,
@@ -367,4 +368,5 @@ export const developerToolingTechnologyDefinitions = [
 	yourgptTechnologyDefinition,
 	youtrackTechnologyDefinition,
 	zammadTechnologyDefinition,
+	shikiTechnologyDefinition,
 ] as const satisfies readonly TechnologyDefinition[];
