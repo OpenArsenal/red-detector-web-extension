@@ -11,7 +11,6 @@ import { fidesTechnologyDefinition } from '../../lib/detection/rules/privacy-com
 import { contentfulTechnologyDefinition } from '../../lib/detection/rules/platform-cms-builder/contentful';
 import { kasadaTechnologyDefinition } from '../../lib/detection/rules/security/kasada';
 import { googleFontApiTechnologyDefinition } from '../../lib/detection/rules/styling-library/google-font-api';
-import { priorityHintsTechnologyDefinition } from '../../lib/detection/rules/widgets-misc/priority-hints';
 import { nextJsTechnologyDefinition } from '../../lib/detection/rules/ui-library/next-js';
 import { turbopackTechnologyDefinition } from '../../lib/detection/rules/bundler/turbopack';
 import { webpackTechnologyDefinition } from '../../lib/detection/rules/bundler/webpack';
@@ -46,7 +45,6 @@ describe('vercel active-tab evidence parity', () => {
 			googleFontApiTechnologyDefinition,
 			amazonS3TechnologyDefinition,
 			amazonWebServicesTechnologyDefinition,
-			priorityHintsTechnologyDefinition,
 			fidesTechnologyDefinition,
 		];
 		const batch = normalizePageSignals(makePageSignals({
@@ -84,9 +82,9 @@ describe('vercel active-tab evidence parity', () => {
 			'google-font-api',
 			'amazon-s3',
 			'amazon-web-services',
-			'priority-hints',
 			'fides',
 		]));
+		expect(detectedIds).not.toContain('priority-hints');
 		expect(result.analysis.results.find((detection) => detection.technologyId === 'kasada')?.evidence)
 			.toEqual(expect.arrayContaining([
 				expect.objectContaining({ kind: 'scriptContent' }),

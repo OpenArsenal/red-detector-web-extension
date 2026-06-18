@@ -693,6 +693,7 @@ describe('false-positive regressions', () => {
 						'iframe[fetchpriority], img[fetchpriority], script[fetchpriority], link[fetchpriority]': true,
 					},
 				},
+				html: '<link rel="preload" href="/asset.css" as="style" fetchpriority="high">',
 			}),
 			technologyDefinitions,
 		);
