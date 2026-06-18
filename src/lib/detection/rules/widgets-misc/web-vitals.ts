@@ -41,6 +41,22 @@ export const webVitalsTechnologyDefinition = {
 			confidence: 45,
 			description: "Script content contains a bounded technology signature.",
 		},
+
+		{
+			id: "web-vitals:resourceUrl:4",
+			kind: "resourceUrl",
+			pattern: new RegExp("(?:^|/)web-vitals(?:-[A-Za-z0-9_-]+|(?:\\.min)?)\\.js(?:[?#]|$)", "i"),
+			confidence: 95,
+			description: "Loaded resource URL references a Web Vitals bundle.",
+		},
+		{
+			id: "web-vitals:link:5",
+			kind: "link",
+			rel: "modulepreload",
+			hrefPattern: new RegExp("(?:^|/)web-vitals(?:-[A-Za-z0-9_-]+|(?:\\.min)?)\\.js(?:[?#]|$)", "i"),
+			confidence: 90,
+			description: "Document modulepreloads a Web Vitals bundle.",
+		},
 	],
 	metadata: {
 		oss: true,

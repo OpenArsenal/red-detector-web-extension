@@ -11,6 +11,7 @@ import { tealiumTechnologyDefinition } from './tealium';
 import { yahooTagManagerTechnologyDefinition } from './yahoo-tag-manager';
 import { yottaaTechnologyDefinition } from './yottaa';
 
+import { shopifyGtmProxyTechnologyDefinition } from './shopify-gtm-proxy';
 export const tagManagementTechnologyDefinitions = [
 	adobeDtmTechnologyDefinition,
 	adobeExperiencePlatformLaunchTechnologyDefinition,
@@ -23,4 +24,5 @@ export const tagManagementTechnologyDefinitions = [
 	tealiumTechnologyDefinition,
 	yahooTagManagerTechnologyDefinition,
 	yottaaTechnologyDefinition,
+	shopifyGtmProxyTechnologyDefinition,
 ] as const satisfies readonly TechnologyDefinition[];

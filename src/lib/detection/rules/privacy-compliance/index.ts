@@ -83,6 +83,7 @@ import { veraTechnologyDefinition } from './vera';
 import { verasafeTechnologyDefinition } from './verasafe';
 import { visiblePrivacyTechnologyDefinition } from './visible-privacy';
 import { yettTechnologyDefinition } from './yett';
+import { automatticCookieBannerTechnologyDefinition } from './automattic-cookie-banner';
 
 export const privacyComplianceTechnologyDefinitions = [
 	technology2bAdviceTechnologyDefinition,
@@ -169,4 +170,5 @@ export const privacyComplianceTechnologyDefinitions = [
 	verasafeTechnologyDefinition,
 	visiblePrivacyTechnologyDefinition,
 	yettTechnologyDefinition,
+	automatticCookieBannerTechnologyDefinition,
 ] as const satisfies readonly TechnologyDefinition[];

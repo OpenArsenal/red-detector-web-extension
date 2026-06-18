@@ -569,6 +569,8 @@ import { mutationObserverApiTechnologyDefinition } from './mutation-observer-api
 import { streamsApiTechnologyDefinition } from './streams-api';
 import { abortControllerApiTechnologyDefinition } from './abortcontroller-api';
 import { paymentRequestApiTechnologyDefinition } from './payment-request-api';
+import { wordpressComHelpCenterTechnologyDefinition } from './wordpress-com-help-center';
+import { dashiconsTechnologyDefinition } from './dashicons';
 
 export const widgetsMiscTechnologyDefinitions = [
 	accuweatherTechnologyDefinition,
@@ -1141,4 +1143,6 @@ export const widgetsMiscTechnologyDefinitions = [
 	streamsApiTechnologyDefinition,
 	abortControllerApiTechnologyDefinition,
 	paymentRequestApiTechnologyDefinition,
+	wordpressComHelpCenterTechnologyDefinition,
+	dashiconsTechnologyDefinition,
 ] as const satisfies readonly TechnologyDefinition[];

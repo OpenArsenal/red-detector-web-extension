@@ -203,6 +203,7 @@ import { zeaburTechnologyDefinition } from './zeabur';
 import { vercelBlobStorageTechnologyDefinition } from './vercel-blob-storage';
 import { vercelMicrofrontendsTechnologyDefinition } from './vercel-microfrontends';
 
+import { shopifyCdnTechnologyDefinition } from './shopify-cdn';
 export const infrastructureHostingTechnologyDefinitions = [
 	technology34spComTechnologyDefinition,
 	technology5centscdnTechnologyDefinition,
@@ -405,4 +406,5 @@ export const infrastructureHostingTechnologyDefinitions = [
 	zeaburTechnologyDefinition,
 	vercelBlobStorageTechnologyDefinition,
 	vercelMicrofrontendsTechnologyDefinition,
+	shopifyCdnTechnologyDefinition,
 ] as const satisfies readonly TechnologyDefinition[];

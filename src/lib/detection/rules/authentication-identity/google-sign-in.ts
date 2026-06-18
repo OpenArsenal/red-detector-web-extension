@@ -28,5 +28,26 @@ export const googleSignInTechnologyDefinition = {
 			property: "googleSignInClientId",
 			description: "Page-owned global matches a known technology marker.",
 		},
+		{
+			id: "google-sign-in:html:3",
+			kind: "html",
+			pattern: new RegExp("google_auth_client_id|googleidentityservice|accounts\\.google\\.com/gsi/(?:client|style)", "i"),
+			confidence: 95,
+			description: "Document references Google Identity Services sign-in configuration or assets.",
+		},
+		{
+			id: "google-sign-in:resourceUrl:4",
+			kind: "resourceUrl",
+			pattern: new RegExp("accounts\\.google\\.com/gsi/(?:client|style)", "i"),
+			confidence: 95,
+			description: "Loaded resource URL references Google Identity Services.",
+		},
+		{
+			id: "google-sign-in:link:5",
+			kind: "link",
+			hrefPattern: new RegExp("accounts\\.google\\.com/gsi/style", "i"),
+			confidence: 90,
+			description: "Document link loads Google Identity Services styles.",
+		},
 	],
 } as const satisfies TechnologyDefinition;

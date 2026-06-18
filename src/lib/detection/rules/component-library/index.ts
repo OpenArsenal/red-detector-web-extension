@@ -79,6 +79,8 @@ import { headlessUiTechnologyDefinition } from './headless-ui';
 import { radixUiTechnologyDefinition } from './radix-ui';
 import { reactAriaTechnologyDefinition } from './react-aria';
 
+import { shopifyBrochureKitTechnologyDefinition } from './shopify-brochure-kit';
+import { wordpressComLandpackTechnologyDefinition } from './wordpress-com-landpack';
 export const componentLibraryTechnologyDefinitions = [
 	augmentedUiTechnologyDefinition,
 	auraTechnologyDefinition,
@@ -159,4 +161,6 @@ export const componentLibraryTechnologyDefinitions = [
 	headlessUiTechnologyDefinition,
 	radixUiTechnologyDefinition,
 	reactAriaTechnologyDefinition,
+	shopifyBrochureKitTechnologyDefinition,
+	wordpressComLandpackTechnologyDefinition,
 ] as const satisfies readonly TechnologyDefinition[];

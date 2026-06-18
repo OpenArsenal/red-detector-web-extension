@@ -406,6 +406,8 @@ import { zentapTechnologyDefinition } from './zentap';
 import { zipkinTechnologyDefinition } from './zipkin';
 import { zoominfoTechnologyDefinition } from './zoominfo';
 
+import { shopifyDuxTechnologyDefinition } from './shopify-dux';
+import { wordpressComStatsTechnologyDefinition } from './wordpress-com-stats';
 export const analyticsTechnologyDefinitions = [
 	technology51LaTechnologyDefinition,
 	technology52degreesTechnologyDefinition,
@@ -813,4 +815,6 @@ export const analyticsTechnologyDefinitions = [
 	zentapTechnologyDefinition,
 	zipkinTechnologyDefinition,
 	zoominfoTechnologyDefinition,
+	shopifyDuxTechnologyDefinition,
+	wordpressComStatsTechnologyDefinition,
 ] as const satisfies readonly TechnologyDefinition[];

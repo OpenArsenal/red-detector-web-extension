@@ -101,14 +101,6 @@ export const stripeTechnologyDefinition = {
 			selector: "a[href*='billing.stripe.com'],a[href*='checkout.stripe.com'], input[data-stripe]",
 			description: "DOM selector matches a known technology marker.",
 		},
-		{
-			id: "stripe:header:14",
-			kind: "header",
-			key: "content-security-policy",
-			valuePattern: new RegExp("(?:^|[^a-z0-9-])(?:\\*\\.)?stripe\\.com", "i"),
-			confidence: 60,
-			description: "Content Security Policy allows Stripe payment hosts.",
-		},
 	],
 	metadata: {
 		saas: true,
