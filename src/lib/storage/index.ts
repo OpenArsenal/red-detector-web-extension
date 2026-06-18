@@ -52,6 +52,7 @@ function isDetectionReplayTrace(value: unknown): value is DetectionReplayTrace {
 	);
 }
 
+
 /** Return whether an unknown storage value looks like a replay history list. */
 function isDetectionReplayTraceHistory(value: unknown): value is DetectionReplayTrace[] {
 	return Array.isArray(value) && value.every(isDetectionReplayTrace);
@@ -103,6 +104,7 @@ export async function getCachedReplayTrace(url: string): Promise<DetectionReplay
 
 	return cloneReplayTrace(value);
 }
+
 
 /** Return bounded fresh replay traces for the requested origin, newest first. */
 export async function getCachedReplayTraceHistory(url: string): Promise<DetectionReplayTrace[]> {
@@ -209,7 +211,7 @@ async function trimReplayTraceCache(): Promise<void> {
 	const historyKeysToRemove: string[] = [];
 
 	for (const [key, value] of historyEntries) {
-		const freshHistory = (value as DetectionReplayTrace[])
+		const freshHistory = value
 			.filter((trace) => getCacheRecordAge(trace) <= STORAGE_LIMITS.replayTraceTtlMs)
 			.sort((left, right) => right.analyzedAt - left.analyzedAt)
 			.slice(0, STORAGE_LIMITS.maxReplayHistoryRunsPerOrigin)

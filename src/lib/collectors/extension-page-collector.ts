@@ -1,5 +1,10 @@
 import { collectBackgroundObservationBatch, type CollectorLog } from './background-signals';
-import { toCollectPageSignalsInput, type CollectionPlan } from './planning';
+import {
+	getCollectionTierPlan,
+	toCollectPageSignalsInput,
+	type CollectionPlan,
+	type CollectionTier,
+} from './planning';
 import type { CollectObservationBatchOutput, ContentApi } from '../contracts/analysis';
 import type { ObservationBatch } from '../observations';
 import {
@@ -18,6 +23,8 @@ export type ExtensionPageCollectorInput = {
 	expectedUrl: string;
 	/** Precompiled collection plan from the active registry artifact. */
 	collectionPlan: CollectionPlan;
+	/** Which plan tier should be collected for this request. */
+	tier?: CollectionTier;
 	/** RPC client for the content script running in the active tab. */
 	contentApi: ContentApi;
 	/** Optional summary logger supplied by the background entrypoint. */
@@ -27,25 +34,24 @@ export type ExtensionPageCollectorInput = {
 /**
  * Collect the active tab as normalized observations for the event pipeline.
  *
- * The extension has two collection worlds. The content script reads DOM-shaped
- * facts such as scripts, links, metadata, storage keys, and selector probes. The
- * background then appends privileged facts such as response headers, same-origin
- * source text, and page-owned JavaScript globals. Returning one enriched batch
- * keeps the detector path event-only while still preserving the evidence that
- * used to require a legacy snapshot enrichment pass.
+ * The initial tier reads cheap document facts so the popup can render a useful
+ * first result. The enrichment tier enables broad HTML, text, headers, and
+ * source-content collection after the first pass has already completed.
  */
 export async function collectExtensionObservationBatch(
 	input: ExtensionPageCollectorInput,
 ): Promise<AppResult<ObservationBatch>> {
+	const tier = input.tier ?? 'initial';
+	const collectionPlan = getCollectionTierPlan(input.collectionPlan, tier);
 	input.log?.('collect-observation-batch-start', {
 		tabId: input.tabId,
 		hostname: new URL(input.expectedUrl).hostname,
+		tier,
 	});
-
-	const collectionPlan = input.collectionPlan;
 
 	input.log?.('collection-plan-selected', {
 		tabId: input.tabId,
+		tier,
 		selectorProbeCount: collectionPlan.selectorProbeList.length,
 		htmlProbeCount: collectionPlan.htmlProbeList.length,
 		jsGlobalProbeCount: collectionPlan.jsGlobalPropertyList.length,
@@ -53,14 +59,12 @@ export async function collectExtensionObservationBatch(
 		needsScriptContent: collectionPlan.needsScriptContent,
 		needsStylesheetContent: collectionPlan.needsStylesheetContent,
 		needsText: collectionPlan.needsText,
-		cheapRuleCount: collectionPlan.costSummary.cheap,
-		expensiveRuleCount: collectionPlan.costSummary.expensive,
-		unsupportedRuleCount: collectionPlan.costSummary.unsupported,
+		needsStorage: collectionPlan.needsStorage,
 	});
 
 	try {
 		const response = await withTimeout(
-			input.contentApi.collectObservationBatch(toCollectPageSignalsInput(collectionPlan)),
+			input.contentApi.collectObservationBatch(toCollectPageSignalsInput(collectionPlan, tier)),
 			CONTENT_SCRIPT_TIMEOUT_MS,
 			'Content script did not respond before the messaging timeout.',
 		);
@@ -88,6 +92,7 @@ export async function collectExtensionObservationBatch(
 
 		input.log?.('collect-observation-batch-success', {
 			tabId: input.tabId,
+			tier,
 			hostname: enrichedBatch.target.hostname,
 			observationCount: enrichedBatch.observations.length,
 			observedAt: enrichedBatch.observedAt,
@@ -97,6 +102,7 @@ export async function collectExtensionObservationBatch(
 	} catch (error) {
 		input.log?.('collect-observation-batch-failed', {
 			tabId: input.tabId,
+			tier,
 			hostname: new URL(input.expectedUrl).hostname,
 			message: error instanceof Error ? error.message : 'Unknown content collection failure',
 		});

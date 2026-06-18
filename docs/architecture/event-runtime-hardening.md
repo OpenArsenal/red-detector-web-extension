@@ -36,7 +36,9 @@ That lets the extension skip broad text collection, inline source collection, ba
 
 Shared source limits now live in a small standalone module. Hot-path collectors, validation helpers, and focused tests can read safety caps without importing the generated registry tree.
 
-This does not claim the initial load is fully optimized. The remaining performance work is to split the user-visible first pass and the enrichment pass so the popup can render cheap detections before optional expensive evidence is collected.
+The generated artifact now lives at `src/generated/compiled-registry.ts` and is refreshed by `modules/compile-registry.ts` through WXT's build lifecycle. Normal extension bundles import matcher buckets, relationship tables, technology metadata, and collection plans from that generated module instead of rebuilding those structures when the popup opens.
+
+Initial collection now uses the cheap tier only. Deeper HTML, text, headers, script-content, and stylesheet-content evidence runs as deferred enrichment after the first analysis response when an observation session is active. The popup can render the first useful detections while deeper evidence is still being checked.
 
 ## Graph refinement
 
@@ -82,7 +84,7 @@ The static architecture check passes for the targeted changes:
 | --- | --- |
 | Event-shaped active-tab pipeline | Implemented through normalized observation batches, indexed matching, evidence, graph refinement, emission, replay, and popup rendering. |
 | Compiled registry informs initial collection | Implemented by passing the compiled `collectionPlan` into active-tab collection. |
-| Initial detections avoid unnecessary expensive evidence | Improved by skipping text, inline source, headers, and source fetches when the compiled plan says those surfaces are unused. Full two-tier rendering remains future work. |
+| Initial detections avoid unnecessary expensive evidence | Implemented with explicit `initial` and `enrichment` collection tiers. First results avoid HTML/text/source/header enrichment; a deferred enrichment pass persists deeper evidence and marks the session dirty for popup refresh. |
 | Matcher indexes reduce rule work | Preserved through the compiled matcher index in the event pipeline. |
 | Graph refinement is constraint-shaped | Improved by solving exclusion conflict components, suppressing removed inferred conflicts, and preserving fixed-point repair. |
 | Replay storage supports past results | Implemented as bounded per-origin replay history. |
@@ -92,31 +94,32 @@ The static architecture check passes for the targeted changes:
 | Privacy posture avoids incognito persistence | Implemented by bypassing persistent analysis and replay writes for incognito active-tab analysis. |
 | Permission surface follows active-tab flow | Improved by removing the broad `tabs` permission from the manifest. |
 
-The literal greenfield architecture still contains work outside this browser-extension hardening pass. The CLI interface and full YAML/JSON registry-source migration remain out of scope. Build-time generation of a standalone compiled artifact is also not complete; the current runtime uses the bundled TypeScript registry provider and its compiled in-memory artifact.
+The literal greenfield architecture still contains work outside this browser-extension hardening pass. The CLI interface and full YAML/JSON registry-source migration remain out of scope. The registry authoring source remains TypeScript by design; the build-time artifact is the runtime optimization layer, not a source-format migration.
 
 ## Commands run in this workspace
 
-These commands completed:
+Dependency installation created `node_modules` and WXT generated files in this archive workspace, but `npm install` and a standalone `npx wxt prepare` did not exit before the execution timeout. The focused validation commands below completed after dependencies were available:
 
 ```text
-npm install
-npx wxt prepare
 npx vitest --run src/tests/messaging/background-api.test.ts --reporter=dot
 npx vitest --run src/tests/storage/cache.test.ts --reporter=dot
 npx vitest --run src/tests/collectors/planning.test.ts --reporter=dot
-npx vitest --run src/tests/content/content-api.test.ts --reporter=dot
-npx vitest --run src/tests/candidates src/tests/graph src/tests/detection/observation-matcher-index.test.ts src/tests/detection/observation-matcher.test.ts --reporter=dot
+npx vitest --run src/tests/content/content-api.test.ts src/tests/messaging/background-api.test.ts src/tests/popup/view-model.test.ts src/tests/storage/cache.test.ts --reporter=dot
+npx vitest --run src/tests/registry src/tests/detection/observation-matcher-index.test.ts src/tests/detection/observation-matcher.test.ts src/tests/candidates src/tests/graph --reporter=dot
 ```
 
 Focused single-file suites also passed for contracts, popup view-model, replay, emission, registry compiler/source schema, lifecycle, observations, evidence, messaging contracts, collector capabilities, page-signal collection, and observed page signals.
 
+The generated registry artifact was also imported through an esbuild smoke check, which reported 7,989 technologies, 20,501 rules, 1,887 initial DOM selectors, no initial HTML probes, and 880 enrichment HTML probes. `src/entrypoints/background.ts`, `src/entrypoints/popup/App.tsx`, `src/lib/collectors/extension-page-collector.ts`, and `src/lib/registry/precompiled-module.ts` were bundled through esbuild as syntax/import checks.
+
 These commands did not complete in this constrained archive workspace before the execution timeout:
 
 ```text
+npx wxt prepare
 npx tsc --noEmit --pretty false
 npm run build
 npm run bench -- --run
 npx vitest --run --reporter=dot
 ```
 
-The timeouts are dominated by the very large generated rules tree and WXT/Vite production bundling. No assertion failure was observed before those timeouts, but they still need to be rerun in the normal branch workspace before release.
+The timeouts were dominated by WXT preparation, the generated rules tree, and WXT/Vite production bundling. No assertion failure was observed before the timeout-bound commands stopped, but they still need to be rerun in the normal branch workspace before release.

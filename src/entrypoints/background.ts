@@ -12,6 +12,7 @@ import {
 import type { ObservationSessionState } from '../lib/content/observed-page-signals';
 import type { SiteAnalysis } from '../lib/detection/types';
 import type {
+	AnalysisEnrichmentState,
 	AnalyzeActiveTabInput,
 	AnalyzeActiveTabOutput,
 	BackgroundApi,
@@ -83,6 +84,16 @@ const contentScriptInjectionByTab = new Map<number, Promise<AppResult<void>>>();
  * the current document instead of merging final detections.
  */
 const eventObservationBatchByTab = new Map<number, ObservationBatch>();
+
+/**
+ * Completed deferred enrichment runs keyed by observation session id.
+ *
+ * The content script owns DOM mutation state, but deeper background enrichment
+ * completes outside that observer. Marking the session dirty lets the popup poll
+ * the existing refresh API and receive the saved enriched result without adding a
+ * new push channel.
+ */
+const completedEnrichmentBySession = new Map<string, { readonly tabId: number; readonly completedAt: number }>();
 
 function logBackgroundEvent(event: string, details?: Record<string, unknown>): void {
 	if (details) {
@@ -228,6 +239,7 @@ async function collectObservationBatchFromTab(
 	tabId: number,
 	expectedUrl: string,
 	compiledRegistryArtifact: CompiledRegistry,
+	tier: 'initial' | 'enrichment' = 'initial',
 ): Promise<AppResult<ObservationBatch>> {
 	const contentScriptResponse = await ensureContentScript(tabId);
 	if (!contentScriptResponse.ok) {
@@ -238,6 +250,7 @@ async function collectObservationBatchFromTab(
 		tabId,
 		expectedUrl,
 		collectionPlan: compiledRegistryArtifact.collectionPlan,
+		tier,
 		contentApi: createContentApiClient(tabId, 0),
 		log: logBackgroundEvent,
 	});
@@ -251,6 +264,7 @@ function createAnalysisOutput(
 	replayTrace?: AnalyzeActiveTabOutput['replayTrace'],
 	replayHistory?: AnalyzeActiveTabOutput['replayHistory'],
 	sessionTarget?: ObservationSessionTarget,
+	enrichment?: AnalysisEnrichmentState,
 ): AnalyzeActiveTabOutput {
 	return {
 		analysis,
@@ -263,6 +277,7 @@ function createAnalysisOutput(
 		...(sessionTarget ? { sessionTarget } : {}),
 		...(replayTrace ? { replayTrace } : {}),
 		...(replayHistory ? { replayHistory } : {}),
+		...(enrichment ? { enrichment } : {}),
 	};
 }
 
@@ -346,13 +361,22 @@ async function flushObservationBatchForTab(
 async function analyzeObservationBatchRefresh(
 	tab: InspectableTab,
 	flush: FlushObservationBatchOutput,
+	enrichment?: AnalysisEnrichmentState,
 ): Promise<AppResult<AnalyzeActiveTabOutput>> {
 	if (!flush.batch || flush.batch.observations.length === 0) {
 		const cached = await getCachedAnalysis(tab.url);
 		const replayTrace = await getCachedReplayTrace(tab.url);
 		if (cached) {
 			const replayHistory = await getCachedReplayTraceHistory(tab.url);
-			return ok(createAnalysisOutput(cached, 'hit', flush.session, replayTrace ?? undefined, replayHistory));
+			return ok(createAnalysisOutput(
+				cached,
+				'hit',
+				flush.session,
+				replayTrace ?? undefined,
+				replayHistory,
+				createObservationSessionTarget(tab, flush.session),
+				enrichment,
+			));
 		}
 
 		return analyzeFreshActiveTab(tab, { mode: 'refresh', observe: 'while-popup-open' }, 'bypassed');
@@ -368,10 +392,10 @@ async function analyzeObservationBatchRefresh(
 	}
 
 	return analyzeAndPersistObservationBatch(tab, batchResponse.value, compiledRegistryArtifact, 'bypassed', flush.session, {
-		refreshKind: baseBatch ? 'incremental' : 'recovered',
+		refreshKind: enrichment?.status === 'complete' ? 'enrichment' : baseBatch ? 'incremental' : 'recovered',
 		queuedCount: flush.stats.queuedCount,
 		lateObservationCount: flush.batch.observations.length,
-	});
+	}, enrichment);
 }
 
 async function recoverObservationBatchForRefresh(
@@ -486,9 +510,109 @@ async function analyzeFreshActiveTab(
 		}
 	}
 
-	return analyzeAndPersistObservationBatch(tab, batchResponse.value, compiledRegistryArtifact, cacheStatus, session, {
+	const enrichment = getInitialEnrichmentState(tab, compiledRegistryArtifact, session);
+	const response = await analyzeAndPersistObservationBatch(tab, batchResponse.value, compiledRegistryArtifact, cacheStatus, session, {
 		refreshKind: 'fresh',
-	});
+	}, enrichment);
+
+	if (response.ok && enrichment.status === 'pending') {
+		scheduleDeferredEnrichment(tab, batchResponse.value, compiledRegistryArtifact, session);
+	}
+
+	return response;
+}
+
+
+function getInitialEnrichmentState(
+	tab: InspectableTab,
+	compiledRegistryArtifact: CompiledRegistry,
+	session?: ObservationSessionState,
+): AnalysisEnrichmentState {
+	if (tab.incognito) {
+		return { status: 'skipped', reason: 'incognito' };
+	}
+	if (!session?.sessionId) {
+		return { status: 'skipped', reason: 'no-observation-session' };
+	}
+	if (!hasEnrichmentWork(compiledRegistryArtifact)) {
+		return { status: 'not-needed' };
+	}
+
+	return { status: 'pending' };
+}
+
+function hasEnrichmentWork(compiledRegistryArtifact: CompiledRegistry): boolean {
+	const enrichment = compiledRegistryArtifact.collectionPlan.enrichment;
+	return (
+		enrichment.htmlProbeList.length > 0 ||
+		enrichment.needsHeaders ||
+		enrichment.needsScriptContent ||
+		enrichment.needsStylesheetContent ||
+		enrichment.needsText
+	);
+}
+
+function scheduleDeferredEnrichment(
+	tab: InspectableTab,
+	initialBatch: ObservationBatch,
+	compiledRegistryArtifact: CompiledRegistry,
+	session?: ObservationSessionState,
+): void {
+	if (!session?.sessionId || tab.incognito) {
+		return;
+	}
+
+	void (async () => {
+		logBackgroundEvent('analysis-enrichment-start', {
+			...summarizeTab(tab),
+			sessionId: session.sessionId,
+		});
+
+		const enrichmentBatch = await collectObservationBatchFromTab(
+			tab.id,
+			tab.url,
+			compiledRegistryArtifact,
+			'enrichment',
+		);
+		if (!enrichmentBatch.ok) {
+			logBackgroundEvent('analysis-enrichment-failed', {
+				...summarizeTab(tab),
+				sessionId: session.sessionId,
+				code: enrichmentBatch.error.code,
+				message: enrichmentBatch.error.message,
+			});
+			return;
+		}
+
+		const mergedBatch = mergeObservationBatches(initialBatch, enrichmentBatch.value);
+		const completedAt = Date.now();
+		const response = await analyzeAndPersistObservationBatch(
+			tab,
+			mergedBatch,
+			compiledRegistryArtifact,
+			'bypassed',
+			session,
+			{ refreshKind: 'enrichment' },
+			{ status: 'complete', completedAt },
+		);
+		if (!response.ok) {
+			logBackgroundEvent('analysis-enrichment-persist-failed', {
+				...summarizeTab(tab),
+				sessionId: session.sessionId,
+				code: response.error.code,
+				message: response.error.message,
+			});
+			return;
+		}
+
+		completedEnrichmentBySession.set(session.sessionId, { tabId: tab.id, completedAt });
+		logBackgroundEvent('analysis-enrichment-complete', {
+			...summarizeTab(tab),
+			sessionId: session.sessionId,
+			completedAt,
+			resultCount: response.value.analysis.results.length,
+		});
+	})();
 }
 
 async function analyzeAndPersistObservationBatch(
@@ -498,6 +622,7 @@ async function analyzeAndPersistObservationBatch(
 	cacheStatus: AnalyzeActiveTabOutput['cache']['status'],
 	session?: ObservationSessionState,
 	details: Record<string, unknown> = {},
+	enrichment?: AnalysisEnrichmentState,
 ): Promise<AppResult<AnalyzeActiveTabOutput>> {
 	const pipelineResult = runObservationBatchPipeline({
 		batch,
@@ -525,7 +650,7 @@ async function analyzeAndPersistObservationBatch(
 		...details,
 	});
 
-	return ok(createAnalysisOutput(savedAnalysis, cacheStatus, session, savedReplayTrace, replayHistory, sessionTarget));
+	return ok(createAnalysisOutput(savedAnalysis, cacheStatus, session, savedReplayTrace, replayHistory, sessionTarget, enrichment));
 }
 
 /**
@@ -611,8 +736,24 @@ async function refreshObservationSessionTarget(
 		);
 	}
 
+	const completedEnrichment = target.sessionId
+		? completedEnrichmentBySession.get(target.sessionId)
+		: undefined;
 	const batchResponse = await flushObservationBatchForTab(tab.id);
-	return batchResponse.ok ? analyzeObservationBatchRefresh(tab, batchResponse.value) : batchResponse;
+	if (!batchResponse.ok) {
+		return batchResponse;
+	}
+
+	const response = await analyzeObservationBatchRefresh(
+		tab,
+		batchResponse.value,
+		completedEnrichment ? { status: 'complete', completedAt: completedEnrichment.completedAt } : undefined,
+	);
+	if (response.ok && target.sessionId) {
+		completedEnrichmentBySession.delete(target.sessionId);
+	}
+
+	return response;
 }
 
 async function stopObservationSessionTarget(
@@ -634,6 +775,29 @@ async function stopObservationSessionTarget(
 	return stopObservationSessionForTab(tab.id);
 }
 
+
+function markSessionDirtyWhenEnrichmentCompleted(
+	session: ObservationSessionState,
+	target: ObservationSessionTarget,
+): ObservationSessionState {
+	if (!target.sessionId) {
+		return session;
+	}
+
+	const completed = completedEnrichmentBySession.get(target.sessionId);
+	if (!completed || completed.tabId !== target.tabId) {
+		return session;
+	}
+	if (session.status !== 'observing' && session.status !== 'idle') {
+		return session;
+	}
+
+	return Object.assign({}, session, {
+		status: 'dirty' as const,
+		lastObservedAt: Math.max(session.lastObservedAt ?? 0, completed.completedAt),
+	});
+}
+
 async function getObservationSessionStateForTarget(
 	target: ObservationSessionTarget,
 ): Promise<AppResult<ObservationSessionState>> {
@@ -643,7 +807,11 @@ async function getObservationSessionStateForTarget(
 	}
 
 	const targetValidation = validateObservationSessionTarget(response.value, target);
-	return targetValidation.ok ? response : targetValidation;
+	if (!targetValidation.ok) {
+		return targetValidation;
+	}
+
+	return ok(markSessionDirtyWhenEnrichmentCompleted(response.value, target));
 }
 
 /** Debug output is intentionally summary-only; never log raw page observations. */

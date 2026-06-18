@@ -1,6 +1,6 @@
 import { browser } from 'wxt/browser';
 
-import type { CollectionPlan } from './planning';
+import type { CollectionTierPlan } from './planning';
 import { limitStringsByTotalChars, truncate, uniqueStrings } from '../detection/normalizers';
 import { SOURCE_LIMITS } from '../detection/source-limits';
 import type { NormalizedObservation, ObservationBatch } from '../observations';
@@ -19,7 +19,7 @@ export type BackgroundObservationCollectorInput = {
 	/** Normalized facts returned by the content script for the analyzed document. */
 	readonly batch: ObservationBatch;
 	/** Rule-aware plan that tells the background which injected globals matter. */
-	readonly collectionPlan: CollectionPlan;
+	readonly collectionPlan: CollectionTierPlan;
 	/** Optional logger supplied by the background entrypoint. */
 	readonly log?: CollectorLog;
 };
@@ -120,7 +120,7 @@ async function collectResponseHeaders(pageUrl: string): Promise<Record<string, s
 async function collectSameOriginSourceContents(
 	batch: ObservationBatch,
 	pageOrigin: string,
-	collectionPlan: CollectionPlan,
+	collectionPlan: CollectionTierPlan,
 ): Promise<{ scriptContents: string[]; stylesheetContents: string[] }> {
 	const scriptContentsAlreadyCollected = countObservations(batch, 'scriptContent');
 	const stylesheetContentsAlreadyCollected = countObservations(batch, 'stylesheetContent');

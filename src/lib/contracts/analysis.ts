@@ -31,6 +31,23 @@ export const OBSERVATION_MODES = ['none', 'while-popup-open', 'bounded'] as cons
 /** Request value that controls whether live page watching starts. */
 export type ActiveTabObservationMode = typeof OBSERVATION_MODES[number];
 
+
+/** Progressive enrichment states returned with an analysis response. */
+export const ANALYSIS_ENRICHMENT_STATUSES = ['not-needed', 'pending', 'complete', 'skipped'] as const;
+
+/** Whether deeper evidence collection is pending, complete, unnecessary, or skipped. */
+export type AnalysisEnrichmentStatus = typeof ANALYSIS_ENRICHMENT_STATUSES[number];
+
+/** User-visible enrichment state for progressive active-tab detection. */
+export type AnalysisEnrichmentState = {
+	/** Current enrichment lifecycle state for this analysis response. */
+	status: AnalysisEnrichmentStatus;
+	/** Millisecond timestamp when enrichment completed, when known. */
+	completedAt?: number;
+	/** Short machine-readable reason for skipped or unnecessary enrichment. */
+	reason?: string;
+};
+
 /** Cache states returned to the popup after active-tab analysis. */
 export const ANALYSIS_CACHE_STATUSES = ['hit', 'miss', 'bypassed'] as const;
 
@@ -101,6 +118,8 @@ export type AnalyzeActiveTabOutput = {
 	replayTrace?: DetectionReplayTrace;
 	/** Bounded newest-first replay traces saved for the active origin. */
 	replayHistory?: readonly DetectionReplayTrace[];
+	/** Whether deeper evidence collection is still running or already reflected. */
+	enrichment?: AnalysisEnrichmentState;
 };
 
 /** Reason a content-script observation session stopped. */
@@ -163,6 +182,8 @@ export type HtmlProbe = {
  * The RPC response is early normalized observations.
  */
 export type CollectPageSignalsInput = {
+	/** Collection tier represented by this request. */
+	tier?: 'initial' | 'enrichment';
 	/** Whether the content script should include bounded page HTML text. */
 	includeHtml?: boolean;
 	/** Whether visible text should be collected for text rules. */
@@ -171,6 +192,8 @@ export type CollectPageSignalsInput = {
 	includeScriptContent?: boolean;
 	/** Whether inline and accessible stylesheet text should be collected for stylesheet-content rules. */
 	includeStylesheetContent?: boolean;
+	/** Whether localStorage and sessionStorage keys should be collected. */
+	includeStorageKeys?: boolean;
 	/** DOM selectors the content script should check for detector rules. */
 	selectorProbeList: string[];
 	/** HTML regex probes serialized for the content script. */

@@ -30,3 +30,4 @@ export {
 	compileTechnologyRegistry,
 } from './compiler';
 export { REGISTRY_SOURCE_SCHEMA_VERSION, registrySourceSchema, validateRegistrySource } from './source-schema';
+export { createPrecompiledTechnologyRegistryProvider } from './precompiled-artifact';

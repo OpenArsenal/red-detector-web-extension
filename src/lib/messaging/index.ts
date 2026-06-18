@@ -1,6 +1,8 @@
 export type {
 	ActiveTabObservationMode,
 	AnalysisCacheStatus,
+	AnalysisEnrichmentState,
+	AnalysisEnrichmentStatus,
 	AnalyzeActiveTabInput,
 	AnalyzeActiveTabMode,
 	AnalyzeActiveTabOutput,
@@ -17,6 +19,7 @@ export type {
 } from '../contracts/analysis';
 export {
 	ANALYSIS_CACHE_STATUSES,
+	ANALYSIS_ENRICHMENT_STATUSES,
 	ANALYSIS_MODES,
 	OBSERVATION_MODES,
 } from '../contracts/analysis';

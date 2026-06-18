@@ -43,7 +43,7 @@ describe('collection planning', () => {
 			]),
 		]);
 
-		expect(plan.htmlProbeList).toEqual([
+		expect(plan.enrichment.htmlProbeList).toEqual([
 			{
 				technologyId: 'wordpress',
 				ruleIndex: 1,
@@ -75,16 +75,22 @@ describe('collection planning', () => {
 			]),
 		]);
 
-		expect(plan).toMatchObject({
+		expect(plan.initial).toMatchObject({
+			needsHeaders: false,
+			needsScriptContent: false,
+			needsStylesheetContent: false,
+			needsText: false,
+		});
+		expect(plan.enrichment).toMatchObject({
 			needsHeaders: true,
 			needsScriptContent: true,
 			needsStylesheetContent: false,
 			needsText: false,
-			costSummary: {
-				cheap: 2,
-				expensive: 1,
-				unsupported: 1,
-			},
+		});
+		expect(plan.costSummary).toEqual({
+			cheap: 1,
+			expensive: 2,
+			unsupported: 1,
 		});
 	});
 
@@ -97,10 +103,12 @@ describe('collection planning', () => {
 		]);
 
 		expect(toCollectPageSignalsInput(plan)).toEqual({
+			tier: 'initial',
 			includeHtml: false,
 			includeText: false,
 			includeScriptContent: false,
 			includeStylesheetContent: false,
+			includeStorageKeys: false,
 			selectorProbeList: ['script[src]'],
 			htmlProbeList: [],
 		});

@@ -1,5 +1,5 @@
-import { technologies } from '../../data/technologies';
-import { compileTechnologyRegistry, type CompiledTechnologyRegistryArtifact } from '../registry';
+import { precompiledRegistryArtifact } from '../../generated/compiled-registry';
+import { compileTechnologyRegistry, createPrecompiledTechnologyRegistryProvider, type CompiledTechnologyRegistryArtifact } from '../registry';
 import type { TechnologyDefinition } from './types';
 
 /**
@@ -47,5 +47,5 @@ export function createStaticTechnologyRegistryProvider(
 	};
 }
 
-/** Provider backed by the current bundled TypeScript registry. */
-export const bundledTechnologyRegistryProvider = createStaticTechnologyRegistryProvider(technologies);
+/** Provider backed by the WXT-generated compiled registry artifact. */
+export const bundledTechnologyRegistryProvider = createPrecompiledTechnologyRegistryProvider(precompiledRegistryArtifact);

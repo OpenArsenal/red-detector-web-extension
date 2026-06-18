@@ -11,12 +11,14 @@ import type {
 import type { HtmlProbe } from '../messaging';
 
 export type CollectPageSignalsInput = {
+	tier?: 'initial' | 'enrichment';
 	selectorProbeList: string[];
 	htmlProbeList?: HtmlProbe[];
 	includeHtml?: boolean;
 	includeText?: boolean;
 	includeScriptContent?: boolean;
 	includeStylesheetContent?: boolean;
+	includeStorageKeys?: boolean;
 };
 
 /**
@@ -82,7 +84,7 @@ export function collectPageSignals(
 				selectorProbeList.map((selector) => [selector, safeQuerySelector(selector)]),
 			),
 		},
-		storage: collectStorageKeys(),
+		storage: input.includeStorageKeys !== false ? collectStorageKeys() : { localStorage: {}, sessionStorage: {} },
 		// JavaScript globals are populated by injected JS context collection.
 		// Content scripts cannot read page-owned globals directly, so callers pass
 		// those injected values through RuntimePageSignals after the injection step.

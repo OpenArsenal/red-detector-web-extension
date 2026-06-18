@@ -365,6 +365,20 @@ function getPopupAnalysisNotice(input: {
 	response: AnalyzeActiveTabOutput;
 	source: PopupAnalysisRequestSource;
 }): PopupNotice | null {
+	if (input.response.enrichment?.status === 'pending') {
+		return {
+			variant: 'warning',
+			text: `Detected ${input.nextAnalysis.results.length} technologies for ${input.nextAnalysis.hostname}. Still checking deeper evidence.`,
+		};
+	}
+
+	if (input.response.enrichment?.status === 'complete' && input.source === 'auto') {
+		return {
+			variant: 'success',
+			text: `Deep evidence complete for ${input.nextAnalysis.hostname}.`,
+		};
+	}
+
 	if (input.addedDetectionIds.length) {
 		const count = input.addedDetectionIds.length;
 		return {
