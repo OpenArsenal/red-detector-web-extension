@@ -5,7 +5,11 @@ import type { DetectionSessionSnapshot } from '../../lib/contracts/detection-ses
 import type { PageSignals, SiteAnalysis } from '../../lib/detection/types';
 import type { ContentApi } from '../../lib/messaging';
 import { CONTENT_SCRIPT_TIMEOUT_MS } from '../../lib/messaging/rpc';
-import { getDetectionOriginSnapshotKey, getDetectionSessionSnapshotKey } from '../../lib/storage/contracts';
+import {
+	createDetectionStorageHash,
+	getDetectionOriginSnapshotKey,
+	getDetectionSessionSnapshotKey,
+} from '../../lib/storage/contracts';
 import type { ObservationBatch } from '../../lib/observations';
 import type { DetectionReplayTrace } from '../../lib/pipeline';
 import { ok, type AppResult } from '../../lib/shared/result';
@@ -307,6 +311,28 @@ afterEach(() => {
 	vi.doUnmock('../../lib/messaging');
 	vi.doUnmock('../../lib/storage');
 	vi.resetModules();
+});
+
+describe.sequential('background active-tab identity', () => {
+	it('returns the active tab identity without contacting the content script', async () => {
+		const collectObservationBatch = vi.fn(async () => ok({ batch: makeObservationBatch() }));
+		const harness = await loadBackgroundApiHarness({ tab: HTTP_TAB, contentApi: { collectObservationBatch } });
+
+		await expect(harness.api.getActiveTabIdentity()).resolves.toMatchObject({
+			ok: true,
+			value: {
+				tabId: 7,
+				frameId: 0,
+				url: HTTP_TAB.url,
+				hostname: 'example.com',
+				originHash: createDetectionStorageHash('https://example.com'),
+				urlHash: createDetectionStorageHash(HTTP_TAB.url!),
+				incognito: false,
+			},
+		});
+		expect(collectObservationBatch).not.toHaveBeenCalled();
+		expect(harness.mocks.getCompiledRegistry).not.toHaveBeenCalled();
+	});
 });
 
 describe.sequential('background analyzeActiveTab messaging hardening', () => {

@@ -20,6 +20,22 @@ export type MockBrowserStorageArea = {
 	remove: ReturnType<typeof vi.fn>;
 };
 
+/** Listener shape used by `browser.storage.onChanged` tests. */
+export type MockBrowserStorageChangeListener = (
+	changes: Record<string, { readonly newValue?: unknown; readonly oldValue?: unknown }>,
+	areaName: string,
+) => void;
+
+/** Browser-like storage change event used by popup streaming tests. */
+export type MockBrowserStorageChangeEvent = {
+	/** Register a storage change listener. */
+	addListener: ReturnType<typeof vi.fn>;
+	/** Remove a storage change listener. */
+	removeListener: ReturnType<typeof vi.fn>;
+	/** Emit a storage change event to all registered listeners. */
+	emit: (changes: Record<string, { readonly newValue?: unknown; readonly oldValue?: unknown }>, areaName?: string) => void;
+};
+
 /** Test harness returned by `createMockBrowserStorageArea`. */
 export type MockBrowserStorageHarness = {
 	/** Browser-like storage area passed to `wxt/browser` mocks. */
@@ -78,4 +94,31 @@ export function createMockBrowserStorageArea(
 	} satisfies MockBrowserStorageArea;
 
 	return { local, values };
+}
+
+
+/**
+ * Build the storage change surface needed by popup snapshot streaming tests.
+ *
+ * Browser storage delivers one event fan-out for every extension context. The
+ * helper keeps listener registration observable while letting tests emit only
+ * the records that matter for a specific popup identity.
+ */
+export function createMockBrowserStorageChangeEvent(): MockBrowserStorageChangeEvent {
+	const listeners = new Set<MockBrowserStorageChangeListener>();
+	const onChanged = {
+		addListener: vi.fn((listener: MockBrowserStorageChangeListener) => {
+			listeners.add(listener);
+		}),
+		removeListener: vi.fn((listener: MockBrowserStorageChangeListener) => {
+			listeners.delete(listener);
+		}),
+		emit(changes: Record<string, { readonly newValue?: unknown; readonly oldValue?: unknown }>, areaName = 'local') {
+			for (const listener of listeners) {
+				listener(changes, areaName);
+			}
+		},
+	} satisfies MockBrowserStorageChangeEvent;
+
+	return onChanged;
 }
