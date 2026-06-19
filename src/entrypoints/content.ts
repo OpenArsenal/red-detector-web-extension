@@ -4,6 +4,7 @@ import { collectPageSignals } from "../lib/content/collect-page-signals";
 import {
   createObservedPageSignals,
   type ObservedPageSignals,
+  type ObservedPageSignalsQueuedBatchEvent,
 } from "../lib/content/observed-page-signals";
 import { writeContentPageSessionSnapshot } from "../lib/content/page-session-snapshots";
 import { validatePageSignals } from "../lib/detection/validate";
@@ -43,6 +44,8 @@ export type ContentRuntime = {
   contentApi: ContentApi;
   /** Stop timers and observers for content-runtime shutdown. */
   dispose(reason: ObservationStopReason): void;
+  /** Publish a durable lifecycle revision after the observer queues new facts. */
+  publishObservedBatchQueued(event: ObservedPageSignalsQueuedBatchEvent): void;
 };
 
 function getRuntimeState(): ContentRuntimeState | undefined {
@@ -346,6 +349,12 @@ export function createContentRuntime(observedSignals: ObservedPageSignals): Cont
 
   return {
     contentApi,
+    publishObservedBatchQueued(event) {
+      publishContentSnapshot("observing", {
+        observedAt: event.observedAt,
+        reason: "observation-batch-queued",
+      });
+    },
     dispose(reason) {
       clearObservationExpiry();
       observedSignals.disconnect(reason);
@@ -388,10 +397,14 @@ export default defineContentScript({
       throttleMs: DOM_MUTATION_THROTTLE_MS,
     });
 
+    let runtime: ContentRuntime | undefined;
     const observedSignals = createObservedPageSignals({
       throttleMs: DOM_MUTATION_THROTTLE_MS,
+      onObservationBatchQueued(event) {
+        runtime?.publishObservedBatchQueued(event);
+      },
     });
-    const runtime = createContentRuntime(observedSignals);
+    runtime = createContentRuntime(observedSignals);
     const { contentApi } = runtime;
 
     const state: ContentRuntimeState = {

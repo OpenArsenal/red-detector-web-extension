@@ -367,4 +367,53 @@ describe.sequential('content API observation baseline', () => {
 		});
 	});
 
+
+	/**
+	 * The observer callback uses the runtime publisher instead of waiting for a
+	 * background flush request. That keeps popup storage revisions moving at the
+	 * content observer throttle, while the detector rerun remains background-owned.
+	 */
+	it('publishes a content snapshot when the observer queues late facts directly', async () => {
+		const { createContentRuntime, writeContentPageSessionSnapshot } = await loadContentApiFactory();
+		const session = makeState({
+			status: 'observing',
+			sessionId: 'session-1',
+			expectedUrl: 'https://example.com/products',
+			startedAt: 1_700_000_000_000,
+		});
+		const observedSignals = {
+			snapshot: vi.fn(),
+			beginObservationSession: vi.fn(() => session),
+			stopObservationSession: vi.fn(() => makeState({ status: 'stopped' })),
+			flushObservationBatch: vi.fn(() => makeFlushOutput(session)),
+			status: vi.fn(() => session),
+			disconnect: vi.fn(),
+		} satisfies ObservedPageSignals;
+		const runtime = createContentRuntime(observedSignals);
+		await runtime.contentApi.beginObservationSession({
+			sessionId: 'session-1',
+			expectedUrl: 'https://example.com/products',
+			snapshotTarget: SNAPSHOT_TARGET,
+			policy: {
+				durationMs: 60_000,
+				throttleMs: 1_500,
+				maxPendingNodes: 100,
+				maxMutations: 5_000,
+			},
+		});
+
+		runtime.publishObservedBatchQueued({
+			observedAt: 1_700_000_000_250,
+			stats: makeFlushOutput(session).stats,
+			session,
+		});
+
+		expect(writeContentPageSessionSnapshot).toHaveBeenLastCalledWith({
+			target: SNAPSHOT_TARGET,
+			status: 'observing',
+			observedAt: 1_700_000_000_250,
+			reason: 'observation-batch-queued',
+		});
+	});
+
 });

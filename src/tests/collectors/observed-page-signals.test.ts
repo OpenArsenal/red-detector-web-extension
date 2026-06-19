@@ -72,14 +72,32 @@ function makeDocument(): Document {
 	} as unknown as Document;
 }
 
+const mutationObservers: FakeMutationObserver[] = [];
+
 class FakeMutationObserver {
 	observe = vi.fn();
 	disconnect = vi.fn();
 
-	constructor(readonly callback: MutationCallback) {}
+	constructor(readonly callback: MutationCallback) {
+		mutationObservers.push(this);
+	}
+}
+
+class FakeObservedScriptElement {
+	readonly textContent: string;
+
+	constructor(readonly src: string, text = '') {
+		this.textContent = text;
+	}
+
+	getAttribute(name: string): string | null {
+		return name === 'src' ? this.src : null;
+	}
 }
 
 afterEach(() => {
+	mutationObservers.length = 0;
+	vi.useRealTimers();
 	vi.unstubAllGlobals();
 });
 
@@ -210,4 +228,54 @@ describe('observed page signals', () => {
 			expect.arrayContaining(['scriptSrc', 'stylesheetHref', 'resourceUrl', 'requestUrl', 'scriptContent', 'stylesheetContent', 'meta']),
 		);
 	});
+
+	/**
+	 * The observer stream should publish a lifecycle event as soon as the
+	 * throttled scan has queued new facts. The background still owns detector
+	 * reruns, but the popup no longer needs to wait for the next background poll
+	 * before it knows that live page evidence advanced.
+	 */
+	it('notifies when throttled mutation scans queue late observations', async () => {
+		vi.useFakeTimers();
+		vi.stubGlobal('document', makeDocument());
+		vi.stubGlobal('location', { href: 'https://example.com/products' });
+		vi.stubGlobal('MutationObserver', FakeMutationObserver);
+		vi.stubGlobal('PerformanceObserver', undefined);
+		vi.stubGlobal('HTMLScriptElement', FakeObservedScriptElement);
+		vi.stubGlobal('performance', {
+			getEntriesByType: vi.fn(() => []),
+		});
+		const queued = vi.fn();
+		const observedSignals = createObservedPageSignals({
+			throttleMs: 25,
+			onObservationBatchQueued: queued,
+		});
+		observedSignals.beginObservationSession({
+			sessionId: 'session-1',
+			expectedUrl: 'https://example.com/products',
+			durationMs: 1_000,
+			maxPendingNodes: 10,
+			maxMutations: 100,
+		});
+
+		mutationObservers[0]?.callback([
+			{
+				type: 'childList',
+				addedNodes: [new FakeObservedScriptElement('https://example.com/late.js')] as unknown as NodeList,
+				removedNodes: [] as unknown as NodeList,
+				target: document,
+			} as MutationRecord,
+		], mutationObservers[0] as unknown as MutationObserver);
+
+		expect(queued).not.toHaveBeenCalled();
+		await vi.advanceTimersByTimeAsync(25);
+
+		expect(queued).toHaveBeenCalledOnce();
+		expect(queued).toHaveBeenCalledWith(expect.objectContaining({
+			stats: expect.objectContaining({ acceptedCount: expect.any(Number) }),
+			session: expect.objectContaining({ status: 'observing', sessionId: 'session-1' }),
+		}));
+		expect(queued.mock.calls[0]?.[0].stats.acceptedCount).toBeGreaterThan(0);
+	});
+
 });

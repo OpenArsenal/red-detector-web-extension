@@ -77,8 +77,21 @@ export type ObservedPageSignals = {
 	disconnect(reason?: ObservationStopReason): void;
 };
 
+/** Event raised after page-local observations have been queued for background refresh. */
+export type ObservedPageSignalsQueuedBatchEvent = {
+	/** Timestamp associated with the observer scan that queued the latest facts. */
+	readonly observedAt: number;
+	/** Batch-controller counters after the observer scan pushed new facts. */
+	readonly stats: ObservationBatchControllerStats;
+	/** Session state after the observer scan, used by content snapshot publishers. */
+	readonly session: ObservationSessionState;
+};
+
 export type ObservedPageSignalsOptions = {
-	throttleMs: number;
+	/** Delay used to coalesce DOM mutations before scanning changed nodes. */
+	readonly throttleMs: number;
+	/** Optional hook for content-owned streaming when new facts enter the batch. */
+	readonly onObservationBatchQueued?: (event: ObservedPageSignalsQueuedBatchEvent) => void;
 };
 
 const MAX_PENDING_MUTATION_NODES = 100;
@@ -368,6 +381,7 @@ export function createObservedPageSignals(
 
 	function flushPendingMutations(): void {
 		clearThrottleTimer();
+		const acceptedBeforeScan = observationBatchController.stats().acceptedCount;
 
 		if (pendingFullDocumentScan) {
 			scanCurrentDocument();
@@ -382,7 +396,30 @@ export function createObservedPageSignals(
 
 		if (activeSession && sessionStatus !== 'stopped') {
 			sessionStatus = 'observing';
+			publishQueuedObservationBatch(acceptedBeforeScan);
 		}
+	}
+
+	/**
+	 * Notify content runtime after the throttled observer scan queues new facts.
+	 *
+	 * The batch itself stays inside the controller so the background can still
+	 * flush and analyze it later. The callback only carries enough lifecycle
+	 * information for a durable popup snapshot revision, which avoids waiting for
+	 * the next background polling request before the open popup knows the page has
+	 * changed.
+	 */
+	function publishQueuedObservationBatch(acceptedBeforeScan: number): void {
+		const stats = observationBatchController.stats();
+		if (stats.acceptedCount <= acceptedBeforeScan) {
+			return;
+		}
+
+		options.onObservationBatchQueued?.({
+			observedAt: lastScannedAt ?? lastObservedAt ?? Date.now(),
+			stats,
+			session: observationState(),
+		});
 	}
 
 	function scheduleThrottledFlush(): void {

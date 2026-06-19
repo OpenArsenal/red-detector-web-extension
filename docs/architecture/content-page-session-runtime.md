@@ -48,3 +48,17 @@ The tests and benchmark protect the new behavior from three directions:
 - content preserves background detector results while advancing lifecycle state
 - late observation batches publish newer snapshot revisions while the popup is open
 - benchmark coverage measures page-signal normalization for common and late-heavy content bootstrap workloads
+
+## Faster observer revisions
+
+Late page facts now publish a content-owned snapshot as soon as the observer's throttled mutation scan queues new observations. The background still owns the detector rerun and enrichment, but the popup can see the session advance without waiting for the next background refresh request.
+
+```text
+MutationObserver batch
+  -> throttled content scan
+  -> observation batch queue accepts new facts
+  -> content writes snapshot revision: observing
+  -> popup storage listener applies the newer revision
+```
+
+The snapshot does not contain the raw observation batch. It only preserves the best existing `SiteAnalysis` and advances the lifecycle state, so this keeps the storage stream responsive without expanding what content persists.
