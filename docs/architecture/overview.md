@@ -50,6 +50,19 @@ Popup extension page
 
 The content script still uses the bounded DOM collector internally because it is the safe place to read the active document. That snapshot is an implementation detail inside the content runtime. The background receives normalized observations and does not call the old direct `analyzeSite(signals, technologies)` path for extension analysis.
 
+## Durable visible state
+
+The extension now has a durable snapshot contract for popup-visible detection state. `DetectionSessionSnapshot` stores the latest normalized `SiteAnalysis`, session identity, enrichment status, and a compact replay summary in `chrome.storage.local`. The popup can use this record before it asks the background to refresh the active page.
+
+```text
+DetectionSessionSnapshot revision
+  -> exact session key
+  -> origin latest key
+  -> popup cache-first render
+```
+
+This storage model supports the streaming rewrite without changing detector semantics. Observations still become evidence, candidates, graph-refined detections, and replay traces. The snapshot is the durable visible output of that pipeline.
+
 ## Dirty refresh behavior
 
 Late page changes are not merged as final detections. A final-result merge can break graph semantics because `requires`, `excludes`, and `implies` need to see the whole candidate set together.
