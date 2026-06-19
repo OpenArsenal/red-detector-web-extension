@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 
 import { normalizePageSignals } from '../../lib/observations';
 import { runObservationBatchPipeline } from '../../lib/pipeline';
-import { stripeTechnologyDefinition } from '../../lib/detection/rules/commerce-operations/stripe';
 import { pusherTechnologyDefinition } from '../../lib/detection/rules/email-messaging/pusher';
 import { opentelemetryTechnologyDefinition } from '../../lib/detection/rules/monitoring-error-tracking/opentelemetry';
 import { amazonS3TechnologyDefinition } from '../../lib/detection/rules/infrastructure-hosting/amazon-s3';
@@ -11,7 +10,6 @@ import { fidesTechnologyDefinition } from '../../lib/detection/rules/privacy-com
 import { contentfulTechnologyDefinition } from '../../lib/detection/rules/platform-cms-builder/contentful';
 import { kasadaTechnologyDefinition } from '../../lib/detection/rules/security/kasada';
 import { googleFontApiTechnologyDefinition } from '../../lib/detection/rules/styling-library/google-font-api';
-import { priorityHintsTechnologyDefinition } from '../../lib/detection/rules/widgets-misc/priority-hints';
 import { nextJsTechnologyDefinition } from '../../lib/detection/rules/ui-library/next-js';
 import { turbopackTechnologyDefinition } from '../../lib/detection/rules/bundler/turbopack';
 import { webpackTechnologyDefinition } from '../../lib/detection/rules/bundler/webpack';
@@ -92,11 +90,9 @@ describe('vercel active-tab evidence parity', () => {
 			opentelemetryTechnologyDefinition,
 			contentfulTechnologyDefinition,
 			pusherTechnologyDefinition,
-			stripeTechnologyDefinition,
 			googleFontApiTechnologyDefinition,
 			amazonS3TechnologyDefinition,
 			amazonWebServicesTechnologyDefinition,
-			priorityHintsTechnologyDefinition,
 			fidesTechnologyDefinition,
 			reactServerComponentsTechnologyDefinition,
 			nextJsPrerenderCacheTechnologyDefinition,
@@ -185,11 +181,9 @@ describe('vercel active-tab evidence parity', () => {
 			'opentelemetry',
 			'contentful',
 			'pusher',
-			'stripe',
 			'google-font-api',
 			'amazon-s3',
 			'amazon-web-services',
-			'priority-hints',
 			'fides',
 			'react-server-components',
 			'next-js-prerender-cache',
