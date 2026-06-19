@@ -281,5 +281,6 @@ export type { DetectionSessionSnapshotWriteResult } from './detection-snapshots'
 export {
 	getLatestDetectionOriginSnapshot,
 	getLatestDetectionSessionSnapshot,
+	isDetectionSessionSnapshot,
 	saveDetectionSessionSnapshot,
 } from './detection-snapshots';

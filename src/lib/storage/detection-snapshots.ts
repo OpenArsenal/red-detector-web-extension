@@ -128,8 +128,14 @@ function isOriginSnapshotNewer(
 	return candidate.revision > existing.revision;
 }
 
-/** Defensive guard for snapshot records read from browser storage. */
-function isDetectionSessionSnapshot(value: unknown): value is DetectionSessionSnapshot {
+/**
+ * Return whether a storage value matches the durable snapshot envelope.
+ *
+ * Storage change listeners receive unknown values from every extension context.
+ * The guard keeps popup streaming on the normalized snapshot contract instead
+ * of trusting arbitrary records that happen to share the same storage area.
+ */
+export function isDetectionSessionSnapshot(value: unknown): value is DetectionSessionSnapshot {
 	if (typeof value !== 'object' || value === null) {
 		return false;
 	}

@@ -11,6 +11,7 @@ import type {
   AnalysisStatus,
   SiteAnalysis,
 } from "../../lib/detection/types";
+import type { DetectionSessionSnapshot } from "../../lib/contracts/detection-session";
 import type { DetectionReplayTrace } from "../../lib/pipeline";
 import type {
   ActiveTabIdentity,
@@ -36,7 +37,9 @@ import {
 } from "../../lib/popup/view-model";
 import {
   createStoredPopupAnalysisOutput,
+  isNewerSnapshotRevision,
   readStoredPopupAnalysis,
+  subscribeToPopupSnapshotRevisions,
 } from "../../lib/popup/snapshot-state";
 
 import "./App.css";
@@ -88,6 +91,8 @@ export default function App() {
   let refreshInFlight = false;
   let pollingCheckInFlight = false;
   let pendingManualRefresh = false;
+  let unsubscribeSnapshotRevisions: (() => void) | undefined;
+  let appliedSnapshotRevision: DetectionSessionSnapshot | null = null;
 
   function resultCount() {
     return analysis()?.results.length ?? 0;
@@ -250,6 +255,25 @@ export default function App() {
     }
   }
 
+  function applySnapshotRevision(snapshot: DetectionSessionSnapshot) {
+    if (!isNewerSnapshotRevision(appliedSnapshotRevision, snapshot)) {
+      logPopupEvent("snapshot-revision-ignored", { revision: snapshot.revision, updatedAt: snapshot.updatedAt });
+      return;
+    }
+
+    appliedSnapshotRevision = snapshot;
+    logPopupEvent("snapshot-revision-applied", {
+      revision: snapshot.revision,
+      resultCount: snapshot.analysis.results.length,
+      status: snapshot.status,
+    });
+    applyAnalysisResponse(createStoredPopupAnalysisOutput({
+      source: "origin-snapshot",
+      analysis: snapshot.analysis,
+      snapshot,
+    }), { source: "auto" });
+  }
+
   async function renderStoredAnalysisForActiveTab(identity: ActiveTabIdentity) {
     try {
       const stored = await readStoredPopupAnalysis(identity);
@@ -264,6 +288,7 @@ export default function App() {
         resultCount: stored.analysis.results.length,
         revision: stored.snapshot?.revision ?? 0,
       });
+      appliedSnapshotRevision = stored.snapshot ?? null;
       applyAnalysisResponse(createStoredPopupAnalysisOutput(stored), {
         source: "initial",
         resetLateMarkers: true,
@@ -536,6 +561,10 @@ export default function App() {
       }
 
       setActiveTabIdentity(identityResponse.value);
+      unsubscribeSnapshotRevisions = subscribeToPopupSnapshotRevisions(
+        identityResponse.value,
+        applySnapshotRevision,
+      );
       await renderStoredAnalysisForActiveTab(identityResponse.value);
       await loadLatestAnalysis({
         input: {
@@ -550,6 +579,8 @@ export default function App() {
   });
 
   onCleanup(() => {
+    unsubscribeSnapshotRevisions?.();
+    unsubscribeSnapshotRevisions = undefined;
     clearPopupPolling();
     const target = sessionTarget();
     if (!target) {
