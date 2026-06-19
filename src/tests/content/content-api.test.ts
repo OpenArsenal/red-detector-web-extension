@@ -4,7 +4,9 @@ import type {
 	ObservedPageSignals,
 	ObservationSessionState,
 } from '../../lib/content/observed-page-signals';
+import type { ContentPageSessionSnapshotTarget } from '../../lib/contracts/analysis';
 import type { PageSignals } from '../../lib/detection/types';
+import type { ObservationBatch } from '../../lib/observations';
 
 function makeSignals(overrides: Partial<PageSignals> = {}): PageSignals {
 	return {
@@ -57,6 +59,18 @@ function makeFlushOutput(session = makeState()) {
 	};
 }
 
+const SNAPSHOT_TARGET: ContentPageSessionSnapshotTarget = {
+	key: {
+		tabId: 7,
+		frameId: 0,
+		documentId: 'session-1',
+		originHash: 'origin-example',
+	},
+	url: 'https://example.com/products',
+	urlHash: 'url-example-products',
+	hostname: 'example.com',
+};
+
 async function loadContentApiFactory() {
 	vi.resetModules();
 	vi.stubGlobal('defineContentScript', (options: unknown) => options);
@@ -69,11 +83,18 @@ async function loadContentApiFactory() {
 	vi.doMock('../../lib/detection/validate', () => ({
 		validatePageSignals: vi.fn(() => null),
 	}));
+	const writeContentPageSessionSnapshot = vi.fn(async () => null);
+	vi.doMock('../../lib/content/page-session-snapshots', () => ({
+		writeContentPageSessionSnapshot,
+	}));
 	vi.doMock('comctx', () => ({
 		defineProxy: vi.fn(() => [vi.fn()]),
 	}));
 
-	return await import('../../entrypoints/content');
+	return {
+		...(await import('../../entrypoints/content')),
+		writeContentPageSessionSnapshot,
+	};
 }
 
 afterEach(() => {
@@ -82,6 +103,7 @@ afterEach(() => {
 	vi.doUnmock('../../lib/content/collect-page-signals');
 	vi.doUnmock('../../lib/content/observed-page-signals');
 	vi.doUnmock('../../lib/detection/validate');
+	vi.doUnmock('../../lib/content/page-session-snapshots');
 	vi.doUnmock('comctx');
 	vi.resetModules();
 });
@@ -89,7 +111,7 @@ afterEach(() => {
 describe.sequential('content API observation baseline', () => {
 	it('starts observation through the observed-signal store and reports the session', async () => {
 		vi.useFakeTimers();
-		const { createContentApi } = await loadContentApiFactory();
+		const { createContentApi, writeContentPageSessionSnapshot } = await loadContentApiFactory();
 		const observing = makeState({
 			status: 'observing',
 			sessionId: 'session-1',
@@ -111,6 +133,7 @@ describe.sequential('content API observation baseline', () => {
 		await expect(api.beginObservationSession({
 			sessionId: 'session-1',
 			expectedUrl: 'https://example.com/products',
+			snapshotTarget: SNAPSHOT_TARGET,
 			policy: {
 				durationMs: 60_000,
 				throttleMs: 1_500,
@@ -124,6 +147,12 @@ describe.sequential('content API observation baseline', () => {
 			durationMs: 60_000,
 			maxPendingNodes: 100,
 			maxMutations: 5_000,
+		});
+		expect(writeContentPageSessionSnapshot).toHaveBeenCalledWith({
+			target: SNAPSHOT_TARGET,
+			status: 'observing',
+			observedAt: observing.startedAt,
+			reason: 'observation-session-started',
 		});
 
 		await api.stopObservationSession();
@@ -274,6 +303,67 @@ describe.sequential('content API observation baseline', () => {
 		await expect(createContentApi(observedSignals).collectObservationBatch({ selectorProbeList: [], includeHtml: true })).resolves.toMatchObject({
 			ok: true,
 			value: { batch: { target: { url: 'https://example.com/products', hostname: 'example.com' } } },
+		});
+	});
+
+	/**
+	 * Late observations should advance the same durable session snapshot while the
+	 * popup is open. A regression here would return to the old behavior where
+	 * users only saw the larger result set after closing and reopening the popup.
+	 */
+	it('publishes content-owned snapshot revisions when late observation batches flush', async () => {
+		const { createContentApi, writeContentPageSessionSnapshot } = await loadContentApiFactory();
+		const session = makeState({
+			status: 'observing',
+			sessionId: 'session-1',
+			expectedUrl: 'https://example.com/products',
+			startedAt: 1_700_000_000_000,
+		});
+		const lateBatch = {
+			target: { url: 'https://example.com/products', hostname: 'example.com' },
+			interface: 'extension' as const,
+			observedAt: 1_700_000_000_125,
+			observations: [{
+				kind: 'scriptSrc' as const,
+				interface: 'extension' as const,
+				collector: 'content-observer' as const,
+				target: { url: 'https://example.com/products', hostname: 'example.com' },
+				observedAt: 1_700_000_000_125,
+				value: 'https://example.com/late.js',
+			}],
+		} satisfies ObservationBatch;
+		const observedSignals = {
+			snapshot: vi.fn(),
+			beginObservationSession: vi.fn(() => session),
+			stopObservationSession: vi.fn(() => makeState({ status: 'stopped' })),
+			flushObservationBatch: vi.fn(() => makeFlushOutput(session)),
+			status: vi.fn(() => session),
+			disconnect: vi.fn(),
+		} satisfies ObservedPageSignals;
+		observedSignals.flushObservationBatch.mockReturnValueOnce({
+			...makeFlushOutput(session),
+			batch: lateBatch,
+		});
+
+		const api = createContentApi(observedSignals);
+		await api.beginObservationSession({
+			sessionId: 'session-1',
+			expectedUrl: 'https://example.com/products',
+			snapshotTarget: SNAPSHOT_TARGET,
+			policy: {
+				durationMs: 60_000,
+				throttleMs: 1_500,
+				maxPendingNodes: 100,
+				maxMutations: 5_000,
+			},
+		});
+		await api.flushObservationBatch();
+
+		expect(writeContentPageSessionSnapshot).toHaveBeenLastCalledWith({
+			target: SNAPSHOT_TARGET,
+			status: 'observing',
+			observedAt: lateBatch.observedAt,
+			reason: 'observation-batch-flushed',
 		});
 	});
 
