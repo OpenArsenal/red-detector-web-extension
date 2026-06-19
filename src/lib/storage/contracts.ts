@@ -1,4 +1,13 @@
+import type { DetectionSessionKey } from '../contracts/detection-session';
+
 import { getOrigin } from '../shared/url';
+
+
+/** Prefix used for exact page-document detection snapshot records. */
+export const DETECTION_SESSION_SNAPSHOT_PREFIX = 'rd:session:';
+
+/** Prefix used for the newest detection snapshot associated with an origin hash. */
+export const DETECTION_ORIGIN_SNAPSHOT_PREFIX = 'rd:origin:';
 
 /** Prefix used for every origin-level analysis cache record. */
 export const ANALYSIS_CACHE_PREFIX = 'analysis:';
@@ -62,4 +71,37 @@ export function getReplayTraceCacheKeyForAnalysisCacheKey(key: string): string {
 /** Convert an analysis cache key into its paired replay history key. */
 export function getReplayTraceHistoryCacheKeyForAnalysisCacheKey(key: string): string {
 	return `${REPLAY_TRACE_HISTORY_CACHE_PREFIX}${key.slice(ANALYSIS_CACHE_PREFIX.length)}`;
+}
+
+
+/**
+ * Build the storage key for the latest snapshot from one page document.
+ *
+ * `documentId` can contain browser-generated punctuation, so each identity part
+ * is encoded before joining. The readable prefix still keeps DevTools storage
+ * inspection useful when debugging cache-first popup rendering.
+ */
+export function getDetectionSessionSnapshotKey(key: DetectionSessionKey): string {
+	return [
+		DETECTION_SESSION_SNAPSHOT_PREFIX.slice(0, -1),
+		String(key.tabId),
+		String(key.frameId),
+		encodeStorageKeyPart(key.documentId),
+	].join(':');
+}
+
+/**
+ * Build the storage key for the newest snapshot associated with an origin hash.
+ *
+ * The value stored at this key is a complete `DetectionSessionSnapshot`, not a
+ * raw origin record. Popup startup can render it while the background resolves
+ * the exact active document session.
+ */
+export function getDetectionOriginSnapshotKey(originHash: string): string {
+	return `${DETECTION_ORIGIN_SNAPSHOT_PREFIX}${encodeStorageKeyPart(originHash)}:latest`;
+}
+
+/** Encode storage key parts without changing already readable ASCII keys. */
+function encodeStorageKeyPart(value: string): string {
+	return encodeURIComponent(value);
 }

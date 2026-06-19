@@ -275,3 +275,11 @@ function cloneReplayTrace(trace: DetectionReplayTrace): DetectionReplayTrace {
 		...(trace.emission ? { emission: { ...trace.emission } } : {}),
 	};
 }
+
+
+export type { DetectionSessionSnapshotWriteResult } from './detection-snapshots';
+export {
+	getLatestDetectionOriginSnapshot,
+	getLatestDetectionSessionSnapshot,
+	saveDetectionSessionSnapshot,
+} from './detection-snapshots';
