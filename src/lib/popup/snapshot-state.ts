@@ -78,9 +78,13 @@ export function createStoredPopupAnalysisOutput(stored: PopupStoredAnalysisResul
   };
 }
 
-/** Only same-tab snapshots can update the open popup's visible current-tab result. */
+/** Only exact active-tab snapshots can update the open popup's visible current-tab result. */
 export function isSnapshotForActiveTab(identity: ActiveTabIdentity, snapshot: DetectionSessionSnapshot): boolean {
-  return snapshot.key.tabId === identity.tabId && snapshot.key.originHash === identity.originHash;
+	return (
+		snapshot.key.tabId === identity.tabId &&
+		snapshot.key.originHash === identity.originHash &&
+		snapshot.urlHash === identity.urlHash
+	);
 }
 
 
