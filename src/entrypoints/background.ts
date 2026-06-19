@@ -21,6 +21,7 @@ import {
 import type { ObservationSessionState } from '../lib/content/observed-page-signals';
 import type { DetectionKind, DetectionRunOptions, SiteAnalysis } from '../lib/detection/types';
 import type {
+	ActiveTabIdentity,
 	AnalysisEnrichmentState,
 	AnalyzeActiveTabInput,
 	AnalyzeActiveTabOutput,
@@ -47,8 +48,12 @@ import {
 	shouldStartObservationForAnalysis,
 } from '../lib/lifecycle/observation';
 import { errorResponse, ok, type AppResult } from '../lib/shared/result';
-import { isSameDocumentUrl } from '../lib/shared/url';
-import { STORAGE_LIMITS, getAnalysisCacheKey } from '../lib/storage/contracts';
+import { getOrigin, isSameDocumentUrl } from '../lib/shared/url';
+import {
+	STORAGE_LIMITS,
+	createDetectionStorageHash,
+	getAnalysisCacheKey,
+} from '../lib/storage/contracts';
 import {
 	getCachedAnalysis,
 	getCachedReplayTrace,
@@ -152,6 +157,21 @@ function summarizeTab(tab: InspectableTab): Record<string, unknown> {
 	return {
 		tabId: tab.id,
 		hostname: new URL(tab.url).hostname,
+	};
+}
+
+function createActiveTabIdentity(tab: InspectableTab): ActiveTabIdentity {
+	const url = new URL(tab.url);
+	const origin = getOrigin(tab.url);
+
+	return {
+		tabId: tab.id,
+		frameId: 0,
+		url: tab.url,
+		hostname: url.hostname,
+		originHash: createDetectionStorageHash(origin),
+		urlHash: createDetectionStorageHash(tab.url),
+		incognito: tab.incognito,
 	};
 }
 
@@ -1216,6 +1236,15 @@ export function createBackgroundApi(): BackgroundApi {
 	return {
 		async getAnalysisStatus() {
 			return ok(await getStatus());
+		},
+
+		async getActiveTabIdentity() {
+			const tabResponse = await getInspectableActiveTab();
+			if (!tabResponse.ok) {
+				return tabResponse;
+			}
+
+			return ok(createActiveTabIdentity(tabResponse.value));
 		},
 
 		async analyzeActiveTab(input): Promise<AppResult<AnalyzeActiveTabOutput>> {

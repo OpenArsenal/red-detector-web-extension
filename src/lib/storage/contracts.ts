@@ -73,6 +73,24 @@ export function getReplayTraceHistoryCacheKeyForAnalysisCacheKey(key: string): s
 	return `${REPLAY_TRACE_HISTORY_CACHE_PREFIX}${key.slice(ANALYSIS_CACHE_PREFIX.length)}`;
 }
 
+/**
+ * Build a stable non-reversible key fragment for URLs and origins.
+ *
+ * Snapshot storage needs to correlate popup, background, and content state
+ * without placing raw URLs in every session key. The hash is intentionally small
+ * and non-cryptographic; it is a deterministic storage partition, not a privacy
+ * guarantee against someone who already has extension storage access.
+ */
+export function createDetectionStorageHash(value: string): string {
+	let hash = 0x811c9dc5;
+	for (let index = 0; index < value.length; index += 1) {
+		hash ^= value.charCodeAt(index);
+		hash = Math.imul(hash, 0x01000193);
+	}
+
+	return (hash >>> 0).toString(36);
+}
+
 
 /**
  * Build the storage key for the latest snapshot from one page document.

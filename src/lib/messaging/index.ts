@@ -1,4 +1,5 @@
 export type {
+	ActiveTabIdentity,
 	ActiveTabObservationMode,
 	AnalysisCacheStatus,
 	AnalysisEnrichmentState,

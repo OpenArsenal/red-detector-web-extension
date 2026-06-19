@@ -65,6 +65,31 @@ export type AnalyzeActiveTabInput = {
 };
 
 /**
+ * Minimal active-tab identity needed before popup analysis starts.
+ *
+ * The popup uses this record to choose a storage snapshot first, then asks the
+ * background to synchronize the page. Keeping identity separate from analysis
+ * avoids loading the detector registry just to decide which cached result can be
+ * painted during popup startup.
+ */
+export type ActiveTabIdentity = {
+	/** Browser tab id that owns the active top-frame page. */
+	readonly tabId: number;
+	/** Frame id used by current detection sessions; top frame is always `0`. */
+	readonly frameId: number;
+	/** Full active URL used only for the legacy analysis-cache fallback. */
+	readonly url: string;
+	/** Hostname shown in the popup before a stored analysis is rendered. */
+	readonly hostname: string;
+	/** Stable storage partition for origin-level snapshot lookup. */
+	readonly originHash: string;
+	/** Stable storage partition for exact active URL comparisons. */
+	readonly urlHash: string;
+	/** Whether persistent reads and writes should be skipped for this popup. */
+	readonly incognito: boolean;
+};
+
+/**
  * Stable handle for the observation session created by one popup analysis.
  *
  * The popup keeps this handle so refresh and stop actions target the same tab
@@ -219,6 +244,8 @@ export type CollectPageSignalsInput = {
 export interface BackgroundApi {
 	/** Return aggregate cache status for the extension. */
 	getAnalysisStatus(): Promise<AppResult<AnalysisStatus>>;
+	/** Return active-tab identity without collecting or analyzing page data. */
+	getActiveTabIdentity(): Promise<AppResult<ActiveTabIdentity>>;
 	/** Analyze the active tab and optionally start a content-script observation session. */
 	analyzeActiveTab(input: AnalyzeActiveTabInput): Promise<AppResult<AnalyzeActiveTabOutput>>;
 	/** Re-analyze a known observation session when its queued page facts are dirty. */
