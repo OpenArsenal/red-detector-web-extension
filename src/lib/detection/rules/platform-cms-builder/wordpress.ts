@@ -201,9 +201,9 @@ export const wordpressTechnologyDefinition = {
 		{
 			id: "wordpress:html:modern:3",
 			kind: "html",
-			pattern: new RegExp("class=\"[^\"]*(?:wordpress|wp-)[^\"]*\""),
+			pattern: new RegExp("class=[\"'][^\"']*\\b(?:wp-site-blocks|wp-block-[\\w-]+|wordpress-(?:logged-in|admin-bar))\\b", "i"),
 			confidence: 65,
-			description: "Document HTML matches a modern tooling marker.",
+			description: "Document HTML contains WordPress-specific block or runtime classes.",
 		},
 		{
 			id: "wordpress:html:modern:4",
@@ -329,7 +329,7 @@ export const wordpressTechnologyDefinition = {
 			id: "wordpress:header:modern:21",
 			kind: "header",
 			key: "x-powered-by",
-			valuePattern: new RegExp("WordPress", "i"),
+			valuePattern: new RegExp("^WordPress(?:\\b|/)", "i"),
 			confidence: 55,
 			description: "HTTP response header matches a modern tooling marker.",
 		},

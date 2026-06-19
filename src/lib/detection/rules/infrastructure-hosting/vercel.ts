@@ -14,7 +14,7 @@ export const vercelTechnologyDefinition = {
 			id: "vercel:header:0",
 			kind: "header",
 			key: "server",
-			valuePattern: new RegExp("^now|Vercel$", "i"),
+			valuePattern: new RegExp("^(?:now|vercel)$", "i"),
 			description: "Response header matches a known technology marker.",
 		},
 		{
@@ -28,7 +28,7 @@ export const vercelTechnologyDefinition = {
 			id: "vercel:header:2",
 			kind: "header",
 			key: "server",
-			valuePattern: new RegExp("^now|vercel$", "i"),
+			valuePattern: new RegExp("^(?:now|vercel)$", "i"),
 			description: "Response header matches a known technology marker.",
 		},
 		{

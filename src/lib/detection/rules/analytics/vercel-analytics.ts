@@ -21,12 +21,6 @@ export const vercelAnalyticsTechnologyDefinition = {
 			pattern: new RegExp("\\/_vercel\\/insights\\/script\\.js"),
 			description: "Script source URL matches a known technology marker.",
 		},
-		{
-			id: "vercel-analytics:jsGlobal:2",
-			kind: "jsGlobal",
-			property: "va",
-			description: "Page-owned global matches a known technology marker.",
-		},
 	],
 	requires: [
 		"vercel",

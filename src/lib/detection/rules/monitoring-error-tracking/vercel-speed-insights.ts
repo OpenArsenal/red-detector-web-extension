@@ -24,12 +24,6 @@ export const vercelSpeedInsightsTechnologyDefinition = {
 			description: "DOM selector matches a known technology marker.",
 		},
 		{
-			id: "vercel-speed-insights:jsGlobal:2",
-			kind: "jsGlobal",
-			property: "si",
-			description: "Page-owned global matches a known technology marker.",
-		},
-		{
 			id: "vercel-speed-insights:scriptContent:modern:0",
 			kind: "scriptContent",
 			pattern: new RegExp("['\"']_vercel\\/speed-insights\\/vitals['\"']"),

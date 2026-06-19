@@ -41,22 +41,9 @@ export const shopifyTechnologyDefinition = {
 			description: "Observed request URL matches a known technology marker.",
 		},
 		{
-			id: "shopify:dom:5",
-			kind: "dom",
-			selector: "link[href*='shopify.com']",
-			description: "DOM selector matches a known technology marker.",
-		},
-		{
 			id: "shopify:jsGlobal:6",
 			kind: "jsGlobal",
 			property: "SHOPIFY_API_BASE_URL",
-			description: "Page-owned global matches a known technology marker.",
-		},
-		{
-			id: "shopify:jsGlobal:7",
-			kind: "jsGlobal",
-			property: "Shopify",
-			confidence: 25,
 			description: "Page-owned global matches a known technology marker.",
 		},
 		{
@@ -170,13 +157,6 @@ export const shopifyTechnologyDefinition = {
 			id: "shopify:resourceUrl:modern:0",
 			kind: "resourceUrl",
 			pattern: new RegExp("\\.myshopify\\.com\\/"),
-			confidence: 45,
-			description: "Resource filename or URL matches a modern tooling marker.",
-		},
-		{
-			id: "shopify:resourceUrl:modern:1",
-			kind: "resourceUrl",
-			pattern: new RegExp("\\.shopify\\.com\\/"),
 			confidence: 45,
 			description: "Resource filename or URL matches a modern tooling marker.",
 		},

@@ -1020,6 +1020,121 @@ describe('payload-ready collector promotions', () => {
 		expect(pydataSphinxTheme?.version).toBe('0.15.4');
 	});
 
+	it('does not infer Wagtail or its server stack from generic image paths', () => {
+		const analysis = analyzeSite(
+			createSignals({
+				url: 'https://google.com/',
+				hostname: 'google.com',
+				html: '<img src="/images/logo.png"><meta property="og:image" content="/images/search.png">',
+				text: 'Search images, maps, news, and videos.',
+				dom: {
+					selectors: {
+						"[style*='images/']": true,
+						"img[src*='images/']": true,
+						"img[srcset*='images/'], source[srcset*='images/']": true,
+						"meta[content*='images/']": true,
+						"video[poster*='images/']": true,
+					},
+				},
+			}),
+			technologyDefinitions,
+		);
+
+		const ids = new Set(analysis.results.map((item) => item.technologyId));
+		expect(ids.has('wagtail')).toBe(false);
+		expect(ids.has('django')).toBe(false);
+		expect(ids.has('python')).toBe(false);
+	});
+
+	it('does not detect requested platform families from loose mentions or generic paths', () => {
+		const analysis = analyzeSite(
+			createSignals({
+				url: 'https://example.com/',
+				hostname: 'example.com',
+				html: '<section class="wp-card react-section">Cloudinary upload notes, Shopify pricing, WooCommerce guide, and Vercel status.</section>',
+				scripts: [
+					'https://cdn.example.com/integrations/woocommerce.js?ver=1.2.3',
+					'https://cdn.example.com/assets/reactive-menu.js',
+				],
+				resources: [
+					{ url: 'https://cdn.example.com/image/upload/banner.jpg', initiatorType: 'img' },
+					{ url: 'https://api.shopify.com/docs/reference.json', initiatorType: 'fetch' },
+					{ url: 'https://example.com/va/script.js', initiatorType: 'script' },
+				],
+				headers: { server: 'not-now', 'x-powered-by': 'Wordpressible' },
+				jsGlobals: { va: {}, si: {}, Shopify: {} },
+				dom: {
+					selectors: {
+						"div[id='react-root'], div[id^='react-root-']": false,
+						"[data-reactroot], [data-reactid], [data-react-helmet], [data-react-checksum]": false,
+					},
+				},
+			}),
+			technologyDefinitions,
+		);
+
+		const ids = new Set(analysis.results.map((item) => item.technologyId));
+		for (const id of [
+			'react',
+			'vercel',
+			'vercel-analytics',
+			'vercel-speed-insights',
+			'cloudinary',
+			'wordpress',
+			'shopify',
+			'woocommerce',
+		]) {
+			expect(ids.has(id)).toBe(false);
+		}
+	});
+
+	it('still detects requested platform families from explicit vendor-owned markers', () => {
+		const analysis = analyzeSite(
+			createSignals({
+				headers: { server: 'Vercel' },
+				meta: { generator: ['WordPress 6.5'] },
+				html: [
+					'<div data-reactroot></div>',
+					'<img src="/media/images/hero.fill-800x600.jpg">',
+					'<link rel="stylesheet" href="/wp-content/plugins/woocommerce/assets/css/woocommerce.css?ver=9.1.0">',
+				].join(''),
+				scripts: [
+					'https://cdn.example.com/react-dom.production.min.js',
+					'https://cdn.shopify.com/s/files/1/0000/0000/t/theme.js',
+					'https://example.com/wp-content/plugins/woocommerce/assets/js/frontend/add-to-cart.min.js?ver=9.1.0',
+					'https://example.com/_vercel/insights/script.js',
+					'https://example.com/_vercel/speed-insights/script.js',
+				],
+				resources: [
+					{ url: 'https://res.cloudinary.com/demo/image/upload/sample.jpg', initiatorType: 'img' },
+					{ url: 'https://cdn.shopify.com/s/files/1/0000/0000/t/theme.js', initiatorType: 'script' },
+					{
+						url: 'https://example.com/wp-content/plugins/woocommerce/assets/js/frontend/add-to-cart.min.js?ver=9.1.0',
+						initiatorType: 'script',
+					},
+					{ url: 'https://example.com/_vercel/insights/script.js', initiatorType: 'script' },
+					{ url: 'https://example.com/_vercel/speed-insights/script.js', initiatorType: 'script' },
+				],
+			}),
+			technologyDefinitions,
+		);
+
+		const ids = new Set(analysis.results.map((item) => item.technologyId));
+		for (const id of [
+			'react',
+			'vercel',
+			'vercel-analytics',
+			'vercel-speed-insights',
+			'cloudinary',
+			'wordpress',
+			'shopify',
+			'woocommerce',
+			'wagtail',
+		]) {
+			expect(ids.has(id)).toBe(true);
+		}
+	});
+
 	it('does not display named tooling from single weak compiled-code snippets', () => {
 		const analysis = analyzeSite(
 			createSignals({

@@ -14,18 +14,19 @@ export const woocommerceTechnologyDefinition = {
 		{
 			id: "woocommerce:scriptSrc:0",
 			kind: "scriptSrc",
-			pattern: new RegExp("woocommerce"),
-			description: "Script source URL matches a known technology marker.",
+			pattern: new RegExp("/wp-content/plugins/woocommerce/", "i"),
+			confidence: 100,
+			description: "Script URL is served from the WooCommerce WordPress plugin directory.",
 		},
 		{
 			id: "woocommerce:scriptSrc:1",
 			kind: "scriptSrc",
-			pattern: new RegExp("\\/woocommerce(?:\\.min)?\\.js(?:\\?ver=([0-9.]+))?"),
+			pattern: new RegExp("/wp-content/plugins/woocommerce/[^?#\\s\"']+[?&]ver=([0-9.]+)", "i"),
 			version: {
 				source: "match",
 				group: 1,
 			},
-			description: "Script source URL matches a known technology marker.",
+			description: "Versioned script URL is served from the WooCommerce WordPress plugin directory.",
 		},
 		{
 			id: "woocommerce:dom:2",
@@ -53,18 +54,19 @@ export const woocommerceTechnologyDefinition = {
 		{
 			id: "woocommerce:scriptSrc:5",
 			kind: "scriptSrc",
-			pattern: new RegExp("^(?!.*?\\/wp-content\\/plugins\\/[^/]+\\/js\\/integrations\\/woocommerce\\.js(?:\\?ver=[\\d.]+)?$).*woocommerce"),
-			description: "Script source URL matches a known technology marker.",
+			pattern: new RegExp("/wp-content/plugins/woocommerce/", "i"),
+			confidence: 100,
+			description: "Script URL is served from the WooCommerce WordPress plugin directory.",
 		},
 		{
 			id: "woocommerce:scriptSrc:6",
 			kind: "scriptSrc",
-			pattern: new RegExp("^(?!.*?\\/wp-content\\/plugins\\/[^/]+\\/js\\/integrations\\/woocommerce\\.js(?:\\?ver=[\\d.]+)?$).*\\/woocommerce(?:\\.min)?\\.js(?:\\?ver=([0-9.]+))?"),
+			pattern: new RegExp("/wp-content/plugins/woocommerce/[^?#\\s\"']+[?&]ver=([0-9.]+)", "i"),
 			version: {
 				source: "match",
 				group: 1,
 			},
-			description: "Script source URL matches a known technology marker.",
+			description: "Versioned script URL is served from the WooCommerce WordPress plugin directory.",
 		},
 		{
 			id: "woocommerce:jsGlobal:7",

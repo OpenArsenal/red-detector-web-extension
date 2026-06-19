@@ -46,7 +46,7 @@ export const cloudinaryTechnologyDefinition = {
 		{
 			id: "cloudinary:resourceUrl:asset-host",
 			kind: "resourceUrl",
-			pattern: new RegExp("https?://[^/]+\\.cloudinary\\.com/|/image/upload/", "i"),
+			pattern: new RegExp("https?://[^/]+\\.cloudinary\\.com/(?:[^\\s\"'<>?#]+/)*(?:image|video|raw)/upload/", "i"),
 			confidence: 85,
 			description: "Loaded resource URL uses Cloudinary asset-delivery path conventions.",
 		},

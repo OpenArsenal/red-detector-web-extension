@@ -57,8 +57,8 @@ export const reactTechnologyDefinition = {
 		{
 			id: "react:dom:6",
 			kind: "dom",
-			selector: "div[id*='react-root'], span[id*='react-']",
-			description: "DOM selector matches a known technology marker.",
+			selector: "div[id='react-root'], div[id^='react-root-']",
+			description: "DOM contains a conventional React root element id.",
 		},
 		{
 			id: "react:jsGlobal:7",
@@ -91,12 +91,6 @@ export const reactTechnologyDefinition = {
 			description: "Meta tag matches a known technology marker.",
 		},
 		{
-			id: "react:scriptContent:11",
-			kind: "scriptContent",
-			pattern: new RegExp("react\\.js"),
-			description: "Script content contains a bounded technology signature.",
-		},
-		{
 			id: "react:dom:12",
 			kind: "dom",
 			selector: "div[id*='appReactRoot']",
@@ -105,14 +99,8 @@ export const reactTechnologyDefinition = {
 		{
 			id: "react:dom:13",
 			kind: "dom",
-			selector: "div[id*='react-root']",
-			description: "DOM selector matches a known technology marker.",
-		},
-		{
-			id: "react:dom:14",
-			kind: "dom",
-			selector: "span[id*='react-']",
-			description: "DOM selector matches a known technology marker.",
+			selector: "div[id='react-root'], div[id^='react-root-']",
+			description: "DOM contains a conventional React root element id.",
 		},
 		{
 			id: "react:dom:15",
@@ -143,8 +131,8 @@ export const reactTechnologyDefinition = {
 		{
 			id: "react:dom:19",
 			kind: "dom",
-			selector: "div[id*='react-root'], div[id*='appReactRoot'], span[id*='react-'], style[id*='react-tooltip-core-styles']",
-			description: "DOM selector matches a known technology marker.",
+			selector: "div[id='react-root'], div[id^='react-root-'], div[id*='appReactRoot'], style[id*='react-tooltip-core-styles']",
+			description: "DOM contains React-specific root or library style markers.",
 		},
 		{
 			id: "react:scriptContent:modern:0",
@@ -233,7 +221,7 @@ export const reactTechnologyDefinition = {
 		{
 			id: "react:scriptContent:modern:12",
 			kind: "scriptContent",
-			pattern: new RegExp("_jsxDEV\\s*\\(\\s*[A-Za-z_$][\\w$]*\\s*,\\s*\\{"),
+			pattern: new RegExp("import\\s*\\{[^}]*jsxDEV[^}]*\\}\\s*from\\s*[\"']react\\/jsx-dev-runtime[\"']"),
 			confidence: 45,
 			description: "Bundled script content matches a modern tooling marker.",
 		},
@@ -247,7 +235,7 @@ export const reactTechnologyDefinition = {
 		{
 			id: "react:scriptContent:modern:14",
 			kind: "scriptContent",
-			pattern: new RegExp("_jsxs?\\s*\\(\\s*[A-Za-z_$][\\w$]*\\s*,\\s*\\{"),
+			pattern: new RegExp("import\\s*\\{[^}]*jsxs?[^}]*\\}\\s*from\\s*[\"']react\\/jsx-runtime[\"']"),
 			confidence: 45,
 			description: "Bundled script content matches a modern tooling marker.",
 		},
