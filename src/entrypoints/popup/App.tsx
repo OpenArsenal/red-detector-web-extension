@@ -75,6 +75,7 @@ export default function App() {
   const [explanationsByTechnologyId, setExplanationsByTechnologyId] =
     createSignal<PopupExplanationLookup>({});
   const [pipelineMode, setPipelineMode] = createSignal("event");
+  const [enrichmentPending, setEnrichmentPending] = createSignal(false);
   const [replayHistory, setReplayHistory] = createSignal<readonly DetectionReplayTrace[]>([]);
   const [sessionTarget, setSessionTarget] = createSignal<ObservationSessionTarget | null>(null);
   let pollTimer: ReturnType<typeof globalThis.setInterval> | undefined;
@@ -144,6 +145,38 @@ export default function App() {
       : backgroundApi.getActiveObservationSessionState();
   }
 
+  async function applyNewerStoredAnalysisWhenAvailable() {
+    const target = sessionTarget();
+    const latestAnalysis = analysis();
+    if (!target || !latestAnalysis) {
+      return false;
+    }
+
+    const response = await backgroundApi.getObservationSessionLatestAnalysis({
+      ...target,
+      afterAnalyzedAt: latestAnalysis.analyzedAt,
+    });
+
+    if (!response.ok) {
+      logPopupEvent("stored-analysis-not-ready", {
+        code: response.error.code,
+        message: response.error.message,
+      });
+      return false;
+    }
+
+    logPopupEvent("stored-analysis-applied", {
+      previousAnalyzedAt: latestAnalysis.analyzedAt,
+      nextAnalyzedAt: response.value.analysis.analyzedAt,
+      resultCount: response.value.analysis.results.length,
+    });
+    applyAnalysisResponse(response.value, {
+      source: "auto",
+    });
+    await refreshStatus();
+    return true;
+  }
+
   async function refreshIfPageSignalsChanged() {
     if (refreshInFlight || pollingCheckInFlight) {
       return;
@@ -151,12 +184,22 @@ export default function App() {
 
     pollingCheckInFlight = true;
     try {
+      if (enrichmentPending() && await applyNewerStoredAnalysisWhenAvailable()) {
+        return;
+      }
+
       const response = await readObservationSessionState();
       if (!response.ok) {
         logPopupEvent("observation-state-unavailable", {
           code: response.error.code,
           message: response.error.message,
+          enrichmentPending: enrichmentPending(),
         });
+        if (enrichmentPending()) {
+          setPollingMode("active");
+          return;
+        }
+
         setPollingMode("unknown");
         clearPopupPolling();
         return;
@@ -167,9 +210,12 @@ export default function App() {
         logPopupEvent("observation-state-inactive", {
           status: response.value.status,
           stopReason: response.value.stopReason,
+          enrichmentPending: enrichmentPending(),
         });
-        setPollingMode(nextPollingMode);
-        clearPopupPolling();
+        setPollingMode(enrichmentPending() ? "active" : nextPollingMode);
+        if (!enrichmentPending()) {
+          clearPopupPolling();
+        }
         return;
       }
 
@@ -184,9 +230,15 @@ export default function App() {
         await refreshActiveObservationSession();
       }
     } catch {
-      logPopupEvent("observation-state-check-failed");
-      setPollingMode("unknown");
-      clearPopupPolling();
+      logPopupEvent("observation-state-check-failed", {
+        enrichmentPending: enrichmentPending(),
+      });
+      if (enrichmentPending()) {
+        setPollingMode("active");
+      } else {
+        setPollingMode("unknown");
+        clearPopupPolling();
+      }
     } finally {
       pollingCheckInFlight = false;
     }
@@ -222,8 +274,9 @@ export default function App() {
     setLateAddedIds(update.lateDetectionIds);
     setExplanationsByTechnologyId(update.explanationsByTechnologyId);
     setPipelineMode(response.replayTrace?.completedMode ?? "event");
+    setEnrichmentPending(response.enrichment?.status === "pending");
     setReplayHistory(response.replayHistory ?? []);
-    setSessionTarget(response.sessionTarget ?? null);
+    setSessionTarget(response.sessionTarget ?? sessionTarget());
 
     logPopupEvent("analysis-applied", {
       source: options.source,
@@ -273,7 +326,7 @@ export default function App() {
 
       const nextPollingMode = getPopupObservationModeFromSession(response.value);
       setPollingMode(nextPollingMode);
-      if (nextPollingMode === "active") {
+      if (nextPollingMode === "active" || enrichmentPending()) {
         startPopupPolling();
       } else {
         clearPopupPolling();
@@ -458,12 +511,18 @@ export default function App() {
   });
 
   onCleanup(() => {
-    logPopupEvent("cleanup-stop-observation");
     clearPopupPolling();
     const target = sessionTarget();
-    void (target
-      ? backgroundApi.stopObservationSession(target)
-      : backgroundApi.stopActiveObservationSession());
+    if (!target) {
+      logPopupEvent("cleanup-without-owned-session");
+      return;
+    }
+
+    logPopupEvent("cleanup-stop-observation", {
+      sessionId: target.sessionId,
+      tabId: target.tabId,
+    });
+    void backgroundApi.stopObservationSession(target);
   });
 
   return (

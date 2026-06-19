@@ -9,6 +9,7 @@ export type {
 	BackgroundApi,
 	ObservationSessionTarget,
 	ObservationSessionTargetInput,
+	ObservationSessionAnalysisSnapshotInput,
 	BeginObservationSessionInput,
 	CollectObservationBatchOutput,
 	CollectPageSignalsInput,

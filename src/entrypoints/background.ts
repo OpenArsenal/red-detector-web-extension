@@ -80,15 +80,17 @@ const CONTENT_SCRIPT_PING_TIMEOUT_MS = 750;
 /**
  * URL-like resource surfaces are deferred out of the user-visible first pass.
  *
- * Resource and request URL rules have high fan-out because a modern page can
- * expose hundreds of resource timing entries and each entry used to meet every
- * URL-pattern rule. Script, stylesheet, link, meta, DOM, storage, and page URL
- * evidence still produce immediate detections, while broad resource/request
- * matching runs during enrichment after the popup can render.
+ * Resource, request, script, and stylesheet URL rules have high fan-out because
+ * modern pages expose many loaded assets and each URL-like observation can meet
+ * broad pattern buckets. Link, meta, DOM, storage, cookie, page-global, and page
+ * URL evidence still produce immediate detections, while asset URL matching runs
+ * during enrichment after the popup can render.
  */
 const INITIAL_PIPELINE_DISABLED_KINDS = Object.freeze([
 	'resourceUrl',
 	'requestUrl',
+	'scriptSrc',
+	'stylesheetHref',
 ] satisfies DetectionKind[]);
 
 /**
@@ -119,6 +121,25 @@ const eventObservationBatchByTab = new Map<number, ObservationBatch>();
  * new push channel.
  */
 const completedEnrichmentBySession = new Map<string, { readonly tabId: number; readonly completedAt: number }>();
+
+/**
+ * Drop volatile state that only makes sense while a tab can still answer RPC.
+ *
+ * Manifest V3 can restart the background at any time, so these maps are only
+ * performance and lifecycle conveniences. Removing them when a tab closes keeps
+ * stale observation batches or completed enrichment markers from being reused by
+ * a later tab that receives the same browser id.
+ */
+function forgetTabRuntimeState(tabId: number): void {
+	contentScriptInjectionByTab.delete(tabId);
+	eventObservationBatchByTab.delete(tabId);
+
+	for (const [sessionId, completed] of completedEnrichmentBySession) {
+		if (completed.tabId === tabId) {
+			completedEnrichmentBySession.delete(sessionId);
+		}
+	}
+}
 
 function logBackgroundEvent(event: string, details?: Record<string, unknown>): void {
 	backgroundLogger.debug('[red-detector][background] {event}', {
@@ -354,6 +375,41 @@ function createObservationSessionTarget(
 		expectedUrl: tab.url,
 		...(tab.incognito ? { incognito: true } : {}),
 	};
+}
+
+/**
+ * Start page watching for a cache hit without making the cache unusable.
+ *
+ * Cache-first popup opens should feel immediate, but a cached result still needs
+ * a session handle so late observations, Stop observation, and cleanup target
+ * the same tab instead of falling back to whichever tab is active later.
+ * Session startup failures are logged and the cached analysis still renders.
+ */
+async function startObservationSessionForCachedAnalysis(
+	tab: InspectableTab,
+	input: AnalyzeActiveTabInput,
+	timingContext: TimingContext,
+): Promise<ObservationSessionState | undefined> {
+	if (!shouldStartObservationForAnalysis(input)) {
+		return undefined;
+	}
+
+	const response = await timeAsyncSpan(
+		'background.cache-hit.observation-session.begin',
+		timingContext,
+		() => beginObservationSessionForTab(tab.id, tab.url),
+		(value) => ({ ok: value.ok, status: value.ok ? value.value.status : undefined }),
+	);
+	if (!response.ok) {
+		logBackgroundEvent('analysis-cache-observation-unavailable', {
+			...summarizeTab(tab),
+			code: response.error.code,
+			message: response.error.message,
+		});
+		return undefined;
+	}
+
+	return response.value;
 }
 
 function validateObservationSessionTarget(
@@ -950,17 +1006,18 @@ async function refreshObservationSessionTarget(
 		return sessionResponse;
 	}
 
-	const targetValidation = validateObservationSessionTarget(sessionResponse.value, target);
+	const resolvedSession = markSessionDirtyWhenEnrichmentCompleted(sessionResponse.value, target);
+	const targetValidation = validateObservationSessionTarget(resolvedSession, target);
 	if (!targetValidation.ok) {
 		return targetValidation;
 	}
 
 	logBackgroundEvent('observation-refresh-session-state', {
 		...summarizeTab(tab),
-		...summarizeSession(sessionResponse.value),
+		...summarizeSession(resolvedSession),
 	});
 
-	const blockReason = getObservationRefreshBlockReason(sessionResponse.value, tab.url);
+	const blockReason = getObservationRefreshBlockReason(resolvedSession, tab.url);
 	if (blockReason) {
 		logBackgroundEvent('observation-refresh-unavailable', {
 			...summarizeTab(tab),
@@ -1025,6 +1082,16 @@ async function stopObservationSessionTarget(
 }
 
 
+/**
+ * Surface completed background enrichment through the existing polling contract.
+ *
+ * Deeper evidence collection runs after the first popup response and does not
+ * come from the content-script mutation observer. Marking the targeted session
+ * as dirty lets the popup reuse the same refresh path and receive the enriched
+ * cached analysis. Expired sessions remain eligible because enrichment can take
+ * longer than the observation window; manual stops, navigation, and invalidation
+ * still keep their stopped state.
+ */
 function markSessionDirtyWhenEnrichmentCompleted(
 	session: ObservationSessionState,
 	target: ObservationSessionTarget,
@@ -1037,7 +1104,7 @@ function markSessionDirtyWhenEnrichmentCompleted(
 	if (!completed || completed.tabId !== target.tabId) {
 		return session;
 	}
-	if (session.status !== 'observing' && session.status !== 'idle') {
+	if (session.status === 'stopped' && session.stopReason !== 'expired') {
 		return session;
 	}
 
@@ -1061,6 +1128,78 @@ async function getObservationSessionStateForTarget(
 	}
 
 	return ok(markSessionDirtyWhenEnrichmentCompleted(response.value, target));
+}
+
+/**
+ * Read the newest stored analysis for a known popup session target.
+ *
+ * Deferred enrichment writes the completed analysis to storage before the popup
+ * can necessarily refresh the content-script observer. Polling storage by the
+ * session target keeps progressive updates durable across observer expiry and
+ * Manifest V3 service-worker restarts, where in-memory completion markers are
+ * lost.
+ */
+async function getLatestAnalysisForObservationSession(
+	input: ObservationSessionTarget & { readonly afterAnalyzedAt: number },
+): Promise<AppResult<AnalyzeActiveTabOutput>> {
+	const tab = tabFromObservationSessionTarget(input);
+	const timingTraceId = createTimingTraceId('latest-session-analysis');
+	const timingContext: TimingContext = {
+		traceId: timingTraceId,
+		surface: 'background',
+		details: {
+			...summarizeTab(tab),
+			sessionId: input.sessionId,
+			afterAnalyzedAt: input.afterAnalyzedAt,
+		},
+	};
+	const cached = await timeAsyncSpan(
+		'storage.get-cached-analysis',
+		timingContext,
+		() => getCachedAnalysis(tab.url),
+		(value) => ({
+			cacheHit: Boolean(value),
+			newerThanRendered: value ? value.analyzedAt > input.afterAnalyzedAt : false,
+		}),
+	);
+	if (!cached || cached.analyzedAt <= input.afterAnalyzedAt) {
+		return errorResponse(
+			'OBSERVATION_SESSION_UNAVAILABLE',
+			'No newer analysis has been stored for the observed document yet.',
+		);
+	}
+
+	const replayTrace = await timeAsyncSpan(
+		'storage.get-cached-replay-trace',
+		timingContext,
+		() => getCachedReplayTrace(tab.url),
+		(value) => ({ replayTraceHit: Boolean(value) }),
+	);
+	const replayHistory = await timeAsyncSpan(
+		'storage.get-replay-history',
+		timingContext,
+		() => getCachedReplayTraceHistory(tab.url),
+		(value) => ({ replayHistoryCount: value.length }),
+	);
+
+	logBackgroundEvent('analysis-session-cache-advanced', {
+		...summarizeTab(tab),
+		sessionId: input.sessionId,
+		previousAnalyzedAt: input.afterAnalyzedAt,
+		nextAnalyzedAt: cached.analyzedAt,
+		resultCount: cached.results.length,
+		timingTraceId,
+	});
+
+	return ok(createAnalysisOutput(
+		cached,
+		'hit',
+		undefined,
+		replayTrace ?? undefined,
+		replayHistory,
+		input,
+		{ status: 'complete', completedAt: cached.analyzedAt },
+	));
 }
 
 /** Debug output is intentionally summary-only; never log raw page observations. */
@@ -1124,13 +1263,22 @@ export function createBackgroundApi(): BackgroundApi {
 							() => getCachedReplayTraceHistory(tab.url),
 							(value) => ({ replayHistoryCount: value.length }),
 						);
+						const session = await startObservationSessionForCachedAnalysis(tab, input, requestTimingContext);
 						logBackgroundEvent('analysis-cache-hit', {
 							...summarizeTab(tab),
 							resultCount: cached.results.length,
 							analyzedAt: cached.analyzedAt,
+							sessionStatus: session?.status ?? 'none',
 							timingTraceId: requestTimingTraceId,
 						});
-						return ok(createAnalysisOutput(cached, 'hit', undefined, replayTrace ?? undefined, replayHistory));
+						return ok(createAnalysisOutput(
+							cached,
+							'hit',
+							session,
+							replayTrace ?? undefined,
+							replayHistory,
+							createObservationSessionTarget(tab, session),
+						));
 					}
 
 					logBackgroundEvent('analysis-cache-miss', {
@@ -1155,6 +1303,17 @@ export function createBackgroundApi(): BackgroundApi {
 		async refreshObservationSession(target) {
 			try {
 				return await refreshObservationSessionTarget(target);
+			} catch (error) {
+				const stack = error instanceof Error ? error.stack : undefined;
+				const message =
+					error instanceof Error ? error.message : 'Unexpected runtime error';
+				return errorResponse('UNKNOWN', message, stack);
+			}
+		},
+
+		async getObservationSessionLatestAnalysis(input) {
+			try {
+				return await getLatestAnalysisForObservationSession(input);
 			} catch (error) {
 				const stack = error instanceof Error ? error.stack : undefined;
 				const message =
@@ -1193,7 +1352,7 @@ export function createBackgroundApi(): BackgroundApi {
 			}
 
 			logBackgroundEvent('observation-stop-api', summarizeTab(tabResponse.value));
-			eventObservationBatchByTab.delete(tabResponse.value.id);
+			forgetTabRuntimeState(tabResponse.value.id);
 			return stopObservationSessionForTab(tabResponse.value.id);
 		},
 
@@ -1229,4 +1388,7 @@ const [provideBackgroundApi] = defineProxy(() => createBackgroundApi(), {
 
 export default defineBackground(() => {
 	provideBackgroundApi(createBackgroundServerAdapter());
+	browser.tabs.onRemoved.addListener((tabId) => {
+		forgetTabRuntimeState(tabId);
+	});
 });

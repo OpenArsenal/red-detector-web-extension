@@ -84,6 +84,33 @@ describe('popup view model', () => {
 		});
 	});
 
+
+	it('keeps polling while deep evidence is pending without an active observer', () => {
+		const response = makeAnalyzeActiveTabOutput({
+			analysis: makeAnalysis([makeDetection('nextjs')]),
+			cache: {
+				status: 'hit',
+				key: 'analysis:https://example.com',
+			},
+			enrichment: { status: 'pending' },
+		});
+
+		const update = buildPopupAnalysisUpdate({
+			previousAnalysis: null,
+			response,
+			source: 'initial',
+		});
+
+		expect(update).toMatchObject({
+			observationMode: 'idle',
+			shouldPoll: true,
+			notice: {
+				variant: 'warning',
+				text: 'Detected 1 technologies for example.com. Still checking deeper evidence.',
+			},
+		});
+	});
+
 	it('marks newly added automatic observation detections without duplicating previous late ids', () => {
 		const previousAnalysis = makeAnalysis([makeDetection('react')]);
 		const response = makeAnalyzeActiveTabOutput({

@@ -343,7 +343,13 @@ export function buildPopupAnalysisUpdate(
 	const lateDetectionIds = mergeUniqueIds(lateMarkerBase, addedDetectionIds);
 	const explanationsByTechnologyId = buildPopupExplanationLookup(input.response.replayTrace);
 	const observationMode = getPopupObservationModeFromAnalysis(input.response);
-	const shouldPoll = shouldPollPopupObservation(observationMode);
+	/**
+	 * Background enrichment completes outside the content observer, so the popup
+	 * keeps polling while deeper evidence is pending even if the DOM session has
+	 * already expired. The targeted refresh call will return the enriched cache
+	 * once the background marks that session dirty.
+	 */
+	const shouldPoll = shouldPollPopupObservation(observationMode) || input.response.enrichment?.status === 'pending';
 	const notice = getPopupAnalysisNotice({
 		addedDetectionIds,
 		nextAnalysis,

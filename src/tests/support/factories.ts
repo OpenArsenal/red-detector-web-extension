@@ -179,7 +179,9 @@ export function makeAnalyzeActiveTabOutput(
 			expiresAt: analysis.analyzedAt + 86_400_000,
 		},
 		session: overrides.session,
+		...(overrides.sessionTarget ? { sessionTarget: overrides.sessionTarget } : {}),
 		replayTrace: overrides.replayTrace,
 		replayHistory: overrides.replayHistory,
+		...(overrides.enrichment ? { enrichment: overrides.enrichment } : {}),
 	};
 }

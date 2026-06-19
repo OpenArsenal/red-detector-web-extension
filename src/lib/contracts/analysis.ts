@@ -86,6 +86,19 @@ export type ObservationSessionTarget = {
 export type ObservationSessionTargetInput = ObservationSessionTarget;
 
 /**
+ * Request for polling the newest persisted analysis for a known session target.
+ *
+ * Background enrichment can finish after the content observer expires or after the
+ * Manifest V3 service worker restarts. The popup sends its rendered timestamp so
+ * the background can answer only when storage contains a newer snapshot for the
+ * same document target.
+ */
+export type ObservationSessionAnalysisSnapshotInput = ObservationSessionTarget & {
+	/** Millisecond timestamp of the newest analysis already rendered by the popup. */
+	afterAnalyzedAt: number;
+};
+
+/**
  * Response returned to the popup after active-tab analysis.
  *
  * `analysis` remains the stable rendering and cache shape. `replayTrace` and
@@ -210,6 +223,8 @@ export interface BackgroundApi {
 	analyzeActiveTab(input: AnalyzeActiveTabInput): Promise<AppResult<AnalyzeActiveTabOutput>>;
 	/** Re-analyze a known observation session when its queued page facts are dirty. */
 	refreshObservationSession(input: ObservationSessionTargetInput): Promise<AppResult<AnalyzeActiveTabOutput>>;
+	/** Return the newest persisted analysis for a known session when storage has advanced. */
+	getObservationSessionLatestAnalysis(input: ObservationSessionAnalysisSnapshotInput): Promise<AppResult<AnalyzeActiveTabOutput>>;
 	/** Re-analyze the active tab when its content-script observation session is dirty. */
 	refreshActiveObservationSession(): Promise<AppResult<AnalyzeActiveTabOutput>>;
 	/** Stop a known content-script observation session. */

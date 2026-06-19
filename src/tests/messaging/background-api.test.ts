@@ -184,10 +184,16 @@ async function loadBackgroundApiHarness(input: {
 	} satisfies ContentApi;
 
 	const executeScript = vi.fn(async () => [{ frameId: 0, result: undefined }]);
+	const tabsOnRemovedAddListener = vi.fn();
 	vi.doMock('wxt/browser', () => ({
 		browser: {
 			scripting: {
 				executeScript,
+			},
+			tabs: {
+				onRemoved: {
+					addListener: tabsOnRemovedAddListener,
+				},
 			},
 		},
 	}));
@@ -365,7 +371,7 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 		});
 	});
 
-	it('returns cached analysis without contacting the content script in cache-first mode', async () => {
+	it('returns cached analysis and reopens observation in cache-first mode', async () => {
 		const collectObservationBatch = vi.fn(async () => ok({ batch: makeObservationBatch() }));
 		const cachedAnalysis = { ...makeAnalysis(), source: 'cache' as const };
 		const cachedReplayTrace = makeDetectionReplayTrace({ completedMode: 'event' });
@@ -387,7 +393,13 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 				cache: {
 					status: 'hit',
 				},
-				session: undefined,
+				session: {
+					status: 'observing',
+				},
+				sessionTarget: {
+					tabId: HTTP_TAB.id,
+					sessionId: 'session-1',
+				},
 				replayTrace: {
 					completedMode: 'event',
 				},
@@ -395,7 +407,29 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 		});
 
 		expect(collectObservationBatch).not.toHaveBeenCalled();
+		expect(harness.contentApi.beginObservationSession).toHaveBeenCalledOnce();
 		expect(harness.mocks.getCachedReplayTrace).toHaveBeenCalledWith(HTTP_TAB.url);
+	});
+
+	it('returns cached analysis without reopening observation when observation is disabled', async () => {
+		const cachedAnalysis = { ...makeAnalysis(), source: 'cache' as const };
+		const harness = await loadBackgroundApiHarness({
+			tab: HTTP_TAB,
+			cachedAnalysis,
+		});
+
+		await expect(
+			harness.api.analyzeActiveTab({ mode: 'cache-first', observe: 'none' }),
+		).resolves.toMatchObject({
+			ok: true,
+			value: {
+				analysis: { source: 'cache' },
+				cache: { status: 'hit' },
+				session: undefined,
+			},
+		});
+
+		expect(harness.contentApi.beginObservationSession).not.toHaveBeenCalled();
 	});
 
 	it('returns a fresh cache-miss analysis and persists normalized output', async () => {
