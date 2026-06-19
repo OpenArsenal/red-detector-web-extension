@@ -1,5 +1,5 @@
 import type { CompiledTechnologyRegistryArtifact } from './compiler';
-import type { IndexedObservationRuleBuckets, IndexedObservationKeyBuckets } from '../detection/observation-matcher-index';
+import type { IndexedObservationLiteralBuckets, IndexedObservationRuleBuckets, IndexedObservationKeyBuckets } from '../detection/observation-matcher-index';
 import type { TechnologyDefinition } from '../detection/types';
 
 /** Input needed to render a checked-in generated registry module. */
@@ -53,6 +53,7 @@ export function renderPrecompiledRegistryModule(
 		`\t\truleCount: ${artifact.matcherIndex.ruleCount},`,
 		`\t\tfallbackRules: ${renderRuleBuckets(artifact.matcherIndex.fallbackRules, technologyIndexById, 2)},`,
 		`\t\tkeyedRules: ${renderKeyBuckets(artifact.matcherIndex.keyedRules, technologyIndexById, 2)},`,
+		`		literalRules: ${renderLiteralBuckets(artifact.matcherIndex.literalRules, technologyIndexById, 2)},`,
 		'\t},',
 		`\tcollectionPlan: ${renderValue(artifact.collectionPlan)},`,
 		'\tsourceMap: {},',
@@ -104,6 +105,53 @@ function renderKeyBuckets(
 		lines.push(`${kindIndent}},`);
 	}
 	lines.push(`${indent}}`);
+	return lines.join('\n');
+}
+
+
+function renderLiteralBuckets(
+	buckets: IndexedObservationLiteralBuckets,
+	technologyIndexById: ReadonlyMap<string, number>,
+	indentLevel: number,
+): string {
+	const entries = Object.entries(buckets);
+	if (entries.length === 0) {
+		return '{}';
+	}
+
+	const indent = '\t'.repeat(indentLevel);
+	const innerIndent = '\t'.repeat(indentLevel + 1);
+	const lines = ['{'];
+	for (const [kind, rules] of entries) {
+		lines.push(`${innerIndent}${JSON.stringify(kind)}: ${renderLiteralIndexedRuleArray(rules, technologyIndexById, indentLevel + 1)},`);
+	}
+	lines.push(`${indent}}`);
+	return lines.join('\n');
+}
+
+function renderLiteralIndexedRuleArray(
+	rules: readonly { readonly technology: TechnologyDefinition; readonly ruleIndex: number; readonly sequence: number; readonly requiredLiteral: string }[],
+	technologyIndexById: ReadonlyMap<string, number>,
+	indentLevel: number,
+): string {
+	if (rules.length === 0) {
+		return '[]';
+	}
+
+	const indent = '\t'.repeat(indentLevel);
+	const itemIndent = '\t'.repeat(indentLevel + 1);
+	const lines = ['['];
+	for (const rule of rules) {
+		const technologyIndex = technologyIndexById.get(rule.technology.id);
+		if (technologyIndex === undefined) {
+			throw new Error(`Cannot render matcher rule for unknown technology ${rule.technology.id}`);
+		}
+
+		lines.push(
+			`${itemIndent}{ technology: technologies[${technologyIndex}], rule: technologies[${technologyIndex}].rules[${rule.ruleIndex}], ruleIndex: ${rule.ruleIndex}, sequence: ${rule.sequence}, requiredLiteral: ${JSON.stringify(rule.requiredLiteral)} },`,
+		);
+	}
+	lines.push(`${indent}]`);
 	return lines.join('\n');
 }
 

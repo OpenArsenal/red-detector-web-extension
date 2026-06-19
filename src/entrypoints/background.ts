@@ -19,7 +19,7 @@ import {
 } from '../lib/diagnostics/timing';
 
 import type { ObservationSessionState } from '../lib/content/observed-page-signals';
-import type { SiteAnalysis } from '../lib/detection/types';
+import type { DetectionKind, DetectionRunOptions, SiteAnalysis } from '../lib/detection/types';
 import type {
 	AnalysisEnrichmentState,
 	AnalyzeActiveTabInput,
@@ -76,6 +76,20 @@ configureRedDetectorLogging('background');
 const backgroundLogger = getRedDetectorLogger('background');
 const CONTENT_SCRIPT_FILE = '/content-scripts/content.js';
 const CONTENT_SCRIPT_PING_TIMEOUT_MS = 750;
+
+/**
+ * URL-like resource surfaces are deferred out of the user-visible first pass.
+ *
+ * Resource and request URL rules have high fan-out because a modern page can
+ * expose hundreds of resource timing entries and each entry used to meet every
+ * URL-pattern rule. Script, stylesheet, link, meta, DOM, storage, and page URL
+ * evidence still produce immediate detections, while broad resource/request
+ * matching runs during enrichment after the popup can render.
+ */
+const INITIAL_PIPELINE_DISABLED_KINDS = Object.freeze([
+	'resourceUrl',
+	'requestUrl',
+] satisfies DetectionKind[]);
 
 /**
  * In-flight runtime injections are deduplicated per tab.
@@ -779,6 +793,7 @@ async function analyzeAndPersistObservationBatch(
 	enrichment?: AnalysisEnrichmentState,
 	timingTraceId?: string,
 ): Promise<AppResult<AnalyzeActiveTabOutput>> {
+	const pipelineOptions = getPipelineOptionsForAnalysis(details.refreshKind);
 	const timingContext: TimingContext = {
 		traceId: timingTraceId,
 		surface: 'pipeline',
@@ -787,6 +802,7 @@ async function analyzeAndPersistObservationBatch(
 			cacheStatus,
 			observationCount: batch.observations.length,
 			refreshKind: details.refreshKind,
+			disabledKinds: pipelineOptions?.disabledKinds?.join(',') ?? '',
 		},
 	};
 	const pipelineResult = timeSyncSpan(
@@ -796,7 +812,9 @@ async function analyzeAndPersistObservationBatch(
 			batch,
 			registry: compiledRegistryArtifact.technologies,
 			compiledRegistryArtifact,
+			options: pipelineOptions,
 			source: 'fresh',
+			timingContext,
 		}),
 		(result) => ({
 			resultCount: result.analysis.results.length,
@@ -845,6 +863,14 @@ async function analyzeAndPersistObservationBatch(
 	});
 
 	return ok(createAnalysisOutput(savedAnalysis, cacheStatus, session, savedReplayTrace, replayHistory, sessionTarget, enrichment));
+}
+
+function getPipelineOptionsForAnalysis(refreshKind: unknown): DetectionRunOptions | undefined {
+	if (refreshKind === 'enrichment') {
+		return undefined;
+	}
+
+	return { disabledKinds: INITIAL_PIPELINE_DISABLED_KINDS };
 }
 
 /**

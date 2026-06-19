@@ -8,8 +8,8 @@ import { matchObservationRule } from './observation-matcher';
  *
  * The matcher keeps the original technology object and rule index so evidence
  * creation stays identical to the sequential matcher. `sequence` records the
- * old nested-loop order, which lets keyed and fallback buckets merge without
- * changing observable match ordering.
+ * old nested-loop order, which lets keyed, literal-prefiltered, and fallback
+ * buckets merge without changing observable match ordering.
  */
 export interface IndexedObservationRule {
 	/** Technology that owns the indexed rule. */
@@ -22,19 +22,35 @@ export interface IndexedObservationRule {
 	readonly sequence: number;
 }
 
+/**
+ * Registry rule that carries a literal substring required by its regex source.
+ *
+ * URL-like rules often contain stable host, path, or package-name fragments.
+ * Checking one required literal before running the full regex turns most
+ * unmatched resource observations into cheap substring checks while keeping
+ * unindexable regexes in the fallback bucket.
+ */
+export interface LiteralPrefilteredObservationRule extends IndexedObservationRule {
+	/** Lowercase substring that must appear in the observation value. */
+	readonly requiredLiteral: string;
+}
+
 /** Read-only rule buckets keyed by normalized observation kind. */
 export type IndexedObservationRuleBuckets = Partial<Record<NormalizedObservationKind, readonly IndexedObservationRule[]>>;
 
 /** Read-only exact-key buckets nested below each normalized observation kind. */
 export type IndexedObservationKeyBuckets = Partial<Record<NormalizedObservationKind, Readonly<Record<string, readonly IndexedObservationRule[]>>>>;
 
+/** Read-only literal-prefiltered buckets keyed by normalized observation kind. */
+export type IndexedObservationLiteralBuckets = Partial<Record<NormalizedObservationKind, readonly LiteralPrefilteredObservationRule[]>>;
+
 /**
  * Observation matcher index built from the current technology registry.
  *
- * The index does not compile or rewrite rules. It only pre-routes rules by the
- * observation surfaces and exact lookup keys that are already part of the
- * normalized observation contract, then delegates final rule semantics to the
- * existing one-rule matcher.
+ * The index does not compile or rewrite rules. It pre-routes rules by the
+ * observation surfaces, exact lookup keys, and conservative literal filters that
+ * are already implied by the rule regex source, then delegates final semantics
+ * to the existing one-rule matcher.
  */
 export interface ObservationMatcherIndex {
 	/** Number of technologies represented by the index. */
@@ -45,6 +61,36 @@ export interface ObservationMatcherIndex {
 	readonly fallbackRules: IndexedObservationRuleBuckets;
 	/** Rules that can be routed by a normalized observation key before matching. */
 	readonly keyedRules: IndexedObservationKeyBuckets;
+	/** Regex rules that can skip full evaluation when a required literal is absent. */
+	readonly literalRules: IndexedObservationLiteralBuckets;
+}
+
+/** Scalar matcher diagnostics safe to emit in timing logs and replay summaries. */
+export interface ObservationMatcherDiagnostics {
+	/** Number of observations received by the matcher. */
+	readonly observationCount: number;
+	/** Number of candidate rules passed to the semantic matcher. */
+	readonly candidateRuleCount: number;
+	/** Number of candidate rules routed from exact-key buckets. */
+	readonly keyedRuleCount: number;
+	/** Number of candidate rules routed from fallback buckets. */
+	readonly fallbackRuleCount: number;
+	/** Number of candidate rules admitted by a successful literal prefilter. */
+	readonly literalRuleCount: number;
+	/** Number of literal-prefiltered rules rejected before regex evaluation. */
+	readonly literalRejectedRuleCount: number;
+	/** Number of emitted pattern matches. */
+	readonly matchCount: number;
+	/** Observation counts grouped by normalized observation kind. */
+	readonly observationsByKind: Readonly<Record<string, number>>;
+	/** Candidate-rule counts grouped by normalized observation kind. */
+	readonly candidateRulesByKind: Readonly<Record<string, number>>;
+}
+
+/** Indexed matcher output with scalar route diagnostics attached. */
+export interface IndexedObservationPatternMatchBatch extends ObservationPatternMatchBatch {
+	/** Summary of routing work performed before evidence aggregation. */
+	readonly diagnostics: ObservationMatcherDiagnostics;
 }
 
 /** Input for indexed matching with an optional prebuilt reusable index. */
@@ -59,12 +105,36 @@ type MutableRuleBuckets = Partial<Record<NormalizedObservationKind, IndexedObser
 /** Internal mutable form used while building exact-key buckets. */
 type MutableKeyBuckets = Partial<Record<NormalizedObservationKind, Record<string, IndexedObservationRule[]>>>;
 
-/** Route that places one rule into a kind bucket and, when safe, an exact-key bucket. */
+/** Internal mutable form used while building literal-prefilter buckets. */
+type MutableLiteralBuckets = Partial<Record<NormalizedObservationKind, LiteralPrefilteredObservationRule[]>>;
+
+/** Route that places one rule into a kind bucket, exact-key bucket, or literal-prefilter bucket. */
 interface ObservationRuleRoute {
 	/** Observation kind that can trigger the rule. */
 	readonly kind: NormalizedObservationKind;
 	/** Canonical key used for exact lookup before running the full rule matcher. */
 	readonly key?: string;
+	/** Required lowercase substring used to avoid regex work for URL-like patterns. */
+	readonly requiredLiteral?: string;
+}
+
+/** Mutable counters used while matching one observation batch. */
+interface MutableObservationMatcherDiagnostics {
+	observationCount: number;
+	candidateRuleCount: number;
+	keyedRuleCount: number;
+	fallbackRuleCount: number;
+	literalRuleCount: number;
+	literalRejectedRuleCount: number;
+	matchCount: number;
+	observationsByKind: Record<string, number>;
+	candidateRulesByKind: Record<string, number>;
+}
+
+/** Literal-prefilter result for one observation. */
+interface LiteralPrefilterResult {
+	readonly rules: readonly LiteralPrefilteredObservationRule[];
+	readonly rejectedCount: number;
 }
 
 /**
@@ -80,13 +150,14 @@ export function createObservationMatcherIndex(
 ): ObservationMatcherIndex {
 	const fallbackRules: MutableRuleBuckets = Object.create(null) as MutableRuleBuckets;
 	const keyedRules: MutableKeyBuckets = Object.create(null) as MutableKeyBuckets;
+	const literalRules: MutableLiteralBuckets = Object.create(null) as MutableLiteralBuckets;
 	let sequence = 0;
 
 	for (const technology of registry) {
 		for (const [ruleIndex, rule] of technology.rules.entries()) {
 			const indexedRule: IndexedObservationRule = { technology, rule, ruleIndex, sequence };
 			for (const route of getRuleRoutes(technology.id, ruleIndex, rule)) {
-				addIndexedRule({ fallbackRules, keyedRules, route, indexedRule });
+				addIndexedRule({ fallbackRules, keyedRules, literalRules, route, indexedRule });
 			}
 			sequence += 1;
 		}
@@ -97,6 +168,7 @@ export function createObservationMatcherIndex(
 		ruleCount: sequence,
 		fallbackRules: freezeRuleBuckets(fallbackRules),
 		keyedRules: freezeKeyBuckets(keyedRules),
+		literalRules: freezeLiteralBuckets(literalRules),
 	};
 }
 
@@ -105,16 +177,29 @@ export function createObservationMatcherIndex(
  *
  * The output shape matches `matchObservationBatch(...)` so downstream evidence,
  * candidate, replay, and popup stages do not need to know whether routing was
- * sequential or indexed.
+ * sequential or indexed. Additional diagnostics describe how much matcher work
+ * was avoided before full rule evaluation.
  */
 export function matchIndexedObservationBatch(
 	input: MatchIndexedObservationBatchInput,
-): ObservationPatternMatchBatch {
+): IndexedObservationPatternMatchBatch {
 	const index = input.index ?? createObservationMatcherIndex(input.registry);
 	const matches: ObservationPatternMatch[] = [];
+	const diagnostics = createMutableMatcherDiagnostics();
 
 	for (const observation of input.batch.observations) {
-		for (const indexedRule of findIndexedObservationRules(index, observation)) {
+		diagnostics.observationCount += 1;
+		incrementCount(diagnostics.observationsByKind, observation.kind);
+
+		const route = findIndexedObservationRulesWithDiagnostics(index, observation);
+		diagnostics.keyedRuleCount += route.keyedRuleCount;
+		diagnostics.fallbackRuleCount += route.fallbackRuleCount;
+		diagnostics.literalRuleCount += route.literalRuleCount;
+		diagnostics.literalRejectedRuleCount += route.literalRejectedRuleCount;
+		diagnostics.candidateRuleCount += route.rules.length;
+		incrementCount(diagnostics.candidateRulesByKind, observation.kind, route.rules.length);
+
+		for (const indexedRule of route.rules) {
 			const match = matchObservationRule({
 				technology: indexedRule.technology,
 				rule: indexedRule.rule,
@@ -127,6 +212,7 @@ export function matchIndexedObservationBatch(
 			}
 		}
 	}
+	diagnostics.matchCount = matches.length;
 
 	return {
 		target: input.batch.target,
@@ -137,53 +223,75 @@ export function matchIndexedObservationBatch(
 			observedAt: input.batch.observedAt,
 			entries: matches.map((match) => match.evidence),
 		},
+		diagnostics: freezeDiagnostics(diagnostics),
 	};
 }
 
 /**
  * Return candidate rules for one observation without changing match semantics.
  *
- * Exact-key and fallback buckets are merged by original registry sequence. This
- * avoids the subtle bug where all exact-key matches would appear before all
- * wildcard matches, which would break version and evidence ordering compared
- * with the sequential matcher.
+ * Exact-key, literal-prefiltered, and fallback buckets are merged by original
+ * registry sequence. This avoids the subtle bug where one routing class would
+ * appear before another, which would break version and evidence ordering
+ * compared with the sequential matcher.
  */
 export function findIndexedObservationRules(
 	index: ObservationMatcherIndex,
 	observation: NormalizedObservation,
 ): readonly IndexedObservationRule[] {
+	return findIndexedObservationRulesWithDiagnostics(index, observation).rules;
+}
+
+function findIndexedObservationRulesWithDiagnostics(
+	index: ObservationMatcherIndex,
+	observation: NormalizedObservation,
+): {
+	readonly rules: readonly IndexedObservationRule[];
+	readonly keyedRuleCount: number;
+	readonly fallbackRuleCount: number;
+	readonly literalRuleCount: number;
+	readonly literalRejectedRuleCount: number;
+} {
 	const fallbackRules = index.fallbackRules[observation.kind] ?? [];
 	const key = getObservationRouteKey(observation);
 	const keyedRules = key === undefined
 		? []
 		: index.keyedRules[observation.kind]?.[key] ?? [];
+	const literalRoute = findLiteralPrefilteredRules(index, observation);
+	const rules = mergeRuleBucketList([keyedRules, literalRoute.rules, fallbackRules]);
 
-	if (keyedRules.length === 0) {
-		return fallbackRules;
-	}
-	if (fallbackRules.length === 0) {
-		return keyedRules;
-	}
-
-	return mergeRuleBuckets(keyedRules, fallbackRules);
+	return {
+		rules,
+		keyedRuleCount: keyedRules.length,
+		fallbackRuleCount: fallbackRules.length,
+		literalRuleCount: literalRoute.rules.length,
+		literalRejectedRuleCount: literalRoute.rejectedCount,
+	};
 }
 
-/** Add one indexed rule to its exact-key bucket or kind-only fallback bucket. */
+/** Add one indexed rule to its exact-key bucket, literal-prefilter bucket, or kind fallback bucket. */
 function addIndexedRule(input: {
 	readonly fallbackRules: MutableRuleBuckets;
 	readonly keyedRules: MutableKeyBuckets;
+	readonly literalRules: MutableLiteralBuckets;
 	readonly route: ObservationRuleRoute;
 	readonly indexedRule: IndexedObservationRule;
 }): void {
-	if (input.route.key === undefined) {
-		pushRule(input.fallbackRules, input.route.kind, input.indexedRule);
+	if (input.route.key !== undefined) {
+		const keyBuckets = input.keyedRules[input.route.kind]
+			?? (input.keyedRules[input.route.kind] = Object.create(null) as Record<string, IndexedObservationRule[]>);
+		const rules = keyBuckets[input.route.key] ?? (keyBuckets[input.route.key] = []);
+		rules.push(input.indexedRule);
 		return;
 	}
 
-	const keyBuckets = input.keyedRules[input.route.kind]
-		?? (input.keyedRules[input.route.kind] = Object.create(null) as Record<string, IndexedObservationRule[]>);
-	const rules = keyBuckets[input.route.key] ?? (keyBuckets[input.route.key] = []);
-	rules.push(input.indexedRule);
+	if (input.route.requiredLiteral !== undefined) {
+		const rules = input.literalRules[input.route.kind] ?? (input.literalRules[input.route.kind] = []);
+		rules.push(Object.assign({}, input.indexedRule, { requiredLiteral: input.route.requiredLiteral }));
+		return;
+	}
+
+	pushRule(input.fallbackRules, input.route.kind, input.indexedRule);
 }
 
 /** Append a rule to a mutable observation-kind bucket. */
@@ -234,8 +342,153 @@ function getRuleRoutes(
 				{ kind: 'htmlMatch', key: htmlProbeKey(technologyId, ruleIndex) },
 			];
 		default:
-			return [{ kind: rule.kind }];
+			return [createPatternRoute(rule)];
 	}
+}
+
+function createPatternRoute(
+	rule: Extract<DetectionRule, { kind: NormalizedObservationKind; pattern?: RegExp }>,
+): ObservationRuleRoute {
+	const requiredLiteral = isLiteralPrefilterSupported(rule.kind)
+		? extractTopLevelRegexLiteral(rule.pattern)
+		: undefined;
+
+	return requiredLiteral
+		? { kind: rule.kind, requiredLiteral }
+		: { kind: rule.kind };
+}
+
+/**
+ * Literal prefilters are only applied to URL-like scalar observations.
+ *
+ * Content and full-text surfaces can contain arbitrary prose or source code, so
+ * they stay in fallback until there is a safer tokenizer for those workloads.
+ */
+function isLiteralPrefilterSupported(kind: NormalizedObservationKind): boolean {
+	switch (kind) {
+		case 'scriptSrc':
+		case 'stylesheetHref':
+		case 'resourceUrl':
+		case 'requestUrl':
+		case 'url':
+			return true;
+		default:
+			return false;
+	}
+}
+
+/**
+ * Extract a required top-level literal from a regex source when it is safe.
+ *
+ * The parser intentionally ignores character classes and groups. A literal found
+ * at regex depth zero is present in every successful match for the supported
+ * URL-like rule shapes, while optional or alternative-heavy patterns fall back
+ * to normal regex evaluation instead of risking false negatives.
+ */
+function extractTopLevelRegexLiteral(pattern: RegExp | undefined): string | undefined {
+	if (!pattern || pattern.source.includes('|')) {
+		return undefined;
+	}
+
+	const tokens: string[] = [];
+	let token = '';
+	let depth = 0;
+	let inCharacterClass = false;
+
+	for (let index = 0; index < pattern.source.length; index += 1) {
+		const char = pattern.source[index]!;
+
+		if (char === '\\') {
+			const next = pattern.source[index + 1];
+			if (next === undefined) {
+				flushToken();
+				break;
+			}
+
+			if (depth === 0 && !inCharacterClass && isEscapedLiteralCharacter(next)) {
+				token += next;
+			} else {
+				flushToken();
+			}
+			index += 1;
+			continue;
+		}
+
+		if (inCharacterClass) {
+			if (char === ']') {
+				inCharacterClass = false;
+			}
+			continue;
+		}
+		if (char === '[') {
+			flushToken();
+			inCharacterClass = true;
+			continue;
+		}
+		if (char === '(') {
+			flushToken();
+			depth += 1;
+			continue;
+		}
+		if (char === ')') {
+			flushToken();
+			depth = Math.max(0, depth - 1);
+			continue;
+		}
+		if (depth === 0 && isPlainLiteralCharacter(char)) {
+			token += char;
+			continue;
+		}
+
+		flushToken();
+	}
+	flushToken();
+
+	return tokens
+		.sort((left, right) => right.length - left.length)[0];
+
+	function flushToken(): void {
+		const normalized = token.toLowerCase();
+		if (isUsefulLiteralToken(normalized)) {
+			tokens.push(normalized);
+		}
+		token = '';
+	}
+}
+
+function isPlainLiteralCharacter(char: string): boolean {
+	return /^[a-zA-Z0-9._~:/@%-]$/.test(char);
+}
+
+function isEscapedLiteralCharacter(char: string): boolean {
+	return /^[a-zA-Z0-9._~:/@%\-]$/.test(char);
+}
+
+function isUsefulLiteralToken(token: string): boolean {
+	return token.length >= 4 && /[a-z0-9]/.test(token);
+}
+
+function findLiteralPrefilteredRules(
+	index: ObservationMatcherIndex,
+	observation: NormalizedObservation,
+): LiteralPrefilterResult {
+	const rules = index.literalRules[observation.kind] ?? [];
+	if (rules.length === 0) {
+		return { rules, rejectedCount: 0 };
+	}
+
+	const value = String(observation.value).toLowerCase();
+	const matched: LiteralPrefilteredObservationRule[] = [];
+	let rejectedCount = 0;
+	for (const rule of rules) {
+		if (value.includes(rule.requiredLiteral)) {
+			matched.push(rule);
+		} else {
+			rejectedCount += 1;
+		}
+	}
+
+	return { rules: matched, rejectedCount };
 }
 
 /** Convert observation keys into the same canonical form used by rule routes. */
@@ -263,6 +516,25 @@ function canonicalHeaderKey(key: string): string {
 /** Create the bounded HTML probe key used by the existing observation matcher. */
 function htmlProbeKey(technologyId: string, ruleIndex: number): string {
 	return `${technologyId}:${ruleIndex}`;
+}
+
+/** Merge any number of sequence-sorted rule buckets while preserving old matcher order. */
+function mergeRuleBucketList(
+	buckets: readonly (readonly IndexedObservationRule[])[],
+): readonly IndexedObservationRule[] {
+	const nonEmpty = buckets.filter((bucket) => bucket.length > 0);
+	if (nonEmpty.length === 0) {
+		return [];
+	}
+	if (nonEmpty.length === 1) {
+		return nonEmpty[0]!;
+	}
+
+	let merged = nonEmpty[0]!;
+	for (const bucket of nonEmpty.slice(1)) {
+		merged = mergeRuleBuckets(merged, bucket);
+	}
+	return merged;
 }
 
 /**
@@ -312,4 +584,44 @@ function freezeKeyBuckets(buckets: MutableKeyBuckets): IndexedObservationKeyBuck
 		Object.freeze(keyBuckets);
 	}
 	return Object.freeze(buckets);
+}
+
+/** Freeze literal-prefilter buckets so the index is safe to share across batches. */
+function freezeLiteralBuckets(buckets: MutableLiteralBuckets): IndexedObservationLiteralBuckets {
+	for (const rules of Object.values(buckets)) {
+		Object.freeze(rules);
+	}
+	return Object.freeze(buckets);
+}
+
+function createMutableMatcherDiagnostics(): MutableObservationMatcherDiagnostics {
+	return {
+		observationCount: 0,
+		candidateRuleCount: 0,
+		keyedRuleCount: 0,
+		fallbackRuleCount: 0,
+		literalRuleCount: 0,
+		literalRejectedRuleCount: 0,
+		matchCount: 0,
+		observationsByKind: Object.create(null) as Record<string, number>,
+		candidateRulesByKind: Object.create(null) as Record<string, number>,
+	};
+}
+
+function freezeDiagnostics(diagnostics: MutableObservationMatcherDiagnostics): ObservationMatcherDiagnostics {
+	return Object.freeze({
+		observationCount: diagnostics.observationCount,
+		candidateRuleCount: diagnostics.candidateRuleCount,
+		keyedRuleCount: diagnostics.keyedRuleCount,
+		fallbackRuleCount: diagnostics.fallbackRuleCount,
+		literalRuleCount: diagnostics.literalRuleCount,
+		literalRejectedRuleCount: diagnostics.literalRejectedRuleCount,
+		matchCount: diagnostics.matchCount,
+		observationsByKind: Object.freeze(Object.assign({}, diagnostics.observationsByKind)),
+		candidateRulesByKind: Object.freeze(Object.assign({}, diagnostics.candidateRulesByKind)),
+	});
+}
+
+function incrementCount(counts: Record<string, number>, key: string, amount = 1): void {
+	counts[key] = (counts[key] ?? 0) + amount;
 }

@@ -123,4 +123,66 @@ describe('indexed observation matcher', () => {
 		expect(matchIndexedObservationBatch({ registry, batch: secondBatch, index }).matches).toHaveLength(1);
 		expect(index).toMatchObject({ technologyCount: 4, ruleCount: 4 });
 	});
+
+	it('uses literal prefilters to skip unrelated URL-like rules', () => {
+		const registry: TechnologyDefinition[] = [
+			{
+				id: 'matching-cdn',
+				name: 'Matching CDN',
+				website: 'https://matching-cdn.example',
+				categories: ['infrastructure-hosting'],
+				rules: [{ kind: 'scriptSrc', pattern: /cdn\.example\/runtime\.js/ }],
+			},
+			{
+				id: 'other-cdn',
+				name: 'Other CDN',
+				website: 'https://other-cdn.example',
+				categories: ['infrastructure-hosting'],
+				rules: [{ kind: 'scriptSrc', pattern: /other\.example\/runtime\.js/ }],
+			},
+		];
+		const index = createObservationMatcherIndex(registry);
+		const [scriptObservation] = normalizePageSignals(makePageSignals({
+			scripts: ['https://cdn.example/runtime.js'],
+		})).observations.filter((observation) => observation.kind === 'scriptSrc');
+
+		expect(scriptObservation).toBeDefined();
+		expect(findIndexedObservationRules(index, scriptObservation!).map((rule) => rule.technology.id)).toEqual([
+			'matching-cdn',
+		]);
+		expect(matchIndexedObservationBatch({
+			registry,
+			batch: normalizePageSignals(makePageSignals({ scripts: ['https://cdn.example/runtime.js'] })),
+			index,
+		}).diagnostics).toMatchObject({
+			literalRuleCount: 1,
+			literalRejectedRuleCount: 1,
+			candidateRuleCount: 1,
+		});
+	});
+
+	it('keeps alternative URL patterns in fallback to avoid false negatives', () => {
+		const registry: TechnologyDefinition[] = [{
+			id: 'alternative-cdn',
+			name: 'Alternative CDN',
+			website: 'https://alternative-cdn.example',
+			categories: ['infrastructure-hosting'],
+			rules: [{ kind: 'scriptSrc', pattern: /alpha\.example|beta\.example/ }],
+		}];
+		const index = createObservationMatcherIndex(registry);
+		const [scriptObservation] = normalizePageSignals(makePageSignals({
+			scripts: ['https://beta.example/runtime.js'],
+		})).observations.filter((observation) => observation.kind === 'scriptSrc');
+
+		expect(scriptObservation).toBeDefined();
+		expect(findIndexedObservationRules(index, scriptObservation!).map((rule) => rule.technology.id)).toEqual([
+			'alternative-cdn',
+		]);
+		expect(matchIndexedObservationBatch({
+			registry,
+			batch: normalizePageSignals(makePageSignals({ scripts: ['https://beta.example/runtime.js'] })),
+			index,
+		}).matches.map((match) => match.technologyId)).toEqual(['alternative-cdn']);
+	});
+
 });

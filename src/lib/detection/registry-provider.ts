@@ -5,12 +5,14 @@ import type { TechnologyDefinition } from './types';
 /**
  * Read-only source of technology definitions for detector calls and collection planning.
  *
- * Callers receive detector-ordered definitions and compiled artifacts without
- * knowing how the bundled registry is backed. That keeps popup, background, and
- * collector code focused on the active registry contract.
+ * The compiled registry can be expensive to parse and evaluate because it holds
+ * the bundled rule tree, matcher index, relationship graph, and collection plan.
+ * Runtime callers await the artifact so the background entrypoint can lazy-load
+ * that generated module instead of statically pulling it into the service-worker
+ * startup bundle.
  */
 export interface TechnologyRegistryProvider {
-	/** Return the active technology definitions in detector order. */
+	/** Return the active technology definitions in detector order when already available. */
 	listTechnologies(): readonly TechnologyDefinition[];
 	/**
 	 * Return the compiled artifact for the active registry.

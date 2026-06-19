@@ -5,23 +5,25 @@ import { addAlias, defineWxtModule } from 'wxt/modules';
 import type { Wxt } from 'wxt';
 
 const COMPILED_REGISTRY_ALIAS = '#/compiled-registry';
+const COMPILED_REGISTRY_ASSET = 'compiled-registry.js';
 
 /**
  * Compiled registry generation runs before WXT type preparation and builds.
  *
- * Technology definitions stay authored as TypeScript, but the background imports
- * a generated module from WXT's generated directory. That keeps generated files
- * out of `src/` while still letting Vite resolve a normal module alias during
- * development, tests, and production builds.
+ * Technology definitions stay authored as TypeScript, but the background loads a
+ * generated registry asset at runtime instead of importing the generated module
+ * through Vite. That keeps the large compiled registry out of the background's
+ * eager bundle while still shipping it inside the extension package.
  */
 export default defineWxtModule({
 	setup(wxt) {
-		const outputPath = resolve(wxt.config.wxtDir, './compiled-registry.js');
-		addAlias(wxt, COMPILED_REGISTRY_ALIAS, outputPath);
+		const assetPath = resolve(wxt.config.wxtDir, COMPILED_REGISTRY_ASSET);
+		const typeAliasPath = resolve(wxt.config.wxtDir, './compiled-registry.js');
+		addAlias(wxt, COMPILED_REGISTRY_ALIAS, typeAliasPath);
 
 		let generation: Promise<void> | undefined;
 		const generate = async () => {
-			generation ??= generateCompiledRegistryModule(wxt, outputPath);
+			generation ??= generateCompiledRegistryModule(wxt, assetPath, typeAliasPath);
 			return generation;
 		};
 
@@ -32,7 +34,8 @@ export default defineWxtModule({
 
 async function generateCompiledRegistryModule(
 	wxt: Wxt,
-	outputPath: string,
+	assetPath: string,
+	typeAliasPath: string,
 ): Promise<void> {
 	const root = wxt.config.root;
 	try {
@@ -50,16 +53,25 @@ async function generateCompiledRegistryModule(
 			generatorPath: 'modules/compile-registry.ts',
 		});
 
-		await mkdir(dirname(outputPath), { recursive: true });
-		await writeFile(outputPath, source);
-		await writeFile(getDeclarationPath(outputPath), renderGeneratedDeclarationModule());
+		await writeGeneratedModules({ assetPath, typeAliasPath, source });
 		wxt.logger.info(`Generated compiled registry artifact with ${artifact.technologies.length} technologies and ${artifact.matcherIndex.ruleCount} rules`);
 	} catch (error) {
-		await mkdir(dirname(outputPath), { recursive: true });
-		await writeFile(outputPath, renderRuntimeFallbackModule(error));
-		await writeFile(getDeclarationPath(outputPath), renderGeneratedDeclarationModule());
+		const source = renderRuntimeFallbackModule(error);
+		await writeGeneratedModules({ assetPath, typeAliasPath, source });
 		wxt.logger.warn('Compiled registry generation failed; generated runtime fallback module instead.');
 	}
+}
+
+async function writeGeneratedModules(input: {
+	readonly assetPath: string;
+	readonly typeAliasPath: string;
+	readonly source: string;
+}): Promise<void> {
+	await mkdir(dirname(input.assetPath), { recursive: true });
+	await mkdir(dirname(input.typeAliasPath), { recursive: true });
+	await writeFile(input.assetPath, input.source);
+	await writeFile(input.typeAliasPath, input.source);
+	await writeFile(getDeclarationPath(input.typeAliasPath), renderGeneratedDeclarationModule());
 }
 
 function renderRuntimeFallbackModule(error: unknown): string {
@@ -70,8 +82,8 @@ function renderRuntimeFallbackModule(error: unknown): string {
 		' * The optimized registry artifact could not be generated, so extension',
 		' * runtime falls back to compiling the bundled TypeScript registry once.',
 		' */',
-		"import { technologies } from '../../src/data/technologies';",
-		"import { compileTechnologyRegistry } from '../../src/lib/registry';",
+		"import { technologies } from '../src/data/technologies';",
+		"import { compileTechnologyRegistry } from '../src/lib/registry';",
 		'',
 		`console.warn('[red-detector] using runtime registry fallback because build-time generation failed: ${message.replace(/'/g, "\\'")}');`,
 		'export const precompiledRegistryArtifact = compileTechnologyRegistry({',
@@ -84,7 +96,7 @@ function renderRuntimeFallbackModule(error: unknown): string {
 
 function renderGeneratedDeclarationModule(): string {
 	return [
-		"import type { CompiledTechnologyRegistryArtifact } from '../../src/lib/registry';",
+		"import type { CompiledTechnologyRegistryArtifact } from '../src/lib/registry';",
 		'export declare const precompiledRegistryArtifact: CompiledTechnologyRegistryArtifact;',
 		'',
 	].join('\n');

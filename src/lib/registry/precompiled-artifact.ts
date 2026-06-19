@@ -2,11 +2,11 @@ import type { CompiledTechnologyRegistryArtifact } from './compiler';
 import type { TechnologyRegistryProvider } from '../detection/registry-provider';
 
 /**
- * Runtime provider backed by a build-generated registry artifact.
+ * Runtime provider backed by an already-loaded build-generated registry artifact.
  *
- * Normal extension runs should receive matcher buckets, relationship tables, and
- * collection plans that were written during the WXT build. Tests can still use
- * the static provider when they need a tiny in-memory registry.
+ * Normal extension code uses the lazy bundled provider so the background can
+ * split the generated registry away from its startup bundle. Tests and tooling
+ * can still wrap a concrete artifact when they need synchronous setup data.
  */
 export function createPrecompiledTechnologyRegistryProvider(
 	artifact: CompiledTechnologyRegistryArtifact,
