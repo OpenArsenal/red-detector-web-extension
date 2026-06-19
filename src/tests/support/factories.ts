@@ -1,5 +1,6 @@
 import type { ObservationSessionState } from '../../lib/content/observed-page-signals';
 import type { AnalyzeActiveTabOutput } from '../../lib/contracts/analysis';
+import type { DetectionSessionSnapshot } from '../../lib/contracts/detection-session';
 import type {
 	CategoryId,
 	ConfidenceScore,
@@ -43,6 +44,41 @@ export function makeAnalysis(
 		source: overrides.source ?? 'fresh',
 		results: [...results],
 		errors: overrides.errors ?? [],
+	};
+}
+
+
+/**
+ * Create a durable detection session snapshot for storage and popup tests.
+ *
+ * The default key mirrors a top-frame active-tab document. Tests can override
+ * the revision, status, or analysis without repeating the storage identity that
+ * every snapshot needs before it can be compared in browser storage.
+ */
+export function makeDetectionSessionSnapshot(
+	overrides: Partial<DetectionSessionSnapshot> = {},
+): DetectionSessionSnapshot {
+	const analysis = overrides.analysis ?? makeAnalysis();
+	const key = overrides.key ?? {
+		tabId: 7,
+		frameId: 0,
+		documentId: 'document-1',
+		originHash: 'origin-example',
+	};
+
+	return {
+		key,
+		schemaVersion: overrides.schemaVersion ?? 1,
+		revision: overrides.revision ?? 1,
+		urlHash: overrides.urlHash ?? 'url-example-products',
+		hostname: overrides.hostname ?? analysis.hostname,
+		status: overrides.status ?? 'collecting',
+		source: overrides.source ?? 'content',
+		updatedAt: overrides.updatedAt ?? TEST_NOW,
+		detectionCount: overrides.detectionCount ?? analysis.results.length,
+		analysis,
+		enrichment: overrides.enrichment ?? { status: 'not-needed' },
+		...(overrides.replaySummary ? { replaySummary: overrides.replaySummary } : {}),
 	};
 }
 
