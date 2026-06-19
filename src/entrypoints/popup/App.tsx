@@ -13,6 +13,7 @@ import type {
 } from "../../lib/detection/types";
 import type { DetectionReplayTrace } from "../../lib/pipeline";
 import type {
+  ActiveTabIdentity,
   AnalyzeActiveTabInput,
   AnalyzeActiveTabOutput,
   BackgroundApi,
@@ -33,6 +34,10 @@ import {
   type PopupNotice,
   type PopupObservationMode,
 } from "../../lib/popup/view-model";
+import {
+  createStoredPopupAnalysisOutput,
+  readStoredPopupAnalysis,
+} from "../../lib/popup/snapshot-state";
 
 import "./App.css";
 
@@ -78,6 +83,7 @@ export default function App() {
   const [enrichmentPending, setEnrichmentPending] = createSignal(false);
   const [replayHistory, setReplayHistory] = createSignal<readonly DetectionReplayTrace[]>([]);
   const [sessionTarget, setSessionTarget] = createSignal<ObservationSessionTarget | null>(null);
+  const [activeTabIdentity, setActiveTabIdentity] = createSignal<ActiveTabIdentity | null>(null);
   let pollTimer: ReturnType<typeof globalThis.setInterval> | undefined;
   let refreshInFlight = false;
   let pollingCheckInFlight = false;
@@ -244,6 +250,31 @@ export default function App() {
     }
   }
 
+  async function renderStoredAnalysisForActiveTab(identity: ActiveTabIdentity) {
+    try {
+      const stored = await readStoredPopupAnalysis(identity);
+      if (!stored) {
+        logPopupEvent("stored-analysis-miss", { hostname: identity.hostname });
+        return false;
+      }
+
+      logPopupEvent("stored-analysis-rendered", {
+        hostname: stored.analysis.hostname,
+        source: stored.source,
+        resultCount: stored.analysis.results.length,
+        revision: stored.snapshot?.revision ?? 0,
+      });
+      applyAnalysisResponse(createStoredPopupAnalysisOutput(stored), {
+        source: "initial",
+        resetLateMarkers: true,
+      });
+      return true;
+    } catch (error) {
+      logPopupEvent("stored-analysis-render-failed", { message: normalizeError(error) });
+      return false;
+    }
+  }
+
   async function refreshStatus() {
     try {
       const response = await backgroundApi.getAnalysisStatus();
@@ -350,7 +381,7 @@ export default function App() {
     }
 
     refreshInFlight = true;
-    const isUserVisibleRefresh = options.source !== "auto";
+    const isUserVisibleRefresh = options.source !== "auto" && !(options.source === "initial" && analysis());
     if (isUserVisibleRefresh) {
       setBusy(true);
     }
@@ -498,12 +529,20 @@ export default function App() {
     void (async () => {
       logPopupEvent("mount");
       await refreshStatus();
+      const identityResponse = await backgroundApi.getActiveTabIdentity();
+      if (!identityResponse.ok) {
+        setErrorMessage(formatPopupAppError(identityResponse.error));
+        return;
+      }
+
+      setActiveTabIdentity(identityResponse.value);
+      await renderStoredAnalysisForActiveTab(identityResponse.value);
       await loadLatestAnalysis({
         input: {
           mode: "cache-first",
           observe: "while-popup-open",
         },
-        resetLateMarkers: true,
+        resetLateMarkers: !analysis(),
         source: "initial",
       });
       await syncObservationState();
@@ -574,7 +613,7 @@ export default function App() {
 
         <PopupShell.Metrics>
           <p>Source: {analysis()?.source ?? "none"}</p>
-          <p>Host: {analysis()?.hostname ?? "not analyzed"}</p>
+          <p>Host: {analysis()?.hostname ?? activeTabIdentity()?.hostname ?? "not analyzed"}</p>
           <p>Polling: {pollingChipLabel().toLowerCase()}</p>
           <p>Pipeline: {pipelineMode()}</p>
         </PopupShell.Metrics>
