@@ -30,7 +30,6 @@ import {
   getPopupObservationLabel,
   getPopupObservationModeFromSession,
   groupDetectionsByPrimaryCategory,
-  shouldRefreshObservedChange,
   type PopupExplanationLookup,
   type PopupNotice,
   type PopupObservationMode,
@@ -44,7 +43,6 @@ import {
 
 import "./App.css";
 
-const POPUP_POLL_INTERVAL_MS = 1_500;
 const popupLogger = getRedDetectorLogger("popup");
 const [, injectBackgroundApi] = defineProxy(() => ({}) as BackgroundApi, {
   namespace: BACKGROUND_RPC_NAMESPACE,
@@ -87,9 +85,7 @@ export default function App() {
   const [replayHistory, setReplayHistory] = createSignal<readonly DetectionReplayTrace[]>([]);
   const [sessionTarget, setSessionTarget] = createSignal<ObservationSessionTarget | null>(null);
   const [activeTabIdentity, setActiveTabIdentity] = createSignal<ActiveTabIdentity | null>(null);
-  let pollTimer: ReturnType<typeof globalThis.setInterval> | undefined;
   let refreshInFlight = false;
-  let pollingCheckInFlight = false;
   let pendingManualRefresh = false;
   let unsubscribeSnapshotRevisions: (() => void) | undefined;
   let appliedSnapshotRevision: DetectionSessionSnapshot | null = null;
@@ -118,20 +114,6 @@ export default function App() {
   }
 
 
-  function clearPopupPolling() {
-    if (pollTimer !== undefined) {
-      clearInterval(pollTimer);
-      pollTimer = undefined;
-    }
-  }
-
-  function startPopupPolling() {
-    clearPopupPolling();
-    pollTimer = setInterval(() => {
-      void refreshIfPageSignalsChanged();
-    }, POPUP_POLL_INTERVAL_MS);
-  }
-
   function schedulePendingManualRefresh() {
     if (!pendingManualRefresh || refreshInFlight) {
       return;
@@ -154,105 +136,6 @@ export default function App() {
     return target
       ? backgroundApi.getObservationSessionState(target)
       : backgroundApi.getActiveObservationSessionState();
-  }
-
-  async function applyNewerStoredAnalysisWhenAvailable() {
-    const target = sessionTarget();
-    const latestAnalysis = analysis();
-    if (!target || !latestAnalysis) {
-      return false;
-    }
-
-    const response = await backgroundApi.getObservationSessionLatestAnalysis({
-      ...target,
-      afterAnalyzedAt: latestAnalysis.analyzedAt,
-    });
-
-    if (!response.ok) {
-      logPopupEvent("stored-analysis-not-ready", {
-        code: response.error.code,
-        message: response.error.message,
-      });
-      return false;
-    }
-
-    logPopupEvent("stored-analysis-applied", {
-      previousAnalyzedAt: latestAnalysis.analyzedAt,
-      nextAnalyzedAt: response.value.analysis.analyzedAt,
-      resultCount: response.value.analysis.results.length,
-    });
-    applyAnalysisResponse(response.value, {
-      source: "auto",
-    });
-    await refreshStatus();
-    return true;
-  }
-
-  async function refreshIfPageSignalsChanged() {
-    if (refreshInFlight || pollingCheckInFlight) {
-      return;
-    }
-
-    pollingCheckInFlight = true;
-    try {
-      if (enrichmentPending() && await applyNewerStoredAnalysisWhenAvailable()) {
-        return;
-      }
-
-      const response = await readObservationSessionState();
-      if (!response.ok) {
-        logPopupEvent("observation-state-unavailable", {
-          code: response.error.code,
-          message: response.error.message,
-          enrichmentPending: enrichmentPending(),
-        });
-        if (enrichmentPending()) {
-          setPollingMode("active");
-          return;
-        }
-
-        setPollingMode("unknown");
-        clearPopupPolling();
-        return;
-      }
-
-      const nextPollingMode = getPopupObservationModeFromSession(response.value);
-      if (nextPollingMode !== "active") {
-        logPopupEvent("observation-state-inactive", {
-          status: response.value.status,
-          stopReason: response.value.stopReason,
-          enrichmentPending: enrichmentPending(),
-        });
-        setPollingMode(enrichmentPending() ? "active" : nextPollingMode);
-        if (!enrichmentPending()) {
-          clearPopupPolling();
-        }
-        return;
-      }
-
-      setPollingMode(nextPollingMode);
-      const latestAnalysis = analysis();
-      if (shouldRefreshObservedChange({ session: response.value, analysis: latestAnalysis })) {
-        logPopupEvent("observation-refresh-triggered", {
-          sessionStatus: response.value.status,
-          lastObservedAt: response.value.lastObservedAt ?? 0,
-          lastAnalyzedAt: latestAnalysis?.analyzedAt ?? 0,
-        });
-        await refreshActiveObservationSession();
-      }
-    } catch {
-      logPopupEvent("observation-state-check-failed", {
-        enrichmentPending: enrichmentPending(),
-      });
-      if (enrichmentPending()) {
-        setPollingMode("active");
-      } else {
-        setPollingMode("unknown");
-        clearPopupPolling();
-      }
-    } finally {
-      pollingCheckInFlight = false;
-    }
   }
 
   function applySnapshotRevision(snapshot: DetectionSessionSnapshot) {
@@ -346,9 +229,10 @@ export default function App() {
 
     setPollingMode(update.observationMode);
     if (update.shouldPoll) {
-      startPopupPolling();
-    } else {
-      clearPopupPolling();
+      logPopupEvent("snapshot-stream-awaiting-revisions", {
+        observationMode: update.observationMode,
+        enrichmentPending: response.enrichment?.status === "pending",
+      });
     }
 
     if (update.addedDetectionIds.length) {
@@ -381,12 +265,7 @@ export default function App() {
       });
 
       const nextPollingMode = getPopupObservationModeFromSession(response.value);
-      setPollingMode(nextPollingMode);
-      if (nextPollingMode === "active" || enrichmentPending()) {
-        startPopupPolling();
-      } else {
-        clearPopupPolling();
-      }
+      setPollingMode(enrichmentPending() ? "active" : nextPollingMode);
     } catch (error) {
       setPollingMode("unknown");
       setErrorMessage(normalizeError(error));
@@ -460,42 +339,6 @@ export default function App() {
     }
   }
 
-  async function refreshActiveObservationSession() {
-    if (refreshInFlight) {
-      return;
-    }
-
-    const target = sessionTarget();
-    if (!target) {
-      setPollingMode("stopped");
-      clearPopupPolling();
-      return;
-    }
-
-    refreshInFlight = true;
-    try {
-      logPopupEvent("observation-refresh-requested", { sessionId: target.sessionId, tabId: target.tabId });
-      const response = await backgroundApi.refreshObservationSession(target);
-      if (!response.ok) {
-        logPopupEvent("observation-refresh-failed", {
-          code: response.error.code,
-          message: response.error.message,
-        });
-        setPollingMode("stopped");
-        clearPopupPolling();
-        return;
-      }
-
-      applyAnalysisResponse(response.value, {
-        source: "auto",
-      });
-      await refreshStatus();
-    } finally {
-      refreshInFlight = false;
-      schedulePendingManualRefresh();
-    }
-  }
-
   async function stopPolling() {
     setBusy(true);
     setErrorMessage("");
@@ -520,7 +363,6 @@ export default function App() {
         stopReason: response.value.stopReason,
       });
 
-      clearPopupPolling();
       setSessionTarget(null);
       setPollingMode("stopped");
       setNotice({
@@ -581,7 +423,6 @@ export default function App() {
   onCleanup(() => {
     unsubscribeSnapshotRevisions?.();
     unsubscribeSnapshotRevisions = undefined;
-    clearPopupPolling();
     const target = sessionTarget();
     if (!target) {
       logPopupEvent("cleanup-without-owned-session");
@@ -645,7 +486,7 @@ export default function App() {
         <PopupShell.Metrics>
           <p>Source: {analysis()?.source ?? "none"}</p>
           <p>Host: {analysis()?.hostname ?? activeTabIdentity()?.hostname ?? "not analyzed"}</p>
-          <p>Polling: {pollingChipLabel().toLowerCase()}</p>
+          <p>Updates: {pollingChipLabel().toLowerCase()}</p>
           <p>Pipeline: {pipelineMode()}</p>
         </PopupShell.Metrics>
       </PopupShell.Hero>
@@ -677,8 +518,8 @@ export default function App() {
           hasLateDetections()
             ? `${lateAddedIds().length} detection${lateAddedIds().length === 1 ? "" : "s"} arrived after the popup opened and are marked below.`
             : pollingMode() === "active"
-              ? "Showing the latest snapshot. Late detections will appear here automatically while polling is active."
-              : "Showing the latest snapshot from the page. Refresh to resume polling for future late detections."
+              ? "Showing the latest snapshot. Late detections appear when storage publishes a newer revision."
+              : "Showing the latest snapshot from the page. Refresh to request a new sync for future late detections."
         }
       >
         <Show
