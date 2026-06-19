@@ -9,6 +9,9 @@ export const DETECTION_SESSION_SNAPSHOT_PREFIX = 'rd:session:';
 /** Prefix used for the newest detection snapshot associated with an origin hash. */
 export const DETECTION_ORIGIN_SNAPSHOT_PREFIX = 'rd:origin:';
 
+/** Prefix used for tab-owned detection snapshot index records. */
+export const DETECTION_SESSION_INDEX_PREFIX = 'rd:session-index:';
+
 /** Prefix used for every origin-level analysis cache record. */
 export const ANALYSIS_CACHE_PREFIX = 'analysis:';
 
@@ -113,6 +116,11 @@ export function getDetectionSessionSnapshotKey(key: DetectionSessionKey): string
  */
 export function getDetectionOriginSnapshotKey(originHash: string): string {
 	return `${DETECTION_ORIGIN_SNAPSHOT_PREFIX}${encodeStorageKeyPart(originHash)}:latest`;
+}
+
+/** Build the storage key for the known page sessions owned by one browser tab. */
+export function getDetectionSessionIndexKey(tabId: number): string {
+	return `${DETECTION_SESSION_INDEX_PREFIX}${tabId}`;
 }
 
 /** Encode storage key parts without changing already readable ASCII keys. */

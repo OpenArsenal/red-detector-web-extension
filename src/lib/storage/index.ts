@@ -277,10 +277,13 @@ function cloneReplayTrace(trace: DetectionReplayTrace): DetectionReplayTrace {
 }
 
 
-export type { DetectionSessionSnapshotWriteResult } from './detection-snapshots';
+export type { DetectionSessionIndexEntry, DetectionSessionIndexRecord, DetectionSessionSnapshotWriteResult } from './detection-snapshots';
 export {
+	getDetectionSessionIndex,
 	getLatestDetectionOriginSnapshot,
 	getLatestDetectionSessionSnapshot,
+	markDetectionSessionSnapshotsForTab,
 	isDetectionSessionSnapshot,
+	removeDetectionSessionIndex,
 	saveDetectionSessionSnapshot,
 } from './detection-snapshots';

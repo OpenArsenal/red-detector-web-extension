@@ -17,6 +17,7 @@ import {
 } from '../contracts/detection-session';
 import {
 	getDetectionOriginSnapshotKey,
+	getDetectionSessionIndexKey,
 	getDetectionSessionSnapshotKey,
 } from './contracts';
 
@@ -27,6 +28,28 @@ import {
  * caller still receives the stored value so a popup or background command can
  * converge on the newest known state without issuing a second read.
  */
+/** Stored pointer to one exact detection snapshot owned by a browser tab. */
+export interface DetectionSessionIndexEntry {
+	/** Exact page-session key used to read or update the stored snapshot. */
+	readonly key: DetectionSessionKey;
+	/** Stable non-raw URL key used to detect same-document replacements. */
+	readonly urlHash: string;
+	/** Last known snapshot status for tab lifecycle cleanup. */
+	readonly status: DetectionSessionStatus;
+	/** Last write timestamp used to keep the newest entry when records collide. */
+	readonly updatedAt: number;
+}
+
+/** Stored list of known detection sessions for one browser tab. */
+export interface DetectionSessionIndexRecord {
+	/** Browser tab id that owns every entry in this index. */
+	readonly tabId: number;
+	/** Latest known sessions for this tab, newest first. */
+	readonly entries: readonly DetectionSessionIndexEntry[];
+	/** Millisecond timestamp when the index was last rewritten. */
+	readonly updatedAt: number;
+}
+
 export interface DetectionSessionSnapshotWriteResult {
 	/** Whether the submitted snapshot replaced the exact session record. */
 	readonly accepted: boolean;
@@ -67,6 +90,7 @@ export async function saveDetectionSessionSnapshot(
 	const normalized = cloneDetectionSessionSnapshot(snapshot);
 	await browser.storage.local.set({ [sessionStorageKey]: normalized });
 	await promoteOriginSnapshot(originStorageKey, normalized);
+	await upsertDetectionSessionIndex(normalized);
 
 	return {
 		accepted: true,
@@ -88,6 +112,108 @@ export async function getLatestDetectionOriginSnapshot(
 	originHash: string,
 ): Promise<DetectionSessionSnapshot | null> {
 	return getStoredDetectionSnapshot(getDetectionOriginSnapshotKey(originHash));
+}
+
+/** Return the known detection sessions for one browser tab, newest first. */
+export async function getDetectionSessionIndex(
+	tabId: number,
+): Promise<DetectionSessionIndexRecord> {
+	const key = getDetectionSessionIndexKey(tabId);
+	const raw = await browser.storage.local.get(key);
+	const value = raw[key];
+
+	if (!isDetectionSessionIndexRecord(value, tabId)) {
+		return { tabId, entries: [], updatedAt: 0 };
+	}
+
+	return cloneDetectionSessionIndexRecord(value);
+}
+
+/** Remove the tab-session index after a tab closes and volatile state is gone. */
+export async function removeDetectionSessionIndex(tabId: number): Promise<void> {
+	await browser.storage.local.remove(getDetectionSessionIndexKey(tabId));
+}
+
+/**
+ * Mark every active snapshot for a tab with a terminal lifecycle state.
+ *
+ * Navigation and tab removal can happen while the background has no reliable
+ * in-memory session. The tab index lets the lifecycle listener update stored
+ * snapshots directly so a popup does not keep rendering an observing session for
+ * a document that can no longer produce content events.
+ */
+export async function markDetectionSessionSnapshotsForTab(
+	tabId: number,
+	status: Extract<DetectionSessionStatus, 'stale' | 'stopped'>,
+	reason: string,
+): Promise<readonly DetectionSessionSnapshot[]> {
+	const index = await getDetectionSessionIndex(tabId);
+	const marked: DetectionSessionSnapshot[] = [];
+
+	for (const entry of index.entries) {
+		const snapshot = await getLatestDetectionSessionSnapshot(entry.key);
+		if (!snapshot || snapshot.status === status) {
+			continue;
+		}
+		if (snapshot.status === 'stopped' && status === 'stale') {
+			continue;
+		}
+
+		const updatedAt = Date.now();
+		const nextSnapshot: DetectionSessionSnapshot = {
+			...snapshot,
+			key: { ...snapshot.key },
+			revision: snapshot.revision + 1,
+			status,
+			source: 'background',
+			updatedAt,
+			enrichment: {
+				...snapshot.enrichment,
+				updatedAt,
+				reason,
+			},
+		};
+		const result = await saveDetectionSessionSnapshot(nextSnapshot);
+		marked.push(result.snapshot);
+	}
+
+	return marked;
+}
+
+/** Add or refresh one snapshot pointer in the owning tab's session index. */
+async function upsertDetectionSessionIndex(snapshot: DetectionSessionSnapshot): Promise<void> {
+	const tabId = snapshot.key.tabId;
+	const index = await getDetectionSessionIndex(tabId);
+	const entry: DetectionSessionIndexEntry = {
+		key: { ...snapshot.key },
+		urlHash: snapshot.urlHash,
+		status: snapshot.status,
+		updatedAt: snapshot.updatedAt,
+	};
+	const entries = [
+		entry,
+		...index.entries.filter((item) => !isSameDetectionSessionKey(item.key, snapshot.key)),
+	]
+		.sort((left, right) => right.updatedAt - left.updatedAt)
+		.slice(0, 20);
+
+	await browser.storage.local.set({
+		[getDetectionSessionIndexKey(tabId)]: {
+			tabId,
+			entries,
+			updatedAt: snapshot.updatedAt,
+		} satisfies DetectionSessionIndexRecord,
+	});
+}
+
+/** Compare exact session keys without depending on object identity from storage mocks. */
+function isSameDetectionSessionKey(left: DetectionSessionKey, right: DetectionSessionKey): boolean {
+	return (
+		left.tabId === right.tabId &&
+		left.frameId === right.frameId &&
+		left.documentId === right.documentId &&
+		left.originHash === right.originHash
+	);
 }
 
 /** Read and clone a snapshot only after the storage value passes a defensive shape check. */
@@ -313,5 +439,19 @@ function cloneDetectionReplaySummary(summary: DetectionReplaySummary): Detection
 		explanationCount: summary.explanationCount,
 		resultCount: summary.resultCount,
 		stages: [...summary.stages],
+	};
+}
+
+/** Clone a tab-session index so tests cannot mutate storage by reference. */
+function cloneDetectionSessionIndexRecord(record: DetectionSessionIndexRecord): DetectionSessionIndexRecord {
+	return {
+		tabId: record.tabId,
+		entries: record.entries.map((entry) => ({
+			key: { ...entry.key },
+			urlHash: entry.urlHash,
+			status: entry.status,
+			updatedAt: entry.updatedAt,
+		})),
+		updatedAt: record.updatedAt,
 	};
 }

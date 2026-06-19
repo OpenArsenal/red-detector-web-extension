@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
 	getDetectionOriginSnapshotKey,
+	getDetectionSessionIndexKey,
 	getDetectionSessionSnapshotKey,
 } from '../../lib/storage/contracts';
 import { makeAnalysis, makeDetection, makeDetectionSessionSnapshot } from '../support/factories';
@@ -182,4 +183,78 @@ describe.sequential('detection session snapshots', () => {
 		expect(raw).not.toHaveProperty('cookies');
 		expect(raw).not.toHaveProperty('storage');
 	});
+
+	/**
+	 * Background lifecycle listeners need a durable tab index because service
+	 * worker globals disappear. Saving a snapshot should refresh that index so a
+	 * later navigation or tab close can mark the stored session without knowing the
+	 * old in-memory observation handle.
+	 */
+	it('indexes saved snapshots by browser tab for lifecycle cleanup', async () => {
+		const storage = await loadStorageHarness();
+		const first = makeDetectionSessionSnapshot({
+			key: { tabId: 7, frameId: 0, documentId: 'session-1', originHash: 'origin-example' },
+			revision: 1,
+			updatedAt: 1_700_000_000_001,
+		});
+		const second = makeDetectionSessionSnapshot({
+			key: { tabId: 7, frameId: 0, documentId: 'session-2', originHash: 'origin-example' },
+			revision: 1,
+			updatedAt: 1_700_000_000_002,
+			status: 'observing',
+		});
+
+		await storage.saveDetectionSessionSnapshot(first);
+		await storage.saveDetectionSessionSnapshot(second);
+		const index = await storage.getDetectionSessionIndex(7);
+
+		expect(index).toMatchObject({
+			tabId: 7,
+			entries: [
+				{ key: second.key, status: 'observing' },
+				{ key: first.key, status: 'collecting' },
+			],
+		});
+		expect(storage.values.has(getDetectionSessionIndexKey(7))).toBe(true);
+	});
+
+	/**
+	 * Navigation cleanup should advance the stored revision instead of deleting the
+	 * snapshot. A popup with the old page open can then show a truthful stale state
+	 * rather than an apparently live observer from a previous document.
+	 */
+	it('marks indexed snapshots stale for tab navigation', async () => {
+		const storage = await loadStorageHarness();
+		const snapshot = makeDetectionSessionSnapshot({
+			key: { tabId: 9, frameId: 0, documentId: 'session-1', originHash: 'origin-example' },
+			revision: 3,
+			status: 'observing',
+		});
+
+		await storage.saveDetectionSessionSnapshot(snapshot);
+		const marked = await storage.markDetectionSessionSnapshotsForTab(9, 'stale', 'tab-navigation');
+		const stored = await storage.getLatestDetectionSessionSnapshot(snapshot.key);
+
+		expect(marked).toHaveLength(1);
+		expect(stored).toMatchObject({
+			revision: 4,
+			status: 'stale',
+			source: 'background',
+			enrichment: expect.objectContaining({ reason: 'tab-navigation' }),
+		});
+	});
+
+	it('removes the tab session index when a tab is closed', async () => {
+		const storage = await loadStorageHarness();
+		const snapshot = makeDetectionSessionSnapshot({
+			key: { tabId: 11, frameId: 0, documentId: 'session-1', originHash: 'origin-example' },
+		});
+		await storage.saveDetectionSessionSnapshot(snapshot);
+
+		await storage.removeDetectionSessionIndex(11);
+
+		expect(await storage.getDetectionSessionIndex(11)).toMatchObject({ entries: [] });
+		expect(storage.values.has(getDetectionSessionIndexKey(11))).toBe(false);
+	});
+
 });
