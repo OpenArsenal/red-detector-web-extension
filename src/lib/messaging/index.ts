@@ -14,6 +14,7 @@ export type {
 	BeginObservationSessionInput,
 	CollectObservationBatchOutput,
 	CollectPageSignalsInput,
+	ContentPageSessionSnapshotTarget,
 	ContentApi,
 	FlushObservationBatchOutput,
 	HtmlProbe,

@@ -2,6 +2,7 @@ import type {
 	ObservationStopReason as ContentObservationStopReason,
 	PageSignalPollingState as ObservationSessionState,
 } from '../content/observed-page-signals';
+import type { DetectionSessionKey } from './detection-session';
 import type { AnalysisStatus, SiteAnalysis } from '../detection/types';
 import type { DetectionReplayTrace } from '../pipeline';
 import type { ObservationBatch, ObservationBatchControllerStats } from '../observations';
@@ -164,6 +165,27 @@ export type AnalyzeActiveTabOutput = {
 export type ObservationStopReason = ContentObservationStopReason;
 
 /**
+ * Storage target a content script can use after the background identifies the tab.
+ *
+ * Content scripts cannot ask Chrome for their own `tabId`, so the background
+ * sends the durable storage identity when it starts observation. Once the target
+ * is known, content can publish status revisions without depending on service
+ * worker memory.
+ */
+export type ContentPageSessionSnapshotTarget = {
+	/** Exact session key shared by content and background snapshot writers. */
+	readonly key: DetectionSessionKey;
+	/** Full document URL used by the public analysis envelope. */
+	readonly url: string;
+	/** Stable hash of the exact document URL for popup snapshot filtering. */
+	readonly urlHash: string;
+	/** Hostname shown by the popup before richer analysis is available. */
+	readonly hostname: string;
+	/** Private browsing sessions skip durable snapshot writes. */
+	readonly incognito?: boolean;
+};
+
+/**
  * Request sent from the background to the content script to start page watching.
  */
 export type BeginObservationSessionInput = {
@@ -171,6 +193,8 @@ export type BeginObservationSessionInput = {
 	sessionId: string;
 	/** URL the background expects the content script to still be observing. */
 	expectedUrl: string;
+	/** Durable snapshot target used by content-owned observation status writes. */
+	snapshotTarget?: ContentPageSessionSnapshotTarget;
 	/** Limits that keep content-script observation bounded. */
 	policy: {
 		/** How long the content script should keep watching the page. */
