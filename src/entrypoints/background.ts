@@ -1,6 +1,7 @@
 import { defineProxy } from 'comctx';
 import { browser } from 'wxt/browser';
 
+import { registerBackgroundLifecycleListeners } from '../lib/background/lifecycle';
 import { canInspectTab, getActiveTab } from '../lib/browser/active-tab';
 import { collectExtensionObservationBatch } from '../lib/collectors/extension-page-collector';
 import { bundledTechnologyRegistryProvider } from '../lib/detection/registry-provider';
@@ -1562,8 +1563,9 @@ const [provideBackgroundApi] = defineProxy(() => createBackgroundApi(), {
 });
 
 export default defineBackground(() => {
-	provideBackgroundApi(createBackgroundServerAdapter());
-	browser.tabs.onRemoved.addListener((tabId) => {
-		forgetTabRuntimeState(tabId);
+	registerBackgroundLifecycleListeners({
+		onTabRemoved: forgetTabRuntimeState,
+		log: logBackgroundEvent,
 	});
+	provideBackgroundApi(createBackgroundServerAdapter());
 });
