@@ -4,11 +4,13 @@ import { browser } from 'wxt/browser';
 import { canInspectTab, getActiveTab } from '../lib/browser/active-tab';
 import { collectExtensionObservationBatch } from '../lib/collectors/extension-page-collector';
 import { bundledTechnologyRegistryProvider } from '../lib/detection/registry-provider';
+import { DETECTION_SESSION_SNAPSHOT_SCHEMA_VERSION } from '../lib/contracts/detection-session';
 import { configureRedDetectorLogging, getRedDetectorLogger } from '../lib/diagnostics/logging';
 import {
 	createDetectionReplayTrace,
 	runObservationBatchPipeline,
 } from '../lib/pipeline';
+import type { DetectionPipelineStage, DetectionReplayTrace } from '../lib/pipeline';
 import {
 	createTimingTraceId,
 	endTimingSpan,
@@ -19,6 +21,14 @@ import {
 } from '../lib/diagnostics/timing';
 
 import type { ObservationSessionState } from '../lib/content/observed-page-signals';
+import type {
+	DetectionEnrichmentState,
+	DetectionReplaySummary,
+	DetectionSessionKey,
+	DetectionSessionSnapshot,
+	DetectionSessionSnapshotSource,
+	DetectionSessionStatus,
+} from '../lib/contracts/detection-session';
 import type { DetectionKind, DetectionRunOptions, SiteAnalysis } from '../lib/detection/types';
 import type {
 	ActiveTabIdentity,
@@ -58,8 +68,10 @@ import {
 	getCachedAnalysis,
 	getCachedReplayTrace,
 	getCachedReplayTraceHistory,
+	getLatestDetectionSessionSnapshot,
 	getStatus,
 	saveAnalysis,
+	saveDetectionSessionSnapshot,
 	saveReplayTrace,
 } from '../lib/storage';
 
@@ -394,6 +406,95 @@ function createObservationSessionTarget(
 		sessionId: session.sessionId,
 		expectedUrl: tab.url,
 		...(tab.incognito ? { incognito: true } : {}),
+	};
+}
+
+/**
+ * Persist the analysis response as the popup's storage update stream.
+ *
+ * The legacy analysis cache remains useful for compatibility, but snapshot
+ * revisions are the durable channel that lets an open popup update without
+ * polling and lets a reopened popup recover state after background shutdown.
+ */
+async function saveDetectionSnapshotForPopup(
+	tab: InspectableTab,
+	output: AnalyzeActiveTabOutput,
+	source: DetectionSessionSnapshotSource,
+): Promise<void> {
+	if (tab.incognito) {
+		return;
+	}
+
+	const key = createDetectionSessionKeyForOutput(tab, output);
+	const existing = await getLatestDetectionSessionSnapshot(key);
+	const replaySummary = output.replayTrace ? createReplaySummary(output.replayTrace) : undefined;
+	const snapshot: DetectionSessionSnapshot = {
+		key,
+		schemaVersion: DETECTION_SESSION_SNAPSHOT_SCHEMA_VERSION,
+		revision: (existing?.revision ?? 0) + 1,
+		urlHash: createDetectionStorageHash(output.analysis.url),
+		hostname: output.analysis.hostname,
+		status: getDetectionSnapshotStatus(output),
+		source,
+		updatedAt: Date.now(),
+		detectionCount: output.analysis.results.length,
+		analysis: output.analysis,
+		enrichment: toDetectionEnrichmentState(output.enrichment),
+		...(replaySummary ? { replaySummary } : {}),
+	};
+
+	await saveDetectionSessionSnapshot(snapshot);
+}
+
+/**
+ * Resolve the page-session key available from a background response.
+ *
+ * Observation sessions provide the strongest document identity. Cached responses
+ * can lack a session, so the URL hash becomes a stable fallback until content
+ * owns browser document ids in the later page-session runtime.
+ */
+function createDetectionSessionKeyForOutput(tab: InspectableTab, output: AnalyzeActiveTabOutput): DetectionSessionKey {
+	return {
+		tabId: tab.id,
+		frameId: 0,
+		documentId: output.sessionTarget?.sessionId ?? output.session?.sessionId ?? createDetectionStorageHash(output.analysis.url),
+		originHash: createDetectionStorageHash(getOrigin(output.analysis.url)),
+	};
+}
+
+/** Derive the popup-visible lifecycle state from the analysis response. */
+function getDetectionSnapshotStatus(output: AnalyzeActiveTabOutput): DetectionSessionStatus {
+	if (output.enrichment?.status === 'pending') return 'enriching';
+	if (output.session?.status === 'observing' || output.session?.status === 'dirty') return 'observing';
+	if (output.session?.status === 'stopped') return 'stopped';
+	if (output.cache.status === 'hit') return 'cached';
+	return 'complete';
+}
+
+/** Store enrichment outcomes with terminal states instead of leaving the popup pending forever. */
+function toDetectionEnrichmentState(enrichment?: AnalysisEnrichmentState): DetectionEnrichmentState {
+	const updatedAt = Date.now();
+	if (!enrichment) return { status: 'not-needed', updatedAt, reason: 'no-enrichment-response' };
+	return {
+		status: enrichment.status === 'skipped' ? 'skipped' : enrichment.status,
+		updatedAt,
+		...(enrichment.completedAt ? { completedAt: enrichment.completedAt } : {}),
+		...(enrichment.reason ? { reason: enrichment.reason } : {}),
+	};
+}
+
+/** Keep only public-safe replay progress inside the visible snapshot record. */
+function createReplaySummary(trace: DetectionReplayTrace): DetectionReplaySummary {
+	const stages: DetectionPipelineStage[] = [];
+	for (const event of trace.events) {
+		if (!stages.includes(event.stage)) stages.push(event.stage);
+	}
+	return {
+		analyzedAt: trace.analyzedAt,
+		eventCount: trace.events.length,
+		explanationCount: trace.explanations.length,
+		resultCount: trace.resultCount,
+		stages,
 	};
 }
 
@@ -938,7 +1039,18 @@ async function analyzeAndPersistObservationBatch(
 		...details,
 	});
 
-	return ok(createAnalysisOutput(savedAnalysis, cacheStatus, session, savedReplayTrace, replayHistory, sessionTarget, enrichment));
+	const output = createAnalysisOutput(
+		savedAnalysis,
+		cacheStatus,
+		session,
+		savedReplayTrace,
+		replayHistory,
+		sessionTarget,
+		enrichment,
+	);
+	await saveDetectionSnapshotForPopup(tab, output, 'background');
+
+	return ok(output);
 }
 
 function getPipelineOptionsForAnalysis(refreshKind: unknown): DetectionRunOptions | undefined {
@@ -1300,14 +1412,17 @@ export function createBackgroundApi(): BackgroundApi {
 							sessionStatus: session?.status ?? 'none',
 							timingTraceId: requestTimingTraceId,
 						});
-						return ok(createAnalysisOutput(
+						const output = createAnalysisOutput(
 							cached,
 							'hit',
 							session,
 							replayTrace ?? undefined,
 							replayHistory,
 							createObservationSessionTarget(tab, session),
-						));
+						);
+						await saveDetectionSnapshotForPopup(tab, output, 'cache');
+
+						return ok(output);
 					}
 
 					logBackgroundEvent('analysis-cache-miss', {

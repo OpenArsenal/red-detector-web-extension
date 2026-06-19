@@ -1,9 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { PageSignalPollingState } from '../../lib/content/observed-page-signals';
+import type { DetectionSessionSnapshot } from '../../lib/contracts/detection-session';
 import type { PageSignals, SiteAnalysis } from '../../lib/detection/types';
 import type { ContentApi } from '../../lib/messaging';
 import { CONTENT_SCRIPT_TIMEOUT_MS } from '../../lib/messaging/rpc';
+import { getDetectionOriginSnapshotKey, getDetectionSessionSnapshotKey } from '../../lib/storage/contracts';
 import type { ObservationBatch } from '../../lib/observations';
 import type { DetectionReplayTrace } from '../../lib/pipeline';
 import { ok, type AppResult } from '../../lib/shared/result';
@@ -254,12 +256,21 @@ async function loadBackgroundApiHarness(input: {
 	const getStatus = vi.fn(async () => ({ totalAnalyses: 0, trackedOrigins: 0 }));
 	const saveAnalysis = vi.fn(async (analysis: SiteAnalysis) => analysis);
 	const saveReplayTrace = vi.fn(async (trace: DetectionReplayTrace) => trace);
+	const getLatestDetectionSessionSnapshot = vi.fn(async () => null);
+	const saveDetectionSessionSnapshot = vi.fn(async (snapshot: DetectionSessionSnapshot) => ({
+		accepted: true,
+		sessionStorageKey: getDetectionSessionSnapshotKey(snapshot.key),
+		originStorageKey: getDetectionOriginSnapshotKey(snapshot.key.originHash),
+		snapshot,
+	}));
 	vi.doMock('../../lib/storage', () => ({
 		getCachedAnalysis,
 		getCachedReplayTrace,
 		getCachedReplayTraceHistory,
 		getStatus,
+		getLatestDetectionSessionSnapshot,
 		saveAnalysis,
+		saveDetectionSessionSnapshot,
 		saveReplayTrace,
 	}));
 
@@ -277,6 +288,7 @@ async function loadBackgroundApiHarness(input: {
 			getCompiledRegistry,
 			listTechnologies,
 			saveAnalysis,
+			saveDetectionSessionSnapshot,
 			saveReplayTrace,
 		},
 	};
