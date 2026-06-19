@@ -21,6 +21,7 @@ import {
 } from '../lib/diagnostics/timing';
 
 import type { ObservationSessionState } from '../lib/content/observed-page-signals';
+import type { ContentPageSessionSnapshotTarget } from '../lib/contracts/analysis';
 import type {
 	DetectionEnrichmentState,
 	DetectionReplaySummary,
@@ -410,6 +411,31 @@ function createObservationSessionTarget(
 }
 
 /**
+ * Build the content-side snapshot target from background-owned tab identity.
+ *
+ * The content script can observe the document, but only the background receives
+ * the tab id from Chrome. Sharing the same key lets content publish revision 1
+ * and background promote revision 2 for the exact same page session.
+ */
+function createContentPageSessionSnapshotTarget(
+	tab: InspectableTab,
+	sessionId: string,
+): ContentPageSessionSnapshotTarget {
+	return {
+		key: {
+			tabId: tab.id,
+			frameId: 0,
+			documentId: sessionId,
+			originHash: createDetectionStorageHash(getOrigin(tab.url)),
+		},
+		url: tab.url,
+		urlHash: createDetectionStorageHash(tab.url),
+		hostname: new URL(tab.url).hostname,
+		...(tab.incognito ? { incognito: true } : {}),
+	};
+}
+
+/**
  * Persist the analysis response as the popup's storage update stream.
  *
  * The legacy analysis cache remains useful for compatibility, but snapshot
@@ -518,7 +544,7 @@ async function startObservationSessionForCachedAnalysis(
 	const response = await timeAsyncSpan(
 		'background.cache-hit.observation-session.begin',
 		timingContext,
-		() => beginObservationSessionForTab(tab.id, tab.url),
+		() => beginObservationSessionForTab(tab.id, tab.url, tab.incognito),
 		(value) => ({ ok: value.ok, status: value.ok ? value.value.status : undefined }),
 	);
 	if (!response.ok) {
@@ -697,10 +723,14 @@ async function recoverObservationBatchForRefresh(
 async function beginObservationSessionForTab(
 	tabId: number,
 	expectedUrl: string,
+	incognito = false,
 ): Promise<AppResult<ObservationSessionState>> {
+	const sessionId = crypto.randomUUID();
+	const tab: InspectableTab = { id: tabId, url: expectedUrl, incognito };
 	logBackgroundEvent('observation-start-requested', {
 		tabId,
 		hostname: new URL(expectedUrl).hostname,
+		sessionId,
 		policy: EXTENSION_OBSERVATION_POLICY,
 	});
 
@@ -714,8 +744,9 @@ async function beginObservationSessionForTab(
 	try {
 		const response = await withTimeout(
 			contentApi.beginObservationSession({
-				sessionId: crypto.randomUUID(),
+				sessionId,
 				expectedUrl,
+				snapshotTarget: createContentPageSessionSnapshotTarget(tab, sessionId),
 				policy: EXTENSION_OBSERVATION_POLICY,
 			}),
 			CONTENT_SCRIPT_TIMEOUT_MS,
@@ -812,7 +843,7 @@ async function analyzeFreshActiveTab(
 		const sessionResponse = await timeAsyncSpan(
 			'background.observation-session.begin',
 			timingContext,
-			() => beginObservationSessionForTab(tab.id, tab.url),
+			() => beginObservationSessionForTab(tab.id, tab.url, tab.incognito),
 			(response) => ({ ok: response.ok, status: response.ok ? response.value.status : undefined }),
 		);
 		if (sessionResponse.ok) {

@@ -5,6 +5,7 @@ import {
   createObservedPageSignals,
   type ObservedPageSignals,
 } from "../lib/content/observed-page-signals";
+import { writeContentPageSessionSnapshot } from "../lib/content/page-session-snapshots";
 import { validatePageSignals } from "../lib/detection/validate";
 import { configureRedDetectorLogging, getRedDetectorLogger } from "../lib/diagnostics/logging";
 import type { CollectPageSignalsInput, ContentApi } from "../lib/messaging";
@@ -12,7 +13,10 @@ import {
   CONTENT_RPC_NAMESPACE,
   createContentServerAdapter,
 } from "../lib/messaging";
-import type { ObservationStopReason } from "../lib/contracts/analysis";
+import type {
+  ContentPageSessionSnapshotTarget,
+  ObservationStopReason,
+} from "../lib/contracts/analysis";
 import { timeAsyncSpan, timeSyncSpan, type TimingContext } from "../lib/diagnostics/timing";
 import { normalizePageSignals } from "../lib/observations";
 import { errorResponse, ok } from "../lib/shared/result";
@@ -61,6 +65,10 @@ function logContentEvent(event: string, details?: Record<string, unknown>): void
     event,
     ...(details ?? {}),
   });
+}
+
+function describeContentError(error: unknown): string {
+  return error instanceof Error ? error.message : "Unexpected content runtime failure";
 }
 
 function summarizeSignals(signals: Awaited<ReturnType<typeof collectPageSignals>>): Record<string, unknown> {
@@ -211,12 +219,41 @@ async function collectInitialObservationBatch(
  */
 export function createContentRuntime(observedSignals: ObservedPageSignals): ContentRuntime {
   let observationExpiryTimer: ReturnType<typeof globalThis.setTimeout> | undefined;
+  let activeSnapshotTarget: ContentPageSessionSnapshotTarget | undefined;
 
   function clearObservationExpiry() {
     if (observationExpiryTimer !== undefined) {
       globalThis.clearTimeout(observationExpiryTimer);
       observationExpiryTimer = undefined;
     }
+  }
+
+  /**
+   * Content lifecycle changes become durable popup-visible revisions when the
+   * background has supplied a storage target for the current tab document. The
+   * write runs outside the RPC response so observation can start and flush
+   * without waiting on storage latency.
+   */
+  function publishContentSnapshot(
+    status: "observing" | "stopped",
+    details: { readonly observedAt?: number; readonly reason?: string } = {},
+  ): void {
+    const target = activeSnapshotTarget;
+    if (!target) {
+      return;
+    }
+
+    void writeContentPageSessionSnapshot({
+      target,
+      status,
+      observedAt: details.observedAt,
+      reason: details.reason,
+    }).catch((error) => {
+      logContentEvent("snapshot-write-failed", {
+        status,
+        message: describeContentError(error),
+      });
+    });
   }
 
   const contentApi: ContentApi = {
@@ -236,12 +273,17 @@ export function createContentRuntime(observedSignals: ObservedPageSignals): Cont
         maxMutations: input.policy.maxMutations,
       });
 
+      activeSnapshotTarget = input.snapshotTarget;
       const session = observedSignals.beginObservationSession({
         sessionId: input.sessionId,
         expectedUrl: input.expectedUrl,
         durationMs: input.policy.durationMs,
         maxPendingNodes: input.policy.maxPendingNodes,
         maxMutations: input.policy.maxMutations,
+      });
+      publishContentSnapshot("observing", {
+        observedAt: session.startedAt,
+        reason: "observation-session-started",
       });
 
       observationExpiryTimer = globalThis.setTimeout(() => {
@@ -250,7 +292,12 @@ export function createContentRuntime(observedSignals: ObservedPageSignals): Cont
           hostname: globalThis.location?.hostname,
           sessionId: input.sessionId,
         });
-        observedSignals.stopObservationSession("expired");
+        const expiredSession = observedSignals.stopObservationSession("expired");
+        publishContentSnapshot("stopped", {
+          observedAt: expiredSession.lastObservedAt,
+          reason: expiredSession.stopReason ?? "expired",
+        });
+        activeSnapshotTarget = undefined;
       }, input.policy.durationMs);
 
       logContentEvent("observation-active", {
@@ -264,12 +311,25 @@ export function createContentRuntime(observedSignals: ObservedPageSignals): Cont
     },
 
     async flushObservationBatch() {
-      return ok(observedSignals.flushObservationBatch());
+      const flush = observedSignals.flushObservationBatch();
+      if (flush.batch && flush.batch.observations.length > 0) {
+        publishContentSnapshot("observing", {
+          observedAt: flush.batch.observedAt,
+          reason: "observation-batch-flushed",
+        });
+      }
+
+      return ok(flush);
     },
 
     async stopObservationSession() {
       clearObservationExpiry();
       const session = observedSignals.stopObservationSession("manual");
+      publishContentSnapshot("stopped", {
+        observedAt: session.lastObservedAt,
+        reason: session.stopReason ?? "manual",
+      });
+      activeSnapshotTarget = undefined;
       logContentEvent("observation-stopped", {
         hostname: globalThis.location?.hostname,
         sessionId: session.sessionId,
@@ -289,6 +349,8 @@ export function createContentRuntime(observedSignals: ObservedPageSignals): Cont
     dispose(reason) {
       clearObservationExpiry();
       observedSignals.disconnect(reason);
+      publishContentSnapshot("stopped", { reason });
+      activeSnapshotTarget = undefined;
     },
   };
 }
