@@ -1,7 +1,7 @@
 import type { DetectionSessionKey } from '../contracts/detection-session';
 
 import { getOrigin } from '../shared/url';
-
+import { createFnv1a32Hash } from './hash';
 
 /** Prefix used for exact page-document detection snapshot records. */
 export const DETECTION_SESSION_SNAPSHOT_PREFIX = 'rd:session:';
@@ -82,15 +82,11 @@ export function getReplayTraceHistoryCacheKeyForAnalysisCacheKey(key: string): s
  * guarantee against someone who already has extension storage access.
  */
 export function createDetectionStorageHash(value: string): string {
-	let hash = 0x811c9dc5;
-	for (let index = 0; index < value.length; index += 1) {
-		hash ^= value.charCodeAt(index);
-		hash = Math.imul(hash, 0x01000193);
-	}
+	const hash = createFnv1a32Hash(value);
 
-	return (hash >>> 0).toString(36);
+	// Base-36 keeps the storage fragment compact without changing the hash.
+	return hash.toString(36);
 }
-
 
 /**
  * Build the storage key for the latest snapshot from one page document.

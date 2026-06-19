@@ -8,6 +8,7 @@ time:
   '@dagrejs/graphlib@4.0.1': 2026-03-08T10:33:18.534Z
   '@fast-check/vitest@0.4.1': 2026-04-28T22:22:05.897Z
   '@logtape/logtape@2.1.5': 2026-06-16T05:03:02.877Z
+  '@std/encoding@1.0.10': 2025-04-24T06:23:20.717Z
   '@wxt-dev/module-solid@1.1.4': 2025-09-03T22:26:17.973Z
   comctx@1.7.5: 2026-06-15T13:00:20.342Z
   solid-js@1.9.13: 2026-05-15T17:36:58.458Z
@@ -25,6 +26,9 @@ importers:
       '@logtape/logtape':
         specifier: ^2.1.5
         version: 2.1.5
+      '@std/encoding':
+        specifier: jsr:^1.0.10
+        version: 1.0.10
       '@types/node':
         specifier: ^20.0.0 || ^22.0.0 || >=24.0.0
         version: 25.9.2
@@ -313,6 +317,10 @@ packages:
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
+
+  '@std/encoding@1.0.10':
+    resolution: {integrity: sha512-WK2njnDTyKefroRNk2Ooq7GStp6Y0ccAvr4To+Z/zecRAGe7+OSvH9DbiaHpAKwEi2KQbmpWMOYsdNt+TsdmSw==, tarball: https://npm.jsr.io/~/11/@jsr/std__encoding/1.0.10.tgz}
+    aliasOf: '@jsr/std__encoding'
 
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -2060,6 +2068,8 @@ snapshots:
   '@rolldown/pluginutils@1.0.1': {}
 
   '@standard-schema/spec@1.1.0': {}
+
+  '@std/encoding@1.0.10': {}
 
   '@types/babel__core@7.20.5':
     dependencies:
