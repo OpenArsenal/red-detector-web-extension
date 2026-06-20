@@ -71,15 +71,15 @@ export interface PackagedRegistryRelationshipsAsset {
 }
 
 /** Rule kinds safe for the small bootstrap registry asset. */
-const BOOTSTRAP_RULE_KINDS = Object.freeze({
-	cookie: true,
-	dom: true,
-	jsGlobal: true,
-	link: true,
-	meta: true,
-	storage: true,
-	url: true,
-} satisfies Partial<Record<TechnologyDefinition['rules'][number]['kind'], true>>);
+const BOOTSTRAP_RULE_KINDS = new Set<TechnologyDefinition['rules'][number]['kind']>([
+	'cookie',
+	'dom',
+	'jsGlobal',
+	'link',
+	'meta',
+	'storage',
+	'url',
+]);
 
 /** Return a registry whose rules are limited to cheap page-local startup evidence. */
 export function createBootstrapTechnologyRegistry(
@@ -88,7 +88,7 @@ export function createBootstrapTechnologyRegistry(
 	return technologies
 		.map((technology) => ({
 			...technology,
-			rules: technology.rules.filter((rule) => BOOTSTRAP_RULE_KINDS[rule.kind] === true),
+			rules: technology.rules.filter((rule) => BOOTSTRAP_RULE_KINDS.has(rule.kind)),
 		}))
 		.filter((technology) => technology.rules.length > 0);
 }

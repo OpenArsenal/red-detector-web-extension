@@ -32,7 +32,9 @@ export function createPackagedTechnologyRegistryProvider(
 ): TechnologyRegistryProvider {
 	let registryPromise: Promise<readonly TechnologyDefinition[]> | undefined;
 	let artifactPromise: Promise<CompiledTechnologyRegistryArtifact> | undefined;
-	const resolveUrl = input.resolveUrl ?? ((path) => browser.runtime.getURL(path));
+	const resolveUrl = input.resolveUrl ?? ((path) => browser.runtime.getURL(
+		path as Parameters<typeof browser.runtime.getURL>[0],
+	));
 	const fetchAsset = input.fetchAsset ?? fetch;
 
 	const loadRegistry = async () => {

@@ -11,7 +11,7 @@ import {
 	createBootstrapTechnologyRegistry,
 	renderPackagedRegistryJson,
 } from '../src/lib/registry/packaged-artifacts';
-import type { CompiledTechnologyRegistryArtifact } from '../src/lib/registry';
+import type { CompiledTechnologyRegistryArtifact } from '../src/lib/registry/index';
 import type { TechnologyDefinition } from '../src/lib/detection/types';
 
 const REGISTRY_CACHE_DIR = 'red-detector-registry';
