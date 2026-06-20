@@ -8,13 +8,18 @@ import {
 	getPopupObservationModeFromAnalysis,
 	getPopupObservationModeFromSession,
 	groupDetectionsByPrimaryCategory,
+	shouldApplyPopupSnapshotRevision,
 	shouldPollPopupObservation,
+	shouldPreservePopupReplayState,
 	shouldRefreshObservedChange,
+	shouldRefreshObservedSnapshot,
 } from '../../lib/popup/view-model';
 import {
 	makeAnalysis,
 	makeAnalyzeActiveTabOutput,
 	makeDetection,
+	makeDetectionReplayTrace,
+	makeDetectionSessionSnapshot,
 	makeObservationSession,
 } from '../support/factories';
 
@@ -142,6 +147,50 @@ describe('popup view model', () => {
 		expect(shouldRefreshObservedChange({
 			session: { ...makeObservationSession('observing'), lastObservedAt: 1_699_999_999_999 },
 			analysis: makeAnalysis([], { analyzedAt: 1_700_000_000_000 }),
+		})).toBe(false);
+	});
+
+	it('ignores empty content lifecycle snapshots when detector output is already visible', () => {
+		const currentAnalysis = makeAnalysis([makeDetection('react')]);
+		const snapshot = makeDetectionSessionSnapshot({
+			source: 'content',
+			status: 'observing',
+			analysis: makeAnalysis([], { url: currentAnalysis.url, analyzedAt: currentAnalysis.analyzedAt }),
+		});
+
+		expect(shouldApplyPopupSnapshotRevision({ currentAnalysis, snapshot })).toBe(false);
+	});
+
+	it('preserves replay state when a lifecycle snapshot repeats the same analysis', () => {
+		const previousAnalysis = makeAnalysis([makeDetection('react')]);
+		const response = makeAnalyzeActiveTabOutput({
+			analysis: previousAnalysis,
+		});
+
+		expect(shouldPreservePopupReplayState({ previousAnalysis, response })).toBe(true);
+		expect(shouldPreservePopupReplayState({
+			previousAnalysis,
+			response: { ...response, replayTrace: makeDetectionReplayTrace() },
+		})).toBe(false);
+	});
+
+	it('uses queued content snapshots as storage-driven refresh triggers', () => {
+		const snapshot = makeDetectionSessionSnapshot({
+			source: 'content',
+			status: 'observing',
+			key: { tabId: 7, frameId: 0, documentId: 'session-1', originHash: 'origin-example' },
+			enrichment: { status: 'not-needed', reason: 'observation-batch-queued' },
+		});
+		const sessionTarget = {
+			tabId: 7,
+			sessionId: 'session-1',
+			expectedUrl: 'https://example.com/products',
+		};
+
+		expect(shouldRefreshObservedSnapshot({ snapshot, sessionTarget })).toBe(true);
+		expect(shouldRefreshObservedSnapshot({
+			snapshot: { ...snapshot, enrichment: { status: 'not-needed', reason: 'observation-session-started' } },
+			sessionTarget,
 		})).toBe(false);
 	});
 

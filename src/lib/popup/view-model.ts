@@ -1,6 +1,7 @@
 import { categories } from '../../data/categories';
 import type { ObservationSessionState } from '../content/observed-page-signals';
-import type { AnalyzeActiveTabOutput } from '../contracts/analysis';
+import type { AnalyzeActiveTabOutput, ObservationSessionTarget } from '../contracts/analysis';
+import type { DetectionSessionSnapshot } from '../contracts/detection-session';
 import type { CategoryId, ConfidenceScore, DetectionResult, SiteAnalysis } from '../detection/types';
 import type { DetectionExplanation, DetectionExplanationEvidenceSummary, DetectionReplayTrace } from '../pipeline';
 import type { AppError } from '../shared/errors';
@@ -9,8 +10,9 @@ import type { AppError } from '../shared/errors';
  * Popup observation states that are meaningful to the user interface.
  *
  * These values intentionally hide the lower-level content-session statuses. The
- * popup only needs to know whether it should keep polling, show a stopped state,
- * show a cache-only idle state, or admit that the current state is unknown.
+ * popup only needs to know whether page watching is active, stopped, idle, or
+ * unknown. Storage revisions are the receive stream; this state only drives copy
+ * and controls.
  */
 export const POPUP_OBSERVATION_MODES = ['idle', 'active', 'stopped', 'unknown'] as const;
 
@@ -232,7 +234,7 @@ export function getPopupObservationModeFromAnalysis(
 	return response.cache.status === 'hit' ? 'idle' : 'stopped';
 }
 
-/** Returns whether a popup observation mode should keep the polling timer active. */
+/** Returns whether active page watching should keep the popup in a live-update state. */
 export function shouldPollPopupObservation(mode: PopupObservationMode): boolean {
 	return mode === 'active';
 }
@@ -250,6 +252,88 @@ export function shouldRefreshObservedChange(
 	const latestObservedAt = input.session.lastObservedAt ?? 0;
 	const latestAnalyzedAt = input.analysis?.analyzedAt ?? 0;
 	return !input.analysis || latestObservedAt > latestAnalyzedAt;
+}
+
+/**
+ * Decide whether a storage snapshot can replace the detector output already shown.
+ *
+ * Content-owned lifecycle revisions are allowed to move observation status forward,
+ * but an empty bootstrap snapshot must not erase richer detector output from the
+ * same page. Background and cache snapshots still apply because they carry real
+ * detector results or explicit cache state.
+ */
+export function shouldApplyPopupSnapshotRevision(input: {
+	readonly currentAnalysis: SiteAnalysis | null;
+	readonly snapshot: DetectionSessionSnapshot;
+}): boolean {
+	const currentAnalysis = input.currentAnalysis;
+	if (!currentAnalysis || input.snapshot.source !== 'content') {
+		return true;
+	}
+
+	if (input.snapshot.analysis.url !== currentAnalysis.url) {
+		return true;
+	}
+
+	if (input.snapshot.analysis.results.length > 0 || currentAnalysis.results.length === 0) {
+		return true;
+	}
+
+	return false;
+}
+
+/**
+ * Preserve replay UI when a lifecycle-only snapshot repeats the same analysis.
+ *
+ * Snapshot records intentionally carry only a replay summary. When the analysis
+ * payload did not advance, clearing explanation and replay state would make the
+ * popup look like evidence disappeared even though only the observation status
+ * changed.
+ */
+export function shouldPreservePopupReplayState(input: {
+	readonly previousAnalysis: SiteAnalysis | null;
+	readonly response: Pick<AnalyzeActiveTabOutput, 'analysis' | 'replayHistory' | 'replayTrace'>;
+}): boolean {
+	if (!input.previousAnalysis || input.response.replayTrace || input.response.replayHistory !== undefined) {
+		return false;
+	}
+
+	if (input.previousAnalysis.url !== input.response.analysis.url) {
+		return false;
+	}
+
+	if (input.previousAnalysis.analyzedAt !== input.response.analysis.analyzedAt) {
+		return false;
+	}
+
+	const previousIds = input.previousAnalysis.results.map((result) => result.technologyId);
+	const nextIds = input.response.analysis.results.map((result) => result.technologyId);
+	return previousIds.length === nextIds.length && previousIds.every((id, index) => id === nextIds[index]);
+}
+
+/**
+ * Return whether a content snapshot should ask background to flush queued facts.
+ *
+ * The trigger is storage-driven: content writes a revision after its throttled
+ * observer queues or flushes late observations, and the popup asks the existing
+ * targeted session API for a detector refresh. No interval or timer loop is
+ * required.
+ */
+export function shouldRefreshObservedSnapshot(input: {
+	readonly snapshot: DetectionSessionSnapshot;
+	readonly sessionTarget: ObservationSessionTarget | null;
+}): boolean {
+	const target = input.sessionTarget;
+	if (!target || input.snapshot.source !== 'content' || input.snapshot.status !== 'observing') {
+		return false;
+	}
+
+	if (input.snapshot.key.tabId !== target.tabId || input.snapshot.key.documentId !== target.sessionId) {
+		return false;
+	}
+
+	const reason = input.snapshot.enrichment.reason;
+	return reason === 'observation-batch-queued' || reason === 'observation-batch-flushed';
 }
 
 /**

@@ -30,6 +30,9 @@ import {
   getPopupObservationLabel,
   getPopupObservationModeFromSession,
   groupDetectionsByPrimaryCategory,
+  shouldApplyPopupSnapshotRevision,
+  shouldPreservePopupReplayState,
+  shouldRefreshObservedSnapshot,
   type PopupExplanationLookup,
   type PopupNotice,
   type PopupObservationMode,
@@ -89,6 +92,8 @@ export default function App() {
   let pendingManualRefresh = false;
   let unsubscribeSnapshotRevisions: (() => void) | undefined;
   let appliedSnapshotRevision: DetectionSessionSnapshot | null = null;
+  let latestSnapshotRefreshRequestKey: string | undefined;
+  let snapshotRefreshInFlight = false;
 
   function resultCount() {
     return analysis()?.results.length ?? 0;
@@ -144,6 +149,19 @@ export default function App() {
       return;
     }
 
+    if (!shouldApplyPopupSnapshotRevision({ currentAnalysis: analysis(), snapshot })) {
+      appliedSnapshotRevision = snapshot;
+      logPopupEvent("snapshot-revision-ignored", {
+        revision: snapshot.revision,
+        resultCount: snapshot.analysis.results.length,
+        status: snapshot.status,
+        source: snapshot.source,
+        reason: "content-lifecycle-without-detector-output",
+      });
+      void requestObservationRefreshFromSnapshot(snapshot);
+      return;
+    }
+
     appliedSnapshotRevision = snapshot;
     logPopupEvent("snapshot-revision-applied", {
       revision: snapshot.revision,
@@ -155,6 +173,48 @@ export default function App() {
       analysis: snapshot.analysis,
       snapshot,
     }), { source: "auto" });
+    void requestObservationRefreshFromSnapshot(snapshot);
+  }
+
+  async function requestObservationRefreshFromSnapshot(snapshot: DetectionSessionSnapshot): Promise<void> {
+    if (!shouldRefreshObservedSnapshot({ snapshot, sessionTarget: sessionTarget() })) {
+      return;
+    }
+
+    const refreshKey = `${snapshot.key.documentId}:${snapshot.revision}`;
+    if (snapshotRefreshInFlight || latestSnapshotRefreshRequestKey === refreshKey) {
+      return;
+    }
+
+    latestSnapshotRefreshRequestKey = refreshKey;
+    snapshotRefreshInFlight = true;
+    try {
+      const target = sessionTarget();
+      if (!target) {
+        return;
+      }
+
+      logPopupEvent("snapshot-observation-refresh-requested", {
+        sessionId: target.sessionId,
+        revision: snapshot.revision,
+        reason: snapshot.enrichment.reason,
+      });
+      const response = await backgroundApi.refreshObservationSession(target);
+      if (!response.ok) {
+        logPopupEvent("snapshot-observation-refresh-failed", {
+          code: response.error.code,
+          message: response.error.message,
+        });
+        return;
+      }
+
+      applyAnalysisResponse(response.value, { source: "auto" });
+      await refreshStatus();
+    } catch (error) {
+      logPopupEvent("snapshot-observation-refresh-threw", { message: normalizeError(error) });
+    } finally {
+      snapshotRefreshInFlight = false;
+    }
   }
 
   async function renderStoredAnalysisForActiveTab(identity: ActiveTabIdentity) {
@@ -201,8 +261,10 @@ export default function App() {
       resetLateMarkers?: boolean;
     },
   ) {
+    const previousAnalysis = analysis();
+    const preserveReplayState = shouldPreservePopupReplayState({ previousAnalysis, response });
     const update = buildPopupAnalysisUpdate({
-      previousAnalysis: analysis(),
+      previousAnalysis,
       response,
       source: options.source,
       currentLateDetectionIds: lateAddedIds(),
@@ -211,10 +273,12 @@ export default function App() {
 
     setAnalysis(update.analysis);
     setLateAddedIds(update.lateDetectionIds);
-    setExplanationsByTechnologyId(update.explanationsByTechnologyId);
-    setPipelineMode(response.replayTrace?.completedMode ?? "event");
+    setExplanationsByTechnologyId(
+      preserveReplayState ? explanationsByTechnologyId() : update.explanationsByTechnologyId,
+    );
+    setPipelineMode(response.replayTrace?.completedMode ?? (preserveReplayState ? pipelineMode() : "event"));
     setEnrichmentPending(response.enrichment?.status === "pending");
-    setReplayHistory(response.replayHistory ?? []);
+    setReplayHistory(response.replayHistory ?? (preserveReplayState ? replayHistory() : []));
     setSessionTarget(response.sessionTarget ?? sessionTarget());
 
     logPopupEvent("analysis-applied", {
