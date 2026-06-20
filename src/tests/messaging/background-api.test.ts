@@ -239,8 +239,8 @@ async function loadBackgroundApiHarness(input: {
 		sourceMap: {},
 		diagnostics: [],
 	};
-	const listTechnologies = vi.fn(() => compiledRegistryArtifact.technologies);
-	const getCompiledRegistry = vi.fn(() => compiledRegistryArtifact);
+	const listTechnologies = vi.fn(async () => compiledRegistryArtifact.technologies);
+	const getCompiledRegistry = vi.fn(async () => compiledRegistryArtifact);
 	vi.doMock('../../lib/detection/registry-provider', () => ({
 		bundledTechnologyRegistryProvider: { listTechnologies, getCompiledRegistry },
 	}));

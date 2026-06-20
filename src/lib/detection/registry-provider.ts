@@ -1,33 +1,30 @@
-import { precompiledRegistryArtifact } from '#/compiled-registry';
-import { compileTechnologyRegistry, createPrecompiledTechnologyRegistryProvider, type CompiledTechnologyRegistryArtifact } from '../registry';
+import { compileTechnologyRegistry, createPackagedTechnologyRegistryProvider, type CompiledTechnologyRegistryArtifact } from '../registry';
 import type { TechnologyDefinition } from './types';
 
 /**
  * Read-only source of technology definitions for detector calls and collection planning.
  *
- * The compiled registry can be expensive to parse and evaluate because it holds
- * the bundled rule tree, matcher index, relationship graph, and collection plan.
- * Runtime callers await the artifact so the background entrypoint can lazy-load
- * that generated module instead of statically pulling it into the service-worker
- * startup bundle.
+ * Registry access is asynchronous because the production extension loads the
+ * large generated registry from packaged JSON only when analysis needs it. Tests
+ * and small tools can still use the static provider to avoid browser fetches.
  */
 export interface TechnologyRegistryProvider {
-	/** Return the active technology definitions in detector order when already available. */
-	listTechnologies(): readonly TechnologyDefinition[];
+	/** Return the active technology definitions in detector order. */
+	listTechnologies(): Promise<readonly TechnologyDefinition[]>;
 	/**
 	 * Return the compiled artifact for the active registry.
 	 *
 	 * The provider owns caching so callers do not rebuild matcher indexes, graphs,
 	 * and collection plans during every active-tab analysis.
 	 */
-	getCompiledRegistry(): CompiledTechnologyRegistryArtifact;
+	getCompiledRegistry(): Promise<CompiledTechnologyRegistryArtifact>;
 }
 
 /**
  * Build a provider around an existing technology list.
  *
- * Tests and future build steps can use this to pass a tiny registry without importing
- * the generated bundled rule tree.
+ * Tests and future build steps can use this to pass a tiny registry without
+ * reading packaged assets or importing the generated bundled rule tree.
  */
 export function createStaticTechnologyRegistryProvider(
 	registry: readonly TechnologyDefinition[],
@@ -35,11 +32,11 @@ export function createStaticTechnologyRegistryProvider(
 	let compiledRegistry: CompiledTechnologyRegistryArtifact | undefined;
 
 	return {
-		listTechnologies() {
+		async listTechnologies() {
 			return registry;
 		},
 
-		getCompiledRegistry() {
+		async getCompiledRegistry() {
 			compiledRegistry ??= compileTechnologyRegistry({
 				technologies: registry,
 				sourceKind: 'typescript-definition',
@@ -49,5 +46,5 @@ export function createStaticTechnologyRegistryProvider(
 	};
 }
 
-/** Provider backed by the WXT-generated compiled registry artifact. */
-export const bundledTechnologyRegistryProvider = createPrecompiledTechnologyRegistryProvider(precompiledRegistryArtifact);
+/** Provider backed by WXT-generated registry JSON assets. */
+export const bundledTechnologyRegistryProvider = createPackagedTechnologyRegistryProvider();

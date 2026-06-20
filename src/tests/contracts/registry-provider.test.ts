@@ -14,11 +14,11 @@ function makeTechnology(id: string): TechnologyDefinition {
 }
 
 describe('technology registry provider contract', () => {
-	it('returns the active registry in detector order', () => {
+	it('returns the active registry in detector order', async () => {
 		const registry = [makeTechnology('first'), makeTechnology('second')];
 		const provider = createStaticTechnologyRegistryProvider(registry);
 
-		expect(provider.listTechnologies().map((technology) => technology.id)).toEqual([
+		expect((await provider.listTechnologies()).map((technology) => technology.id)).toEqual([
 			'first',
 			'second',
 		]);

@@ -4,19 +4,19 @@ import type { TechnologyRegistryProvider } from '../detection/registry-provider'
 /**
  * Runtime provider backed by an already-loaded build-generated registry artifact.
  *
- * Normal extension code uses the lazy bundled provider so the background can
- * split the generated registry away from its startup bundle. Tests and tooling
- * can still wrap a concrete artifact when they need synchronous setup data.
+ * Tooling and tests can still wrap a concrete artifact even though production
+ * loads packaged JSON asynchronously. The async methods keep callers on one
+ * provider contract while avoiding browser fetches in small test registries.
  */
 export function createPrecompiledTechnologyRegistryProvider(
 	artifact: CompiledTechnologyRegistryArtifact,
 ): TechnologyRegistryProvider {
 	return {
-		listTechnologies() {
+		async listTechnologies() {
 			return artifact.technologies;
 		},
 
-		getCompiledRegistry() {
+		async getCompiledRegistry() {
 			return artifact;
 		},
 	};

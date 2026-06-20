@@ -88,7 +88,7 @@ type InspectableTab = {
 };
 
 /** Compiled registry artifact reused across collection planning and matching. */
-type CompiledRegistry = ReturnType<typeof bundledTechnologyRegistryProvider.getCompiledRegistry>;
+type CompiledRegistry = Awaited<ReturnType<typeof bundledTechnologyRegistryProvider.getCompiledRegistry>>;
 
 configureRedDetectorLogging('background');
 
@@ -675,7 +675,7 @@ async function analyzeObservationBatchRefresh(
 
 	const lateBatch = flush.batch;
 	const baseBatch = eventObservationBatchByTab.get(tab.id);
-	const compiledRegistryArtifact = timeSyncSpan(
+	const compiledRegistryArtifact = await timeAsyncSpan(
 		'background.registry.get-compiled',
 		timingContext,
 		() => bundledTechnologyRegistryProvider.getCompiledRegistry(),
@@ -827,7 +827,7 @@ async function analyzeFreshActiveTab(
 			observe: input.observe,
 		},
 	};
-	const compiledRegistryArtifact = timeSyncSpan(
+	const compiledRegistryArtifact = await timeAsyncSpan(
 		'background.registry.get-compiled',
 		timingContext,
 		() => bundledTechnologyRegistryProvider.getCompiledRegistry(),
