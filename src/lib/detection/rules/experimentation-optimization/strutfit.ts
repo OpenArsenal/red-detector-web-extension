@@ -13,7 +13,7 @@ export const strutfitTechnologyDefinition = {
 		{
 			id: "strutfit:dom:0",
 			kind: "dom",
-			selector: "iframe[scr*='.strut.fit/']",
+			selector: "iframe[src*='.strut.fit/']",
 			description: "DOM selector matches a known technology marker.",
 		},
 		{

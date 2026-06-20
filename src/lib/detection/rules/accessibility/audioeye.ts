@@ -19,7 +19,7 @@ export const audioeyeTechnologyDefinition = {
 		{
 			id: "audioeye:dom:1",
 			kind: "dom",
-			selector: "iframe[scr*='.audioeye.com/']",
+			selector: "iframe[src*='.audioeye.com/']",
 			description: "DOM selector matches a known technology marker.",
 		},
 		{

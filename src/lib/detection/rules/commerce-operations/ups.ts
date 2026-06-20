@@ -14,7 +14,15 @@ export const upsTechnologyDefinition = {
 			id: "ups:text:0",
 			kind: "text",
 			pattern: new RegExp("\\b(?<!-)UPS\\b"),
-			description: "Page text contains a known technology marker.",
+			confidence: 25,
+			description: "Page text mentions UPS; this is corroborating evidence only.",
+		},
+		{
+			id: "ups:resourceUrl:owned-host",
+			kind: "resourceUrl",
+			pattern: new RegExp("https?://[^\\s\"'<>/]*(?:ups\\.com|ups\\.com\\.cdn\\.cloudflare\\.net)/", "i"),
+			confidence: 85,
+			description: "Loaded resource URL uses a UPS-owned host.",
 		},
 	],
 } as const satisfies TechnologyDefinition;

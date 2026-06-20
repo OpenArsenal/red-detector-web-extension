@@ -13,7 +13,7 @@ export const dailymotionTechnologyDefinition = {
 		{
 			id: "dailymotion:dom:0",
 			kind: "dom",
-			selector: "img[data-src*='.dailymotion.com/'], iframe[scr*='.dailymotion.com/']",
+			selector: "img[data-src*='.dailymotion.com/'], iframe[src*='.dailymotion.com/']",
 			description: "DOM selector matches a known technology marker.",
 		},
 		{

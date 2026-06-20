@@ -13,7 +13,7 @@ export const arenaTechnologyDefinition = {
 		{
 			id: "arena:dom:0",
 			kind: "dom",
-			selector: "iframe[scr*='//go.arena.im/']",
+			selector: "iframe[src*='//go.arena.im/']",
 			description: "DOM selector matches a known technology marker.",
 		},
 		{

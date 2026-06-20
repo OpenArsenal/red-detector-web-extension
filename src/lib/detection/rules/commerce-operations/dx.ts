@@ -14,7 +14,15 @@ export const dxTechnologyDefinition = {
 			id: "dx:text:0",
 			kind: "text",
 			pattern: new RegExp("\\bDX\\b"),
-			description: "Page text contains a known technology marker.",
+			confidence: 25,
+			description: "Page text mentions DX; this is corroborating evidence only.",
+		},
+		{
+			id: "dx:resourceUrl:owned-host",
+			kind: "resourceUrl",
+			pattern: new RegExp("https?://[^\\s\"'<>/]*(?:dxdelivery|dxfreight)\\.[^\\s\"'<>/]+/", "i"),
+			confidence: 85,
+			description: "Loaded resource URL uses a DX delivery host.",
 		},
 	],
 } as const satisfies TechnologyDefinition;

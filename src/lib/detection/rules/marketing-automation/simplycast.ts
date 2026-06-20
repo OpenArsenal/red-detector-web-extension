@@ -19,7 +19,7 @@ export const simplycastTechnologyDefinition = {
 		{
 			id: "simplycast:dom:1",
 			kind: "dom",
-			selector: "iframe[scr*='.simplycast.com']",
+			selector: "iframe[src*='.simplycast.com']",
 			description: "DOM selector matches a known technology marker.",
 		},
 	],

@@ -19,7 +19,7 @@ export const adnegahTechnologyDefinition = {
 		{
 			id: "adnegah:dom:1",
 			kind: "dom",
-			selector: "iframe[scr*='adnegah.net']",
+			selector: "iframe[src*='adnegah.net']",
 			description: "DOM selector matches a known technology marker.",
 		},
 		{

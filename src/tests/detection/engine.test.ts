@@ -1150,6 +1150,65 @@ describe('payload-ready collector promotions', () => {
 		}
 	});
 
+	it('does not detect short commerce and styling names from ordinary page text', () => {
+		const analysis = analyzeSite(
+			createSignals({
+				text: [
+					'DHL and UPS are mentioned in a shipping comparison.',
+					'DX is a developer-experience abbreviation here, not a courier.',
+					'APC is a power backup brand in this article.',
+					'Bootstrap appears in prose and --bs-gutter is shown as a code example.',
+				].join(' '),
+			}),
+			technologyDefinitions,
+		);
+
+		const ids = new Set(analysis.results.map((item) => item.technologyId));
+		for (const id of ['dhl', 'ups', 'dx', 'apc', 'bootstrap']) {
+			expect(ids.has(id)).toBe(false);
+		}
+	});
+
+	it('detects commerce and Bootstrap technologies from owned resources and structured styling evidence', () => {
+		const analysis = analyzeSite(
+			createSignals({
+				resources: [
+					{ url: 'https://assets.dhl.com/parcel/widget.js', initiatorType: 'script' },
+					{ url: 'https://www.ups.com/assets/tracking/widget.js', initiatorType: 'script' },
+					{ url: 'https://tracking.apc-pli.com/assets/checkout.js', initiatorType: 'script' },
+					{ url: 'https://www.dxdelivery.com/assets/tracking.js', initiatorType: 'script' },
+				],
+				stylesheets: [
+					'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
+				],
+				stylesheetContents: [
+					'/*! * Bootstrap v5.3.3 */ :root { --bs-gutter-x: 1.5rem; }',
+				],
+			}),
+			technologyDefinitions,
+		);
+
+		const ids = new Set(analysis.results.map((item) => item.technologyId));
+		for (const id of ['dhl', 'ups', 'apc', 'dx', 'bootstrap']) {
+			expect(ids.has(id)).toBe(true);
+		}
+	});
+
+	it('detects iframe integrations whose selectors use src attribute matching', () => {
+		const analysis = analyzeSite(
+			createSignals({
+				dom: {
+					selectors: {
+						"iframe[src*='.audioeye.com/']": true,
+					},
+				},
+			}),
+			technologyDefinitions,
+		);
+
+		expect(analysis.results.some((item) => item.technologyId === 'audioeye')).toBe(true);
+	});
+
 	it('still detects requested platform families from explicit vendor-owned markers', () => {
 		const analysis = analyzeSite(
 			createSignals({

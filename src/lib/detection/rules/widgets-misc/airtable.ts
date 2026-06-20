@@ -13,7 +13,7 @@ export const airtableTechnologyDefinition = {
 		{
 			id: "airtable:dom:0",
 			kind: "dom",
-			selector: "iframe[scr*='//airtable.com/'], a[href*='//airtable.com/'][target='_blank']",
+			selector: "iframe[src*='//airtable.com/'], a[href*='//airtable.com/'][target='_blank']",
 			description: "DOM selector matches a known technology marker.",
 		},
 	],

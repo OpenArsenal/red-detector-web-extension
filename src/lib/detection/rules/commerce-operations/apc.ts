@@ -13,8 +13,16 @@ export const apcTechnologyDefinition = {
 		{
 			id: "apc:text:0",
 			kind: "text",
-			pattern: new RegExp("\\APC\\b"),
-			description: "Page text contains a known technology marker.",
+			pattern: new RegExp("\\bAPC\\b"),
+			confidence: 25,
+			description: "Page text mentions APC; this is corroborating evidence only.",
+		},
+		{
+			id: "apc:resourceUrl:owned-host",
+			kind: "resourceUrl",
+			pattern: new RegExp("https?://[^\\s\"'<>/]*(?:apc-pli|apc-overnight)\\.[^\\s\"'<>/]+/", "i"),
+			confidence: 85,
+			description: "Loaded resource URL uses an APC delivery host.",
 		},
 	],
 } as const satisfies TechnologyDefinition;

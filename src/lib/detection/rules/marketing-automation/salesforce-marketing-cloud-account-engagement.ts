@@ -13,7 +13,7 @@ export const salesforceMarketingCloudAccountEngagementTechnologyDefinition = {
 		{
 			id: "salesforce-marketing-cloud-account-engagement:dom:0",
 			kind: "dom",
-			selector: "iframe[scr*='.pardot.com/']",
+			selector: "iframe[src*='.pardot.com/']",
 			description: "DOM selector matches a known technology marker.",
 		},
 		{
