@@ -244,6 +244,28 @@ describe.sequential('detection session snapshots', () => {
 		});
 	});
 
+	it('ignores malformed tab session index records', async () => {
+		const storage = await loadStorageHarness();
+		storage.values.set(getDetectionSessionIndexKey(13), {
+			tabId: 13,
+			updatedAt: 1_700_000_000_001,
+			entries: [
+				{
+					key: { tabId: 14, frameId: 0, documentId: 'other-tab', originHash: 'origin-example' },
+					urlHash: 'url-example',
+					status: 'observing',
+					updatedAt: 1_700_000_000_001,
+				},
+			],
+		});
+
+		await expect(storage.getDetectionSessionIndex(13)).resolves.toMatchObject({
+			tabId: 13,
+			entries: [],
+			updatedAt: 0,
+		});
+	});
+
 	it('removes the tab session index when a tab is closed', async () => {
 		const storage = await loadStorageHarness();
 		const snapshot = makeDetectionSessionSnapshot({

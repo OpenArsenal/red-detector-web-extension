@@ -21,13 +21,6 @@ import {
 	getDetectionSessionSnapshotKey,
 } from './contracts';
 
-/**
- * Result returned after attempting to persist a detection snapshot revision.
- *
- * Older revisions are rejected instead of overwriting the visible snapshot. The
- * caller still receives the stored value so a popup or background command can
- * converge on the newest known state without issuing a second read.
- */
 /** Stored pointer to one exact detection snapshot owned by a browser tab. */
 export interface DetectionSessionIndexEntry {
 	/** Exact page-session key used to read or update the stored snapshot. */
@@ -50,6 +43,13 @@ export interface DetectionSessionIndexRecord {
 	readonly updatedAt: number;
 }
 
+/**
+ * Result returned after attempting to persist a detection snapshot revision.
+ *
+ * Older revisions are rejected instead of overwriting the visible snapshot. The
+ * caller still receives the stored value so a popup or background command can
+ * converge on the newest known state without issuing a second read.
+ */
 export interface DetectionSessionSnapshotWriteResult {
 	/** Whether the submitted snapshot replaced the exact session record. */
 	readonly accepted: boolean;
@@ -297,6 +297,45 @@ function isDetectionSessionKey(value: unknown): value is DetectionSessionKey {
 		typeof candidate.frameId === 'number' &&
 		typeof candidate.documentId === 'string' &&
 		typeof candidate.originHash === 'string'
+	);
+}
+
+/** Guard the tab-session index before lifecycle cleanup trusts stored pointers. */
+function isDetectionSessionIndexRecord(
+	value: unknown,
+	tabId: number,
+): value is DetectionSessionIndexRecord {
+	if (typeof value !== 'object' || value === null) {
+		return false;
+	}
+
+	const candidate = value as Partial<DetectionSessionIndexRecord>;
+
+	return (
+		candidate.tabId === tabId &&
+		typeof candidate.updatedAt === 'number' &&
+		Array.isArray(candidate.entries) &&
+		candidate.entries.every((entry) => isDetectionSessionIndexEntry(entry, tabId))
+	);
+}
+
+/** Guard one indexed session pointer without reading the pointed-to snapshot yet. */
+function isDetectionSessionIndexEntry(
+	value: unknown,
+	tabId: number,
+): value is DetectionSessionIndexEntry {
+	if (typeof value !== 'object' || value === null) {
+		return false;
+	}
+
+	const candidate = value as Partial<DetectionSessionIndexEntry>;
+
+	return (
+		isDetectionSessionKey(candidate.key) &&
+		candidate.key.tabId === tabId &&
+		typeof candidate.urlHash === 'string' &&
+		isDetectionSessionStatus(candidate.status) &&
+		typeof candidate.updatedAt === 'number'
 	);
 }
 
