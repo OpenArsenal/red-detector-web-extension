@@ -74,17 +74,23 @@ export function runObservationBatchPipeline(
 		(result) => ({
 			matchCount: result.matches.length,
 			evidenceCount: result.evidenceBatch.entries.length,
+			observationCount: result.diagnostics.observationCount,
 			candidateRuleCount: result.diagnostics.candidateRuleCount,
 			keyedRuleCount: result.diagnostics.keyedRuleCount,
 			literalRuleCount: result.diagnostics.literalRuleCount,
 			literalRejectedRuleCount: result.diagnostics.literalRejectedRuleCount,
 			fallbackRuleCount: result.diagnostics.fallbackRuleCount,
+			observationsByKind: result.diagnostics.observationsByKind,
+			candidateRulesByKind: result.diagnostics.candidateRulesByKind,
 		}),
 	);
 	record('pattern-matched', matches.matches.length, {
+		observationCount: matches.diagnostics.observationCount,
 		candidateRuleCount: matches.diagnostics.candidateRuleCount,
 		literalRejectedRuleCount: matches.diagnostics.literalRejectedRuleCount,
 		fallbackRuleCount: matches.diagnostics.fallbackRuleCount,
+		observationsByKind: matches.diagnostics.observationsByKind,
+		candidateRulesByKind: matches.diagnostics.candidateRulesByKind,
 	});
 	record('evidence-created', matches.evidenceBatch.entries.length);
 
