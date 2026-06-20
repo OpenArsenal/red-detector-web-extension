@@ -406,7 +406,7 @@ export function createObservedPageSignals(
 	 * The batch itself stays inside the controller so the background can still
 	 * flush and analyze it later. The callback only carries enough lifecycle
 	 * information for a durable popup snapshot revision, which avoids waiting for
-	 * the next background polling request before the open popup knows the page has
+	 * the next background refresh request before the open popup knows the page has
 	 * changed.
 	 */
 	function publishQueuedObservationBatch(acceptedBeforeScan: number): void {

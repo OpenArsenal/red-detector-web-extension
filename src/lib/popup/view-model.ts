@@ -131,8 +131,8 @@ export type PopupAnalysisUpdate = {
 	explanationsByTechnologyId: PopupExplanationLookup;
 	/** User-facing observation state for buttons, chips, and result copy. */
 	observationMode: PopupObservationMode;
-	/** Whether the popup should keep polling the background for late page signals. */
-	shouldPoll: boolean;
+	/** Whether the popup should keep background-driven live updates active for late page signals. */
+	shouldKeepLiveUpdatesActive: boolean;
 	/** Optional notice to display after applying the response. */
 	notice: PopupNotice | null;
 };
@@ -235,7 +235,7 @@ export function getPopupObservationModeFromAnalysis(
 }
 
 /** Returns whether active page watching should keep the popup in a live-update state. */
-export function shouldPollPopupObservation(mode: PopupObservationMode): boolean {
+export function shouldKeepPopupLiveUpdatesActive(mode: PopupObservationMode): boolean {
 	return mode === 'active';
 }
 
@@ -429,11 +429,11 @@ export function buildPopupAnalysisUpdate(
 	const observationMode = getPopupObservationModeFromAnalysis(input.response);
 	/**
 	 * Background enrichment completes outside the content observer, so the popup
-	 * keeps polling while deeper evidence is pending even if the DOM session has
+	 * keeps live updates while deeper evidence is pending even if the DOM session has
 	 * already expired. The targeted refresh call will return the enriched cache
 	 * once the background marks that session dirty.
 	 */
-	const shouldPoll = shouldPollPopupObservation(observationMode) || input.response.enrichment?.status === 'pending';
+	const shouldKeepLiveUpdatesActive = shouldKeepPopupLiveUpdatesActive(observationMode) || input.response.enrichment?.status === 'pending';
 	const notice = getPopupAnalysisNotice({
 		addedDetectionIds,
 		nextAnalysis,
@@ -447,7 +447,7 @@ export function buildPopupAnalysisUpdate(
 		lateDetectionIds,
 		explanationsByTechnologyId,
 		observationMode,
-		shouldPoll,
+		shouldKeepLiveUpdatesActive,
 		notice,
 	};
 }

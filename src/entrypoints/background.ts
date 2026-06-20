@@ -115,7 +115,7 @@ const INITIAL_PIPELINE_DISABLED_KINDS = Object.freeze([
 /**
  * In-flight runtime injections are deduplicated per tab.
  *
- * Popup refreshes and polling can ask for the content runtime at nearly the same
+ * Popup refreshes and live-update requests can ask for the content runtime at nearly the same
  * time. The first request owns the injection; later requests await the same
  * promise instead of injecting duplicate runtime scripts into the page.
  */
@@ -135,7 +135,7 @@ const eventObservationBatchByTab = new Map<number, ObservationBatch>();
  * Completed deferred enrichment runs keyed by observation session id.
  *
  * The content script owns DOM mutation state, but deeper background enrichment
- * completes outside that observer. Marking the session dirty lets the popup poll
+ * completes outside that observer. Marking the session dirty lets the popup use
  * the existing refresh API and receive the saved enriched result without adding a
  * new push channel.
  */
@@ -441,7 +441,7 @@ function createContentPageSessionSnapshotTarget(
  *
  * The legacy analysis cache remains useful for compatibility, but snapshot
  * revisions are the durable channel that lets an open popup update without
- * polling and lets a reopened popup recover state after background shutdown.
+ * a polling loop and lets a reopened popup recover state after background shutdown.
  */
 async function saveDetectionSnapshotForPopup(
 	tab: InspectableTab,
@@ -1217,7 +1217,7 @@ async function stopObservationSessionTarget(
 
 
 /**
- * Surface completed background enrichment through the existing polling contract.
+ * Surface completed background enrichment through the existing live-update contract.
  *
  * Deeper evidence collection runs after the first popup response and does not
  * come from the content-script mutation observer. Marking the targeted session
@@ -1268,7 +1268,7 @@ async function getObservationSessionStateForTarget(
  * Read the newest stored analysis for a known popup session target.
  *
  * Deferred enrichment writes the completed analysis to storage before the popup
- * can necessarily refresh the content-script observer. Polling storage by the
+ * can necessarily refresh the content-script observer. Reading storage by the
  * session target keeps progressive updates durable across observer expiry and
  * Manifest V3 service-worker restarts, where in-memory completion markers are
  * lost.

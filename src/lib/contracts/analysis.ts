@@ -112,7 +112,7 @@ export type ObservationSessionTarget = {
 export type ObservationSessionTargetInput = ObservationSessionTarget;
 
 /**
- * Request for polling the newest persisted analysis for a known session target.
+ * Request for reading the newest persisted analysis for a known session target.
  *
  * Background enrichment can finish after the content observer expires or after the
  * Manifest V3 service worker restarts. The popup sends its rendered timestamp so

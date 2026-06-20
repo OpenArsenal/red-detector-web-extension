@@ -80,7 +80,7 @@ export const PopupShell = {
 		);
 	},
 
-	/** Small source, host, and polling metrics below the hero cards. */
+	/** Small source, host, and live updates metrics below the hero cards. */
 	Metrics(props: PopupRegionChildren) {
 		return <div class="mini-metrics">{props.children}</div>;
 	},

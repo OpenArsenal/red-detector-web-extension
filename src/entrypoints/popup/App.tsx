@@ -76,7 +76,7 @@ export default function App() {
     trackedOrigins: 0,
   });
   const [busy, setBusy] = createSignal(false);
-  const [pollingMode, setPollingMode] = createSignal<PopupObservationMode>("unknown");
+  const [liveUpdateMode, setLiveUpdateMode] = createSignal<PopupObservationMode>("unknown");
   const [notice, setNotice] = createSignal<PopupNotice | null>(null);
   const [errorMessage, setErrorMessage] = createSignal("");
   const [analysis, setAnalysis] = createSignal<SiteAnalysis | null>(null);
@@ -107,8 +107,8 @@ export default function App() {
     return lateAddedIds().length > 0;
   }
 
-  function pollingChipLabel() {
-    return getPopupObservationLabel(pollingMode());
+  function liveUpdateChipLabel() {
+    return getPopupObservationLabel(liveUpdateMode());
   }
   function formatReplayTime(trace: DetectionReplayTrace) {
     return new Date(trace.analyzedAt).toLocaleString();
@@ -125,7 +125,7 @@ export default function App() {
     }
 
     pendingManualRefresh = false;
-    void refreshAndRestartPolling();
+    void refreshAndRestartObservation();
   }
 
   function queueManualRefresh(): void {
@@ -291,8 +291,8 @@ export default function App() {
       sessionStatus: response.session?.status ?? "none",
     });
 
-    setPollingMode(update.observationMode);
-    if (update.shouldPoll) {
+    setLiveUpdateMode(update.observationMode);
+    if (update.shouldKeepLiveUpdatesActive) {
       logPopupEvent("snapshot-stream-awaiting-revisions", {
         observationMode: update.observationMode,
         enrichmentPending: response.enrichment?.status === "pending",
@@ -319,7 +319,7 @@ export default function App() {
           code: response.error.code,
           message: response.error.message,
         });
-        setPollingMode("unknown");
+        setLiveUpdateMode("unknown");
         return;
       }
 
@@ -328,10 +328,10 @@ export default function App() {
         stopReason: response.value.stopReason,
       });
 
-      const nextPollingMode = getPopupObservationModeFromSession(response.value);
-      setPollingMode(enrichmentPending() ? "active" : nextPollingMode);
+      const nextLiveUpdateMode = getPopupObservationModeFromSession(response.value);
+      setLiveUpdateMode(enrichmentPending() ? "active" : nextLiveUpdateMode);
     } catch (error) {
-      setPollingMode("unknown");
+      setLiveUpdateMode("unknown");
       setErrorMessage(normalizeError(error));
     }
   }
@@ -403,7 +403,7 @@ export default function App() {
     }
   }
 
-  async function stopPolling() {
+  async function stopObservation() {
     setBusy(true);
     setErrorMessage("");
     setNotice(null);
@@ -428,7 +428,7 @@ export default function App() {
       });
 
       setSessionTarget(null);
-      setPollingMode("stopped");
+      setLiveUpdateMode("stopped");
       setNotice({
         variant: "warning",
         text: "Observation stopped. Existing detections stay visible, but late-loaded page signals will not be captured until refresh starts a new session.",
@@ -440,7 +440,7 @@ export default function App() {
     }
   }
 
-  async function refreshAndRestartPolling() {
+  async function refreshAndRestartObservation() {
     if (refreshInFlight) {
       queueManualRefresh();
       return;
@@ -516,14 +516,14 @@ export default function App() {
           <button
             class="primary-button"
             disabled={busy()}
-            onClick={() => void refreshAndRestartPolling()}
+            onClick={() => void refreshAndRestartObservation()}
           >
             {busy() ? "Refreshing..." : "Refresh"}
           </button>
           <button
             class="secondary-button"
-            disabled={busy() || pollingMode() !== "active"}
-            onClick={() => void stopPolling()}
+            disabled={busy() || liveUpdateMode() !== "active"}
+            onClick={() => void stopObservation()}
           >
             Stop observation
           </button>
@@ -550,7 +550,7 @@ export default function App() {
         <PopupShell.Metrics>
           <p>Source: {analysis()?.source ?? "none"}</p>
           <p>Host: {analysis()?.hostname ?? activeTabIdentity()?.hostname ?? "not analyzed"}</p>
-          <p>Updates: {pollingChipLabel().toLowerCase()}</p>
+          <p>Updates: {liveUpdateChipLabel().toLowerCase()}</p>
           <p>Pipeline: {pipelineMode()}</p>
         </PopupShell.Metrics>
       </PopupShell.Hero>
@@ -581,7 +581,7 @@ export default function App() {
         meta={
           hasLateDetections()
             ? `${lateAddedIds().length} detection${lateAddedIds().length === 1 ? "" : "s"} arrived after the popup opened and are marked below.`
-            : pollingMode() === "active"
+            : liveUpdateMode() === "active"
               ? "Showing the latest snapshot. Late detections appear when storage publishes a newer revision."
               : "Showing the latest snapshot from the page. Refresh to request a new sync for future late detections."
         }

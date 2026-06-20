@@ -9,7 +9,7 @@ import {
 	getPopupObservationModeFromSession,
 	groupDetectionsByPrimaryCategory,
 	shouldApplyPopupSnapshotRevision,
-	shouldPollPopupObservation,
+	shouldKeepPopupLiveUpdatesActive,
 	shouldPreservePopupReplayState,
 	shouldRefreshObservedChange,
 	shouldRefreshObservedSnapshot,
@@ -48,20 +48,20 @@ describe('popup view model', () => {
 		});
 
 		expect(getPopupObservationModeFromAnalysis(response)).toBe('idle');
-		expect(shouldPollPopupObservation('idle')).toBe(false);
+		expect(shouldKeepPopupLiveUpdatesActive('idle')).toBe(false);
 		expect(getPopupObservationLabel('idle')).toBe('Idle');
 	});
 
-	it('maps observing and dirty sessions to active popup polling', () => {
+	it('maps observing and dirty sessions to active popup live updates', () => {
 		expect(getPopupObservationModeFromSession(makeObservationSession('observing'))).toBe('active');
 		expect(getPopupObservationModeFromSession(makeObservationSession('dirty'))).toBe('active');
-		expect(shouldPollPopupObservation('active')).toBe(true);
+		expect(shouldKeepPopupLiveUpdatesActive('active')).toBe(true);
 		expect(getPopupObservationLabel('active')).toBe('Observing');
 	});
 
 	it('maps stopped sessions to stopped popup controls', () => {
 		expect(getPopupObservationModeFromSession(makeObservationSession('stopped'))).toBe('stopped');
-		expect(shouldPollPopupObservation('stopped')).toBe(false);
+		expect(shouldKeepPopupLiveUpdatesActive('stopped')).toBe(false);
 		expect(getPopupObservationLabel('stopped')).toBe('Stopped');
 	});
 
@@ -80,7 +80,7 @@ describe('popup view model', () => {
 
 		expect(update).toMatchObject({
 			observationMode: 'active',
-			shouldPoll: true,
+			shouldKeepLiveUpdatesActive: true,
 			lateDetectionIds: [],
 			notice: {
 				variant: 'success',
@@ -90,7 +90,7 @@ describe('popup view model', () => {
 	});
 
 
-	it('keeps polling while deep evidence is pending without an active observer', () => {
+	it('keeps live updates while deep evidence is pending without an active observer', () => {
 		const response = makeAnalyzeActiveTabOutput({
 			analysis: makeAnalysis([makeDetection('nextjs')]),
 			cache: {
@@ -108,7 +108,7 @@ describe('popup view model', () => {
 
 		expect(update).toMatchObject({
 			observationMode: 'idle',
-			shouldPoll: true,
+			shouldKeepLiveUpdatesActive: true,
 			notice: {
 				variant: 'warning',
 				text: 'Detected 1 technologies for example.com. Still checking deeper evidence.',
