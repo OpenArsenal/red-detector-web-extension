@@ -1,29 +1,49 @@
-import { dirname, resolve } from 'node:path';
+import { resolve } from 'node:path';
+import { mkdirSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 
-import { addAlias, defineWxtModule } from 'wxt/modules';
+import { addPublicAssets, defineWxtModule } from 'wxt/modules';
 import type { Wxt } from 'wxt';
 
-const COMPILED_REGISTRY_ALIAS = '#/compiled-registry';
-const COMPILED_REGISTRY_ASSET = 'compiled-registry.js';
+import {
+	PACKAGED_REGISTRY_ASSET_PATHS,
+	countTechnologyRules,
+	createBootstrapTechnologyRegistry,
+	renderPackagedRegistryJson,
+} from '../src/lib/registry/packaged-artifacts';
+import type { CompiledTechnologyRegistryArtifact } from '../src/lib/registry';
+import type { TechnologyDefinition } from '../src/lib/detection/types';
+
+const REGISTRY_CACHE_DIR = 'red-detector-registry';
+const PUBLIC_ASSET_ROOT = 'red-detector-public';
+
+type RegistryAssetName = keyof typeof PACKAGED_REGISTRY_ASSET_PATHS;
+
+interface RegistryAssetPayload {
+	readonly name: RegistryAssetName;
+	readonly contents: string;
+}
 
 /**
- * Compiled registry generation runs before WXT type preparation and builds.
+ * Registry generation runs before WXT type preparation and builds.
  *
- * Technology definitions stay authored as TypeScript, but the background loads a
- * generated registry asset at runtime instead of importing the generated module
- * through Vite. That keeps the large compiled registry out of the background's
- * eager bundle while still shipping it inside the extension package.
+ * Technology definitions stay authored as TypeScript, but the extension package
+ * now receives JSON assets instead of a generated JavaScript module. Runtime code
+ * fetches those assets when analysis needs them, so the background service worker
+ * can start by registering listeners without statically bundling the full rule
+ * registry into the entry chunk.
  */
 export default defineWxtModule({
 	setup(wxt) {
-		const assetPath = resolve(wxt.config.wxtDir, COMPILED_REGISTRY_ASSET);
-		const typeAliasPath = resolve(wxt.config.wxtDir, './compiled-registry.js');
-		addAlias(wxt, COMPILED_REGISTRY_ALIAS, typeAliasPath);
+		const cacheRegistryDir = resolve(wxt.config.wxtDir, REGISTRY_CACHE_DIR);
+		const publicRootDir = resolve(wxt.config.wxtDir, PUBLIC_ASSET_ROOT);
+		const publicRegistryDir = resolve(publicRootDir, REGISTRY_CACHE_DIR);
+		mkdirSync(publicRegistryDir, { recursive: true });
+		addPublicAssets(wxt, publicRootDir);
 
 		let generation: Promise<void> | undefined;
 		const generate = async () => {
-			generation ??= generateCompiledRegistryModule(wxt, assetPath, typeAliasPath);
+			generation ??= generateRegistryJsonAssets(wxt, cacheRegistryDir, publicRegistryDir);
 			return generation;
 		};
 
@@ -32,76 +52,97 @@ export default defineWxtModule({
 	},
 });
 
-async function generateCompiledRegistryModule(
+async function generateRegistryJsonAssets(
 	wxt: Wxt,
-	assetPath: string,
-	typeAliasPath: string,
+	cacheRegistryDir: string,
+	publicRegistryDir: string,
 ): Promise<void> {
 	const root = wxt.config.root;
-	try {
-		const [{ technologies }, { compileTechnologyRegistry }, { renderPrecompiledRegistryModule }] = await Promise.all([
-			import(resolve(root, 'src/data/technologies.ts')),
-			import(resolve(root, 'src/lib/registry/index.ts')),
-			import(resolve(root, 'src/lib/registry/precompiled-module.ts')),
-		]);
-		const artifact = compileTechnologyRegistry({
-			technologies,
-			sourceKind: 'typescript-definition',
-		});
-		const source = renderPrecompiledRegistryModule({
-			artifact,
-			generatorPath: 'modules/compile-registry.ts',
-		});
+	const [{ technologies }, { compileTechnologyRegistry }] = await Promise.all([
+		import(resolve(root, 'src/data/technologies.ts')) as Promise<{ readonly technologies: readonly TechnologyDefinition[] }>,
+		import(resolve(root, 'src/lib/registry/compiler.ts')) as Promise<{ compileTechnologyRegistry(input: { readonly technologies: readonly TechnologyDefinition[]; readonly sourceKind: 'typescript-definition' }): CompiledTechnologyRegistryArtifact }>,
+	]);
+	const enrichmentArtifact = compileTechnologyRegistry({
+		technologies,
+		sourceKind: 'typescript-definition',
+	});
+	const bootstrapTechnologies = createBootstrapTechnologyRegistry(technologies);
+	const generatedAt = Date.now();
+	const assets = createRegistryAssets({
+		bootstrapTechnologies,
+		enrichmentArtifact,
+		generatedAt,
+	});
 
-		await writeGeneratedModules({ assetPath, typeAliasPath, source });
-		wxt.logger.info(`Generated compiled registry artifact with ${artifact.technologies.length} technologies and ${artifact.matcherIndex.ruleCount} rules`);
-	} catch (error) {
-		const source = renderRuntimeFallbackModule(error);
-		await writeGeneratedModules({ assetPath, typeAliasPath, source });
-		wxt.logger.warn('Compiled registry generation failed; generated runtime fallback module instead.');
-	}
+	await Promise.all([
+		writeRegistryAssets(cacheRegistryDir, assets),
+		writeRegistryAssets(publicRegistryDir, assets),
+	]);
+	wxt.logger.info(
+		`Generated registry JSON assets with ${enrichmentArtifact.technologies.length} technologies, ${enrichmentArtifact.matcherIndex.ruleCount} enrichment rules, and ${countTechnologyRules(bootstrapTechnologies)} bootstrap rules`,
+	);
 }
 
-async function writeGeneratedModules(input: {
-	readonly assetPath: string;
-	readonly typeAliasPath: string;
-	readonly source: string;
-}): Promise<void> {
-	await mkdir(dirname(input.assetPath), { recursive: true });
-	await mkdir(dirname(input.typeAliasPath), { recursive: true });
-	await writeFile(input.assetPath, input.source);
-	await writeFile(input.typeAliasPath, input.source);
-	await writeFile(getDeclarationPath(input.typeAliasPath), renderGeneratedDeclarationModule());
-}
-
-function renderRuntimeFallbackModule(error: unknown): string {
-	const message = error instanceof Error ? error.message : String(error);
+function createRegistryAssets(input: {
+	readonly bootstrapTechnologies: readonly TechnologyDefinition[];
+	readonly enrichmentArtifact: CompiledTechnologyRegistryArtifact;
+	readonly generatedAt: number;
+}): readonly RegistryAssetPayload[] {
 	return [
-		'/**',
-		' * Generated fallback by modules/compile-registry.ts.',
-		' * The optimized registry artifact could not be generated, so extension',
-		' * runtime falls back to compiling the bundled TypeScript registry once.',
-		' */',
-		"import { technologies } from '../src/data/technologies';",
-		"import { compileTechnologyRegistry } from '../src/lib/registry';",
-		'',
-		`console.warn('[red-detector] using runtime registry fallback because build-time generation failed: ${message.replace(/'/g, "\\'")}');`,
-		'export const precompiledRegistryArtifact = compileTechnologyRegistry({',
-		'\ttechnologies,',
-		"\tsourceKind: 'typescript-definition',",
-		'});',
-		'',
-	].join('\n');
+		{
+			name: 'bootstrap',
+			contents: renderPackagedRegistryJson({
+				schemaVersion: 1,
+				kind: 'bootstrap',
+				technologies: input.bootstrapTechnologies,
+				ruleCount: countTechnologyRules(input.bootstrapTechnologies),
+				generatedAt: input.generatedAt,
+			}),
+		},
+		{
+			name: 'enrichment',
+			contents: renderPackagedRegistryJson({
+				schemaVersion: 1,
+				kind: 'enrichment',
+				technologies: input.enrichmentArtifact.technologies,
+				ruleCount: input.enrichmentArtifact.matcherIndex.ruleCount,
+				generatedAt: input.generatedAt,
+			}),
+		},
+		{
+			name: 'metadata',
+			contents: renderPackagedRegistryJson({
+				schemaVersion: 1,
+				kind: 'metadata',
+				technologyMetadata: input.enrichmentArtifact.technologyMetadata,
+				patternTables: input.enrichmentArtifact.patternTables,
+				generatedAt: input.generatedAt,
+			}),
+		},
+		{
+			name: 'relationships',
+			contents: renderPackagedRegistryJson({
+				schemaVersion: 1,
+				kind: 'relationships',
+				relationshipEdges: input.enrichmentArtifact.relationshipGraph.relationshipEdges,
+				generatedAt: input.generatedAt,
+			}),
+		},
+	];
 }
 
-function renderGeneratedDeclarationModule(): string {
-	return [
-		"import type { CompiledTechnologyRegistryArtifact } from '../src/lib/registry';",
-		'export declare const precompiledRegistryArtifact: CompiledTechnologyRegistryArtifact;',
-		'',
-	].join('\n');
+async function writeRegistryAssets(
+	registryDir: string,
+	assets: readonly RegistryAssetPayload[],
+): Promise<void> {
+	await mkdir(registryDir, { recursive: true });
+	await Promise.all(assets.map((asset) => writeFile(
+		resolve(registryDir, getRegistryAssetFilename(asset.name)),
+		asset.contents,
+	)));
 }
 
-function getDeclarationPath(outputPath: string): string {
-	return outputPath.replace(/\.js$/, '.d.ts');
+function getRegistryAssetFilename(name: RegistryAssetName): string {
+	const path = PACKAGED_REGISTRY_ASSET_PATHS[name];
+	return path.slice(path.lastIndexOf('/') + 1);
 }
