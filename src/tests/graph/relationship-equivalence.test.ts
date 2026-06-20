@@ -52,12 +52,12 @@ function relationshipTechnology(input: RelationshipTechnologyInput): TechnologyD
 		categories: ['unknown'],
 		rules: input.marker === undefined
 			? []
-			: [
-					{
-						kind: 'html',
-						pattern: new RegExp(input.marker, 'i'),
-						confidence: input.confidence ?? 100,
-						version: input.version,
+				: [
+						{
+							kind: 'text',
+							pattern: new RegExp(input.marker, 'i'),
+							confidence: input.confidence ?? 100,
+							version: input.version,
 					},
 				],
 		implies: input.implies,
@@ -68,7 +68,7 @@ function relationshipTechnology(input: RelationshipTechnologyInput): TechnologyD
 }
 
 function resultIds(registry: TechnologyDefinition[], html: string): string[] {
-	return analyzeSite(createSignals({ html }), registry).results.map(
+	return analyzeSite(createSignals({ text: html }), registry).results.map(
 		(result) => result.technologyId,
 	);
 }
@@ -134,7 +134,7 @@ describe('graph compatibility baseline', () => {
 			relationshipTechnology({ id: 'runtime' }),
 		];
 
-		const analysis = analyzeSite(createSignals({ html: 'Framework 2.4.1' }), registry);
+		const analysis = analyzeSite(createSignals({ text: 'Framework 2.4.1' }), registry);
 		const framework = analysis.results.find((result) => result.technologyId === 'framework');
 		const runtime = analysis.results.find((result) => result.technologyId === 'runtime');
 

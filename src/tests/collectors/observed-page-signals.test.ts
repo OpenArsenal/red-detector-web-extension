@@ -264,7 +264,7 @@ describe('observed page signals', () => {
 				addedNodes: [new FakeObservedScriptElement('https://example.com/late.js')] as unknown as NodeList,
 				removedNodes: [] as unknown as NodeList,
 				target: document,
-			} as MutationRecord,
+			} as unknown as MutationRecord,
 		], mutationObservers[0] as unknown as MutationObserver);
 
 		expect(queued).not.toHaveBeenCalled();

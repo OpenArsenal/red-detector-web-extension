@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type {
+	FlushObservedObservationBatchOutput,
 	ObservedPageSignals,
 	ObservationSessionState,
 } from '../../lib/content/observed-page-signals';
@@ -45,7 +46,7 @@ function makeState(overrides: Partial<ObservationSessionState> = {}): Observatio
 	};
 }
 
-function makeFlushOutput(session = makeState()) {
+function makeFlushOutput(session = makeState()): FlushObservedObservationBatchOutput {
 	return {
 		stats: {
 			queuedCount: 0,

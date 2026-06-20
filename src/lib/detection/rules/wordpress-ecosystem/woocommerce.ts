@@ -45,18 +45,6 @@ export const woocommerceTechnologyDefinition = {
 			},
 			description: "Script URL is served from /wp-content/plugins/woocommerce/.",
 		},
-		{
-			id: "woocommerce:html:3",
-			kind: "html",
-			pattern: new RegExp("/wp\\-content/plugins/woocommerce/", "i"),
-			confidence: 90,
-			version: {
-				source: "matchedValue",
-				pattern: new RegExp("/wp\\-content/plugins/woocommerce/[^?#\\s\"\\']+[?&]ver=([^&\\s\"\\']+)", "i"),
-				group: 1,
-			},
-			description: "Document HTML references /wp-content/plugins/woocommerce/.",
-		},
 	],
 	requires: [
 		"wordpress",

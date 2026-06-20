@@ -35,6 +35,18 @@ const DISPLAY_CONFIDENCE_THRESHOLD = 50;
 const IMPLIED_CONFIDENCE = 55;
 const ADDITIONAL_SAME_SURFACE_WEIGHT = 0.35;
 const ADDITIONAL_DISTINCT_SURFACE_WEIGHT = 0.65;
+const HTML_ONLY_PRODUCT_CONFIDENCE_CAP = DISPLAY_CONFIDENCE_THRESHOLD - 1;
+const HTML_STANDALONE_SAFE_CATEGORIES = new Set([
+	'accessibility',
+	'mobile',
+	'module-format',
+	'styling-processor',
+]);
+const HTML_STANDALONE_SAFE_TECHNOLOGY_IDS = new Set([
+	'dialog-element',
+	'json-ld',
+	'speculation-rules',
+]);
 
 export const runtimeDetectionKinds = [
 	'dom',
@@ -122,7 +134,7 @@ function detectTechnology(
 		return null;
 	}
 
-	const confidenceValue = combineEvidenceConfidence(evidence);
+	const confidenceValue = combineEvidenceConfidence(definition, evidence);
 	const version = evidence.find((item) => item.version)?.version;
 
 	return createDirectDetectionCandidate(
@@ -138,7 +150,7 @@ function detectTechnology(
  * fake high-confidence claim. The best signal carries full weight, other
  * distinct surfaces help, and repeated matches from the same surface help less.
  */
-function combineEvidenceConfidence(evidence: Evidence[]): number {
+function combineEvidenceConfidence(definition: TechnologyDefinition, evidence: Evidence[]): number {
 	const sorted = [...evidence].sort((a, b) => b.confidence - a.confidence);
 	const [best, ...rest] = sorted;
 	if (!best) {
@@ -156,7 +168,21 @@ function combineEvidenceConfidence(evidence: Evidence[]): number {
 		seenKinds.add(item.kind);
 	}
 
-	return clampConfidence(score);
+	const combined = clampConfidence(score);
+	if (isUnsafeHtmlOnlyDetection(definition, evidence)) {
+		return Math.min(combined, HTML_ONLY_PRODUCT_CONFIDENCE_CAP);
+	}
+
+	return combined;
+}
+
+function isUnsafeHtmlOnlyDetection(
+	definition: TechnologyDefinition,
+	evidence: readonly Evidence[],
+): boolean {
+	return evidence.every((item) => item.kind === 'html')
+		&& !HTML_STANDALONE_SAFE_TECHNOLOGY_IDS.has(definition.id)
+		&& !definition.categories.every((category) => HTML_STANDALONE_SAFE_CATEGORIES.has(category));
 }
 
 /**

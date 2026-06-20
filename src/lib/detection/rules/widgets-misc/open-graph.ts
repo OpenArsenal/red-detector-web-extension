@@ -25,11 +25,11 @@ export const openGraphTechnologyDefinition = {
 			description: "Document declares og:type metadata.",
 		},
 		{
-			id: "open-graph:html:metadata",
-			kind: "html",
-			pattern: new RegExp("<meta[^>]+(?:property|name)=[\"']og:[^\"']+[\"']", "i"),
-			confidence: 65,
-			description: "Document contains Open Graph metadata.",
+			id: "open-graph:meta:image",
+			kind: "meta",
+			key: "og:image",
+			confidence: 90,
+			description: "Document declares og:image metadata.",
 		},
 	],
 	metadata: {

@@ -39,6 +39,32 @@ function createSignals(overrides: Partial<PageSignals> = {}): PageSignals {
 	};
 }
 
+function detectionIds(analysis: ReturnType<typeof analyzeSite>): Set<string> {
+	return new Set(analysis.results.map((item) => item.technologyId));
+}
+
+function expectNoDetections(
+	registry: TechnologyDefinition[],
+	signals: Partial<PageSignals>,
+	technologyIds: readonly string[],
+): void {
+	const ids = detectionIds(analyzeSite(createSignals(signals), registry));
+	for (const id of technologyIds) {
+		expect(ids.has(id), `${id} should not be detected`).toBe(false);
+	}
+}
+
+function expectDetections(
+	registry: TechnologyDefinition[],
+	signals: Partial<PageSignals>,
+	technologyIds: readonly string[],
+): void {
+	const ids = detectionIds(analyzeSite(createSignals(signals), registry));
+	for (const id of technologyIds) {
+		expect(ids.has(id), `${id} should be detected`).toBe(true);
+	}
+}
+
 describe('detection helpers', () => {
 	it('deduplicates and normalizes meta maps', () => {
 		expect(
@@ -270,7 +296,7 @@ describe('analyzeSite', () => {
 				id: 'long-evidence',
 				name: 'Long Evidence',
 				website: 'https://example.com',
-				categories: ['unknown'],
+				categories: ['mobile'],
 				rules: [
 					{
 						kind: 'html',
@@ -316,7 +342,7 @@ function relationshipTechnology(input: RelationshipTechnologyInput): TechnologyD
 				? []
 				: [
 						{
-							kind: 'html',
+							kind: 'text',
 							pattern: new RegExp(input.marker, 'i'),
 							confidence: input.confidence ?? 100,
 						},
@@ -329,7 +355,7 @@ function relationshipTechnology(input: RelationshipTechnologyInput): TechnologyD
 }
 
 function resultIds(registry: TechnologyDefinition[], html: string): string[] {
-	return analyzeSite(createSignals({ html }), registry).results.map(
+	return analyzeSite(createSignals({ text: html }), registry).results.map(
 		(result) => result.technologyId,
 	);
 }
@@ -341,7 +367,7 @@ describe('relationship resolver', () => {
 			relationshipTechnology({ id: 'react' }),
 		];
 
-		const analysis = analyzeSite(createSignals({ html: 'next' }), registry);
+		const analysis = analyzeSite(createSignals({ text: 'next' }), registry);
 		const react = analysis.results.find((result) => result.technologyId === 'react');
 
 		expect(analysis.results.map((result) => result.technologyId)).toEqual([
@@ -561,7 +587,7 @@ describe('relationship resolver', () => {
 			relationshipTechnology({ id: 'react', marker: 'react', confidence: 95 }),
 		];
 
-		const analysis = analyzeSite(createSignals({ html: 'next react' }), registry);
+		const analysis = analyzeSite(createSignals({ text: 'next react' }), registry);
 		const react = analysis.results.find((result) => result.technologyId === 'react');
 
 		expect(resultIds(registry, 'next react')).toEqual(['nextjs', 'react']);
@@ -646,6 +672,42 @@ describe('relationship resolver', () => {
 
 
 describe('false-positive regressions', () => {
+	it('does not display product-like technologies from HTML-only evidence', () => {
+		const registry: TechnologyDefinition[] = [
+			{
+				id: 'html-only-product',
+				name: 'HTML Only Product',
+				website: 'https://example.com/html-only-product',
+				categories: ['platform-cms-builder'],
+				rules: [{ kind: 'html', pattern: /HTML_ONLY_PRODUCT/, confidence: 100 }],
+			},
+			{
+				id: 'html-with-structured-support',
+				name: 'HTML With Structured Support',
+				website: 'https://example.com/html-with-structured-support',
+				categories: ['platform-cms-builder'],
+				rules: [
+					{ kind: 'html', pattern: /HTML_WITH_STRUCTURED_SUPPORT/, confidence: 100 },
+					{ kind: 'meta', key: 'generator', valuePattern: /Structured Support/, confidence: 80 },
+				],
+			},
+		];
+
+		expectNoDetections(
+			registry,
+			{ html: '<div>HTML_ONLY_PRODUCT</div>' },
+			['html-only-product'],
+		);
+		expectDetections(
+			registry,
+			{
+				html: '<div>HTML_WITH_STRUCTURED_SUPPORT</div>',
+				meta: { generator: ['Structured Support'] },
+			},
+			['html-with-structured-support'],
+		);
+	});
+
 	it('does not detect Element UI or Vue.js from Vercel-style class names containing el-', () => {
 		const analysis = analyzeSite(
 			createSignals({
@@ -1107,6 +1169,7 @@ describe('payload-ready collector promotions', () => {
 				],
 				resources: [
 					{ url: 'https://res.cloudinary.com/demo/image/upload/sample.jpg', initiatorType: 'img' },
+					{ url: 'https://example.com/media/images/hero.fill-800x600.jpg', initiatorType: 'img' },
 					{ url: 'https://cdn.shopify.com/s/files/1/0000/0000/t/theme.js', initiatorType: 'script' },
 					{
 						url: 'https://example.com/wp-content/plugins/woocommerce/assets/js/frontend/add-to-cart.min.js?ver=9.1.0',
@@ -1283,6 +1346,7 @@ describe('payload-ready collector promotions', () => {
 					viewport: ['width=device-width, initial-scale=1.0'],
 					'apple-itunes-app': ['app-id=1565481562'],
 					'twitter:app:id:iphone': ['335703880'],
+					'og:title': ['WordPress.com'],
 				},
 				links: [
 					{ rel: 'EditURI', href: 'https://s1.wp.com/xmlrpc.php?rsd', type: 'application/rsd+xml' },

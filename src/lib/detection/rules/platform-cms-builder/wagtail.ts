@@ -18,18 +18,11 @@ export const wagtailTechnologyDefinition = {
 			description: "DOM contains Wagtail StreamField block keys.",
 		},
 		{
-			id: "wagtail:html:5",
-			kind: "html",
+			id: "wagtail:resourceUrl:image-rendition",
+			kind: "resourceUrl",
 			pattern: new RegExp("(?:\\/media)?\\/(?:original_images|images)\\/[\\w.-]+\\.(?:(?:fill|max|min)-\\d+x\\d+(?:-c\\d+)?|(?:width|height|scale)-\\d+|original)\\.", "i"),
 			confidence: 85,
-			description: "Document HTML contains Wagtail image rendition paths.",
-		},
-		{
-			id: "wagtail:text:6",
-			kind: "text",
-			pattern: new RegExp("(?:\\.[a-z]+|\\/media)(?:\\/[\\w-]+)?\\/(?:original_images\\/[\\w-]+|images\\/[\\w-.]+\\.(?:(?:fill|max|min)-\\d+x\\d+(?:-c\\d+)?|(?:width|height|scale)-\\d+|original))\\."),
-			confidence: 85,
-			description: "Page text contains a known technology marker.",
+			description: "Loaded resource URL matches Wagtail image rendition path conventions.",
 		},
 	],
 	metadata: {

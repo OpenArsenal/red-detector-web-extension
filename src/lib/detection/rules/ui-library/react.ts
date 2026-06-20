@@ -43,12 +43,6 @@ export const reactTechnologyDefinition = {
 			description: "Script source URL matches a known technology marker.",
 		},
 		{
-			id: "react:html:4",
-			kind: "html",
-			pattern: new RegExp("<[^>]+data-react"),
-			description: "HTML contains a known technology signature.",
-		},
-		{
 			id: "react:dom:5",
 			kind: "dom",
 			selector: "[data-reactroot], [data-reactid], [data-react-helmet], [data-react-checksum]",
