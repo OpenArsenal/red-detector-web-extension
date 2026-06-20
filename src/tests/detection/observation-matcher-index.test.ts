@@ -185,4 +185,46 @@ describe('indexed observation matcher', () => {
 		}).matches.map((match) => match.technologyId)).toEqual(['alternative-cdn']);
 	});
 
+	it('skips disabled observation kinds before candidate routing', () => {
+		const registry: TechnologyDefinition[] = [
+			{
+				id: 'script-tech',
+				name: 'Script Tech',
+				website: 'https://script-tech.example',
+				categories: ['framework'],
+				rules: [{ kind: 'scriptSrc', pattern: /runtime\.js/, confidence: 90 }],
+			},
+			{
+				id: 'generator-tech',
+				name: 'Generator Tech',
+				website: 'https://generator-tech.example',
+				categories: ['platform-cms-builder'],
+				rules: [{ kind: 'meta', key: 'generator', valuePattern: /Generator Tech/, confidence: 90 }],
+			},
+		];
+		const batch = normalizePageSignals(makePageSignals({
+			scripts: ['https://cdn.example/runtime.js'],
+			meta: { generator: ['Generator Tech'] },
+		}));
+
+		const result = matchIndexedObservationBatch({
+			registry,
+			batch,
+			options: { disabledKinds: ['scriptSrc'] },
+		});
+
+		expect(result.matches.map((match) => match.technologyId)).toEqual(['generator-tech']);
+		expect(result.diagnostics).toMatchObject({
+			observationCount: 2,
+			skippedObservationCount: 1,
+			candidateRuleCount: 1,
+			observationsByKind: {
+				scriptSrc: 1,
+				meta: 1,
+			},
+			skippedObservationsByKind: { scriptSrc: 1 },
+			candidateRulesByKind: { meta: 1 },
+		});
+	});
+
 });

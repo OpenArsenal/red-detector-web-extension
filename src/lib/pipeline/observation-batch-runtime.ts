@@ -75,21 +75,25 @@ export function runObservationBatchPipeline(
 			matchCount: result.matches.length,
 			evidenceCount: result.evidenceBatch.entries.length,
 			observationCount: result.diagnostics.observationCount,
+			skippedObservationCount: result.diagnostics.skippedObservationCount,
 			candidateRuleCount: result.diagnostics.candidateRuleCount,
 			keyedRuleCount: result.diagnostics.keyedRuleCount,
 			literalRuleCount: result.diagnostics.literalRuleCount,
 			literalRejectedRuleCount: result.diagnostics.literalRejectedRuleCount,
 			fallbackRuleCount: result.diagnostics.fallbackRuleCount,
 			observationsByKind: result.diagnostics.observationsByKind,
+			skippedObservationsByKind: result.diagnostics.skippedObservationsByKind,
 			candidateRulesByKind: result.diagnostics.candidateRulesByKind,
 		}),
 	);
 	record('pattern-matched', matches.matches.length, {
 		observationCount: matches.diagnostics.observationCount,
+		skippedObservationCount: matches.diagnostics.skippedObservationCount,
 		candidateRuleCount: matches.diagnostics.candidateRuleCount,
 		literalRejectedRuleCount: matches.diagnostics.literalRejectedRuleCount,
 		fallbackRuleCount: matches.diagnostics.fallbackRuleCount,
 		observationsByKind: matches.diagnostics.observationsByKind,
+		skippedObservationsByKind: matches.diagnostics.skippedObservationsByKind,
 		candidateRulesByKind: matches.diagnostics.candidateRulesByKind,
 	});
 	record('evidence-created', matches.evidenceBatch.entries.length);

@@ -1,5 +1,5 @@
 import type { MatchObservationBatchInput, ObservationPatternMatch, ObservationPatternMatchBatch } from './observation-match-types';
-import type { DetectionRule, TechnologyDefinition } from './types';
+import type { DetectionRule, DetectionRunOptions, TechnologyDefinition } from './types';
 import type { NormalizedObservation, NormalizedObservationKind } from '../observations';
 import { matchObservationRule } from './observation-matcher';
 
@@ -69,6 +69,8 @@ export interface ObservationMatcherIndex {
 export interface ObservationMatcherDiagnostics {
 	/** Number of observations received by the matcher. */
 	readonly observationCount: number;
+	/** Observations skipped before rule routing because the run disabled their kind. */
+	readonly skippedObservationCount: number;
 	/** Number of candidate rules passed to the semantic matcher. */
 	readonly candidateRuleCount: number;
 	/** Number of candidate rules routed from exact-key buckets. */
@@ -83,6 +85,8 @@ export interface ObservationMatcherDiagnostics {
 	readonly matchCount: number;
 	/** Observation counts grouped by normalized observation kind. */
 	readonly observationsByKind: Readonly<Record<string, number>>;
+	/** Skipped-observation counts grouped by normalized observation kind. */
+	readonly skippedObservationsByKind: Readonly<Record<string, number>>;
 	/** Candidate-rule counts grouped by normalized observation kind. */
 	readonly candidateRulesByKind: Readonly<Record<string, number>>;
 }
@@ -121,6 +125,7 @@ interface ObservationRuleRoute {
 /** Mutable counters used while matching one observation batch. */
 interface MutableObservationMatcherDiagnostics {
 	observationCount: number;
+	skippedObservationCount: number;
 	candidateRuleCount: number;
 	keyedRuleCount: number;
 	fallbackRuleCount: number;
@@ -128,6 +133,7 @@ interface MutableObservationMatcherDiagnostics {
 	literalRejectedRuleCount: number;
 	matchCount: number;
 	observationsByKind: Record<string, number>;
+	skippedObservationsByKind: Record<string, number>;
 	candidateRulesByKind: Record<string, number>;
 }
 
@@ -136,6 +142,9 @@ interface LiteralPrefilterResult {
 	readonly rules: readonly LiteralPrefilteredObservationRule[];
 	readonly rejectedCount: number;
 }
+
+/** Lookup table for rule kinds disabled before matcher routing begins. */
+type DisabledKindLookup = Readonly<Partial<Record<string, true>>>;
 
 /**
  * Build an observation matcher index for a registry snapshot.
@@ -186,10 +195,17 @@ export function matchIndexedObservationBatch(
 	const index = input.index ?? createObservationMatcherIndex(input.registry);
 	const matches: ObservationPatternMatch[] = [];
 	const diagnostics = createMutableMatcherDiagnostics();
+	const disabledKinds = createDisabledKindLookup(input.options);
 
 	for (const observation of input.batch.observations) {
 		diagnostics.observationCount += 1;
 		incrementCount(diagnostics.observationsByKind, observation.kind);
+
+		if (isObservationKindDisabled(observation.kind, disabledKinds)) {
+			diagnostics.skippedObservationCount += 1;
+			incrementCount(diagnostics.skippedObservationsByKind, observation.kind);
+			continue;
+		}
 
 		const route = findIndexedObservationRulesWithDiagnostics(index, observation);
 		diagnostics.keyedRuleCount += route.keyedRuleCount;
@@ -240,6 +256,42 @@ export function findIndexedObservationRules(
 	observation: NormalizedObservation,
 ): readonly IndexedObservationRule[] {
 	return findIndexedObservationRulesWithDiagnostics(index, observation).rules;
+}
+
+/**
+ * Decide whether an observation surface should be skipped before rule routing.
+ *
+ * Initial active-tab analysis intentionally defers high-fan-out URL-like
+ * surfaces. Skipping those observations before exact-key, literal, and fallback
+ * buckets are consulted avoids doing thousands of candidate-rule lookups that
+ * a deeper rule guard would reject anyway.
+ */
+function isObservationKindDisabled(
+	kind: NormalizedObservationKind,
+	disabledKinds: DisabledKindLookup | DetectionRunOptions | undefined,
+): boolean {
+	if (!disabledKinds) {
+		return false;
+	}
+
+	if ('disabledKinds' in disabledKinds) {
+		return Boolean(disabledKinds.disabledKinds?.includes(kind));
+	}
+
+	return disabledKinds[kind] === true;
+}
+
+/** Build a branch-friendly lookup once so the hot observation loop avoids repeated array scans. */
+function createDisabledKindLookup(options: DetectionRunOptions | undefined): DisabledKindLookup | undefined {
+	if (!options?.disabledKinds || options.disabledKinds.length === 0) {
+		return undefined;
+	}
+
+	const lookup: Partial<Record<string, true>> = Object.create(null) as Partial<Record<string, true>>;
+	for (const kind of options.disabledKinds) {
+		lookup[kind] = true;
+	}
+	return Object.freeze(lookup);
 }
 
 function findIndexedObservationRulesWithDiagnostics(
@@ -597,6 +649,7 @@ function freezeLiteralBuckets(buckets: MutableLiteralBuckets): IndexedObservatio
 function createMutableMatcherDiagnostics(): MutableObservationMatcherDiagnostics {
 	return {
 		observationCount: 0,
+		skippedObservationCount: 0,
 		candidateRuleCount: 0,
 		keyedRuleCount: 0,
 		fallbackRuleCount: 0,
@@ -604,6 +657,7 @@ function createMutableMatcherDiagnostics(): MutableObservationMatcherDiagnostics
 		literalRejectedRuleCount: 0,
 		matchCount: 0,
 		observationsByKind: Object.create(null) as Record<string, number>,
+		skippedObservationsByKind: Object.create(null) as Record<string, number>,
 		candidateRulesByKind: Object.create(null) as Record<string, number>,
 	};
 }
@@ -611,6 +665,7 @@ function createMutableMatcherDiagnostics(): MutableObservationMatcherDiagnostics
 function freezeDiagnostics(diagnostics: MutableObservationMatcherDiagnostics): ObservationMatcherDiagnostics {
 	return Object.freeze({
 		observationCount: diagnostics.observationCount,
+		skippedObservationCount: diagnostics.skippedObservationCount,
 		candidateRuleCount: diagnostics.candidateRuleCount,
 		keyedRuleCount: diagnostics.keyedRuleCount,
 		fallbackRuleCount: diagnostics.fallbackRuleCount,
@@ -618,6 +673,7 @@ function freezeDiagnostics(diagnostics: MutableObservationMatcherDiagnostics): O
 		literalRejectedRuleCount: diagnostics.literalRejectedRuleCount,
 		matchCount: diagnostics.matchCount,
 		observationsByKind: Object.freeze(Object.assign({}, diagnostics.observationsByKind)),
+		skippedObservationsByKind: Object.freeze(Object.assign({}, diagnostics.skippedObservationsByKind)),
 		candidateRulesByKind: Object.freeze(Object.assign({}, diagnostics.candidateRulesByKind)),
 	});
 }
