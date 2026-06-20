@@ -35,7 +35,7 @@ export function createPackagedTechnologyRegistryProvider(
 	const resolveUrl = input.resolveUrl ?? ((path) => browser.runtime.getURL(
 		path as Parameters<typeof browser.runtime.getURL>[0],
 	));
-	const fetchAsset = input.fetchAsset ?? fetch;
+	const fetchAsset = input.fetchAsset ?? fetchRegistryAsset;
 
 	const loadRegistry = async () => {
 		registryPromise ??= loadEnrichmentRegistry({ resolveUrl, fetchAsset });
@@ -53,6 +53,19 @@ export function createPackagedTechnologyRegistryProvider(
 			return artifactPromise;
 		},
 	};
+}
+
+/**
+ * Fetch packaged registry data without detaching the native worker fetch method.
+ *
+ * Chrome's worker `fetch` expects the worker global as its receiver. Passing the
+ * native method through an object and later invoking it as `input.fetchAsset(...)`
+ * can bind `this` to that object, which raises `Illegal invocation` before the
+ * registry URL is even requested. Wrapping the call preserves the correct
+ * browser receiver while keeping tests free to inject a fake fetcher.
+ */
+async function fetchRegistryAsset(url: string): Promise<{ readonly ok: boolean; json(): Promise<unknown> }> {
+	return globalThis.fetch(url);
 }
 
 async function loadEnrichmentRegistry(input: {

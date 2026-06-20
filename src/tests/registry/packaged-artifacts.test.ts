@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import type { TechnologyDefinition } from '../../lib/detection/types';
 import { compileTechnologyRegistry } from '../../lib/registry';
 import {
+	PACKAGED_REGISTRY_ASSET_PATHS,
 	PACKAGED_REGISTRY_ASSET_SCHEMA_VERSION,
 	createBootstrapTechnologyRegistry,
 	hydratePackagedTechnologyRegistry,
@@ -62,6 +63,39 @@ describe('packaged registry artifacts', () => {
 
 		expect(bootstrap.map((technology) => technology.id)).toEqual(['bootstrap-visible']);
 		expect(bootstrap[0]?.rules.map((rule) => rule.kind)).toEqual(['meta']);
+	});
+
+	it('keeps packaged registry paths relative to the extension root', () => {
+		expect(PACKAGED_REGISTRY_ASSET_PATHS.enrichment).toBe('red-detector-registry/registry.enrichment.json');
+		expect(PACKAGED_REGISTRY_ASSET_PATHS.enrichment.startsWith('/')).toBe(false);
+	});
+
+	it('calls the default worker fetch through the global receiver', async () => {
+		const registry = makeRegistry();
+		const rendered = renderPackagedRegistryJson(makeEnrichmentAsset(registry));
+		const fetchAsset = vi.fn(function (this: unknown) {
+			expect(this).toBe(globalThis);
+			return Promise.resolve({
+				ok: true,
+				async json() {
+					return JSON.parse(rendered);
+				},
+			});
+		});
+		vi.stubGlobal('fetch', fetchAsset);
+
+		const provider = createPackagedTechnologyRegistryProvider({
+			resolveUrl: (path) => `extension://${path}`,
+		});
+
+		try {
+			const artifact = await provider.getCompiledRegistry();
+
+			expect(fetchAsset).toHaveBeenCalledOnce();
+			expect(artifact.technologies.map((technology) => technology.id)).toEqual(['bootstrap-visible', 'enrichment-only']);
+		} finally {
+			vi.unstubAllGlobals();
+		}
 	});
 
 	it('loads packaged enrichment JSON once and preserves detector order', async () => {

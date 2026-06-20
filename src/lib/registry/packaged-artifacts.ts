@@ -14,10 +14,10 @@ export type PackagedRegistryAssetKind = typeof PACKAGED_REGISTRY_ASSET_KINDS[num
 
 /** Generated asset paths relative to the extension output root. */
 export const PACKAGED_REGISTRY_ASSET_PATHS = Object.freeze({
-	bootstrap: '/red-detector-registry/registry.bootstrap.json',
-	enrichment: '/red-detector-registry/registry.enrichment.json',
-	metadata: '/red-detector-registry/registry.metadata.json',
-	relationships: '/red-detector-registry/registry.relationships.json',
+	bootstrap: 'red-detector-registry/registry.bootstrap.json',
+	enrichment: 'red-detector-registry/registry.enrichment.json',
+	metadata: 'red-detector-registry/registry.metadata.json',
+	relationships: 'red-detector-registry/registry.relationships.json',
 } satisfies Record<PackagedRegistryAssetKind, string>);
 
 /** Encoded regular expression marker used inside JSON registry assets. */
