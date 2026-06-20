@@ -36,7 +36,7 @@ That lets the extension skip broad text collection, inline source collection, ba
 
 Shared source limits now live in a small standalone module. Hot-path collectors, validation helpers, and focused tests can read safety caps without importing the generated registry tree.
 
-The generated artifact now lives under WXT's generated directory at `.wxt/compiled-registry.js`. The module in `modules/compile-registry.ts` adds the `#/compiled-registry` alias and refreshes the artifact through WXT's build lifecycle. Normal extension bundles import matcher buckets, relationship tables, technology metadata, and collection plans from that alias instead of rebuilding those structures when the popup opens. If generation fails, the generated module falls back to compiling the bundled TypeScript registry once at runtime so development does not fail closed.
+The generated registry now lives as JSON assets under `.wxt/red-detector-registry/` and is copied into the extension output as `red-detector-registry/*.json`. The module in `modules/compile-registry.ts` refreshes those assets through WXT's build lifecycle. Runtime code fetches the enrichment asset only when fresh analysis needs the full registry, then hydrates regular expressions and compiles matcher buckets, relationship tables, technology metadata, and collection plans once for reuse.
 
 Initial collection now uses the cheap tier only. Deeper HTML, text, headers, script-content, and stylesheet-content evidence runs as deferred enrichment after the first analysis response when an observation session is active. The popup can render the first useful detections while deeper evidence is still being checked.
 
@@ -98,7 +98,7 @@ The literal greenfield architecture still contains work outside this browser-ext
 
 ## Commands run in this workspace
 
-Dependency installation created `node_modules` and WXT generated files in this archive workspace. `aube run postinstall` completed and generated `.wxt/compiled-registry.js`, then TypeScript compilation completed successfully. The focused validation commands below also completed:
+Dependency installation created `node_modules` and WXT generated files in this archive workspace. `aube run postinstall` previously completed and generated the compiled registry artifact used at that point in the migration, then TypeScript compilation completed successfully. Newer registry work writes JSON assets under `.wxt/red-detector-registry/` instead. The focused validation commands below also completed:
 
 ```text
 aube run postinstall
