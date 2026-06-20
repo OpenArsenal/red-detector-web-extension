@@ -525,41 +525,6 @@ function createReplaySummary(trace: DetectionReplayTrace): DetectionReplaySummar
 	};
 }
 
-/**
- * Start page watching for a cache hit without making the cache unusable.
- *
- * Cache-first popup opens should feel immediate, but a cached result still needs
- * a session handle so late observations, Stop observation, and cleanup target
- * the same tab instead of falling back to whichever tab is active later.
- * Session startup failures are logged and the cached analysis still renders.
- */
-async function startObservationSessionForCachedAnalysis(
-	tab: InspectableTab,
-	input: AnalyzeActiveTabInput,
-	timingContext: TimingContext,
-): Promise<ObservationSessionState | undefined> {
-	if (!shouldStartObservationForAnalysis(input)) {
-		return undefined;
-	}
-
-	const response = await timeAsyncSpan(
-		'background.cache-hit.observation-session.begin',
-		timingContext,
-		() => beginObservationSessionForTab(tab.id, tab.url, tab.incognito),
-		(value) => ({ ok: value.ok, status: value.ok ? value.value.status : undefined }),
-	);
-	if (!response.ok) {
-		logBackgroundEvent('analysis-cache-observation-unavailable', {
-			...summarizeTab(tab),
-			code: response.error.code,
-			message: response.error.message,
-		});
-		return undefined;
-	}
-
-	return response.value;
-}
-
 function validateObservationSessionTarget(
 	actual: ObservationSessionState,
 	expected: ObservationSessionTarget,
@@ -718,7 +683,12 @@ async function recoverObservationBatchForRefresh(
 		lateObservationCount: lateBatch.observations.length,
 	});
 
-	return collectObservationBatchFromTab(tab.id, tab.url, compiledRegistryArtifact, 'initial', timingTraceId);
+	const recoveredBatch = await collectObservationBatchFromTab(tab.id, tab.url, compiledRegistryArtifact, 'initial', timingTraceId);
+	if (!recoveredBatch.ok) {
+		return recoveredBatch;
+	}
+
+	return ok(mergeObservationBatches(recoveredBatch.value, lateBatch));
 }
 
 async function beginObservationSessionForTab(
@@ -1436,21 +1406,19 @@ export function createBackgroundApi(): BackgroundApi {
 							() => getCachedReplayTraceHistory(tab.url),
 							(value) => ({ replayHistoryCount: value.length }),
 						);
-						const session = await startObservationSessionForCachedAnalysis(tab, input, requestTimingContext);
 						logBackgroundEvent('analysis-cache-hit', {
 							...summarizeTab(tab),
 							resultCount: cached.results.length,
 							analyzedAt: cached.analyzedAt,
-							sessionStatus: session?.status ?? 'none',
+							sessionStatus: 'none',
 							timingTraceId: requestTimingTraceId,
 						});
 						const output = createAnalysisOutput(
 							cached,
 							'hit',
-							session,
+							undefined,
 							replayTrace ?? undefined,
 							replayHistory,
-							createObservationSessionTarget(tab, session),
 						);
 						await saveDetectionSnapshotForPopup(tab, output, 'cache');
 

@@ -409,7 +409,7 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 		});
 	});
 
-	it('returns cached analysis and reopens observation in cache-first mode', async () => {
+	it('returns cached analysis without reopening observation in cache-first mode', async () => {
 		const collectObservationBatch = vi.fn(async () => ok({ batch: makeObservationBatch() }));
 		const cachedAnalysis = { ...makeAnalysis(), source: 'cache' as const };
 		const cachedReplayTrace = makeDetectionReplayTrace({ completedMode: 'event' });
@@ -420,9 +420,9 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 			contentApi: { collectObservationBatch },
 		});
 
-		await expect(
-			harness.api.analyzeActiveTab({ mode: 'cache-first', observe: 'while-popup-open' }),
-		).resolves.toMatchObject({
+		const result = await harness.api.analyzeActiveTab({ mode: 'cache-first', observe: 'while-popup-open' });
+
+		expect(result).toMatchObject({
 			ok: true,
 			value: {
 				analysis: {
@@ -431,21 +431,18 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 				cache: {
 					status: 'hit',
 				},
-				session: {
-					status: 'observing',
-				},
-				sessionTarget: {
-					tabId: HTTP_TAB.id,
-					sessionId: 'session-1',
-				},
 				replayTrace: {
 					completedMode: 'event',
 				},
 			},
 		});
+		if (result.ok) {
+			expect(result.value.session).toBeUndefined();
+			expect(result.value.sessionTarget).toBeUndefined();
+		}
 
 		expect(collectObservationBatch).not.toHaveBeenCalled();
-		expect(harness.contentApi.beginObservationSession).toHaveBeenCalledOnce();
+		expect(harness.contentApi.beginObservationSession).not.toHaveBeenCalled();
 		expect(harness.mocks.getCachedReplayTrace).toHaveBeenCalledWith(HTTP_TAB.url);
 	});
 
@@ -770,6 +767,61 @@ describe.sequential('background observation session baseline', () => {
 		expect(harness.contentApi.beginObservationSession).not.toHaveBeenCalled();
 		expect(harness.mocks.saveAnalysis).toHaveBeenCalledTimes(2);
 		expect(harness.mocks.analyzeSite).not.toHaveBeenCalled();
+	});
+
+	it('merges queued late observations after service-worker batch recovery', async () => {
+		const dirtyState: PageSignalPollingState = {
+			status: 'dirty',
+			throttleMs: 1_500,
+			pendingMutationCount: 1,
+			sessionId: 'session-1',
+			expectedUrl: HTTP_TAB.url!,
+		};
+		const lateTarget = { url: HTTP_TAB.url!, hostname: 'example.com' };
+		const lateBatch: ObservationBatch = {
+			target: lateTarget,
+			interface: 'extension',
+			observedAt: 1_700_000_000_500,
+			observations: [{
+				kind: 'scriptSrc',
+				interface: 'extension',
+				collector: 'content-observer',
+				target: lateTarget,
+				observedAt: 1_700_000_000_500,
+				value: 'https://example.com/late.js',
+			}],
+		};
+		const harness = await loadBackgroundApiHarness({
+			tab: HTTP_TAB,
+			contentApi: {
+				getObservationSessionState: vi.fn(async () => ok(dirtyState)),
+				flushObservationBatch: vi.fn(async () => ok({
+					batch: lateBatch,
+					stats: {
+						queuedCount: 1,
+						acceptedCount: 1,
+						duplicateDropCount: 0,
+						queueLimitDropCount: 0,
+						stormLimitDropCount: 0,
+						acceptedInStormWindow: 1,
+					},
+					session: dirtyState,
+				})),
+			},
+		});
+
+		await expect(harness.api.refreshActiveObservationSession()).resolves.toMatchObject({
+			ok: true,
+			value: {
+				cache: { status: 'bypassed' },
+				replayTrace: { completedMode: 'event' },
+			},
+		});
+
+		expect(harness.contentApi.collectObservationBatch).toHaveBeenCalledOnce();
+		expect(harness.contentApi.flushObservationBatch).toHaveBeenCalledOnce();
+		expect(harness.contentApi.beginObservationSession).not.toHaveBeenCalled();
+		expect(harness.mocks.saveAnalysis).toHaveBeenCalledOnce();
 	});
 
 	it('rejects observation refresh when the session belongs to a previous page path', async () => {
