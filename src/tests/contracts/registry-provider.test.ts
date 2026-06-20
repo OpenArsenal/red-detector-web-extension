@@ -22,5 +22,9 @@ describe('technology registry provider contract', () => {
 			'first',
 			'second',
 		]);
+		expect((await provider.listBootstrapTechnologies()).map((technology) => technology.id)).toEqual([
+			'first',
+			'second',
+		]);
 	});
 });

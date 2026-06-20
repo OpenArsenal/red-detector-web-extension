@@ -240,9 +240,16 @@ async function loadBackgroundApiHarness(input: {
 		diagnostics: [],
 	};
 	const listTechnologies = vi.fn(async () => compiledRegistryArtifact.technologies);
+	const listBootstrapTechnologies = vi.fn(async () => compiledRegistryArtifact.technologies);
 	const getCompiledRegistry = vi.fn(async () => compiledRegistryArtifact);
+	const getCompiledBootstrapRegistry = vi.fn(async () => compiledRegistryArtifact);
 	vi.doMock('../../lib/detection/registry-provider', () => ({
-		bundledTechnologyRegistryProvider: { listTechnologies, getCompiledRegistry },
+		bundledTechnologyRegistryProvider: {
+			listTechnologies,
+			listBootstrapTechnologies,
+			getCompiledRegistry,
+			getCompiledBootstrapRegistry,
+		},
 	}));
 
 	vi.doMock('../../lib/messaging', () => ({
@@ -290,7 +297,9 @@ async function loadBackgroundApiHarness(input: {
 			getCachedReplayTraceHistory,
 			getStatus,
 			getCompiledRegistry,
+			getCompiledBootstrapRegistry,
 			listTechnologies,
+			listBootstrapTechnologies,
 			saveAnalysis,
 			saveDetectionSessionSnapshot,
 			saveReplayTrace,

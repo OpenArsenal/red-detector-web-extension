@@ -9,8 +9,10 @@ import type { TechnologyDefinition } from './types';
  * and small tools can still use the static provider to avoid browser fetches.
  */
 export interface TechnologyRegistryProvider {
-	/** Return the active technology definitions in detector order. */
+	/** Return the enrichment technology definitions in detector order. */
 	listTechnologies(): Promise<readonly TechnologyDefinition[]>;
+	/** Return the cheap first-pass technology definitions in detector order. */
+	listBootstrapTechnologies(): Promise<readonly TechnologyDefinition[]>;
 	/**
 	 * Return the compiled artifact for the active registry.
 	 *
@@ -18,6 +20,8 @@ export interface TechnologyRegistryProvider {
 	 * and collection plans during every active-tab analysis.
 	 */
 	getCompiledRegistry(): Promise<CompiledTechnologyRegistryArtifact>;
+	/** Return the compiled bootstrap artifact for the first visible detector pass. */
+	getCompiledBootstrapRegistry(): Promise<CompiledTechnologyRegistryArtifact>;
 }
 
 /**
@@ -36,7 +40,19 @@ export function createStaticTechnologyRegistryProvider(
 			return registry;
 		},
 
+		async listBootstrapTechnologies() {
+			return registry;
+		},
+
 		async getCompiledRegistry() {
+			compiledRegistry ??= compileTechnologyRegistry({
+				technologies: registry,
+				sourceKind: 'typescript-definition',
+			});
+			return compiledRegistry;
+		},
+
+		async getCompiledBootstrapRegistry() {
 			compiledRegistry ??= compileTechnologyRegistry({
 				technologies: registry,
 				sourceKind: 'typescript-definition',

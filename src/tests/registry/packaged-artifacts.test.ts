@@ -34,10 +34,10 @@ function makeRegistry(): readonly TechnologyDefinition[] {
 	];
 }
 
-function makeEnrichmentAsset(registry: readonly TechnologyDefinition[]) {
+function makeRegistryAsset(registry: readonly TechnologyDefinition[], kind: 'bootstrap' | 'enrichment' = 'enrichment') {
 	return {
 		schemaVersion: PACKAGED_REGISTRY_ASSET_SCHEMA_VERSION,
-		kind: 'enrichment',
+		kind,
 		technologies: registry,
 		ruleCount: registry.reduce((count, technology) => count + technology.rules.length, 0),
 		generatedAt: 1,
@@ -46,7 +46,7 @@ function makeEnrichmentAsset(registry: readonly TechnologyDefinition[]) {
 
 describe('packaged registry artifacts', () => {
 	it('round-trips regular expression rules through JSON assets', () => {
-		const rendered = renderPackagedRegistryJson(makeEnrichmentAsset(makeRegistry()));
+		const rendered = renderPackagedRegistryJson(makeRegistryAsset(makeRegistry()));
 		const parsed = JSON.parse(rendered);
 
 		expect(isPackagedTechnologyRegistryAsset(parsed, 'enrichment')).toBe(true);
@@ -72,7 +72,7 @@ describe('packaged registry artifacts', () => {
 
 	it('calls the default worker fetch through the global receiver', async () => {
 		const registry = makeRegistry();
-		const rendered = renderPackagedRegistryJson(makeEnrichmentAsset(registry));
+		const rendered = renderPackagedRegistryJson(makeRegistryAsset(registry));
 		const fetchAsset = vi.fn(function (this: unknown) {
 			expect(this).toBe(globalThis);
 			return Promise.resolve({
@@ -98,9 +98,35 @@ describe('packaged registry artifacts', () => {
 		}
 	});
 
+
+
+	it('loads bootstrap and enrichment registries through separate packaged assets', async () => {
+		const registry = makeRegistry();
+		const bootstrap = createBootstrapTechnologyRegistry(registry);
+		const fetchAsset = vi.fn(async (url: string) => ({
+			ok: true,
+			async json() {
+				return JSON.parse(url.includes('bootstrap')
+					? renderPackagedRegistryJson(makeRegistryAsset(bootstrap, 'bootstrap'))
+					: renderPackagedRegistryJson(makeRegistryAsset(registry, 'enrichment')));
+			},
+		}));
+		const provider = createPackagedTechnologyRegistryProvider({
+			resolveUrl: (path) => `extension://${path}`,
+			fetchAsset,
+		});
+
+		const firstPass = await provider.getCompiledBootstrapRegistry();
+		const enrichment = await provider.getCompiledRegistry();
+
+		expect(fetchAsset).toHaveBeenCalledTimes(2);
+		expect(firstPass.technologies.map((technology) => technology.id)).toEqual(['bootstrap-visible']);
+		expect(enrichment.technologies.map((technology) => technology.id)).toEqual(['bootstrap-visible', 'enrichment-only']);
+	});
+
 	it('loads packaged enrichment JSON once and preserves detector order', async () => {
 		const registry = makeRegistry();
-		const rendered = renderPackagedRegistryJson(makeEnrichmentAsset(registry));
+		const rendered = renderPackagedRegistryJson(makeRegistryAsset(registry));
 		const fetchAsset = vi.fn(async () => ({
 			ok: true,
 			async json() {

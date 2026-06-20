@@ -16,7 +16,15 @@ export function createPrecompiledTechnologyRegistryProvider(
 			return artifact.technologies;
 		},
 
+		async listBootstrapTechnologies() {
+			return artifact.technologies;
+		},
+
 		async getCompiledRegistry() {
+			return artifact;
+		},
+
+		async getCompiledBootstrapRegistry() {
 			return artifact;
 		},
 	};
