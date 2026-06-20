@@ -92,9 +92,9 @@ export function runObservationBatchPipeline(
 		candidateRuleCount: matches.diagnostics.candidateRuleCount,
 		literalRejectedRuleCount: matches.diagnostics.literalRejectedRuleCount,
 		fallbackRuleCount: matches.diagnostics.fallbackRuleCount,
-		observationsByKind: matches.diagnostics.observationsByKind,
-		skippedObservationsByKind: matches.diagnostics.skippedObservationsByKind,
-		candidateRulesByKind: matches.diagnostics.candidateRulesByKind,
+		observationsByKind: stringifyCounts(matches.diagnostics.observationsByKind),
+		skippedObservationsByKind: stringifyCounts(matches.diagnostics.skippedObservationsByKind),
+		candidateRulesByKind: stringifyCounts(matches.diagnostics.candidateRulesByKind),
 	});
 	record('evidence-created', matches.evidenceBatch.entries.length);
 
@@ -151,6 +151,10 @@ export function runObservationBatchPipeline(
 		events,
 		emission: emitted.metadata,
 	};
+}
+
+function stringifyCounts(counts: Readonly<Record<string, number>>): string {
+	return JSON.stringify(counts);
 }
 
 /** Run a pipeline sub-stage with timing only when the caller supplied context. */

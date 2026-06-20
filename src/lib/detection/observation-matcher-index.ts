@@ -268,17 +268,9 @@ export function findIndexedObservationRules(
  */
 function isObservationKindDisabled(
 	kind: NormalizedObservationKind,
-	disabledKinds: DisabledKindLookup | DetectionRunOptions | undefined,
+	disabledKinds: DisabledKindLookup | undefined,
 ): boolean {
-	if (!disabledKinds) {
-		return false;
-	}
-
-	if ('disabledKinds' in disabledKinds) {
-		return Boolean(disabledKinds.disabledKinds?.includes(kind));
-	}
-
-	return disabledKinds[kind] === true;
+	return disabledKinds?.[kind] === true;
 }
 
 /** Build a branch-friendly lookup once so the hot observation loop avoids repeated array scans. */

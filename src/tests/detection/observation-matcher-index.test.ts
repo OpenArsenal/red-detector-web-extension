@@ -215,10 +215,12 @@ describe('indexed observation matcher', () => {
 
 		expect(result.matches.map((match) => match.technologyId)).toEqual(['generator-tech']);
 		expect(result.diagnostics).toMatchObject({
-			observationCount: 2,
+			observationCount: 4,
 			skippedObservationCount: 1,
 			candidateRuleCount: 1,
 			observationsByKind: {
+				url: 1,
+				html: 1,
 				scriptSrc: 1,
 				meta: 1,
 			},
