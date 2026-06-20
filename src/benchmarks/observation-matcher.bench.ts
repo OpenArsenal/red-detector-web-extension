@@ -27,6 +27,14 @@ const BENCHMARK_OPTIONS = {
 /** Workload names measured by the observation matcher benchmark. */
 const OBSERVATION_MATCHER_WORKLOADS = ['common', 'adversarial'] as const;
 
+/** URL-like surfaces deferred from the first visible active-tab pass. */
+const INITIAL_DISABLED_KINDS = Object.freeze([
+	'resourceUrl',
+	'requestUrl',
+	'scriptSrc',
+	'stylesheetHref',
+] as const);
+
 /** Workload name measured by this benchmark. */
 type ObservationMatcherWorkload = typeof OBSERVATION_MATCHER_WORKLOADS[number];
 
@@ -132,6 +140,15 @@ describe('observation matcher', () => {
 					registry: scenario.registry,
 					batch: scenario.batch,
 					index: scenario.index,
+				}).matches.length);
+			}, BENCHMARK_OPTIONS);
+
+			bench('indexed initial-pass disabled URL surfaces', () => {
+				consumeMatchCount(matchIndexedObservationBatch({
+					registry: scenario.registry,
+					batch: scenario.batch,
+					index: scenario.index,
+					options: { disabledKinds: INITIAL_DISABLED_KINDS },
 				}).matches.length);
 			}, BENCHMARK_OPTIONS);
 		});
