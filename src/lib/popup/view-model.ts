@@ -292,7 +292,7 @@ export function shouldApplyPopupSnapshotRevision(input: {
  */
 export function shouldPreservePopupReplayState(input: {
 	readonly previousAnalysis: SiteAnalysis | null;
-	readonly response: Pick<AnalyzeActiveTabOutput, 'analysis' | 'replayHistory' | 'replayTrace'>;
+	readonly response: Pick<AnalyzeActiveTabOutput, 'analysis' | 'enrichment' | 'replayHistory' | 'replayTrace'>;
 }): boolean {
 	if (!input.previousAnalysis || input.response.replayTrace || input.response.replayHistory !== undefined) {
 		return false;
@@ -300,6 +300,10 @@ export function shouldPreservePopupReplayState(input: {
 
 	if (input.previousAnalysis.url !== input.response.analysis.url) {
 		return false;
+	}
+
+	if (input.response.enrichment?.reason === 'progressive-detection-frame') {
+		return input.response.analysis.analyzedAt >= input.previousAnalysis.analyzedAt;
 	}
 
 	if (input.previousAnalysis.analyzedAt !== input.response.analysis.analyzedAt) {
@@ -461,6 +465,13 @@ function getPopupAnalysisNotice(input: {
 	response: AnalyzeActiveTabOutput;
 	source: PopupAnalysisRequestSource;
 }): PopupNotice | null {
+	if (input.response.enrichment?.reason === 'progressive-detection-frame') {
+		return {
+			variant: 'warning',
+			text: `Streaming ${input.nextAnalysis.results.length} detections for ${input.nextAnalysis.hostname}.`,
+		};
+	}
+
 	if (input.response.enrichment?.status === 'pending') {
 		return {
 			variant: 'warning',
@@ -472,6 +483,13 @@ function getPopupAnalysisNotice(input: {
 		return {
 			variant: 'success',
 			text: `Deep evidence complete for ${input.nextAnalysis.hostname}.`,
+		};
+	}
+
+	if ((input.response.enrichment?.status === 'failed' || input.response.enrichment?.status === 'timed-out') && input.source === 'auto') {
+		return {
+			variant: 'warning',
+			text: `Deep evidence stopped for ${input.nextAnalysis.hostname}. Showing the latest stored detections.`,
 		};
 	}
 

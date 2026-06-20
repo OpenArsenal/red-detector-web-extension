@@ -116,6 +116,53 @@ describe('popup view model', () => {
 		});
 	});
 
+	it('uses progressive detector frames as live snapshot updates without clearing replay state', () => {
+		const previousAnalysis = makeAnalysis([makeDetection('react')]);
+		const response = makeAnalyzeActiveTabOutput({
+			analysis: makeAnalysis([
+				makeDetection('react'),
+				makeDetection('next-js'),
+			], { analyzedAt: previousAnalysis.analyzedAt + 100 }),
+			enrichment: { status: 'pending', reason: 'progressive-detection-frame' },
+		});
+
+		const update = buildPopupAnalysisUpdate({
+			previousAnalysis,
+			response,
+			source: 'auto',
+		});
+
+		expect(shouldPreservePopupReplayState({ previousAnalysis, response })).toBe(true);
+		expect(update).toMatchObject({
+			shouldKeepLiveUpdatesActive: true,
+			notice: {
+				variant: 'warning',
+				text: 'Streaming 2 detections for example.com.',
+			},
+		});
+	});
+
+	it('shows terminal enrichment failures without leaving the popup pending', () => {
+		const response = makeAnalyzeActiveTabOutput({
+			analysis: makeAnalysis([makeDetection('react')]),
+			enrichment: { status: 'timed-out', reason: 'timeout' },
+		});
+
+		const update = buildPopupAnalysisUpdate({
+			previousAnalysis: null,
+			response,
+			source: 'auto',
+		});
+
+		expect(update).toMatchObject({
+			shouldKeepLiveUpdatesActive: false,
+			notice: {
+				variant: 'warning',
+				text: 'Deep evidence stopped for example.com. Showing the latest stored detections.',
+			},
+		});
+	});
+
 	it('marks newly added automatic observation detections without duplicating previous late ids', () => {
 		const previousAnalysis = makeAnalysis([makeDetection('react')]);
 		const response = makeAnalyzeActiveTabOutput({

@@ -34,9 +34,9 @@ export type ActiveTabObservationMode = typeof OBSERVATION_MODES[number];
 
 
 /** Progressive enrichment states returned with an analysis response. */
-export const ANALYSIS_ENRICHMENT_STATUSES = ['not-needed', 'pending', 'complete', 'skipped'] as const;
+export const ANALYSIS_ENRICHMENT_STATUSES = ['not-needed', 'pending', 'complete', 'failed', 'timed-out', 'skipped'] as const;
 
-/** Whether deeper evidence collection is pending, complete, unnecessary, or skipped. */
+/** Whether deeper evidence collection is pending, complete, failed, timed out, unnecessary, or skipped. */
 export type AnalysisEnrichmentStatus = typeof ANALYSIS_ENRICHMENT_STATUSES[number];
 
 /** User-visible enrichment state for progressive active-tab detection. */
@@ -45,7 +45,7 @@ export type AnalysisEnrichmentState = {
 	status: AnalysisEnrichmentStatus;
 	/** Millisecond timestamp when enrichment completed, when known. */
 	completedAt?: number;
-	/** Short machine-readable reason for skipped or unnecessary enrichment. */
+	/** Short machine-readable reason for skipped, terminal, or unnecessary enrichment. */
 	reason?: string;
 };
 

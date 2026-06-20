@@ -341,6 +341,7 @@ describe.sequential('background active-tab identity', () => {
 		});
 		expect(collectObservationBatch).not.toHaveBeenCalled();
 		expect(harness.mocks.getCompiledRegistry).not.toHaveBeenCalled();
+		expect(harness.mocks.getCompiledBootstrapRegistry).not.toHaveBeenCalled();
 	});
 });
 
@@ -500,7 +501,8 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 
 		expect(harness.mocks.getCachedAnalysis).toHaveBeenCalledWith(HTTP_TAB.url);
 		expect(harness.contentApi.collectObservationBatch).toHaveBeenCalledOnce();
-		expect(harness.mocks.getCompiledRegistry).toHaveBeenCalledOnce();
+		expect(harness.mocks.getCompiledBootstrapRegistry).toHaveBeenCalledOnce();
+		expect(harness.mocks.getCompiledRegistry).not.toHaveBeenCalled();
 		expect(harness.mocks.analyzeSite).not.toHaveBeenCalled();
 		expect(harness.mocks.saveAnalysis).toHaveBeenCalledWith(expect.objectContaining({ source: 'fresh' }));
 		expect(harness.mocks.saveAnalysis).toHaveBeenCalledOnce();

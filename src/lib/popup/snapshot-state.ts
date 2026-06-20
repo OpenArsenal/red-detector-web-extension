@@ -127,13 +127,8 @@ export function isNewerSnapshotRevision(current: DetectionSessionSnapshot | null
 }
 
 function toAnalysisEnrichmentState(snapshot: DetectionSessionSnapshot): AnalysisEnrichmentState | undefined {
-  const status = snapshot.enrichment.status;
-  if (status === 'failed' || status === 'timed-out') {
-    return { status: 'skipped', reason: snapshot.enrichment.reason ?? status };
-  }
-
   return {
-    status,
+    status: snapshot.enrichment.status,
     ...(snapshot.enrichment.completedAt ? { completedAt: snapshot.enrichment.completedAt } : {}),
     ...(snapshot.enrichment.reason ? { reason: snapshot.enrichment.reason } : {}),
   };

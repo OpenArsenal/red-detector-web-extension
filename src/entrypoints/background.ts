@@ -45,6 +45,7 @@ import type {
 import type { NormalizedObservation, ObservationBatch } from '../lib/observations';
 import {
 	CONTENT_SCRIPT_TIMEOUT_MS,
+	RpcTimeoutError,
 	contentScriptFailure,
 	withTimeout,
 } from '../lib/messaging/rpc';
@@ -54,6 +55,11 @@ import {
 	createBackgroundServerAdapter,
 	createContentClientAdapter,
 } from '../lib/messaging';
+import {
+	DETECTION_STREAM_FRAME_DELAY_MS,
+	createDetectionStreamFrameOutput,
+	createDetectionStreamFrameSizes,
+} from '../lib/lifecycle/detection-stream';
 import {
 	EXTENSION_OBSERVATION_POLICY,
 	getObservationRefreshBlockReason,
@@ -111,6 +117,9 @@ const INITIAL_PIPELINE_DISABLED_KINDS = Object.freeze([
 	'scriptSrc',
 	'stylesheetHref',
 ] satisfies DetectionKind[]);
+
+/** Background enrichment is a follow-up pass and must not leave the popup pending forever. */
+const ENRICHMENT_TIMEOUT_MS = 10_000;
 
 /**
  * In-flight runtime injections are deduplicated per tab.
@@ -210,6 +219,12 @@ function summarizeCompiledRegistryArtifact(artifact: CompiledRegistry): Record<s
 		initialJsGlobalProbeCount: artifact.collectionPlan.initial.jsGlobalPropertyList.length,
 		enrichmentHtmlProbeCount: artifact.collectionPlan.enrichment.htmlProbeList.length,
 	};
+}
+
+function waitForDetectionStreamFrame(): Promise<void> {
+	return new Promise((resolve) => {
+		setTimeout(resolve, DETECTION_STREAM_FRAME_DELAY_MS);
+	});
 }
 
 function createContentApiClient(tabId: number, frameId = 0): ContentApi {
@@ -473,6 +488,25 @@ async function saveDetectionSnapshotForPopup(
 	await saveDetectionSessionSnapshot(snapshot);
 }
 
+async function saveDetectionSnapshotStreamForPopup(
+	tab: InspectableTab,
+	output: AnalyzeActiveTabOutput,
+	source: DetectionSessionSnapshotSource,
+): Promise<void> {
+	const frameSizes = createDetectionStreamFrameSizes(output.analysis.results.length);
+	if (frameSizes.length === 0) {
+		await saveDetectionSnapshotForPopup(tab, output, source);
+		return;
+	}
+
+	for (const size of frameSizes) {
+		await saveDetectionSnapshotForPopup(tab, createDetectionStreamFrameOutput(output, size), source);
+		await waitForDetectionStreamFrame();
+	}
+
+	await saveDetectionSnapshotForPopup(tab, output, source);
+}
+
 /**
  * Resolve the page-session key available from a background response.
  *
@@ -641,9 +675,9 @@ async function analyzeObservationBatchRefresh(
 	const lateBatch = flush.batch;
 	const baseBatch = eventObservationBatchByTab.get(tab.id);
 	const compiledRegistryArtifact = await timeAsyncSpan(
-		'background.registry.get-compiled',
+		'background.registry.get-bootstrap-compiled',
 		timingContext,
-		() => bundledTechnologyRegistryProvider.getCompiledRegistry(),
+		() => bundledTechnologyRegistryProvider.getCompiledBootstrapRegistry(),
 		summarizeCompiledRegistryArtifact,
 	);
 	const batchResponse = baseBatch && isSameObservationTarget(baseBatch, lateBatch)
@@ -798,9 +832,9 @@ async function analyzeFreshActiveTab(
 		},
 	};
 	const compiledRegistryArtifact = await timeAsyncSpan(
-		'background.registry.get-compiled',
+		'background.registry.get-bootstrap-compiled',
 		timingContext,
-		() => bundledTechnologyRegistryProvider.getCompiledRegistry(),
+		() => bundledTechnologyRegistryProvider.getCompiledBootstrapRegistry(),
 		summarizeCompiledRegistryArtifact,
 	);
 	const batchResponse = await collectObservationBatchFromTab(tab.id, tab.url, compiledRegistryArtifact, 'initial', timingTraceId);
@@ -827,13 +861,13 @@ async function analyzeFreshActiveTab(
 		}
 	}
 
-	const enrichment = getInitialEnrichmentState(tab, compiledRegistryArtifact, session);
+	const enrichment = getInitialEnrichmentState(tab, session);
 	const response = await analyzeAndPersistObservationBatch(tab, batchResponse.value, compiledRegistryArtifact, cacheStatus, session, {
-		refreshKind: 'fresh',
+		refreshKind: 'bootstrap',
 	}, enrichment, timingTraceId);
 
 	if (response.ok && enrichment.status === 'pending') {
-		scheduleDeferredEnrichment(tab, batchResponse.value, compiledRegistryArtifact, session, timingTraceId);
+		scheduleDeferredEnrichment(tab, batchResponse.value, session, response.value, timingTraceId);
 	}
 
 	endTimingSpan(totalSpan, {
@@ -847,7 +881,6 @@ async function analyzeFreshActiveTab(
 
 function getInitialEnrichmentState(
 	tab: InspectableTab,
-	compiledRegistryArtifact: CompiledRegistry,
 	session?: ObservationSessionState,
 ): AnalysisEnrichmentState {
 	if (tab.incognito) {
@@ -855,9 +888,6 @@ function getInitialEnrichmentState(
 	}
 	if (!session?.sessionId) {
 		return { status: 'skipped', reason: 'no-observation-session' };
-	}
-	if (!hasEnrichmentWork(compiledRegistryArtifact)) {
-		return { status: 'not-needed' };
 	}
 
 	return { status: 'pending' };
@@ -877,11 +907,11 @@ function hasEnrichmentWork(compiledRegistryArtifact: CompiledRegistry): boolean 
 function scheduleDeferredEnrichment(
 	tab: InspectableTab,
 	initialBatch: ObservationBatch,
-	compiledRegistryArtifact: CompiledRegistry,
 	session?: ObservationSessionState,
+	initialOutput?: AnalyzeActiveTabOutput,
 	initialTimingTraceId?: string,
 ): void {
-	if (!session?.sessionId || tab.incognito) {
+	if (!session?.sessionId || !initialOutput || tab.incognito) {
 		return;
 	}
 
@@ -901,65 +931,120 @@ function scheduleDeferredEnrichment(
 			sessionId: session.sessionId,
 			timingTraceId,
 		});
+		try {
 
-		const enrichmentBatch = await collectObservationBatchFromTab(
-			tab.id,
-			tab.url,
-			compiledRegistryArtifact,
-			'enrichment',
-			timingTraceId,
-		);
-		if (!enrichmentBatch.ok) {
-			logBackgroundEvent('analysis-enrichment-failed', {
+			const compiledRegistryArtifact = await timeAsyncSpan(
+				'background.registry.get-enrichment-compiled',
+				timingContext,
+				() => bundledTechnologyRegistryProvider.getCompiledRegistry(),
+				summarizeCompiledRegistryArtifact,
+			);
+			if (!hasEnrichmentWork(compiledRegistryArtifact)) {
+				await persistTerminalEnrichmentSnapshot(tab, initialOutput, { status: 'not-needed', reason: 'no-enrichment-work' });
+				endTimingSpan(enrichmentSpan, { ok: true, skipped: 'no-enrichment-work' });
+				return;
+			}
+
+			const enrichmentBatch = await runEnrichmentWithTimeout(() => collectObservationBatchFromTab(
+				tab.id,
+				tab.url,
+				compiledRegistryArtifact,
+				'enrichment',
+				timingTraceId,
+			));
+			if (!enrichmentBatch.ok) {
+				logBackgroundEvent('analysis-enrichment-failed', {
+					...summarizeTab(tab),
+					sessionId: session.sessionId,
+					code: enrichmentBatch.error.code,
+					message: enrichmentBatch.error.message,
+				});
+				await persistTerminalEnrichmentSnapshot(tab, initialOutput, {
+					status: enrichmentBatch.error.message.includes('timed out') ? 'timed-out' : 'failed',
+					reason: enrichmentBatch.error.message,
+				});
+				endTimingSpan(enrichmentSpan, { ok: false, failedAt: 'collect-enrichment' });
+				return;
+			}
+
+			const mergedBatch = mergeObservationBatches(initialBatch, enrichmentBatch.value);
+			const completedAt = Date.now();
+			const sessionId = session.sessionId;
+			if (!sessionId) {
+				return;
+			}
+			const response = await analyzeAndPersistObservationBatch(
+				tab,
+				mergedBatch,
+				compiledRegistryArtifact,
+				'bypassed',
+				session,
+				{ refreshKind: 'enrichment' },
+				{ status: 'complete', completedAt },
+				timingTraceId,
+			);
+			if (!response.ok) {
+				logBackgroundEvent('analysis-enrichment-persist-failed', {
+					...summarizeTab(tab),
+					sessionId: session.sessionId,
+					code: response.error.code,
+					message: response.error.message,
+				});
+				await persistTerminalEnrichmentSnapshot(tab, initialOutput, { status: 'failed', reason: response.error.message });
+				endTimingSpan(enrichmentSpan, { ok: false, failedAt: 'persist-enrichment' });
+				return;
+			}
+
+			completedEnrichmentBySession.set(sessionId, { tabId: tab.id, completedAt });
+			logBackgroundEvent('analysis-enrichment-complete', {
 				...summarizeTab(tab),
-				sessionId: session.sessionId,
-				code: enrichmentBatch.error.code,
-				message: enrichmentBatch.error.message,
+				sessionId,
+				completedAt,
+				resultCount: response.value.analysis.results.length,
+				timingTraceId,
 			});
-			endTimingSpan(enrichmentSpan, { ok: false, failedAt: 'collect-enrichment' });
-			return;
-		}
-
-		const mergedBatch = mergeObservationBatches(initialBatch, enrichmentBatch.value);
-		const completedAt = Date.now();
-		const sessionId = session.sessionId;
-		if (!sessionId) {
-			return;
-		}
-		const response = await analyzeAndPersistObservationBatch(
-			tab,
-			mergedBatch,
-			compiledRegistryArtifact,
-			'bypassed',
-			session,
-			{ refreshKind: 'enrichment' },
-			{ status: 'complete', completedAt },
-			timingTraceId,
-		);
-		if (!response.ok) {
-			logBackgroundEvent('analysis-enrichment-persist-failed', {
-				...summarizeTab(tab),
-				sessionId: session.sessionId,
-				code: response.error.code,
-				message: response.error.message,
+			endTimingSpan(enrichmentSpan, {
+				ok: true,
+				resultCount: response.value.analysis.results.length,
 			});
-			endTimingSpan(enrichmentSpan, { ok: false, failedAt: 'persist-enrichment' });
-			return;
+		} catch (error) {
+			const message = error instanceof Error ? error.message : 'Deep evidence collection failed.';
+			await persistTerminalEnrichmentSnapshot(tab, initialOutput, { status: 'failed', reason: message });
+			endTimingSpan(enrichmentSpan, { ok: false, failedAt: 'unexpected-enrichment-error' });
 		}
-
-		completedEnrichmentBySession.set(sessionId, { tabId: tab.id, completedAt });
-		logBackgroundEvent('analysis-enrichment-complete', {
-			...summarizeTab(tab),
-			sessionId,
-			completedAt,
-			resultCount: response.value.analysis.results.length,
-			timingTraceId,
-		});
-		endTimingSpan(enrichmentSpan, {
-			ok: true,
-			resultCount: response.value.analysis.results.length,
-		});
 	})();
+}
+
+async function runEnrichmentWithTimeout<T>(
+	operation: () => Promise<AppResult<T>>,
+): Promise<AppResult<T>> {
+	try {
+		return await withTimeout(
+			operation(),
+			ENRICHMENT_TIMEOUT_MS,
+			'Deep evidence collection timed out before it could update the popup.',
+		);
+	} catch (error) {
+		if (error instanceof RpcTimeoutError) {
+			return errorResponse('CONTENT_SCRIPT_UNAVAILABLE', error.message, error.stack);
+		}
+
+		const message = error instanceof Error ? error.message : 'Deep evidence collection failed.';
+		const stack = error instanceof Error ? error.stack : undefined;
+		return errorResponse('UNKNOWN', message, stack);
+	}
+}
+
+async function persistTerminalEnrichmentSnapshot(
+	tab: InspectableTab,
+	output: AnalyzeActiveTabOutput,
+	enrichment: AnalysisEnrichmentState,
+): Promise<void> {
+	await saveDetectionSnapshotForPopup(
+		tab,
+		Object.assign({}, output, { enrichment }),
+		'background',
+	);
 }
 
 async function analyzeAndPersistObservationBatch(
@@ -1050,7 +1135,7 @@ async function analyzeAndPersistObservationBatch(
 		sessionTarget,
 		enrichment,
 	);
-	await saveDetectionSnapshotForPopup(tab, output, 'background');
+	await saveDetectionSnapshotStreamForPopup(tab, output, 'background');
 
 	return ok(output);
 }
