@@ -10,12 +10,12 @@ import { isSameDocumentUrl } from '../shared/url';
  * Standard observation policy for the active-tab extension flow.
  *
  * The background sends these limits to the content script after a fresh analysis.
- * Keeping them in the lifecycle layer makes the runtime contract visible: the
- * popup may ask for watching, but the background owns the bounded limits that
- * keep the content script from scanning the page forever.
+ * Matching can run for longer than the first collection pass on large sites, so
+ * the observer window must outlive the initial CPU work while still staying
+ * bounded. Keeping the policy here makes that lifecycle tradeoff visible.
  */
 export const EXTENSION_OBSERVATION_POLICY = {
-	durationMs: 60_000,
+	durationMs: 5 * 60_000,
 	throttleMs: 1_500,
 	maxPendingNodes: 100,
 	maxMutations: 5_000,
