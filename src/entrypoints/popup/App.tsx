@@ -587,10 +587,12 @@ export default function App() {
         )}
         meta={
           hasLateDetections()
-            ? `${lateAddedIds().length} detection${lateAddedIds().length === 1 ? "" : "s"} arrived after the popup opened and are marked below.`
+            ? `${lateAddedIds().length} detection${lateAddedIds().length === 1 ? "" : "s"} changed during recent analysis updates and are marked below.`
             : liveUpdateMode() === "active"
-              ? "Showing the latest snapshot. Late detections appear when storage publishes a newer revision."
-              : "Showing the latest snapshot from the page. Refresh to request a new sync for future late detections."
+              ? "Observing page updates. New detector revisions are highlighted when more evidence arrives."
+              : liveUpdateMode() === "stopped"
+                ? "Observation is stopped. The latest detector snapshot remains visible until refresh starts a new session."
+                : "Showing the latest detector snapshot for this page."
         }
       >
         <Show

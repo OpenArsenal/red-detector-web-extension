@@ -487,9 +487,16 @@ function getPopupAnalysisNotice(input: {
 }): PopupNotice | null {
 	if (input.addedDetectionIds.length) {
 		const count = input.addedDetectionIds.length;
+		if (input.source === 'auto') {
+			return {
+				variant: 'success',
+				text: `Analysis update found ${count} additional detection${count === 1 ? '' : 's'} on ${input.nextAnalysis.hostname}.`,
+			};
+		}
+
 		return {
 			variant: 'success',
-			text: `Observation found ${count} new late detection${count === 1 ? '' : 's'} on ${input.nextAnalysis.hostname}.`,
+			text: `Detected ${count} additional technolog${count === 1 ? 'y' : 'ies'} on ${input.nextAnalysis.hostname}.`,
 		};
 	}
 
