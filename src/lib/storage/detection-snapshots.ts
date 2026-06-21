@@ -228,7 +228,14 @@ async function getStoredDetectionSnapshot(storageKey: string): Promise<Detection
 	return cloneDetectionSessionSnapshot(value);
 }
 
-/** Promote a session snapshot to the origin-level latest record when it is newer. */
+/** Promote detector-owned snapshots to the origin-level latest record.
+ *
+ * Content snapshots describe page-session lifecycle. They can preserve detector output
+ * for the exact session, but they must not become the origin-level startup record
+ * when they only carry an empty bootstrap analysis. Popup startup uses the origin
+ * record as its cache-first render path, so detector output must outrank lifecycle
+ * updates even when the lifecycle update was written later.
+ */
 async function promoteOriginSnapshot(
 	originStorageKey: string,
 	snapshot: DetectionSessionSnapshot,
@@ -247,11 +254,32 @@ function isOriginSnapshotNewer(
 	candidate: DetectionSessionSnapshot,
 	existing: DetectionSessionSnapshot,
 ): boolean {
+	const candidateRank = getOriginSnapshotRank(candidate);
+	const existingRank = getOriginSnapshotRank(existing);
+	if (candidateRank !== existingRank) {
+		return candidateRank > existingRank;
+	}
+
 	if (candidate.updatedAt !== existing.updatedAt) {
 		return candidate.updatedAt > existing.updatedAt;
 	}
 
 	return candidate.revision > existing.revision;
+}
+
+/**
+ * Detector snapshots outrank lifecycle snapshots for origin startup recovery.
+ *
+ * Content revisions can be newer because observers are active, but a newer empty
+ * content record should not replace a background/cache detector result when the
+ * popup opens again. A content snapshot that preserves real detections stays useful
+ * as a lower-ranked fallback for exact-session lifecycle reads.
+ */
+function getOriginSnapshotRank(snapshot: DetectionSessionSnapshot): number {
+	if (snapshot.source === 'background') return 3;
+	if (snapshot.source === 'cache') return 2;
+	if (snapshot.detectionCount > 0) return 1;
+	return 0;
 }
 
 /**

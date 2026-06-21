@@ -47,7 +47,7 @@ export async function readStoredPopupAnalysis(
   }
 
   const snapshot = await getLatestDetectionOriginSnapshot(identity.originHash);
-  if (snapshot && isSnapshotForActiveTab(identity, snapshot)) {
+  if (snapshot && isSnapshotForActiveTab(identity, snapshot) && isDetectorStartupSnapshot(snapshot)) {
     return { source: 'origin-snapshot', analysis: snapshot.analysis, snapshot };
   }
 
@@ -57,6 +57,16 @@ export async function readStoredPopupAnalysis(
   }
 
   return { source: 'analysis-cache', analysis };
+}
+
+
+/** Detector-owned or detection-bearing snapshots are safe as the first popup paint. */
+function isDetectorStartupSnapshot(snapshot: DetectionSessionSnapshot): boolean {
+  if (snapshot.source === 'background' || snapshot.source === 'cache') {
+    return true;
+  }
+
+  return snapshot.detectionCount > 0;
 }
 
 /**
