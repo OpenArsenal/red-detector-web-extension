@@ -29,6 +29,7 @@ import {
   formatPopupAppError,
   getPopupObservationLabel,
   getPopupObservationModeFromSession,
+  getPopupObservationModeFromSnapshot,
   groupDetectionsByPrimaryCategory,
   shouldApplyPopupSnapshotRevision,
   shouldPreservePopupReplayState,
@@ -150,12 +151,21 @@ export default function App() {
 
     if (!shouldApplyPopupSnapshotRevision({ currentAnalysis: analysis(), snapshot })) {
       appliedSnapshotRevision = snapshot;
-      logPopupEvent("snapshot-revision-ignored", {
+      const nextMode = getPopupObservationModeFromSnapshot(snapshot);
+      setLiveUpdateMode(nextMode);
+      if (nextMode === "stopped") {
+        setSessionTarget(null);
+        setNotice({
+          variant: "warning",
+          text: "Observation stopped. Existing detections stay visible until refresh starts a new session.",
+        });
+      }
+      logPopupEvent("snapshot-lifecycle-applied", {
         revision: snapshot.revision,
         resultCount: snapshot.analysis.results.length,
         status: snapshot.status,
         source: snapshot.source,
-        reason: "content-lifecycle-without-detector-output",
+        reason: snapshot.enrichment.reason ?? "content-lifecycle-without-detector-output",
       });
       void requestObservationRefreshFromSnapshot(snapshot);
       return;

@@ -218,6 +218,31 @@ export function getPopupObservationModeFromSession(
 }
 
 /**
+ * Converts durable snapshot lifecycle status into the popup state model.
+ *
+ * Detector snapshots and content lifecycle snapshots flow through the same
+ * storage subscription. This mapping lets lifecycle-only content revisions stop
+ * or idle the controls without replacing the detector results already rendered.
+ */
+export function getPopupObservationModeFromSnapshot(
+	snapshot: Pick<DetectionSessionSnapshot, 'status'>,
+): PopupObservationMode {
+	if (snapshot.status === 'collecting' || snapshot.status === 'observing' || snapshot.status === 'enriching') {
+		return 'active';
+	}
+
+	if (snapshot.status === 'cached' || snapshot.status === 'complete') {
+		return 'idle';
+	}
+
+	if (snapshot.status === 'stopped' || snapshot.status === 'failed' || snapshot.status === 'stale') {
+		return 'stopped';
+	}
+
+	return 'unknown';
+}
+
+/**
  * Converts a successful analysis response into the popup observation mode.
  *
  * Cache hits can be useful without active observation, so they render as `idle`.
