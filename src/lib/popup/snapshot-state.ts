@@ -3,7 +3,13 @@ import type { DetectionSessionSnapshot } from '../contracts/detection-session';
 import { browser } from 'wxt/browser';
 import type { ActiveTabIdentity, AnalysisEnrichmentState, AnalyzeActiveTabOutput } from '../messaging';
 
-import { getCachedAnalysis, getLatestDetectionOriginSnapshot, isDetectionSessionSnapshot } from '../storage';
+import {
+  getCachedAnalysis,
+  getCachedReplayTrace,
+  getCachedReplayTraceHistory,
+  getLatestDetectionOriginSnapshot,
+  isDetectionSessionSnapshot,
+} from '../storage';
 import { STORAGE_LIMITS, getAnalysisCacheKey, getDetectionOriginSnapshotKey } from '../storage/contracts';
 
 /** Handler invoked when storage publishes a matching snapshot revision. */
@@ -30,6 +36,10 @@ export type PopupStoredAnalysisResult = {
   readonly analysis: AnalyzeActiveTabOutput['analysis'];
   /** Snapshot revision used when the storage-backed stream already has state. */
   readonly snapshot?: DetectionSessionSnapshot;
+  /** Latest replay trace for the stored analysis, when replay storage has one. */
+  readonly replayTrace?: AnalyzeActiveTabOutput['replayTrace'];
+  /** Recent replay runs for the stored analysis origin. */
+  readonly replayHistory?: AnalyzeActiveTabOutput['replayHistory'];
 };
 
 /**
@@ -48,7 +58,8 @@ export async function readStoredPopupAnalysis(
 
   const snapshot = await getLatestDetectionOriginSnapshot(identity.originHash);
   if (snapshot && isSnapshotForActiveTab(identity, snapshot) && isDetectorStartupSnapshot(snapshot)) {
-    return { source: 'origin-snapshot', analysis: snapshot.analysis, snapshot };
+    const replay = await readStoredReplayState(snapshot.analysis.url);
+    return { source: 'origin-snapshot', analysis: snapshot.analysis, snapshot, ...replay };
   }
 
   const analysis = await getCachedAnalysis(identity.url);
@@ -56,7 +67,28 @@ export async function readStoredPopupAnalysis(
     return null;
   }
 
-  return { source: 'analysis-cache', analysis };
+  const replay = await readStoredReplayState(analysis.url);
+  return { source: 'analysis-cache', analysis, ...replay };
+}
+
+/**
+ * Read replay data next to startup analysis so explanations survive popup reopen.
+ *
+ * Snapshots keep only a compact replay summary to avoid duplicating full traces
+ * across every visible revision. The popup can still recover the newest full
+ * trace and bounded history from the dedicated replay storage namespace before
+ * the background service worker has to start a fresh analysis command.
+ */
+async function readStoredReplayState(url: string): Promise<Pick<PopupStoredAnalysisResult, 'replayTrace' | 'replayHistory'>> {
+  const [replayTrace, replayHistory] = await Promise.all([
+    getCachedReplayTrace(url),
+    getCachedReplayTraceHistory(url),
+  ]);
+
+  return {
+    ...(replayTrace ? { replayTrace } : {}),
+    ...(replayHistory.length ? { replayHistory } : {}),
+  };
 }
 
 
@@ -84,6 +116,8 @@ export function createStoredPopupAnalysisOutput(stored: PopupStoredAnalysisResul
       key: getAnalysisCacheKey(stored.analysis.url),
       expiresAt: stored.analysis.analyzedAt + STORAGE_LIMITS.analysisTtlMs,
     },
+    ...(stored.replayTrace ? { replayTrace: stored.replayTrace } : {}),
+    ...(stored.replayHistory ? { replayHistory: stored.replayHistory } : {}),
     enrichment: stored.snapshot ? toAnalysisEnrichmentState(stored.snapshot) : undefined,
   };
 }
