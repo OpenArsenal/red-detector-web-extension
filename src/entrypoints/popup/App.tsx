@@ -84,7 +84,6 @@ export default function App() {
   const [explanationsByTechnologyId, setExplanationsByTechnologyId] =
     createSignal<PopupExplanationLookup>({});
   const [pipelineMode, setPipelineMode] = createSignal("event");
-  const [enrichmentPending, setEnrichmentPending] = createSignal(false);
   const [replayHistory, setReplayHistory] = createSignal<readonly DetectionReplayTrace[]>([]);
   const [sessionTarget, setSessionTarget] = createSignal<ObservationSessionTarget | null>(null);
   const [activeTabIdentity, setActiveTabIdentity] = createSignal<ActiveTabIdentity | null>(null);
@@ -277,7 +276,6 @@ export default function App() {
       preserveReplayState ? explanationsByTechnologyId() : update.explanationsByTechnologyId,
     );
     setPipelineMode(response.replayTrace?.completedMode ?? (preserveReplayState ? pipelineMode() : "event"));
-    setEnrichmentPending(response.enrichment?.status === "pending");
     setReplayHistory(response.replayHistory ?? (preserveReplayState ? replayHistory() : []));
     setSessionTarget(response.sessionTarget ?? sessionTarget());
 
@@ -295,7 +293,6 @@ export default function App() {
     if (update.shouldKeepLiveUpdatesActive) {
       logPopupEvent("snapshot-stream-awaiting-revisions", {
         observationMode: update.observationMode,
-        enrichmentPending: response.enrichment?.status === "pending",
       });
     }
 
@@ -329,7 +326,7 @@ export default function App() {
       });
 
       const nextLiveUpdateMode = getPopupObservationModeFromSession(response.value);
-      setLiveUpdateMode(enrichmentPending() ? "active" : nextLiveUpdateMode);
+      setLiveUpdateMode(nextLiveUpdateMode);
     } catch (error) {
       setLiveUpdateMode("unknown");
       setErrorMessage(normalizeError(error));

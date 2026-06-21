@@ -302,10 +302,6 @@ export function shouldPreservePopupReplayState(input: {
 		return false;
 	}
 
-	if (input.response.enrichment?.reason === 'progressive-detection-frame') {
-		return input.response.analysis.analyzedAt >= input.previousAnalysis.analyzedAt;
-	}
-
 	if (input.previousAnalysis.analyzedAt !== input.response.analysis.analyzedAt) {
 		return false;
 	}
@@ -432,12 +428,11 @@ export function buildPopupAnalysisUpdate(
 	const explanationsByTechnologyId = buildPopupExplanationLookup(input.response.replayTrace);
 	const observationMode = getPopupObservationModeFromAnalysis(input.response);
 	/**
-	 * Background enrichment completes outside the content observer, so the popup
-	 * keeps live updates while matcher or enrichment evidence is pending even if the DOM session has
-	 * already expired. The targeted refresh call will return the enriched cache
-	 * once the background marks that session dirty.
+	 * Storage revisions are the receive stream for continuous matching. The popup
+	 * stays live only when an observation session is active; follow-up evidence
+	 * passes publish normal background snapshots without a separate pending state.
 	 */
-	const shouldKeepLiveUpdatesActive = shouldKeepPopupLiveUpdatesActive(observationMode) || input.response.enrichment?.status === 'pending';
+	const shouldKeepLiveUpdatesActive = shouldKeepPopupLiveUpdatesActive(observationMode);
 	const notice = getPopupAnalysisNotice({
 		addedDetectionIds,
 		nextAnalysis,
@@ -465,34 +460,6 @@ function getPopupAnalysisNotice(input: {
 	response: AnalyzeActiveTabOutput;
 	source: PopupAnalysisRequestSource;
 }): PopupNotice | null {
-	if (input.response.enrichment?.reason === 'progressive-detection-frame') {
-		return {
-			variant: 'warning',
-			text: `Streaming ${input.nextAnalysis.results.length} detections for ${input.nextAnalysis.hostname}.`,
-		};
-	}
-
-	if (input.response.enrichment?.status === 'pending') {
-		return {
-			variant: 'warning',
-			text: `Detected ${input.nextAnalysis.results.length} technologies for ${input.nextAnalysis.hostname}. Continuing to match evidence as page signals arrive.`,
-		};
-	}
-
-	if (input.response.enrichment?.status === 'complete' && input.source === 'auto') {
-		return {
-			variant: 'success',
-			text: `Initial evidence pass complete for ${input.nextAnalysis.hostname}. Observation remains active for late page changes.`,
-		};
-	}
-
-	if ((input.response.enrichment?.status === 'failed' || input.response.enrichment?.status === 'timed-out') && input.source === 'auto') {
-		return {
-			variant: 'warning',
-			text: `Evidence matching paused for ${input.nextAnalysis.hostname}. Showing the latest stored detections.`,
-		};
-	}
-
 	if (input.addedDetectionIds.length) {
 		const count = input.addedDetectionIds.length;
 		return {
