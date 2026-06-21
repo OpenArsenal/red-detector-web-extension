@@ -1,9 +1,9 @@
-import { matchIndexedObservationBatch } from '../detection/observation-matcher-index';
+import { matchIndexedObservationBatch } from '../../lib/detection/observation-matcher-index';
 import type {
 	MatcherPartitionMatch,
 	MatcherWorkerResponseMessage,
 	MatcherWorkerRunMessage,
-} from './contracts';
+} from '../../lib/matcher/contracts';
 
 /** Worker global with the message contract used by the offscreen host. */
 type MatcherWorkerGlobal = typeof globalThis & {

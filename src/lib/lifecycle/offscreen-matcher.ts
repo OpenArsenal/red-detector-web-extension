@@ -12,32 +12,13 @@ import {
 } from '../matcher';
 
 /** Static WXT output path for the hidden matcher host document. */
-const MATCHER_OFFSCREEN_DOCUMENT_PATH = '/matcher-offscreen.html';
+const MATCHER_OFFSCREEN_DOCUMENT_PATH = '/offscreen.html';
 
 /** Maximum time the background waits for the offscreen host to answer one job. */
 const MATCHER_OFFSCREEN_TIMEOUT_MS = 120_000;
 
 /** Promise shared by concurrent requests creating the same offscreen document. */
 let creatingOffscreenDocument: Promise<void> | undefined;
-
-/** Narrow subset of Chrome's offscreen API needed by the matcher scheduler. */
-interface BrowserOffscreenApi {
-	/** Create a bundled offscreen document when none exists yet. */
-	createDocument(input: {
-		readonly url: string;
-		readonly reasons: readonly ['WORKERS'];
-		readonly justification: string;
-	}): Promise<void>;
-}
-
-/** Narrow subset of `runtime.getContexts()` used to avoid duplicate offscreen pages. */
-interface BrowserRuntimeContextsApi {
-	/** Return extension contexts matching the offscreen document query. */
-	getContexts(input: {
-		readonly contextTypes: readonly ['OFFSCREEN_DOCUMENT'];
-		readonly documentUrls: readonly string[];
-	}): Promise<readonly unknown[]>;
-}
 
 /**
  * Run matcher work through the offscreen host and fall back in-process if needed.
@@ -86,7 +67,7 @@ async function tryRunMatcherJobInOffscreen(
 }
 
 async function ensureMatcherOffscreenDocument(): Promise<boolean> {
-	const offscreen = getOffscreenApi();
+	const offscreen = browser.offscreen;
 	if (!offscreen) {
 		return false;
 	}
@@ -98,7 +79,7 @@ async function ensureMatcherOffscreenDocument(): Promise<boolean> {
 	if (!creatingOffscreenDocument) {
 		creatingOffscreenDocument = offscreen.createDocument({
 			url: MATCHER_OFFSCREEN_DOCUMENT_PATH,
-			reasons: ['WORKERS'],
+			reasons: [offscreen.Reason.WORKERS],
 			justification: 'Run CPU-bound technology matching in extension workers without blocking the background service worker.',
 		}).finally(() => {
 			creatingOffscreenDocument = undefined;
@@ -114,21 +95,16 @@ async function ensureMatcherOffscreenDocument(): Promise<boolean> {
 }
 
 async function hasMatcherOffscreenDocument(): Promise<boolean> {
-	const runtime = browser.runtime as typeof browser.runtime & Partial<BrowserRuntimeContextsApi>;
+	const runtime = browser.runtime;
 	if (!runtime.getContexts) {
 		return false;
 	}
 
 	const contexts = await runtime.getContexts({
-		contextTypes: ['OFFSCREEN_DOCUMENT'],
-		documentUrls: [browser.runtime.getURL(MATCHER_OFFSCREEN_DOCUMENT_PATH)],
+		contextTypes: [runtime.ContextType.OFFSCREEN_DOCUMENT],
+		documentUrls: [runtime.getURL(MATCHER_OFFSCREEN_DOCUMENT_PATH)],
 	});
 	return contexts.length > 0;
-}
-
-function getOffscreenApi(): BrowserOffscreenApi | undefined {
-	const candidate = browser as typeof browser & { readonly offscreen?: BrowserOffscreenApi };
-	return candidate.offscreen;
 }
 
 async function runMatcherJobInBackgroundFallback(

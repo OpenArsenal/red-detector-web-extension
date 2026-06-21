@@ -10,8 +10,8 @@ import {
 	type MatcherWorkerResponseMessage,
 	type MatcherWorkerRunMessage,
 	type RunMatcherJobRequest,
-} from './contracts';
-import { createMatcherPartitionTasks, createMatcherPipelineResult } from './partition';
+} from '../../lib/matcher/contracts';
+import { createMatcherPartitionTasks, createMatcherPipelineResult } from '../../lib/matcher/partition';
 
 /** Default worker count used before benchmark data justifies a larger pool. */
 const DEFAULT_WORKER_COUNT = 2;
