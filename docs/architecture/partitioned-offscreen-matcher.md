@@ -61,3 +61,9 @@ The worker script is one static module loaded with `new Worker(new URL('./matche
 The current implementation returns a bootstrap result and a later complete cached result. It does not yet stream every partition as a visible popup revision. Offscreen emits partition progress messages to the background and updates job records, so the next step is to merge safe partials into user-visible stored snapshots instead of only using progress for diagnostics.
 
 The next hardening pass should add explicit cancellation for manual refresh and newer same-session jobs, more lifecycle tests for active-tab switches, and browser-level validation in both WXT dev and production builds.
+
+## Parity and observation recovery
+
+The bootstrap response is only a first paint. It must not be the last detector result for a normal active-tab session. Many accurate detections come from script URLs, resource URLs, request URLs, full HTML, text, and source-content observations, so the background schedules a complete matcher pass as soon as the full compiled registry is available. That complete pass runs before deeper enrichment collection waits on same-origin source fetches or content-script RPC, because matcher parity should not depend on whether enrichment collection succeeds.
+
+Cached analyses also reopen observation when the popup asks for live watching. A cache hit can paint immediately, but the content script still needs a fresh observation session so late script, link, meta, and resource facts can queue storage revisions. Observation refreshes use the complete compiled registry because late facts often arrive as asset URL observations, and those are intentionally outside the bootstrap partition set.
