@@ -25,6 +25,9 @@ const queuedJobs: QueuedMatcherJob[] = [];
 /** Whether the offscreen host is currently feeding partitions to the pool. */
 let matcherQueueRunning = false;
 
+/** Shared worker pool kept hot for the lifetime of the offscreen document. */
+let sharedMatcherWorkerPool: MatcherWorkerPool | undefined;
+
 /** Matcher job queued with the promise callbacks returned to the background. */
 interface QueuedMatcherJob {
 	/** Request sent by the background. */
@@ -229,38 +232,46 @@ async function runMatcherJob(request: RunMatcherJobRequest) {
 		batch: request.batch,
 		options: request.options,
 	});
-	const workerCount = Math.min(
-		request.maxWorkerCount ?? DEFAULT_WORKER_COUNT,
-		Math.max(1, tasks.length),
-	);
-	const pool = new MatcherWorkerPool(workerCount);
-
-	try {
-		const partitions = await pool.run(request, tasks);
-		if (canceledJobs.has(request.job.jobId)) {
-			throw new Error('Matcher job was canceled before completion.');
-		}
-
-		const result = createMatcherPipelineResult({
-			batch: request.batch,
-			registry: request.registry,
-			compiledRegistryArtifact: { relationshipGraph: request.relationshipGraph },
-			partitions,
-			analyzedAt: request.analyzedAt,
-			source: request.source,
-		});
-
-		return {
-			job: request.job,
-			mode: request.mode,
-			result,
-			partitions,
-			executor: 'offscreen-worker-pool' as const,
-			completedAt: Date.now(),
-		};
-	} finally {
-		pool.dispose();
+	const pool = getSharedMatcherWorkerPool(request);
+	const partitions = await pool.run(request, tasks);
+	if (canceledJobs.has(request.job.jobId)) {
+		throw new Error('Matcher job was canceled before completion.');
 	}
+
+	const result = createMatcherPipelineResult({
+		batch: request.batch,
+		registry: request.registry,
+		compiledRegistryArtifact: { relationshipGraph: request.relationshipGraph },
+		partitions,
+		analyzedAt: request.analyzedAt,
+		source: request.source,
+	});
+
+	return {
+		job: request.job,
+		mode: request.mode,
+		result,
+		partitions,
+		executor: 'offscreen-worker-pool' as const,
+		completedAt: Date.now(),
+	};
+}
+
+/**
+ * Keep workers and their shard caches alive across matcher jobs.
+ *
+ * Worker startup and registry-shard hydration were previously paid for every
+ * matcher job, which made follow-up evidence passes behave like cold full runs.
+ * A shared pool keeps the offscreen document as the durable CPU executor while
+ * the background remains the owner of tab lifecycle and storage writes.
+ */
+function getSharedMatcherWorkerPool(request: RunMatcherJobRequest): MatcherWorkerPool {
+	if (sharedMatcherWorkerPool) {
+		return sharedMatcherWorkerPool;
+	}
+
+	sharedMatcherWorkerPool = new MatcherWorkerPool(request.maxWorkerCount ?? DEFAULT_WORKER_COUNT);
+	return sharedMatcherWorkerPool;
 }
 
 function emitPartitionProgress(

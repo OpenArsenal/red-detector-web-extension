@@ -60,8 +60,10 @@ async function tryRunMatcherJobInOffscreen(
 		if (response.ok && 'value' in response) {
 			return response.value;
 		}
+		console.warn('[red-detector] offscreen matcher returned no job result', response);
 		return null;
-	} catch {
+	} catch (error) {
+		console.warn('[red-detector] offscreen matcher failed; using background fallback', error);
 		return null;
 	}
 }
