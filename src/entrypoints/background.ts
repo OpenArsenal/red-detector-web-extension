@@ -681,18 +681,29 @@ async function analyzeObservationBatchRefresh(
 		return batchResponse;
 	}
 
-	const response = await analyzeAndPersistObservationBatch(tab, batchResponse.value, compiledRegistryArtifact, 'bypassed', flush.session, {
-		refreshKind: baseBatch ? 'incremental' : 'recovered',
-		matcherMode: 'complete',
-		queuedCount: flush.stats.queuedCount,
-		lateObservationCount: lateBatch.observations.length,
-	}, undefined, timingTraceId);
+	eventObservationBatchByTab.set(tab.id, batchResponse.value);
+	enqueueAnalysisPersistence({
+		tab,
+		batch: batchResponse.value,
+		compiledRegistryArtifact,
+		cacheStatus: 'bypassed',
+		session: flush.session,
+		details: {
+			refreshKind: baseBatch ? 'incremental' : 'recovered',
+			matcherMode: 'complete',
+			queuedCount: flush.stats.queuedCount,
+			lateObservationCount: lateBatch.observations.length,
+		},
+		timingTraceId,
+	});
+	const response = await createQueuedAnalysisOutput(tab, 'bypassed', flush.session, timingTraceId);
 	endTimingSpan(totalSpan, {
-		ok: response.ok,
-		resultCount: response.ok ? response.value.analysis.results.length : 0,
+		ok: true,
+		queuedMatcher: true,
+		resultCount: response.analysis.results.length,
 		lateObservationCount: lateBatch.observations.length,
 	});
-	return response;
+	return ok(response);
 }
 
 async function recoverObservationBatchForRefresh(
