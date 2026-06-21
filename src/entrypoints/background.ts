@@ -1150,6 +1150,12 @@ async function analyzeAndPersistObservationBatch(
 	});
 	await updateMatcherJobRecord(matcherJob.jobId, { status: 'dispatching' });
 	let matcherResult: Awaited<ReturnType<typeof runMatcherJobWithOffscreenFallback>>;
+	logBackgroundEvent('matcher-job-dispatch', {
+		...summarizeTab(tab),
+		jobId: matcherJob.jobId,
+		mode: matcherMode,
+		observationCount: batch.observations.length,
+	});
 	try {
 		matcherResult = await timeAsyncSpan(
 			'pipeline.run-partitioned-matcher-job',
@@ -1173,6 +1179,21 @@ async function analyzeAndPersistObservationBatch(
 	} finally {
 		activeMatcherProgressByJob.delete(matcherJob.jobId);
 	}
+	logBackgroundEvent('matcher-job-complete', {
+		...summarizeTab(tab),
+		jobId: matcherJob.jobId,
+		executor: matcherResult.executor,
+		partitionCount: matcherResult.partitions.length,
+		resultCount: matcherResult.result.analysis.results.length,
+	});
+	if (matcherResult.executor === 'background-fallback') {
+		logBackgroundEvent('matcher-background-fallback', {
+			...summarizeTab(tab),
+			jobId: matcherJob.jobId,
+			partitionCount: matcherResult.partitions.length,
+		});
+	}
+
 	const newestJobId = latestMatcherJobByTab.get(tab.id);
 	if (newestJobId && newestJobId !== matcherJob.jobId) {
 		await updateMatcherJobRecord(matcherJob.jobId, { status: 'stale', reason: 'newer-job' });
@@ -1822,6 +1843,15 @@ async function handleMatcherPartitionProgressUpdate(
 		status: 'streaming',
 		partitionCount: message.partitionCount,
 		completedPartitionCount: message.completedPartitionCount,
+	});
+	logBackgroundEvent('matcher-partition-complete', {
+		jobId,
+		kind: message.partition.kind,
+		partitionId: message.partition.partitionId,
+		observationCount: message.partition.observationCount,
+		matchCount: message.partition.matches.length,
+		completedPartitionCount: message.completedPartitionCount,
+		partitionCount: message.partitionCount,
 	});
 
 	const context = activeMatcherProgressByJob.get(jobId);
