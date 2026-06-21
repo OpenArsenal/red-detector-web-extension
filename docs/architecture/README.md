@@ -11,9 +11,7 @@ Start with the overview when you need the runtime map, then use the workflow or 
 | [`popup-composition.md`](popup-composition.md) | You are changing the Solid popup shell, named regions, status feedback, or explanation/replay placement. |
 | [`content-page-session-runtime.md`](content-page-session-runtime.md) | You are changing content-owned page observation, snapshot targets, or popup-visible lifecycle revisions. |
 | [`background-coordinator-runtime.md`](background-coordinator-runtime.md) | You are changing background service-worker lifecycle listeners, tab cleanup, or disposable coordinator state. |
-| [`durable-enrichment-stream.md`](durable-enrichment-stream.md) | You are changing bootstrap detection, progressive detector frames, enrichment terminal states, or first-result timing. |
+| [`kind-sharded-incremental-matcher.md`](kind-sharded-incremental-matcher.md) | You are changing continuous evidence passes, kind-sharded matcher workers, or popup snapshot revisions. |
 | [`../migration/status.md`](../migration/status.md) | You need the current migration status matrix and remaining completion notes. |
 
 Migration phase notes remain under [`../migration/`](../migration/). Older notes document how the event path was introduced; the overview records the current shape after the legacy extension path was removed from the background runtime.
-
-- [Kind-sharded incremental matcher runtime](./kind-sharded-incremental-matcher.md)
