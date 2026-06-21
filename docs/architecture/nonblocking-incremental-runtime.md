@@ -1,0 +1,52 @@
+# Non-blocking incremental matcher runtime
+
+The active-tab command now starts the analysis session and returns before CPU-bound matching completes. The popup should treat storage-backed detector snapshots as the receive stream: cached output paints first, worker partition revisions advance the visible result, and the final matcher result replaces the cache when all partitions finish.
+
+This fixes the older staged shape where the popup waited for one large matcher job, then started later evidence work. In that design, collection took milliseconds but the matcher could occupy the background request for tens of seconds. The content observer could expire while the first matcher job was still running, and popup reopen behavior could race between content lifecycle snapshots and detector snapshots.
+
+```text
+popup opens
+  -> background reads cache or returns a pending response
+  -> content/background collectors gather all planned evidence surfaces
+  -> matcher job is queued without blocking the popup RPC
+  -> offscreen workers process small kind chunks
+  -> each completed chunk publishes a detector snapshot revision
+  -> final result updates analysis cache and replay storage
+```
+
+The registry still plans collection from the complete compiled artifact. Kind shards are used only by workers so each partition can hydrate the smallest matcher index needed for its observation kind. This keeps the product truth surface complete while reducing per-worker matching cost.
+
+## Snapshot precedence
+
+Detector snapshots are the startup source of truth. Content-owned snapshots describe the page-local observation lifecycle and can preserve an exact-session analysis, but they must not replace a background/cache detector result at the origin-latest key just because an observer event wrote a newer timestamp. Origin recovery therefore ranks snapshots as:
+
+```text
+background detector snapshot
+  > cache detector snapshot
+  > content snapshot with detections
+  > content lifecycle placeholder
+```
+
+This keeps popup reopen behavior stable. Opening and closing the popup should show the last real detector output immediately, then subscribe to newer revisions for the active tab.
+
+## Worker progress
+
+Large observation kinds are chunked before they enter the offscreen pool. A single Vercel-style `resourceUrl` or `requestUrl` partition can otherwise block visible progress until the entire kind completes. Chunking turns high-fan-out surfaces into multiple progress events while preserving deterministic merge order through original observation indexes.
+
+The offscreen document keeps a shared worker pool alive for its lifetime. Worker-local shard caches stay warm across initial analysis, refreshes, and follow-up observation jobs. Background logs must show whether each job completed through `offscreen-worker-pool` or fell back to `background-fallback`.
+
+## Trace markers
+
+A healthy browser trace should show these events:
+
+```text
+analysis-requested
+analysis-fresh-start
+collect-observation-batch-success
+matcher-job-dispatch
+matcher-partition-complete ...
+matcher-partition-complete ...
+analysis-queued-persist-complete
+```
+
+A trace that shows `matcher-background-fallback` means matching is running in the service worker again. That is a correctness-preserving recovery path, but it is not the intended performance path and should be treated as a bug to diagnose.
