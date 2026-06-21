@@ -134,27 +134,40 @@ class MatcherWorkerSlot {
 	}
 }
 
-browser.runtime.onMessage.addListener((message: unknown): Promise<MatcherOffscreenResponse> | undefined => {
-	if (!isMatcherOffscreenRequest(message)) {
-		return undefined;
-	}
+if (canRegisterMatcherOffscreenHost()) {
+	browser.runtime.onMessage.addListener((message: unknown): Promise<MatcherOffscreenResponse> | undefined => {
+		if (!isMatcherOffscreenRequest(message)) {
+			return undefined;
+		}
 
-	if (message.type === 'matcher.ping') {
-		return Promise.resolve({ ok: true, ready: true });
-	}
-	if (message.type === 'matcher.cancel-job') {
-		canceledJobs.add(message.jobId);
-		cancelQueuedMatcherJob(message.jobId);
-		return Promise.resolve({ ok: true, canceled: true, jobId: message.jobId });
-	}
+		if (message.type === 'matcher.ping') {
+			return Promise.resolve({ ok: true, ready: true });
+		}
+		if (message.type === 'matcher.cancel-job') {
+			canceledJobs.add(message.jobId);
+			cancelQueuedMatcherJob(message.jobId);
+			return Promise.resolve({ ok: true, canceled: true, jobId: message.jobId });
+		}
 
-	return enqueueMatcherJob(message.request)
-		.then((value): MatcherOffscreenResponse => ({ ok: true, value }))
-		.catch((error): MatcherOffscreenResponse => ({
-			ok: false,
-			message: error instanceof Error ? error.message : 'Offscreen matcher host failed.',
-		}));
-});
+		return enqueueMatcherJob(message.request)
+			.then((value): MatcherOffscreenResponse => ({ ok: true, value }))
+			.catch((error): MatcherOffscreenResponse => ({
+				ok: false,
+				message: error instanceof Error ? error.message : 'Offscreen matcher host failed.',
+			}));
+	});
+}
+
+/**
+ * Register runtime listeners only inside the bundled offscreen document.
+ *
+ * WXT can import HTML module dependencies during prepare and production build in
+ * a Node-like context. Avoiding listener registration there keeps build steps
+ * side-effect safe while preserving the real offscreen runtime path in Chrome.
+ */
+function canRegisterMatcherOffscreenHost(): boolean {
+	return typeof globalThis.document !== 'undefined' && typeof globalThis.Worker !== 'undefined';
+}
 
 function enqueueMatcherJob(request: RunMatcherJobRequest): Promise<Awaited<ReturnType<typeof runMatcherJob>>> {
 	return new Promise((resolve, reject) => {
