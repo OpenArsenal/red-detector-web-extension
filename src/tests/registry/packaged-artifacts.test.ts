@@ -6,8 +6,11 @@ import {
 	PACKAGED_REGISTRY_ASSET_PATHS,
 	PACKAGED_REGISTRY_ASSET_SCHEMA_VERSION,
 	createBootstrapTechnologyRegistry,
+	createObservationKindTechnologyRegistry,
+	getPackagedRegistryShardAssetPath,
 	hydratePackagedTechnologyRegistry,
 	isPackagedTechnologyRegistryAsset,
+	isPackagedTechnologyRegistryShardAsset,
 	renderPackagedRegistryJson,
 } from '../../lib/registry/packaged-artifacts';
 import { createPackagedTechnologyRegistryProvider } from '../../lib/registry/packaged-provider';
@@ -29,7 +32,11 @@ function makeRegistry(): readonly TechnologyDefinition[] {
 			name: 'Enrichment Only',
 			website: 'https://enrichment-only.example',
 			categories: ['developer-tooling'],
-			rules: [{ kind: 'scriptContent', pattern: /enrichmentOnly\(/, confidence: 90 }],
+			rules: [
+				{ kind: 'scriptContent', pattern: /enrichmentOnly\(/, confidence: 90 },
+				{ kind: 'html', pattern: /enrichment-only-root/, confidence: 80 },
+				{ kind: 'responseHeader', key: 'x-powered-by', valuePattern: /Example/, confidence: 70 },
+			],
 		},
 	];
 }
@@ -40,6 +47,20 @@ function makeRegistryAsset(registry: readonly TechnologyDefinition[], kind: 'boo
 		kind,
 		technologies: registry,
 		ruleCount: registry.reduce((count, technology) => count + technology.rules.length, 0),
+		generatedAt: 1,
+	};
+}
+
+function makeShardAsset(registry: readonly TechnologyDefinition[], observationKind: 'meta' | 'scriptSrc' | 'htmlMatch' | 'header') {
+	const shard = createObservationKindTechnologyRegistry(registry, observationKind);
+	return {
+		schemaVersion: PACKAGED_REGISTRY_ASSET_SCHEMA_VERSION,
+		kind: 'kind-shard',
+		observationKind,
+		technologies: shard,
+		ruleCount: shard.reduce((count, technology) => count + technology.rules.length, 0),
+		technologyCount: shard.length,
+		priority: 1,
 		generatedAt: 1,
 	};
 }
@@ -65,9 +86,27 @@ describe('packaged registry artifacts', () => {
 		expect(bootstrap[0]?.rules.map((rule) => rule.kind)).toEqual(['meta']);
 	});
 
+	it('creates observation-kind shards that preserve detector order with narrowed rules', () => {
+		const registry = makeRegistry();
+		const scriptShard = createObservationKindTechnologyRegistry(registry, 'scriptSrc');
+		const htmlProbeShard = createObservationKindTechnologyRegistry(registry, 'htmlMatch');
+		const headerShard = createObservationKindTechnologyRegistry(registry, 'header');
+
+		expect(scriptShard.map((technology) => technology.id)).toEqual(['bootstrap-visible']);
+		expect(scriptShard[0]?.rules.map((rule) => rule.kind)).toEqual(['scriptSrc']);
+		expect(scriptShard[0]?.rules[0]?.sourceRuleIndex).toBe(1);
+		expect(htmlProbeShard.map((technology) => technology.id)).toEqual(['enrichment-only']);
+		expect(htmlProbeShard[0]?.rules.map((rule) => rule.kind)).toEqual(['html']);
+		expect(htmlProbeShard[0]?.rules[0]?.sourceRuleIndex).toBe(1);
+		expect(headerShard.map((technology) => technology.id)).toEqual(['enrichment-only']);
+		expect(headerShard[0]?.rules.map((rule) => rule.kind)).toEqual(['responseHeader']);
+		expect(headerShard[0]?.rules[0]?.sourceRuleIndex).toBe(2);
+	});
+
 	it('keeps packaged registry paths relative to the extension root', () => {
 		expect(PACKAGED_REGISTRY_ASSET_PATHS.enrichment).toBe('red-detector-registry/registry.enrichment.json');
 		expect(PACKAGED_REGISTRY_ASSET_PATHS.enrichment.startsWith('/')).toBe(false);
+		expect(getPackagedRegistryShardAssetPath('scriptSrc')).toBe('red-detector-registry/registry.kind.scriptSrc.json');
 	});
 
 	it('calls the default worker fetch through the global receiver', async () => {
@@ -98,8 +137,6 @@ describe('packaged registry artifacts', () => {
 		}
 	});
 
-
-
 	it('loads bootstrap and enrichment registries through separate packaged assets', async () => {
 		const registry = makeRegistry();
 		const bootstrap = createBootstrapTechnologyRegistry(registry);
@@ -122,6 +159,31 @@ describe('packaged registry artifacts', () => {
 		expect(fetchAsset).toHaveBeenCalledTimes(2);
 		expect(firstPass.technologies.map((technology) => technology.id)).toEqual(['bootstrap-visible']);
 		expect(enrichment.technologies.map((technology) => technology.id)).toEqual(['bootstrap-visible', 'enrichment-only']);
+	});
+
+	it('loads observation-kind shard JSON once and compiles a narrowed matcher index', async () => {
+		const registry = makeRegistry();
+		const fetchAsset = vi.fn(async (url: string) => ({
+			ok: true,
+			async json() {
+				if (url.includes('registry.kind.scriptSrc')) {
+					return JSON.parse(renderPackagedRegistryJson(makeShardAsset(registry, 'scriptSrc')));
+				}
+				return JSON.parse(renderPackagedRegistryJson(makeRegistryAsset(registry, 'enrichment')));
+			},
+		}));
+		const provider = createPackagedTechnologyRegistryProvider({
+			resolveUrl: (path) => `extension://${path}`,
+			fetchAsset,
+		});
+
+		const first = await provider.getCompiledObservationKindRegistry('scriptSrc');
+		const second = await provider.getCompiledObservationKindRegistry('scriptSrc');
+
+		expect(fetchAsset).toHaveBeenCalledOnce();
+		expect(first).toBe(second);
+		expect(first.technologies.map((technology) => technology.id)).toEqual(['bootstrap-visible']);
+		expect(first.matcherIndex.ruleCount).toBe(1);
 	});
 
 	it('loads packaged enrichment JSON once and preserves detector order', async () => {

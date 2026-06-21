@@ -164,8 +164,9 @@ export function createObservationMatcherIndex(
 
 	for (const technology of registry) {
 		for (const [ruleIndex, rule] of technology.rules.entries()) {
-			const indexedRule: IndexedObservationRule = { technology, rule, ruleIndex, sequence };
-			for (const route of getRuleRoutes(technology.id, ruleIndex, rule)) {
+			const sourceRuleIndex = getRuleSourceIndex(rule, ruleIndex);
+			const indexedRule: IndexedObservationRule = { technology, rule, ruleIndex: sourceRuleIndex, sequence };
+			for (const route of getRuleRoutes(technology.id, sourceRuleIndex, rule)) {
 				addIndexedRule({ fallbackRules, keyedRules, literalRules, route, indexedRule });
 			}
 			sequence += 1;
@@ -558,6 +559,12 @@ function canonicalHeaderKey(key: string): string {
 }
 
 /** Create the bounded HTML probe key used by the existing observation matcher. */
+
+/** Prefer a generated shard's full-registry rule index when one is present. */
+function getRuleSourceIndex(rule: DetectionRule, fallbackRuleIndex: number): number {
+	return typeof rule.sourceRuleIndex === 'number' ? rule.sourceRuleIndex : fallbackRuleIndex;
+}
+
 function htmlProbeKey(technologyId: string, ruleIndex: number): string {
 	return `${technologyId}:${ruleIndex}`;
 }

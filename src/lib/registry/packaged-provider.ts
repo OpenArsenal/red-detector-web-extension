@@ -3,12 +3,17 @@ import { browser } from 'wxt/browser';
 import { compileTechnologyRegistry, type CompiledTechnologyRegistryArtifact } from './compiler';
 import {
 	PACKAGED_REGISTRY_ASSET_PATHS,
+	getPackagedRegistryShardAssetPath,
 	hydratePackagedTechnologyRegistry,
 	isPackagedTechnologyRegistryAsset,
+	isPackagedTechnologyRegistryShardAsset,
+	normalizePackagedRegistryObservationKind,
+	type PackagedRegistryObservationKind,
 	type PackagedTechnologyRegistryAsset,
 } from './packaged-artifacts';
 import type { TechnologyRegistryProvider } from '../detection/registry-provider';
 import type { TechnologyDefinition } from '../detection/types';
+import type { NormalizedObservationKind } from '../observations';
 
 /** Fetch implementation used by tests and non-browser harnesses. */
 export type RegistryAssetFetch = (url: string) => Promise<{ readonly ok: boolean; json(): Promise<unknown> }>;
@@ -32,14 +37,16 @@ interface PackagedRegistryTierCache {
 	artifactPromise?: Promise<CompiledTechnologyRegistryArtifact>;
 }
 
+/** Cached runtime state for observation-kind matcher shards. */
+type PackagedRegistryShardCache = Partial<Record<PackagedRegistryObservationKind, PackagedRegistryTierCache>>;
+
 /**
  * Create a registry provider backed by generated JSON assets.
  *
- * The large enrichment payload is fetched only when deep analysis needs it.
- * Background startup can register listeners and answer cache-only requests
- * without Vite pulling the generated registry module into the service-worker
- * entry chunk. The bootstrap payload stays separate so the first visible result
- * can use cheap page-local rules before the full registry hydrates.
+ * The full payload is fetched for collection planning, graph refinement, and
+ * final emission. Dedicated matcher workers fetch observation-kind shards on
+ * demand, so a `scriptSrc` partition does not clone DOM, HTML, header, and text
+ * rules through the worker message channel before it can begin matching.
  */
 export function createPackagedTechnologyRegistryProvider(
 	input: PackagedTechnologyRegistryProviderInput = {},
@@ -50,6 +57,7 @@ export function createPackagedTechnologyRegistryProvider(
 	const fetchAsset = input.fetchAsset ?? fetchRegistryAsset;
 	const bootstrap = createRegistryTierCache();
 	const enrichment = createRegistryTierCache();
+	const shards: PackagedRegistryShardCache = Object.create(null) as PackagedRegistryShardCache;
 
 	const loadRegistry = (kind: PackagedExecutableRegistryKind, cache: PackagedRegistryTierCache) => {
 		cache.registryPromise ??= loadPackagedRegistry({ kind, resolveUrl, fetchAsset });
@@ -62,12 +70,26 @@ export function createPackagedTechnologyRegistryProvider(
 		}))();
 		return cache.artifactPromise;
 	};
+	const getShardCache = (kind: NormalizedObservationKind) => {
+		const observationKind = normalizePackagedRegistryObservationKind(kind);
+		return shards[observationKind] ?? (shards[observationKind] = createRegistryTierCache());
+	};
 
 	return {
 		listTechnologies: () => loadRegistry('enrichment', enrichment),
 		listBootstrapTechnologies: () => loadRegistry('bootstrap', bootstrap),
 		getCompiledRegistry: () => compileRegistry('enrichment', enrichment),
 		getCompiledBootstrapRegistry: () => compileRegistry('bootstrap', bootstrap),
+		getCompiledObservationKindRegistry(kind) {
+			const observationKind = normalizePackagedRegistryObservationKind(kind);
+			const cache = getShardCache(kind);
+			cache.registryPromise ??= loadPackagedRegistryShard({ observationKind, resolveUrl, fetchAsset });
+			cache.artifactPromise ??= (async () => compileTechnologyRegistry({
+				technologies: await cache.registryPromise!,
+				sourceKind: 'typescript-definition',
+			}))();
+			return cache.artifactPromise;
+		},
 	};
 }
 
@@ -102,6 +124,26 @@ async function loadPackagedRegistry(input: {
 	const parsed = await response.json();
 	if (!isPackagedTechnologyRegistryAsset(parsed, input.kind)) {
 		throw new Error(`Packaged ${input.kind} registry asset did not match the expected schema.`);
+	}
+
+	return hydratePackagedTechnologyRegistry(parsed);
+}
+
+async function loadPackagedRegistryShard(input: {
+	readonly observationKind: PackagedRegistryObservationKind;
+	readonly resolveUrl: (path: string) => string;
+	readonly fetchAsset: RegistryAssetFetch;
+}): Promise<readonly TechnologyDefinition[]> {
+	const path = getPackagedRegistryShardAssetPath(input.observationKind);
+	const url = input.resolveUrl(path);
+	const response = await input.fetchAsset(url);
+	if (!response.ok) {
+		throw new Error(`Unable to load packaged ${input.observationKind} matcher shard from ${url}.`);
+	}
+
+	const parsed = await response.json();
+	if (!isPackagedTechnologyRegistryShardAsset(parsed, input.observationKind)) {
+		throw new Error(`Packaged ${input.observationKind} matcher shard did not match the expected schema.`);
 	}
 
 	return hydratePackagedTechnologyRegistry(parsed);

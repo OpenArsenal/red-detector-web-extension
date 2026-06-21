@@ -27,5 +27,9 @@ export function createPrecompiledTechnologyRegistryProvider(
 		async getCompiledBootstrapRegistry() {
 			return artifact;
 		},
+
+		async getCompiledObservationKindRegistry() {
+			return artifact;
+		},
 	};
 }

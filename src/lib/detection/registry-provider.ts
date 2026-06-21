@@ -1,5 +1,6 @@
 import { compileTechnologyRegistry, createPackagedTechnologyRegistryProvider, type CompiledTechnologyRegistryArtifact } from '../registry';
 import type { TechnologyDefinition } from './types';
+import type { NormalizedObservationKind } from '../observations';
 
 /**
  * Read-only source of technology definitions for detector calls and collection planning.
@@ -20,8 +21,10 @@ export interface TechnologyRegistryProvider {
 	 * and collection plans during every active-tab analysis.
 	 */
 	getCompiledRegistry(): Promise<CompiledTechnologyRegistryArtifact>;
-	/** Return the compiled bootstrap artifact for the first visible detector pass. */
+	/** Return the compiled bootstrap artifact kept for compatibility and benchmark baselines. */
 	getCompiledBootstrapRegistry(): Promise<CompiledTechnologyRegistryArtifact>;
+	/** Return a compiled matcher shard for one normalized observation kind. */
+	getCompiledObservationKindRegistry(kind: NormalizedObservationKind): Promise<CompiledTechnologyRegistryArtifact>;
 }
 
 /**
@@ -53,6 +56,14 @@ export function createStaticTechnologyRegistryProvider(
 		},
 
 		async getCompiledBootstrapRegistry() {
+			compiledRegistry ??= compileTechnologyRegistry({
+				technologies: registry,
+				sourceKind: 'typescript-definition',
+			});
+			return compiledRegistry;
+		},
+
+		async getCompiledObservationKindRegistry(_kind) {
 			compiledRegistry ??= compileTechnologyRegistry({
 				technologies: registry,
 				sourceKind: 'typescript-definition',

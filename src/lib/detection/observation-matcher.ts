@@ -81,7 +81,7 @@ export function matchObservationBatch(
 				const match = matchObservationRule({
 					technology,
 					rule,
-					ruleIndex,
+					ruleIndex: getRuleSourceIndex(rule, ruleIndex),
 					observation,
 					options: input.options,
 				});
@@ -382,6 +382,12 @@ function linkSignalFromObservation(observation: NormalizedObservation): LinkSign
 
 function optionalString(value: ObservationValue | undefined): string | undefined {
 	return value === undefined ? undefined : String(value);
+}
+
+
+/** Prefer a generated shard's full-registry rule index when one is present. */
+function getRuleSourceIndex(rule: DetectionRule, fallbackRuleIndex: number): number {
+	return typeof rule.sourceRuleIndex === 'number' ? rule.sourceRuleIndex : fallbackRuleIndex;
 }
 
 function htmlProbeKey(technologyId: string, ruleIndex: number): string {

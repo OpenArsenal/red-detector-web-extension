@@ -119,6 +119,8 @@ type DetectionRuleBase = {
 	confidence?: number;
 	description?: string;
 	version?: VersionExtraction;
+	/** Original rule index preserved when generated matcher shards filter a technology's rules. */
+	sourceRuleIndex?: number;
 };
 
 export type PatternDetectionRule = DetectionRuleBase & {

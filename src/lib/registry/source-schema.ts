@@ -60,6 +60,7 @@ const ruleBaseShape = {
 	confidence: z.number().min(0).max(100).optional(),
 	description: z.string().min(1).optional(),
 	version: z.lazy(() => versionExtractionSchema).optional(),
+	sourceRuleIndex: z.number().int().min(0).optional(),
 };
 
 /** Version extraction rules supported by the current detector. */
