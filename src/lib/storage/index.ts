@@ -287,3 +287,9 @@ export {
 	removeDetectionSessionIndex,
 	saveDetectionSessionSnapshot,
 } from './detection-snapshots';
+
+export {
+	getMatcherJobRecord,
+	saveMatcherJobRecord,
+	updateMatcherJobRecord,
+} from './matcher-jobs';

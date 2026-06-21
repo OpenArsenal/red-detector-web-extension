@@ -12,6 +12,9 @@ export const DETECTION_ORIGIN_SNAPSHOT_PREFIX = 'rd:origin:';
 /** Prefix used for tab-owned detection snapshot index records. */
 export const DETECTION_SESSION_INDEX_PREFIX = 'rd:session-index:';
 
+/** Prefix used for durable matcher job lifecycle records. */
+export const MATCHER_JOB_CACHE_PREFIX = 'matcher-job:';
+
 /** Prefix used for every origin-level analysis cache record. */
 export const ANALYSIS_CACHE_PREFIX = 'analysis:';
 
@@ -59,6 +62,11 @@ export function getReplayTraceCacheKey(url: string): string {
 /** Build the storage key for bounded replay history on one origin. */
 export function getReplayTraceHistoryCacheKey(url: string): string {
 	return `${REPLAY_TRACE_HISTORY_CACHE_PREFIX}${getOrigin(url)}`;
+}
+
+/** Build the storage key for one matcher job lifecycle record. */
+export function getMatcherJobCacheKey(jobId: string): string {
+	return `${MATCHER_JOB_CACHE_PREFIX}${jobId}`;
 }
 
 /**
