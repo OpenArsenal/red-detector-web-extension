@@ -9,7 +9,6 @@ import { DETECTION_SESSION_SNAPSHOT_SCHEMA_VERSION } from '../lib/contracts/dete
 import { configureRedDetectorLogging, getRedDetectorLogger } from '../lib/diagnostics/logging';
 import {
 	createDetectionReplayTrace,
-	runObservationBatchPipeline,
 } from '../lib/pipeline';
 import type { DetectionPipelineStage, DetectionReplayTrace } from '../lib/pipeline';
 import {
@@ -31,7 +30,7 @@ import type {
 	DetectionSessionSnapshotSource,
 	DetectionSessionStatus,
 } from '../lib/contracts/detection-session';
-import type { DetectionKind, DetectionRunOptions, SiteAnalysis } from '../lib/detection/types';
+import type { SiteAnalysis } from '../lib/detection/types';
 import type {
 	ActiveTabIdentity,
 	AnalysisEnrichmentState,
@@ -61,11 +60,21 @@ import {
 	createDetectionStreamFrameSizes,
 } from '../lib/lifecycle/detection-stream';
 import {
+	runMatcherJobWithOffscreenFallback,
+} from '../lib/lifecycle/offscreen-matcher';
+import {
 	EXTENSION_OBSERVATION_POLICY,
 	getObservationRefreshBlockReason,
 	shouldStartObservationForAnalysis,
 } from '../lib/lifecycle/observation';
 import { errorResponse, ok, type AppResult } from '../lib/shared/result';
+import {
+	MATCHER_OFFSCREEN_CHANNEL,
+	hasDeferredMatcherPartitions,
+	type MatcherJobMode,
+	type MatcherJobRecord,
+	type MatcherPartitionProgressMessage,
+} from '../lib/matcher';
 import { getOrigin, isSameDocumentUrl } from '../lib/shared/url';
 import {
 	STORAGE_LIMITS,
@@ -80,7 +89,9 @@ import {
 	getStatus,
 	saveAnalysis,
 	saveDetectionSessionSnapshot,
+	saveMatcherJobRecord,
 	saveReplayTrace,
+	updateMatcherJobRecord,
 } from '../lib/storage';
 
 /** Active tab shape after unsupported URLs and missing ids have been rejected. */
@@ -101,22 +112,6 @@ configureRedDetectorLogging('background');
 const backgroundLogger = getRedDetectorLogger('background');
 const CONTENT_SCRIPT_FILE = '/content-scripts/content.js';
 const CONTENT_SCRIPT_PING_TIMEOUT_MS = 750;
-
-/**
- * URL-like resource surfaces are deferred out of the user-visible first pass.
- *
- * Resource, request, script, and stylesheet URL rules have high fan-out because
- * modern pages expose many loaded assets and each URL-like observation can meet
- * broad pattern buckets. Link, meta, DOM, storage, cookie, page-global, and page
- * URL evidence still produce immediate detections, while asset URL matching runs
- * during enrichment after the popup can render.
- */
-const INITIAL_PIPELINE_DISABLED_KINDS = Object.freeze([
-	'resourceUrl',
-	'requestUrl',
-	'scriptSrc',
-	'stylesheetHref',
-] satisfies DetectionKind[]);
 
 /** Background enrichment is a follow-up pass and must not leave the popup pending forever. */
 const ENRICHMENT_TIMEOUT_MS = 10_000;
@@ -150,6 +145,9 @@ const eventObservationBatchByTab = new Map<number, ObservationBatch>();
  */
 const completedEnrichmentBySession = new Map<string, { readonly tabId: number; readonly completedAt: number }>();
 
+/** Latest matcher job created for each tab while the background is alive. */
+const latestMatcherJobByTab = new Map<number, string>();
+
 /**
  * Drop volatile state that only makes sense while a tab can still answer RPC.
  *
@@ -161,6 +159,7 @@ const completedEnrichmentBySession = new Map<string, { readonly tabId: number; r
 function forgetTabRuntimeState(tabId: number): void {
 	contentScriptInjectionByTab.delete(tabId);
 	eventObservationBatchByTab.delete(tabId);
+	latestMatcherJobByTab.delete(tabId);
 
 	for (const [sessionId, completed] of completedEnrichmentBySession) {
 		if (completed.tabId === tabId) {
@@ -200,7 +199,7 @@ function createActiveTabIdentity(tab: InspectableTab): ActiveTabIdentity {
 
 function summarizeSession(session: ObservationSessionState): Record<string, unknown> {
 	return {
-		sessionId: session.sessionId,
+		sessionId,
 		status: session.status,
 		startedAt: session.startedAt,
 		expiresAt: session.expiresAt,
@@ -420,7 +419,7 @@ function createObservationSessionTarget(
 
 	return {
 		tabId: tab.id,
-		sessionId: session.sessionId,
+		sessionId,
 		expectedUrl: tab.url,
 		...(tab.incognito ? { incognito: true } : {}),
 	};
@@ -861,13 +860,15 @@ async function analyzeFreshActiveTab(
 		}
 	}
 
-	const enrichment = getInitialEnrichmentState(tab, session);
+	const hasDeferredMatcherWork = hasDeferredMatcherPartitions(batchResponse.value);
+	const enrichment = getInitialEnrichmentState(tab, session, hasDeferredMatcherWork);
 	const response = await analyzeAndPersistObservationBatch(tab, batchResponse.value, compiledRegistryArtifact, cacheStatus, session, {
 		refreshKind: 'bootstrap',
+		matcherMode: session?.sessionId && !tab.incognito ? 'bootstrap' : 'complete',
 	}, enrichment, timingTraceId);
 
 	if (response.ok && enrichment.status === 'pending') {
-		scheduleDeferredEnrichment(tab, batchResponse.value, session, response.value, timingTraceId);
+		scheduleDeferredEnrichment(tab, batchResponse.value, session, response.value, timingTraceId, hasDeferredMatcherWork);
 	}
 
 	endTimingSpan(totalSpan, {
@@ -881,7 +882,8 @@ async function analyzeFreshActiveTab(
 
 function getInitialEnrichmentState(
 	tab: InspectableTab,
-	session?: ObservationSessionState,
+	session: ObservationSessionState | undefined,
+	hasDeferredMatcherWork: boolean,
 ): AnalysisEnrichmentState {
 	if (tab.incognito) {
 		return { status: 'skipped', reason: 'incognito' };
@@ -889,8 +891,9 @@ function getInitialEnrichmentState(
 	if (!session?.sessionId) {
 		return { status: 'skipped', reason: 'no-observation-session' };
 	}
-
-	return { status: 'pending' };
+	return hasDeferredMatcherWork
+		? { status: 'pending', reason: 'deferred-matcher-work' }
+		: { status: 'pending' };
 }
 
 function hasEnrichmentWork(compiledRegistryArtifact: CompiledRegistry): boolean {
@@ -910,11 +913,13 @@ function scheduleDeferredEnrichment(
 	session?: ObservationSessionState,
 	initialOutput?: AnalyzeActiveTabOutput,
 	initialTimingTraceId?: string,
+	hasDeferredMatcherWork = false,
 ): void {
 	if (!session?.sessionId || !initialOutput || tab.incognito) {
 		return;
 	}
 
+	const sessionId = session.sessionId;
 	void (async () => {
 		const timingTraceId = initialTimingTraceId ? `${initialTimingTraceId}:enrichment` : createTimingTraceId('enrichment');
 		const timingContext: TimingContext = {
@@ -922,13 +927,13 @@ function scheduleDeferredEnrichment(
 			surface: 'background',
 			details: {
 				...summarizeTab(tab),
-				sessionId: session.sessionId,
+				sessionId,
 			},
 		};
 		const enrichmentSpan = startTimingSpan('background.analysis-enrichment.total', timingContext);
 		logBackgroundEvent('analysis-enrichment-start', {
 			...summarizeTab(tab),
-			sessionId: session.sessionId,
+			sessionId,
 			timingTraceId,
 		});
 		try {
@@ -940,6 +945,12 @@ function scheduleDeferredEnrichment(
 				summarizeCompiledRegistryArtifact,
 			);
 			if (!hasEnrichmentWork(compiledRegistryArtifact)) {
+				if (hasDeferredMatcherWork) {
+					await runDeferredMatcherCompletion(tab, initialBatch, compiledRegistryArtifact, session, timingTraceId);
+					endTimingSpan(enrichmentSpan, { ok: true, completedMatcher: true });
+					return;
+				}
+
 				await persistTerminalEnrichmentSnapshot(tab, initialOutput, { status: 'not-needed', reason: 'no-enrichment-work' });
 				endTimingSpan(enrichmentSpan, { ok: true, skipped: 'no-enrichment-work' });
 				return;
@@ -955,7 +966,7 @@ function scheduleDeferredEnrichment(
 			if (!enrichmentBatch.ok) {
 				logBackgroundEvent('analysis-enrichment-failed', {
 					...summarizeTab(tab),
-					sessionId: session.sessionId,
+					sessionId,
 					code: enrichmentBatch.error.code,
 					message: enrichmentBatch.error.message,
 				});
@@ -969,24 +980,20 @@ function scheduleDeferredEnrichment(
 
 			const mergedBatch = mergeObservationBatches(initialBatch, enrichmentBatch.value);
 			const completedAt = Date.now();
-			const sessionId = session.sessionId;
-			if (!sessionId) {
-				return;
-			}
 			const response = await analyzeAndPersistObservationBatch(
 				tab,
 				mergedBatch,
 				compiledRegistryArtifact,
 				'bypassed',
 				session,
-				{ refreshKind: 'enrichment' },
+				{ refreshKind: 'enrichment', matcherMode: 'enrichment' },
 				{ status: 'complete', completedAt },
 				timingTraceId,
 			);
 			if (!response.ok) {
 				logBackgroundEvent('analysis-enrichment-persist-failed', {
 					...summarizeTab(tab),
-					sessionId: session.sessionId,
+					sessionId,
 					code: response.error.code,
 					message: response.error.message,
 				});
@@ -1013,6 +1020,80 @@ function scheduleDeferredEnrichment(
 			endTimingSpan(enrichmentSpan, { ok: false, failedAt: 'unexpected-enrichment-error' });
 		}
 	})();
+}
+
+
+async function runDeferredMatcherCompletion(
+	tab: InspectableTab,
+	initialBatch: ObservationBatch,
+	compiledRegistryArtifact: CompiledRegistry,
+	session: ObservationSessionState,
+	timingTraceId?: string,
+): Promise<void> {
+	const completedAt = Date.now();
+	const response = await analyzeAndPersistObservationBatch(
+		tab,
+		initialBatch,
+		compiledRegistryArtifact,
+		'bypassed',
+		session,
+		{ refreshKind: 'matcher-complete', matcherMode: 'complete' },
+		{ status: 'complete', completedAt },
+		timingTraceId,
+	);
+	if (response.ok) {
+		completedEnrichmentBySession.set(session.sessionId, { tabId: tab.id, completedAt });
+		logBackgroundEvent('analysis-matcher-complete', {
+			...summarizeTab(tab),
+			sessionId: session.sessionId,
+			resultCount: response.value.analysis.results.length,
+			timingTraceId,
+		});
+	}
+}
+
+function createMatcherJobRecord(
+	tab: InspectableTab,
+	batch: ObservationBatch,
+	mode: MatcherJobMode,
+	session?: ObservationSessionState,
+): MatcherJobRecord {
+	const now = Date.now();
+	const jobId = `matcher:${tab.id}:${now}:${Math.random().toString(36).slice(2)}`;
+	return {
+		jobId,
+		tabId: tab.id,
+		...(session?.sessionId ? { sessionId: session.sessionId } : {}),
+		expectedUrl: tab.url,
+		...(tab.incognito ? { incognito: true } : {}),
+		status: 'queued',
+		mode,
+		target: batch.target,
+		createdAt: now,
+		updatedAt: now,
+		observationCount: batch.observations.length,
+		partitionCount: 0,
+		completedPartitionCount: 0,
+	};
+}
+
+function getMatcherJobMode(value: unknown, session?: ObservationSessionState): MatcherJobMode {
+	if (value === 'enrichment' || value === 'complete' || value === 'bootstrap') {
+		return value;
+	}
+	return session?.sessionId ? 'bootstrap' : 'complete';
+}
+
+async function canPersistMatcherResult(tab: InspectableTab, expectedUrl: string): Promise<boolean> {
+	try {
+		const current = await browser.tabs.get(tab.id);
+		if (!current.url) {
+			return true;
+		}
+		return isSameDocumentUrl(current.url, expectedUrl);
+	} catch {
+		return true;
+	}
 }
 
 async function runEnrichmentWithTimeout<T>(
@@ -1057,7 +1138,7 @@ async function analyzeAndPersistObservationBatch(
 	enrichment?: AnalysisEnrichmentState,
 	timingTraceId?: string,
 ): Promise<AppResult<AnalyzeActiveTabOutput>> {
-	const pipelineOptions = getPipelineOptionsForAnalysis(details.refreshKind);
+	const matcherMode = getMatcherJobMode(details.matcherMode, session);
 	const timingContext: TimingContext = {
 		traceId: timingTraceId,
 		surface: 'pipeline',
@@ -1066,25 +1147,50 @@ async function analyzeAndPersistObservationBatch(
 			cacheStatus,
 			observationCount: batch.observations.length,
 			refreshKind: details.refreshKind,
-			disabledKinds: pipelineOptions?.disabledKinds?.join(',') ?? '',
+			matcherMode,
 		},
 	};
-	const pipelineResult = timeSyncSpan(
-		'pipeline.run-observation-batch',
+	const matcherJob = createMatcherJobRecord(tab, batch, matcherMode, session);
+	await saveMatcherJobRecord(matcherJob);
+	latestMatcherJobByTab.set(tab.id, matcherJob.jobId);
+	await updateMatcherJobRecord(matcherJob.jobId, { status: 'dispatching' });
+	const matcherResult = await timeAsyncSpan(
+		'pipeline.run-partitioned-matcher-job',
 		timingContext,
-		() => runObservationBatchPipeline({
+		() => runMatcherJobWithOffscreenFallback({
+			job: matcherJob,
+			mode: matcherMode,
 			batch,
 			registry: compiledRegistryArtifact.technologies,
-			compiledRegistryArtifact,
-			options: pipelineOptions,
+			index: compiledRegistryArtifact.matcherIndex,
+			relationshipGraph: compiledRegistryArtifact.relationshipGraph,
 			source: 'fresh',
-			timingContext,
 		}),
 		(result) => ({
-			resultCount: result.analysis.results.length,
-			eventCount: result.events.length,
+			resultCount: result.result.analysis.results.length,
+			eventCount: result.result.events.length,
+			partitionCount: result.partitions.length,
+			executor: result.executor,
 		}),
 	);
+	const newestJobId = latestMatcherJobByTab.get(tab.id);
+	if (newestJobId && newestJobId !== matcherJob.jobId) {
+		await updateMatcherJobRecord(matcherJob.jobId, { status: 'stale', reason: 'newer-job' });
+		return errorResponse('VALIDATION_ERROR', 'Matcher result was superseded by a newer analysis job.');
+	}
+
+	const cacheable = await canPersistMatcherResult(tab, batch.target.url);
+	if (!cacheable) {
+		await updateMatcherJobRecord(matcherJob.jobId, { status: 'stale', reason: 'navigation' });
+		return errorResponse('VALIDATION_ERROR', 'Matcher result belongs to a document that is no longer active.');
+	}
+	await updateMatcherJobRecord(matcherJob.jobId, {
+		status: 'completed',
+		reason: 'completed',
+		partitionCount: matcherResult.partitions.length,
+		completedPartitionCount: matcherResult.partitions.length,
+	});
+	const pipelineResult = matcherResult.result;
 	const replayTrace = timeSyncSpan(
 		'pipeline.create-replay-trace',
 		timingContext,
@@ -1138,14 +1244,6 @@ async function analyzeAndPersistObservationBatch(
 	await saveDetectionSnapshotStreamForPopup(tab, output, 'background');
 
 	return ok(output);
-}
-
-function getPipelineOptionsForAnalysis(refreshKind: unknown): DetectionRunOptions | undefined {
-	if (refreshKind === 'enrichment') {
-		return undefined;
-	}
-
-	return { disabledKinds: INITIAL_PIPELINE_DISABLED_KINDS };
 }
 
 /**
@@ -1609,6 +1707,30 @@ export function createBackgroundApi(): BackgroundApi {
 	};
 }
 
+
+function isMatcherPartitionProgressMessage(message: unknown): message is MatcherPartitionProgressMessage {
+	return Boolean(
+		message &&
+		typeof message === 'object' &&
+		'channel' in message &&
+		message.channel === MATCHER_OFFSCREEN_CHANNEL &&
+		'type' in message &&
+		message.type === 'matcher.partition-complete',
+	);
+}
+
+function handleMatcherPartitionProgress(message: unknown): void {
+	if (!isMatcherPartitionProgressMessage(message)) {
+		return;
+	}
+
+	void updateMatcherJobRecord(message.partition.job.jobId, {
+		status: 'streaming',
+		partitionCount: message.partitionCount,
+		completedPartitionCount: message.completedPartitionCount,
+	});
+}
+
 const [provideBackgroundApi] = defineProxy(() => createBackgroundApi(), {
 	namespace: BACKGROUND_RPC_NAMESPACE,
 	heartbeatCheck: false,
@@ -1616,6 +1738,7 @@ const [provideBackgroundApi] = defineProxy(() => createBackgroundApi(), {
 });
 
 export default defineBackground(() => {
+	browser.runtime.onMessage.addListener(handleMatcherPartitionProgress);
 	registerBackgroundLifecycleListeners({
 		onTabRemoved: forgetTabRuntimeState,
 		log: logBackgroundEvent,
