@@ -16,3 +16,5 @@ Start with the overview when you need the runtime map, then use the workflow or 
 
 Migration phase notes remain under [`../migration/`](../migration/). Older notes document how the event path was introduced; the overview records the current shape after the legacy extension path was removed from the background runtime.
 - [Non-blocking incremental matcher runtime](./nonblocking-incremental-runtime.md)
+
+- [Cache, lifecycle, and detector revision model](./cache-lifecycle-revision-model.md)
