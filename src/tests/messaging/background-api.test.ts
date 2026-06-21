@@ -252,12 +252,14 @@ async function loadBackgroundApiHarness(input: {
 	const listBootstrapTechnologies = vi.fn(async () => compiledRegistryArtifact.technologies);
 	const getCompiledRegistry = vi.fn(async () => compiledRegistryArtifact);
 	const getCompiledBootstrapRegistry = vi.fn(async () => compiledRegistryArtifact);
+	const getCompiledObservationKindRegistry = vi.fn(async () => compiledRegistryArtifact);
 	vi.doMock('../../lib/detection/registry-provider', () => ({
 		bundledTechnologyRegistryProvider: {
 			listTechnologies,
 			listBootstrapTechnologies,
 			getCompiledRegistry,
 			getCompiledBootstrapRegistry,
+			getCompiledObservationKindRegistry,
 		},
 	}));
 
@@ -311,6 +313,7 @@ async function loadBackgroundApiHarness(input: {
 			getStatus,
 			getCompiledRegistry,
 			getCompiledBootstrapRegistry,
+			getCompiledObservationKindRegistry,
 			listTechnologies,
 			listBootstrapTechnologies,
 			saveAnalysis,
@@ -669,7 +672,8 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 			},
 		});
 
-		expect(harness.mocks.getCompiledBootstrapRegistry).toHaveBeenCalledOnce();
+		expect(harness.mocks.getCompiledRegistry).toHaveBeenCalledOnce();
+		expect(harness.mocks.getCompiledBootstrapRegistry).not.toHaveBeenCalled();
 	});
 
 	it('returns replay history for the active origin', async () => {

@@ -55,11 +55,6 @@ import {
 	createContentClientAdapter,
 } from '../lib/messaging';
 import {
-	DETECTION_STREAM_FRAME_DELAY_MS,
-	createDetectionStreamFrameOutput,
-	createDetectionStreamFrameSizes,
-} from '../lib/lifecycle/detection-stream';
-import {
 	runMatcherJobWithOffscreenFallback,
 } from '../lib/lifecycle/offscreen-matcher';
 import {
@@ -70,10 +65,11 @@ import {
 import { errorResponse, ok, type AppResult } from '../lib/shared/result';
 import {
 	MATCHER_OFFSCREEN_CHANNEL,
-	hasDeferredMatcherPartitions,
+	createMatcherPipelineResult,
 	type MatcherJobMode,
 	type MatcherJobRecord,
 	type MatcherPartitionProgressMessage,
+	type MatcherPartitionResult,
 } from '../lib/matcher';
 import { getOrigin, isSameDocumentUrl } from '../lib/shared/url';
 import {
@@ -148,6 +144,27 @@ const completedEnrichmentBySession = new Map<string, { readonly tabId: number; r
 /** Latest matcher job created for each tab while the background is alive. */
 const latestMatcherJobByTab = new Map<number, string>();
 
+/** Partial matcher state used to turn worker partition completions into popup revisions. */
+interface ActiveMatcherProgressContext {
+	/** Tab and URL identity that owns the matcher job. */
+	readonly tab: InspectableTab;
+	/** Full observation batch for deterministic partial candidate refinement. */
+	readonly batch: ObservationBatch;
+	/** Full compiled registry used by the coordinator after worker shards emit matches. */
+	readonly compiledRegistryArtifact: CompiledRegistry;
+	/** Cache status attached to partial popup outputs. */
+	readonly cacheStatus: AnalyzeActiveTabOutput['cache']['status'];
+	/** Active observation session, when the popup asked for live updates. */
+	readonly session?: ObservationSessionState;
+	/** Current enrichment state shown while deeper collectors keep running. */
+	readonly enrichment?: AnalysisEnrichmentState;
+	/** Completed partition results accumulated in original completion order. */
+	readonly partitions: MatcherPartitionResult[];
+}
+
+/** Matcher jobs currently able to publish real incremental popup revisions. */
+const activeMatcherProgressByJob = new Map<string, ActiveMatcherProgressContext>();
+
 /**
  * Drop volatile state that only makes sense while a tab can still answer RPC.
  *
@@ -160,6 +177,12 @@ function forgetTabRuntimeState(tabId: number): void {
 	contentScriptInjectionByTab.delete(tabId);
 	eventObservationBatchByTab.delete(tabId);
 	latestMatcherJobByTab.delete(tabId);
+
+	for (const [jobId, context] of activeMatcherProgressByJob) {
+		if (context.tab.id === tabId) {
+			activeMatcherProgressByJob.delete(jobId);
+		}
+	}
 
 	for (const [sessionId, completed] of completedEnrichmentBySession) {
 		if (completed.tabId === tabId) {
@@ -220,11 +243,6 @@ function summarizeCompiledRegistryArtifact(artifact: CompiledRegistry): Record<s
 	};
 }
 
-function waitForDetectionStreamFrame(): Promise<void> {
-	return new Promise((resolve) => {
-		setTimeout(resolve, DETECTION_STREAM_FRAME_DELAY_MS);
-	});
-}
 
 function createContentApiClient(tabId: number, frameId = 0): ContentApi {
 	const [, injectContentApi] = defineProxy(() => ({}) as ContentApi, {
@@ -485,25 +503,6 @@ async function saveDetectionSnapshotForPopup(
 	};
 
 	await saveDetectionSessionSnapshot(snapshot);
-}
-
-async function saveDetectionSnapshotStreamForPopup(
-	tab: InspectableTab,
-	output: AnalyzeActiveTabOutput,
-	source: DetectionSessionSnapshotSource,
-): Promise<void> {
-	const frameSizes = createDetectionStreamFrameSizes(output.analysis.results.length);
-	if (frameSizes.length === 0) {
-		await saveDetectionSnapshotForPopup(tab, output, source);
-		return;
-	}
-
-	for (const size of frameSizes) {
-		await saveDetectionSnapshotForPopup(tab, createDetectionStreamFrameOutput(output, size), source);
-		await waitForDetectionStreamFrame();
-	}
-
-	await saveDetectionSnapshotForPopup(tab, output, source);
 }
 
 /**
@@ -831,15 +830,10 @@ async function analyzeFreshActiveTab(
 			observe: input.observe,
 		},
 	};
-	const shouldUseBootstrapRegistry = shouldStartObservationForAnalysis(input) && !tab.incognito;
 	const compiledRegistryArtifact = await timeAsyncSpan(
-		shouldUseBootstrapRegistry
-			? 'background.registry.get-bootstrap-compiled'
-			: 'background.registry.get-complete-compiled',
+		'background.registry.get-complete-compiled',
 		timingContext,
-		() => shouldUseBootstrapRegistry
-			? bundledTechnologyRegistryProvider.getCompiledBootstrapRegistry()
-			: bundledTechnologyRegistryProvider.getCompiledRegistry(),
+		() => bundledTechnologyRegistryProvider.getCompiledRegistry(),
 		summarizeCompiledRegistryArtifact,
 	);
 	const batchResponse = await collectObservationBatchFromTab(tab.id, tab.url, compiledRegistryArtifact, 'initial', timingTraceId);
@@ -866,15 +860,14 @@ async function analyzeFreshActiveTab(
 		}
 	}
 
-	const hasDeferredMatcherWork = hasDeferredMatcherPartitions(batchResponse.value);
-	const enrichment = getInitialEnrichmentState(tab, session, hasDeferredMatcherWork);
+	const enrichment = getInitialEnrichmentState(tab, session, hasEnrichmentWork(compiledRegistryArtifact));
 	const response = await analyzeAndPersistObservationBatch(tab, batchResponse.value, compiledRegistryArtifact, cacheStatus, session, {
-		refreshKind: 'bootstrap',
-		matcherMode: session?.sessionId && !tab.incognito ? 'bootstrap' : 'complete',
+		refreshKind: 'incremental-initial',
+		matcherMode: 'complete',
 	}, enrichment, timingTraceId);
 
 	if (response.ok && enrichment.status === 'pending') {
-		scheduleDeferredEnrichment(tab, batchResponse.value, session, response.value, timingTraceId, hasDeferredMatcherWork);
+		scheduleDeferredEnrichment(tab, batchResponse.value, session, response.value, timingTraceId);
 	}
 
 	endTimingSpan(totalSpan, {
@@ -889,7 +882,7 @@ async function analyzeFreshActiveTab(
 function getInitialEnrichmentState(
 	tab: InspectableTab,
 	session: ObservationSessionState | undefined,
-	hasDeferredMatcherWork: boolean,
+	hasEnrichmentWorkAvailable: boolean,
 ): AnalysisEnrichmentState {
 	if (tab.incognito) {
 		return { status: 'skipped', reason: 'incognito' };
@@ -897,9 +890,9 @@ function getInitialEnrichmentState(
 	if (!session?.sessionId) {
 		return { status: 'skipped', reason: 'no-observation-session' };
 	}
-	return hasDeferredMatcherWork
-		? { status: 'pending', reason: 'deferred-matcher-work' }
-		: { status: 'pending' };
+	return hasEnrichmentWorkAvailable
+		? { status: 'pending', reason: 'evidence-surfaces-queued' }
+		: { status: 'skipped', reason: 'no-enrichment-work' };
 }
 
 function hasEnrichmentWork(compiledRegistryArtifact: CompiledRegistry): boolean {
@@ -919,7 +912,6 @@ function scheduleDeferredEnrichment(
 	session?: ObservationSessionState,
 	initialOutput?: AnalyzeActiveTabOutput,
 	initialTimingTraceId?: string,
-	hasDeferredMatcherWork = false,
 ): void {
 	if (!session?.sessionId || !initialOutput || tab.incognito) {
 		return;
@@ -951,15 +943,9 @@ function scheduleDeferredEnrichment(
 				summarizeCompiledRegistryArtifact,
 			);
 
-			if (hasDeferredMatcherWork) {
-				await runDeferredMatcherCompletion(tab, initialBatch, compiledRegistryArtifact, session, timingTraceId);
-			}
-
 			if (!hasEnrichmentWork(compiledRegistryArtifact)) {
-				if (!hasDeferredMatcherWork) {
-					await persistTerminalEnrichmentSnapshot(tab, initialOutput, { status: 'not-needed', reason: 'no-enrichment-work' });
-				}
-				endTimingSpan(enrichmentSpan, { ok: true, skipped: 'no-enrichment-work', completedMatcher: hasDeferredMatcherWork });
+				await persistTerminalEnrichmentSnapshot(tab, initialOutput, { status: 'not-needed', reason: 'no-enrichment-work' });
+				endTimingSpan(enrichmentSpan, { ok: true, skipped: 'no-enrichment-work' });
 				return;
 			}
 
@@ -1030,35 +1016,6 @@ function scheduleDeferredEnrichment(
 }
 
 
-async function runDeferredMatcherCompletion(
-	tab: InspectableTab,
-	initialBatch: ObservationBatch,
-	compiledRegistryArtifact: CompiledRegistry,
-	session: ObservationSessionState,
-	timingTraceId?: string,
-): Promise<void> {
-	const completedAt = Date.now();
-	const response = await analyzeAndPersistObservationBatch(
-		tab,
-		initialBatch,
-		compiledRegistryArtifact,
-		'bypassed',
-		session,
-		{ refreshKind: 'matcher-complete', matcherMode: 'complete' },
-		{ status: 'complete', completedAt },
-		timingTraceId,
-	);
-	if (response.ok) {
-		completedEnrichmentBySession.set(session.sessionId, { tabId: tab.id, completedAt });
-		logBackgroundEvent('analysis-matcher-complete', {
-			...summarizeTab(tab),
-			sessionId: session.sessionId,
-			resultCount: response.value.analysis.results.length,
-			timingTraceId,
-		});
-	}
-}
-
 function createMatcherJobRecord(
 	tab: InspectableTab,
 	batch: ObservationBatch,
@@ -1084,11 +1041,11 @@ function createMatcherJobRecord(
 	};
 }
 
-function getMatcherJobMode(value: unknown, session?: ObservationSessionState): MatcherJobMode {
+function getMatcherJobMode(value: unknown, _session?: ObservationSessionState): MatcherJobMode {
 	if (value === 'enrichment' || value === 'complete' || value === 'bootstrap') {
 		return value;
 	}
-	return session?.sessionId ? 'bootstrap' : 'complete';
+	return 'complete';
 }
 
 async function canPersistMatcherResult(tab: InspectableTab, expectedUrl: string): Promise<boolean> {
@@ -1160,26 +1117,40 @@ async function analyzeAndPersistObservationBatch(
 	const matcherJob = createMatcherJobRecord(tab, batch, matcherMode, session);
 	await saveMatcherJobRecord(matcherJob);
 	latestMatcherJobByTab.set(tab.id, matcherJob.jobId);
+	activeMatcherProgressByJob.set(matcherJob.jobId, {
+		tab,
+		batch,
+		compiledRegistryArtifact,
+		cacheStatus,
+		...(session ? { session } : {}),
+		...(enrichment ? { enrichment } : {}),
+		partitions: [],
+	});
 	await updateMatcherJobRecord(matcherJob.jobId, { status: 'dispatching' });
-	const matcherResult = await timeAsyncSpan(
-		'pipeline.run-partitioned-matcher-job',
-		timingContext,
-		() => runMatcherJobWithOffscreenFallback({
-			job: matcherJob,
-			mode: matcherMode,
-			batch,
-			registry: compiledRegistryArtifact.technologies,
-			index: compiledRegistryArtifact.matcherIndex,
-			relationshipGraph: compiledRegistryArtifact.relationshipGraph,
-			source: 'fresh',
-		}),
-		(result) => ({
-			resultCount: result.result.analysis.results.length,
-			eventCount: result.result.events.length,
-			partitionCount: result.partitions.length,
-			executor: result.executor,
-		}),
-	);
+	let matcherResult: Awaited<ReturnType<typeof runMatcherJobWithOffscreenFallback>>;
+	try {
+		matcherResult = await timeAsyncSpan(
+			'pipeline.run-partitioned-matcher-job',
+			timingContext,
+			() => runMatcherJobWithOffscreenFallback({
+				job: matcherJob,
+				mode: matcherMode,
+				batch,
+				registry: compiledRegistryArtifact.technologies,
+				index: compiledRegistryArtifact.matcherIndex,
+				relationshipGraph: compiledRegistryArtifact.relationshipGraph,
+				source: 'fresh',
+			}),
+			(result) => ({
+				resultCount: result.result.analysis.results.length,
+				eventCount: result.result.events.length,
+				partitionCount: result.partitions.length,
+				executor: result.executor,
+			}),
+		);
+	} finally {
+		activeMatcherProgressByJob.delete(matcherJob.jobId);
+	}
 	const newestJobId = latestMatcherJobByTab.get(tab.id);
 	if (newestJobId && newestJobId !== matcherJob.jobId) {
 		await updateMatcherJobRecord(matcherJob.jobId, { status: 'stale', reason: 'newer-job' });
@@ -1248,7 +1219,7 @@ async function analyzeAndPersistObservationBatch(
 		sessionTarget,
 		enrichment,
 	);
-	await saveDetectionSnapshotStreamForPopup(tab, output, 'background');
+	await saveDetectionSnapshotForPopup(tab, output, 'background');
 
 	return ok(output);
 }
@@ -1751,11 +1722,61 @@ function handleMatcherPartitionProgress(message: unknown): void {
 		return;
 	}
 
-	void updateMatcherJobRecord(message.partition.job.jobId, {
+	void handleMatcherPartitionProgressUpdate(message);
+}
+
+async function handleMatcherPartitionProgressUpdate(
+	message: MatcherPartitionProgressMessage,
+): Promise<void> {
+	const jobId = message.partition.job.jobId;
+	await updateMatcherJobRecord(jobId, {
 		status: 'streaming',
 		partitionCount: message.partitionCount,
 		completedPartitionCount: message.completedPartitionCount,
 	});
+
+	const context = activeMatcherProgressByJob.get(jobId);
+	if (!context || context.tab.incognito) {
+		return;
+	}
+
+	const newestJobId = latestMatcherJobByTab.get(context.tab.id);
+	if (newestJobId && newestJobId !== jobId) {
+		return;
+	}
+
+	const previousIndex = context.partitions.findIndex((partition) => partition.partitionId === message.partition.partitionId);
+	if (previousIndex >= 0) {
+		context.partitions[previousIndex] = message.partition;
+	} else {
+		context.partitions.push(message.partition);
+	}
+
+	if (context.partitions.length === 0) {
+		return;
+	}
+
+	const partial = createMatcherPipelineResult({
+		batch: context.batch,
+		registry: context.compiledRegistryArtifact.technologies,
+		compiledRegistryArtifact: { relationshipGraph: context.compiledRegistryArtifact.relationshipGraph },
+		partitions: context.partitions,
+		analyzedAt: Date.now(),
+		source: 'fresh',
+	});
+	const output = createAnalysisOutput(
+		partial.analysis,
+		context.cacheStatus,
+		context.session,
+		undefined,
+		undefined,
+		createObservationSessionTarget(context.tab, context.session),
+		context.enrichment ?? {
+			status: 'pending',
+			reason: `matched ${context.partitions.length} of ${message.partitionCount} evidence groups`,
+		},
+	);
+	await saveDetectionSnapshotForPopup(context.tab, output, 'background');
 }
 
 const [provideBackgroundApi] = defineProxy(() => createBackgroundApi(), {

@@ -433,7 +433,7 @@ export function buildPopupAnalysisUpdate(
 	const observationMode = getPopupObservationModeFromAnalysis(input.response);
 	/**
 	 * Background enrichment completes outside the content observer, so the popup
-	 * keeps live updates while deeper evidence is pending even if the DOM session has
+	 * keeps live updates while matcher or enrichment evidence is pending even if the DOM session has
 	 * already expired. The targeted refresh call will return the enriched cache
 	 * once the background marks that session dirty.
 	 */
@@ -475,21 +475,21 @@ function getPopupAnalysisNotice(input: {
 	if (input.response.enrichment?.status === 'pending') {
 		return {
 			variant: 'warning',
-			text: `Detected ${input.nextAnalysis.results.length} technologies for ${input.nextAnalysis.hostname}. Still checking deeper evidence.`,
+			text: `Detected ${input.nextAnalysis.results.length} technologies for ${input.nextAnalysis.hostname}. Continuing to match evidence as page signals arrive.`,
 		};
 	}
 
 	if (input.response.enrichment?.status === 'complete' && input.source === 'auto') {
 		return {
 			variant: 'success',
-			text: `Deep evidence complete for ${input.nextAnalysis.hostname}.`,
+			text: `Initial evidence pass complete for ${input.nextAnalysis.hostname}. Observation remains active for late page changes.`,
 		};
 	}
 
 	if ((input.response.enrichment?.status === 'failed' || input.response.enrichment?.status === 'timed-out') && input.source === 'auto') {
 		return {
 			variant: 'warning',
-			text: `Deep evidence stopped for ${input.nextAnalysis.hostname}. Showing the latest stored detections.`,
+			text: `Evidence matching paused for ${input.nextAnalysis.hostname}. Showing the latest stored detections.`,
 		};
 	}
 

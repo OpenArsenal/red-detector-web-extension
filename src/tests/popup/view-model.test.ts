@@ -111,7 +111,7 @@ describe('popup view model', () => {
 			shouldKeepLiveUpdatesActive: true,
 			notice: {
 				variant: 'warning',
-				text: 'Detected 1 technologies for example.com. Still checking deeper evidence.',
+				text: 'Detected 1 technologies for example.com. Continuing to match evidence as page signals arrive.',
 			},
 		});
 	});
