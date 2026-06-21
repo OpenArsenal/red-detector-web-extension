@@ -293,7 +293,9 @@ async function loadBackgroundApiHarness(input: {
 		getLatestDetectionSessionSnapshot,
 		saveAnalysis,
 		saveDetectionSessionSnapshot,
+		saveMatcherJobRecord,
 		saveReplayTrace,
+		updateMatcherJobRecord,
 	}));
 
 	const background = await import('../../entrypoints/background');
@@ -432,7 +434,7 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 		});
 	});
 
-	it('returns cached analysis without reopening observation in cache-first mode', async () => {
+	it('returns cached analysis and reopens observation in cache-first mode', async () => {
 		const collectObservationBatch = vi.fn(async () => ok({ batch: makeObservationBatch() }));
 		const cachedAnalysis = { ...makeAnalysis(), source: 'cache' as const };
 		const cachedReplayTrace = makeDetectionReplayTrace({ completedMode: 'event' });
@@ -457,15 +459,18 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 				replayTrace: {
 					completedMode: 'event',
 				},
+				session: {
+					status: 'observing',
+				},
+				sessionTarget: {
+					tabId: HTTP_TAB.id,
+					sessionId: 'session-1',
+				},
 			},
 		});
-		if (result.ok) {
-			expect(result.value.session).toBeUndefined();
-			expect(result.value.sessionTarget).toBeUndefined();
-		}
 
 		expect(collectObservationBatch).not.toHaveBeenCalled();
-		expect(harness.contentApi.beginObservationSession).not.toHaveBeenCalled();
+		expect(harness.contentApi.beginObservationSession).toHaveBeenCalledOnce();
 		expect(harness.mocks.getCachedReplayTrace).toHaveBeenCalledWith(HTTP_TAB.url);
 	});
 
@@ -514,8 +519,8 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 
 		expect(harness.mocks.getCachedAnalysis).toHaveBeenCalledWith(HTTP_TAB.url);
 		expect(harness.contentApi.collectObservationBatch).toHaveBeenCalledOnce();
-		expect(harness.mocks.getCompiledBootstrapRegistry).toHaveBeenCalledOnce();
-		expect(harness.mocks.getCompiledRegistry).not.toHaveBeenCalled();
+		expect(harness.mocks.getCompiledBootstrapRegistry).not.toHaveBeenCalled();
+		expect(harness.mocks.getCompiledRegistry).toHaveBeenCalledOnce();
 		expect(harness.mocks.analyzeSite).not.toHaveBeenCalled();
 		expect(harness.mocks.saveAnalysis).toHaveBeenCalledWith(expect.objectContaining({ source: 'fresh' }));
 		expect(harness.mocks.saveAnalysis).toHaveBeenCalledOnce();
@@ -645,10 +650,10 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 	});
 
 	it('starts an observation session after a fresh refresh analysis', async () => {
-		const api = await loadBackgroundApi({ tab: HTTP_TAB });
+		const harness = await loadBackgroundApiHarness({ tab: HTTP_TAB });
 
 		await expect(
-			api.analyzeActiveTab({ mode: 'refresh', observe: 'while-popup-open' }),
+			harness.api.analyzeActiveTab({ mode: 'refresh', observe: 'while-popup-open' }),
 		).resolves.toMatchObject({
 			ok: true,
 			value: {
@@ -663,6 +668,8 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 				},
 			},
 		});
+
+		expect(harness.mocks.getCompiledBootstrapRegistry).toHaveBeenCalledOnce();
 	});
 
 	it('returns replay history for the active origin', async () => {
@@ -789,6 +796,7 @@ describe.sequential('background observation session baseline', () => {
 		expect(harness.contentApi.collectObservationBatch).toHaveBeenCalledOnce();
 		expect(harness.contentApi.flushObservationBatch).toHaveBeenCalledOnce();
 		expect(harness.contentApi.beginObservationSession).not.toHaveBeenCalled();
+		expect(harness.mocks.getCompiledRegistry).toHaveBeenCalledTimes(2);
 		expect(harness.mocks.saveAnalysis).toHaveBeenCalledTimes(2);
 		expect(harness.mocks.analyzeSite).not.toHaveBeenCalled();
 	});
