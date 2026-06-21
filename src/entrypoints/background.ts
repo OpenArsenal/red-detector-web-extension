@@ -864,29 +864,53 @@ async function analyzeFreshActiveTab(
 		return batchResponse;
 	}
 
-	const response = await analyzeAndPersistObservationBatch(tab, batchResponse.value, compiledRegistryArtifact, cacheStatus, session, {
-		refreshKind: 'evidence-pass:initial',
-		matcherMode: 'complete',
-	}, undefined, timingTraceId);
-
-	if (response.ok && remainingPasses.length > 0) {
-		scheduleIncrementalEvidencePasses({
-			tab,
-			initialBatch: batchResponse.value,
+	let completeBatch = batchResponse.value;
+	for (const pass of remainingPasses) {
+		const passBatch = await runEvidencePassWithTimeout(() => collectObservationBatchFromTab(
+			tab.id,
+			tab.url,
 			compiledRegistryArtifact,
-			cacheStatus: 'bypassed',
-			session,
-			passes: remainingPasses,
-			initialTimingTraceId: timingTraceId,
-		});
+			pass.plan.tier,
+			`${timingTraceId}:collect:${pass.id}`,
+			pass.plan,
+		));
+		if (!passBatch.ok) {
+			logBackgroundEvent('evidence-pass-collection-skipped-before-match', {
+				...summarizeTab(tab),
+				passId: pass.id,
+				code: passBatch.error.code,
+				message: passBatch.error.message,
+			});
+			continue;
+		}
+
+		completeBatch = mergeObservationBatches(completeBatch, passBatch.value);
 	}
 
-	endTimingSpan(totalSpan, {
-		ok: response.ok,
-		resultCount: response.ok ? response.value.analysis.results.length : 0,
-		remainingEvidencePassCount: remainingPasses.length,
+	eventObservationBatchByTab.set(tab.id, completeBatch);
+	enqueueAnalysisPersistence({
+		tab,
+		batch: completeBatch,
+		compiledRegistryArtifact,
+		cacheStatus,
+		session,
+		details: {
+			refreshKind: 'queued-continuous-initial',
+			matcherMode: 'complete',
+			collectionPassCount: collectionPasses.length,
+		},
+		timingTraceId,
 	});
-	return response;
+
+	const response = await createQueuedAnalysisOutput(tab, cacheStatus, session, timingTraceId);
+	endTimingSpan(totalSpan, {
+		ok: true,
+		returnedImmediately: true,
+		queuedObservationCount: completeBatch.observations.length,
+		collectionPassCount: collectionPasses.length,
+		returnedResultCount: response.analysis.results.length,
+	});
+	return ok(response);
 }
 
 
@@ -1448,6 +1472,116 @@ function logAnalysisSummary(analysis: SiteAnalysis): void {
 		resultCount: analysis.results.length,
 		technologyIds: analysis.results.map((result) => result.technologyId),
 		analyzedAt: analysis.analyzedAt,
+	});
+}
+
+
+/** Create a minimal analysis envelope while matcher revisions are queued. */
+function createPendingSiteAnalysis(tab: InspectableTab, analyzedAt = Date.now()): SiteAnalysis {
+	return {
+		url: tab.url,
+		hostname: new URL(tab.url).hostname,
+		analyzedAt,
+		source: 'fresh',
+		results: [],
+		errors: [],
+	};
+}
+
+/**
+ * Return the best immediate response before CPU-bound matcher work finishes.
+ *
+ * Active-tab commands should start collection and matching, then return the last
+ * durable detector output instead of blocking the popup for a full matcher job.
+ * Storage revisions from the queued matcher job become the receive stream that
+ * moves the popup from cached output to newer partial and final detections.
+ */
+async function createQueuedAnalysisOutput(
+	tab: InspectableTab,
+	cacheStatus: AnalyzeActiveTabOutput['cache']['status'],
+	session?: ObservationSessionState,
+	timingTraceId?: string,
+): Promise<AnalyzeActiveTabOutput> {
+	const timingContext: TimingContext = {
+		traceId: timingTraceId,
+		surface: 'background',
+		details: summarizeTab(tab),
+	};
+	const cached = tab.incognito
+		? null
+		: await timeAsyncSpan(
+			'storage.get-cached-analysis-for-queued-response',
+			timingContext,
+			() => getCachedAnalysis(tab.url),
+			(value) => ({ cacheHit: Boolean(value) }),
+		);
+	const analysis = cached ?? createPendingSiteAnalysis(tab);
+	const replayTrace = cached && !tab.incognito
+		? await timeAsyncSpan(
+			'storage.get-cached-replay-trace-for-queued-response',
+			timingContext,
+			() => getCachedReplayTrace(tab.url),
+			(value) => ({ replayTraceHit: Boolean(value) }),
+		)
+		: null;
+	const replayHistory = cached && !tab.incognito
+		? await timeAsyncSpan(
+			'storage.get-replay-history-for-queued-response',
+			timingContext,
+			() => getCachedReplayTraceHistory(tab.url),
+			(value) => ({ replayHistoryCount: value.length }),
+		)
+		: [];
+
+	return createAnalysisOutput(
+		analysis,
+		cached ? 'hit' : cacheStatus,
+		session,
+		replayTrace ?? undefined,
+		replayHistory,
+		createObservationSessionTarget(tab, session),
+	);
+}
+
+/** Run matcher persistence after the popup command has been released. */
+function enqueueAnalysisPersistence(input: {
+	readonly tab: InspectableTab;
+	readonly batch: ObservationBatch;
+	readonly compiledRegistryArtifact: CompiledRegistry;
+	readonly cacheStatus: AnalyzeActiveTabOutput['cache']['status'];
+	readonly session?: ObservationSessionState;
+	readonly details?: Record<string, unknown>;
+	readonly enrichment?: AnalysisEnrichmentState;
+	readonly timingTraceId?: string;
+}): void {
+	void analyzeAndPersistObservationBatch(
+		input.tab,
+		input.batch,
+		input.compiledRegistryArtifact,
+		input.cacheStatus,
+		input.session,
+		input.details ?? {},
+		input.enrichment,
+		input.timingTraceId,
+	).then((response) => {
+		if (!response.ok) {
+			logBackgroundEvent('analysis-queued-persist-failed', {
+				...summarizeTab(input.tab),
+				code: response.error.code,
+				message: response.error.message,
+			});
+			return;
+		}
+
+		logBackgroundEvent('analysis-queued-persist-complete', {
+			...summarizeTab(input.tab),
+			resultCount: response.value.analysis.results.length,
+		});
+	}, (error) => {
+		logBackgroundEvent('analysis-queued-persist-threw', {
+			...summarizeTab(input.tab),
+			message: error instanceof Error ? error.message : 'Queued matcher persistence failed.',
+		});
 	});
 }
 
