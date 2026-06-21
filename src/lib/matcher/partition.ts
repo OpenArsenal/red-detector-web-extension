@@ -45,6 +45,30 @@ const KIND_PRIORITIES = Object.freeze({
 	probe: 4,
 } satisfies Record<NormalizedObservationKind, MatcherPartitionPriority>);
 
+/** Default partition size for cheap evidence kinds with low fan-out. */
+const DEFAULT_PARTITION_CHUNK_SIZE = 128;
+
+/**
+ * High-fan-out surfaces are chunked so the popup receives real revisions.
+ *
+ * A single Vercel page can expose hundreds or thousands of resource and request
+ * URL observations. Treating that whole kind as one partition recreates the old
+ * long quiet wait. Smaller chunks let worker progress messages publish partial
+ * detector snapshots while the rest of the same kind continues matching.
+ */
+const KIND_PARTITION_CHUNK_SIZES = Object.freeze({
+	scriptSrc: 48,
+	stylesheetHref: 48,
+	resourceUrl: 48,
+	requestUrl: 48,
+	html: 16,
+	text: 16,
+	scriptContent: 12,
+	stylesheetContent: 12,
+	htmlMatch: 32,
+	dom: 64,
+} satisfies Partial<Record<NormalizedObservationKind, number>>);
+
 /** Input for splitting one observation batch into kind-routed matcher tasks. */
 export interface CreateMatcherPartitionTasksInput {
 	/** Job identity shared by every partition. */
@@ -106,30 +130,47 @@ export function createMatcherPartitionTasks(
 		});
 	});
 
-	return [...grouped]
-		.sort((left, right) => {
-			const priorityDelta = left[1].priority - right[1].priority;
-			return priorityDelta === 0 ? left[0].localeCompare(right[0]) : priorityDelta;
-		})
-		.map(([kind, bucket], ordinal): MatcherPartitionTask => ({
-			job: input.job,
-			partitionId: `${input.job.jobId}:${ordinal}:${kind}`,
-			kind,
-			priority: bucket.priority,
-			batch: {
-				target: input.batch.target,
-				interface: input.batch.interface,
-				observedAt: input.batch.observedAt,
-				observations: bucket.observations,
-			},
-			observationIndexes: bucket.indexes,
-			...(input.options ? { options: input.options } : {}),
-		}));
+	let ordinal = 0;
+	const tasks: MatcherPartitionTask[] = [];
+	const sortedGroups = [...grouped].sort((left, right) => {
+		const priorityDelta = left[1].priority - right[1].priority;
+		return priorityDelta === 0 ? left[0].localeCompare(right[0]) : priorityDelta;
+	});
+
+	for (const [kind, bucket] of sortedGroups) {
+		const chunkSize = getMatcherPartitionChunkSize(kind);
+		for (let offset = 0; offset < bucket.observations.length; offset += chunkSize) {
+			const observations = bucket.observations.slice(offset, offset + chunkSize);
+			const indexes = bucket.indexes.slice(offset, offset + chunkSize);
+			tasks.push({
+				job: input.job,
+				partitionId: `${input.job.jobId}:${ordinal}:${kind}:${offset}`,
+				kind,
+				priority: bucket.priority,
+				batch: {
+					target: input.batch.target,
+					interface: input.batch.interface,
+					observedAt: input.batch.observedAt,
+					observations,
+				},
+				observationIndexes: indexes,
+				...(input.options ? { options: input.options } : {}),
+			});
+			ordinal += 1;
+		}
+	}
+
+	return tasks;
 }
 
 /** Return the scheduler priority assigned to an observation kind. */
 export function getMatcherPartitionPriority(kind: NormalizedObservationKind): MatcherPartitionPriority {
 	return KIND_PRIORITIES[kind] ?? 4;
+}
+
+/** Return the maximum observation count assigned to one worker task. */
+export function getMatcherPartitionChunkSize(kind: NormalizedObservationKind): number {
+	return KIND_PARTITION_CHUNK_SIZES[kind] ?? DEFAULT_PARTITION_CHUNK_SIZE;
 }
 
 /**
