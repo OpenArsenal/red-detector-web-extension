@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildCollectionPlan, toCollectPageSignalsInput } from '../../lib/collectors/planning';
+import { buildCollectionPlan, createIncrementalCollectionPasses, toCollectPageSignalsInput } from '../../lib/collectors/planning';
 import { SOURCE_LIMITS } from '../../lib/detection/source-limits';
 import type { TechnologyDefinition } from '../../lib/detection/types';
 
@@ -92,6 +92,28 @@ describe('collection planning', () => {
 			expensive: 2,
 			unsupported: 1,
 		});
+	});
+
+
+	it('splits expensive evidence surfaces into independent continuous passes', () => {
+		const plan = buildCollectionPlan([
+			makeTechnology('mixed', [
+				{ kind: 'dom', selector: '[data-app]' },
+				{ kind: 'html', pattern: /data-app/ },
+				{ kind: 'header', key: 'server', valuePattern: /nginx/ },
+				{ kind: 'text', pattern: /powered by/i },
+				{ kind: 'scriptContent', pattern: /hydrate/ },
+			]),
+		]);
+
+		const passes = createIncrementalCollectionPasses(plan);
+
+		expect(passes.map((pass) => pass.id)).toEqual(['initial', 'html', 'headers', 'text', 'source-content']);
+		expect(passes[0]?.plan.selectorProbeList).toEqual(['[data-app]']);
+		expect(passes[1]?.plan.htmlProbeList).toHaveLength(1);
+		expect(passes[2]?.plan.needsHeaders).toBe(true);
+		expect(passes[3]?.plan.needsText).toBe(true);
+		expect(passes[4]?.plan.needsScriptContent).toBe(true);
 	});
 
 	it('keeps content-script collection input separate from injected script globals', () => {

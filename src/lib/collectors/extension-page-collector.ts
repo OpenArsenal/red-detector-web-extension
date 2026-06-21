@@ -4,6 +4,7 @@ import {
 	toCollectPageSignalsInput,
 	type CollectionPlan,
 	type CollectionTier,
+	type CollectionTierPlan,
 } from './planning';
 import type { CollectObservationBatchOutput, ContentApi } from '../contracts/analysis';
 import type { ObservationBatch } from '../observations';
@@ -26,6 +27,8 @@ export type ExtensionPageCollectorInput = {
 	collectionPlan: CollectionPlan;
 	/** Which plan tier should be collected for this request. */
 	tier?: CollectionTier;
+	/** Exact evidence pass plan selected by the background scheduler. */
+	collectionTierPlan?: CollectionTierPlan;
 	/** RPC client for the content script running in the active tab. */
 	contentApi: ContentApi;
 	/** Optional summary logger supplied by the background entrypoint. */
@@ -37,15 +40,15 @@ export type ExtensionPageCollectorInput = {
 /**
  * Collect the active tab as normalized observations for the event pipeline.
  *
- * The initial tier reads cheap document facts so the popup can render a useful
- * first result. The enrichment tier enables broad HTML, text, headers, and
- * source-content collection after the first pass has already completed.
+ * The scheduler sends small evidence pass plans instead of one bootstrap pass
+ * followed by one large enrichment pass. Each returned batch can be merged into
+ * the current evidence store and published as a normal snapshot revision.
  */
 export async function collectExtensionObservationBatch(
 	input: ExtensionPageCollectorInput,
 ): Promise<AppResult<ObservationBatch>> {
-	const tier = input.tier ?? 'initial';
-	const collectionPlan = getCollectionTierPlan(input.collectionPlan, tier);
+	const tier = input.tier ?? input.collectionTierPlan?.tier ?? 'initial';
+	const collectionPlan = input.collectionTierPlan ?? getCollectionTierPlan(input.collectionPlan, tier);
 	const timingContext: TimingContext = {
 		traceId: input.timingTraceId,
 		surface: 'collector',

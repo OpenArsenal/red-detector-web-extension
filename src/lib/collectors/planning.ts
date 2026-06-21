@@ -8,6 +8,9 @@ export const COLLECTION_TIERS = ['initial', 'enrichment'] as const;
 /** Detection collection tier for one active-tab pass. */
 export type CollectionTier = typeof COLLECTION_TIERS[number];
 
+/** Evidence pass ids used by the continuous active-tab collection scheduler. */
+export type CollectionEvidencePassId = 'initial' | 'html' | 'headers' | 'text' | 'source-content';
+
 /**
  * Runtime cost assigned to a collector surface in the compiled collection plan.
  *
@@ -79,6 +82,14 @@ export type CollectionTierPlan = {
 	needsStorage: boolean;
 };
 
+/** One executable evidence pass in the continuous active-tab runtime. */
+export type CollectionEvidencePass = {
+	/** Stable pass id used for logs, snapshots, and tests. */
+	readonly id: CollectionEvidencePassId;
+	/** Collector plan that captures only the evidence surface for this pass. */
+	readonly plan: CollectionTierPlan;
+};
+
 /**
  * Signals the background should ask collectors to capture for the active registry.
  *
@@ -135,6 +146,100 @@ export function buildCollectionPlan(
 		enrichment,
 		costSummary: createCollectionPlanCostSummary(registry),
 	};
+}
+
+
+/**
+ * Split full-registry collection needs into small evidence passes.
+ *
+ * The initial pass collects cheap facts that are already present in the page:
+ * URLs, resources, scripts, stylesheets, meta tags, DOM selectors, storage keys,
+ * cookies, and page globals. Follow-up passes ask for one expensive surface at a
+ * time. Each pass can produce a normal detector revision, which avoids the old
+ * bootstrap-then-enrichment contract where the popup waited for one large
+ * deferred result.
+ */
+export function createIncrementalCollectionPasses(
+	plan: CollectionPlan,
+): readonly CollectionEvidencePass[] {
+	const passes: CollectionEvidencePass[] = [{ id: 'initial', plan: plan.initial }];
+	const htmlPass = createCollectionTierPlan('enrichment', {
+		selectorProbeList: [],
+		htmlProbeList: plan.enrichment.htmlProbeList,
+		jsGlobalPropertyList: [],
+		needsHeaders: false,
+		needsScriptContent: false,
+		needsStylesheetContent: false,
+		needsText: false,
+		needsStorage: false,
+	});
+	const headerPass = createCollectionTierPlan('enrichment', {
+		selectorProbeList: [],
+		htmlProbeList: [],
+		jsGlobalPropertyList: [],
+		needsHeaders: plan.enrichment.needsHeaders,
+		needsScriptContent: false,
+		needsStylesheetContent: false,
+		needsText: false,
+		needsStorage: false,
+	});
+	const textPass = createCollectionTierPlan('enrichment', {
+		selectorProbeList: [],
+		htmlProbeList: [],
+		jsGlobalPropertyList: [],
+		needsHeaders: false,
+		needsScriptContent: false,
+		needsStylesheetContent: false,
+		needsText: plan.enrichment.needsText,
+		needsStorage: false,
+	});
+	const sourceContentPass = createCollectionTierPlan('enrichment', {
+		selectorProbeList: [],
+		htmlProbeList: [],
+		jsGlobalPropertyList: [],
+		needsHeaders: false,
+		needsScriptContent: plan.enrichment.needsScriptContent,
+		needsStylesheetContent: plan.enrichment.needsStylesheetContent,
+		needsText: false,
+		needsStorage: false,
+	});
+	appendCollectionEvidencePass(passes, 'html', htmlPass);
+	appendCollectionEvidencePass(passes, 'headers', headerPass);
+	appendCollectionEvidencePass(passes, 'text', textPass);
+	appendCollectionEvidencePass(passes, 'source-content', sourceContentPass);
+
+	return passes;
+}
+
+function appendCollectionEvidencePass(
+	passes: CollectionEvidencePass[],
+	id: CollectionEvidencePassId,
+	plan: CollectionTierPlan,
+): void {
+	if (hasCollectionTierPlanWork(plan)) {
+		passes.push({ id, plan });
+	}
+}
+
+/** Return whether a pass asks any collector to do real work. */
+export function hasCollectionTierPlanWork(plan: CollectionTierPlan): boolean {
+	return (
+		plan.selectorProbeList.length > 0 ||
+		plan.htmlProbeList.length > 0 ||
+		plan.jsGlobalPropertyList.length > 0 ||
+		plan.needsHeaders ||
+		plan.needsScriptContent ||
+		plan.needsStylesheetContent ||
+		plan.needsText ||
+		plan.needsStorage
+	);
+}
+
+function createCollectionTierPlan(
+	tier: CollectionTier,
+	fields: Omit<CollectionTierPlan, 'tier'>,
+): CollectionTierPlan {
+	return Object.assign({ tier }, fields);
 }
 
 /** Convert a collection plan to the content-script request shape. */
