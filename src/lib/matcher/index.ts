@@ -30,5 +30,4 @@ export {
 	createMatcherPartitionTasks,
 	createMatcherPipelineResult,
 	getMatcherPartitionPriority,
-	hasDeferredMatcherPartitions,
 } from './partition';

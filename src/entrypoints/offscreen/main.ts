@@ -29,7 +29,7 @@ let matcherQueueRunning = false;
 interface QueuedMatcherJob {
 	/** Request sent by the background. */
 	readonly request: RunMatcherJobRequest;
-	/** Lower values run before deferred enrichment or inactive work. */
+	/** Lower values run before inactive or lower-priority evidence work. */
 	readonly priority: number;
 	/** Resolve the background runtime message when the job completes. */
 	readonly resolve: (result: Awaited<ReturnType<typeof runMatcherJob>>) => void;
@@ -217,9 +217,6 @@ function takeNextQueuedMatcherJob(): QueuedMatcherJob | undefined {
 }
 
 function getJobQueuePriority(request: RunMatcherJobRequest): number {
-	if (request.mode === 'bootstrap') {
-		return 0;
-	}
 	if (request.mode === 'complete') {
 		return 1;
 	}
@@ -231,7 +228,6 @@ async function runMatcherJob(request: RunMatcherJobRequest) {
 		job: request.job,
 		batch: request.batch,
 		options: request.options,
-		bootstrapOnly: request.mode === 'bootstrap',
 	});
 	const workerCount = Math.min(
 		request.maxWorkerCount ?? DEFAULT_WORKER_COUNT,

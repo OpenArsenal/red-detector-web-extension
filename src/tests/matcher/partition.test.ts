@@ -4,7 +4,7 @@ import { matchIndexedObservationBatch } from '../../lib/detection/observation-ma
 import { createObservationMatcherIndex } from '../../lib/detection/observation-matcher-index';
 import { createCompiledDetectionRegistry } from '../../lib/detection/registry-graph';
 import type { TechnologyDefinition } from '../../lib/detection/types';
-import { createMatcherPartitionTasks, createMatcherPipelineResult, hasDeferredMatcherPartitions } from '../../lib/matcher';
+import { createMatcherPartitionTasks, createMatcherPipelineResult } from '../../lib/matcher';
 import type { MatcherPartitionResult } from '../../lib/matcher';
 import { normalizePageSignals, type ObservationBatch } from '../../lib/observations';
 import { createObservationKindTechnologyRegistry } from '../../lib/registry';
@@ -38,21 +38,7 @@ describe('matcher partitions', () => {
 			['html', 4],
 			['scriptContent', 4],
 		]);
-		expect(hasDeferredMatcherPartitions(batch)).toBe(true);
 	});
-
-	/** Bootstrap work deliberately leaves slower partitions for a follow-up job. */
-	it('can keep only bootstrap partitions for the first popup-visible run', () => {
-		const batch = normalizePageSignals(makePageSignals({
-			meta: { generator: ['Example CMS'] },
-			scripts: ['https://cdn.example/runtime.js'],
-		}));
-
-		const partitions = createMatcherPartitionTasks({ job, batch, bootstrapOnly: true });
-
-		expect(partitions.map((partition) => partition.kind)).toEqual(['meta', 'url']);
-	});
-
 
 	/** HTML probe observations use full-registry rule indexes as their lookup key. */
 	it('matches html probes after a shard preserves full-registry rule indexes', () => {

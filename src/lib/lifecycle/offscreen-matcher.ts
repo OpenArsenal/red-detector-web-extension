@@ -114,7 +114,6 @@ async function runMatcherJobInBackgroundFallback(
 		job: request.job,
 		batch: request.batch,
 		options: request.options,
-		bootstrapOnly: request.mode === 'bootstrap',
 	}).map((task) => {
 		const observationIndexes = new Map(task.batch.observations.map((observation, index) => [
 			observation,

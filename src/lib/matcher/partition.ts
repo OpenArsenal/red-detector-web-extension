@@ -18,15 +18,7 @@ import type {
 	MatcherPartitionTask,
 } from './contracts';
 
-/** Bootstrap partitions are the only ones allowed into the first visible matcher pass. */
-const BOOTSTRAP_PRIORITY_LOOKUP = Object.freeze({
-	1: true,
-	2: true,
-	3: false,
-	4: false,
-} satisfies Record<MatcherPartitionPriority, boolean>);
-
-/** Sort order that replaces the old hard-coded initial/enrichment split. */
+/** Sort order that lets cheap evidence publish before slower source-heavy work. */
 const KIND_PRIORITIES = Object.freeze({
 	url: 1,
 	htmlMatch: 1,
@@ -61,8 +53,6 @@ export interface CreateMatcherPartitionTasksInput {
 	readonly batch: ObservationBatch;
 	/** Optional detector flags such as disabled kinds. */
 	readonly options?: DetectionRunOptions;
-	/** Whether to keep only high-priority bootstrap partitions. */
-	readonly bootstrapOnly?: boolean;
 }
 
 /** Input for merging partition results into the normal event-pipeline result. */
@@ -88,7 +78,7 @@ export interface CreateMatcherPipelineResultInput {
  *
  * A page can expose thousands of script and resource URL observations while its
  * URL, meta, DOM, and header evidence is tiny. Kind partitions let the scheduler
- * send cheap facts first, then keep deeper content scans moving in parallel
+ * send cheap facts first, then keep source-heavy content scans moving in parallel
  * without blocking the background service worker message loop.
  */
 export function createMatcherPartitionTasks(
@@ -102,10 +92,6 @@ export function createMatcherPartitionTasks(
 
 	input.batch.observations.forEach((observation, index) => {
 		const priority = getMatcherPartitionPriority(observation.kind);
-		if (input.bootstrapOnly && !isBootstrapMatcherPriority(priority)) {
-			return;
-		}
-
 		const bucket = grouped.get(observation.kind);
 		if (bucket) {
 			bucket.observations.push(observation);
@@ -139,18 +125,6 @@ export function createMatcherPartitionTasks(
 			observationIndexes: bucket.indexes,
 			...(input.options ? { options: input.options } : {}),
 		}));
-}
-
-/** Return whether low-priority partitions remain after the bootstrap response. */
-export function hasDeferredMatcherPartitions(batch: ObservationBatch): boolean {
-	return batch.observations.some((observation) => !isBootstrapMatcherPriority(
-		getMatcherPartitionPriority(observation.kind),
-	));
-}
-
-/** Return whether a matcher priority belongs in the first popup-visible pass. */
-function isBootstrapMatcherPriority(priority: MatcherPartitionPriority): boolean {
-	return BOOTSTRAP_PRIORITY_LOOKUP[priority];
 }
 
 /** Return the scheduler priority assigned to an observation kind. */

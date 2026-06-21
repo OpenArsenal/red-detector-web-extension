@@ -4,6 +4,11 @@ import { browser } from 'wxt/browser';
 import { registerBackgroundLifecycleListeners } from '../lib/background/lifecycle';
 import { canInspectTab, getActiveTab } from '../lib/browser/active-tab';
 import { collectExtensionObservationBatch } from '../lib/collectors/extension-page-collector';
+import {
+	createIncrementalCollectionPasses,
+	type CollectionEvidencePass,
+	type CollectionTierPlan,
+} from '../lib/collectors/planning';
 import { bundledTechnologyRegistryProvider } from '../lib/detection/registry-provider';
 import { DETECTION_SESSION_SNAPSHOT_SCHEMA_VERSION } from '../lib/contracts/detection-session';
 import { configureRedDetectorLogging, getRedDetectorLogger } from '../lib/diagnostics/logging';
@@ -109,8 +114,8 @@ const backgroundLogger = getRedDetectorLogger('background');
 const CONTENT_SCRIPT_FILE = '/content-scripts/content.js';
 const CONTENT_SCRIPT_PING_TIMEOUT_MS = 750;
 
-/** Background enrichment is a follow-up pass and must not leave the popup pending forever. */
-const ENRICHMENT_TIMEOUT_MS = 10_000;
+/** Each follow-up evidence surface is bounded so one slow collector cannot own the UX. */
+const EVIDENCE_PASS_TIMEOUT_MS = 10_000;
 
 /**
  * In-flight runtime injections are deduplicated per tab.
@@ -131,15 +136,8 @@ const contentScriptInjectionByTab = new Map<number, Promise<AppResult<void>>>();
  */
 const eventObservationBatchByTab = new Map<number, ObservationBatch>();
 
-/**
- * Completed deferred enrichment runs keyed by observation session id.
- *
- * The content script owns DOM mutation state, but deeper background enrichment
- * completes outside that observer. Marking the session dirty lets the popup use
- * the existing refresh API and receive the saved enriched result without adding a
- * new push channel.
- */
-const completedEnrichmentBySession = new Map<string, { readonly tabId: number; readonly completedAt: number }>();
+/** Latest scheduled evidence-pass sequence for each tab while the background is alive. */
+const evidencePassSequenceByTab = new Map<number, string>();
 
 /** Latest matcher job created for each tab while the background is alive. */
 const latestMatcherJobByTab = new Map<number, string>();
@@ -156,8 +154,6 @@ interface ActiveMatcherProgressContext {
 	readonly cacheStatus: AnalyzeActiveTabOutput['cache']['status'];
 	/** Active observation session, when the popup asked for live updates. */
 	readonly session?: ObservationSessionState;
-	/** Current enrichment state shown while deeper collectors keep running. */
-	readonly enrichment?: AnalysisEnrichmentState;
 	/** Completed partition results accumulated in original completion order. */
 	readonly partitions: MatcherPartitionResult[];
 }
@@ -170,7 +166,7 @@ const activeMatcherProgressByJob = new Map<string, ActiveMatcherProgressContext>
  *
  * Manifest V3 can restart the background at any time, so these maps are only
  * performance and lifecycle conveniences. Removing them when a tab closes keeps
- * stale observation batches or completed enrichment markers from being reused by
+ * stale observation batches or evidence-pass schedules from being reused by
  * a later tab that receives the same browser id.
  */
 function forgetTabRuntimeState(tabId: number): void {
@@ -184,11 +180,7 @@ function forgetTabRuntimeState(tabId: number): void {
 		}
 	}
 
-	for (const [sessionId, completed] of completedEnrichmentBySession) {
-		if (completed.tabId === tabId) {
-			completedEnrichmentBySession.delete(sessionId);
-		}
-	}
+	evidencePassSequenceByTab.delete(tabId);
 }
 
 function logBackgroundEvent(event: string, details?: Record<string, unknown>): void {
@@ -354,7 +346,7 @@ async function ensureContentScript(tabId: number): Promise<AppResult<void>> {
  * Ask the extension collector for normalized observations from the active tab.
  *
  * Fresh analysis no longer exposes the old page-snapshot detector path to the
- * background. The content script collects document facts, background enrichment
+ * background. The content script collects document facts, background evidence passes
  * appends privileged facts, and the event pipeline consumes the enriched batch.
  */
 async function collectObservationBatchFromTab(
@@ -363,6 +355,7 @@ async function collectObservationBatchFromTab(
 	compiledRegistryArtifact: CompiledRegistry,
 	tier: 'initial' | 'enrichment' = 'initial',
 	timingTraceId?: string,
+	collectionTierPlan?: CollectionTierPlan,
 ): Promise<AppResult<ObservationBatch>> {
 	const timingContext: TimingContext = {
 		traceId: timingTraceId,
@@ -391,6 +384,7 @@ async function collectObservationBatchFromTab(
 			expectedUrl,
 			collectionPlan: compiledRegistryArtifact.collectionPlan,
 			tier,
+			...(collectionTierPlan ? { collectionTierPlan } : {}),
 			contentApi: createContentApiClient(tabId, 0),
 			log: logBackgroundEvent,
 			timingTraceId,
@@ -523,17 +517,16 @@ function createDetectionSessionKeyForOutput(tab: InspectableTab, output: Analyze
 
 /** Derive the popup-visible lifecycle state from the analysis response. */
 function getDetectionSnapshotStatus(output: AnalyzeActiveTabOutput): DetectionSessionStatus {
-	if (output.enrichment?.status === 'pending') return 'enriching';
 	if (output.session?.status === 'observing' || output.session?.status === 'dirty') return 'observing';
 	if (output.session?.status === 'stopped') return 'stopped';
 	if (output.cache.status === 'hit') return 'cached';
 	return 'complete';
 }
 
-/** Store enrichment outcomes with terminal states instead of leaving the popup pending forever. */
+/** Convert legacy enrichment metadata into the snapshot schema used by existing storage. */
 function toDetectionEnrichmentState(enrichment?: AnalysisEnrichmentState): DetectionEnrichmentState {
 	const updatedAt = Date.now();
-	if (!enrichment) return { status: 'not-needed', updatedAt, reason: 'no-enrichment-response' };
+	if (!enrichment) return { status: 'not-needed', updatedAt, reason: 'continuous-evidence-revisions' };
 	return {
 		status: enrichment.status === 'skipped' ? 'skipped' : enrichment.status,
 		updatedAt,
@@ -621,15 +614,13 @@ async function flushObservationBatchForTab(
 async function analyzeObservationBatchRefresh(
 	tab: InspectableTab,
 	flush: FlushObservationBatchOutput,
-	enrichment?: AnalysisEnrichmentState,
-	timingTraceId = createTimingTraceId(enrichment?.status === 'complete' ? 'refresh-enrichment' : 'refresh'),
+	timingTraceId = createTimingTraceId('refresh'),
 ): Promise<AppResult<AnalyzeActiveTabOutput>> {
 	const timingContext: TimingContext = {
 		traceId: timingTraceId,
 		surface: 'background',
 		details: {
 			...summarizeTab(tab),
-			enrichmentStatus: enrichment?.status ?? 'none',
 		},
 	};
 	const totalSpan = startTimingSpan('background.observation-refresh.total', timingContext);
@@ -661,7 +652,6 @@ async function analyzeObservationBatchRefresh(
 				replayTrace ?? undefined,
 				replayHistory,
 				createObservationSessionTarget(tab, flush.session),
-				enrichment,
 			));
 		}
 
@@ -692,11 +682,11 @@ async function analyzeObservationBatchRefresh(
 	}
 
 	const response = await analyzeAndPersistObservationBatch(tab, batchResponse.value, compiledRegistryArtifact, 'bypassed', flush.session, {
-		refreshKind: enrichment?.status === 'complete' ? 'enrichment' : baseBatch ? 'incremental' : 'recovered',
+		refreshKind: baseBatch ? 'incremental' : 'recovered',
 		matcherMode: 'complete',
 		queuedCount: flush.stats.queuedCount,
 		lateObservationCount: lateBatch.observations.length,
-	}, enrichment, timingTraceId);
+	}, undefined, timingTraceId);
 	endTimingSpan(totalSpan, {
 		ok: response.ok,
 		resultCount: response.ok ? response.value.analysis.results.length : 0,
@@ -836,10 +826,11 @@ async function analyzeFreshActiveTab(
 		() => bundledTechnologyRegistryProvider.getCompiledRegistry(),
 		summarizeCompiledRegistryArtifact,
 	);
-	const batchResponse = await collectObservationBatchFromTab(tab.id, tab.url, compiledRegistryArtifact, 'initial', timingTraceId);
-	if (!batchResponse.ok) {
-		endTimingSpan(totalSpan, { ok: false, failedAt: 'collect-initial' });
-		return batchResponse;
+	const collectionPasses = createIncrementalCollectionPasses(compiledRegistryArtifact.collectionPlan);
+	const [initialPass, ...remainingPasses] = collectionPasses;
+	if (!initialPass) {
+		endTimingSpan(totalSpan, { ok: false, failedAt: 'create-collection-passes' });
+		return errorResponse('VALIDATION_ERROR', 'No collection pass was available for the active registry.');
 	}
 
 	let session: ObservationSessionState | undefined;
@@ -860,161 +851,189 @@ async function analyzeFreshActiveTab(
 		}
 	}
 
-	const enrichment = getInitialEnrichmentState(tab, session, hasEnrichmentWork(compiledRegistryArtifact));
-	const response = await analyzeAndPersistObservationBatch(tab, batchResponse.value, compiledRegistryArtifact, cacheStatus, session, {
-		refreshKind: 'incremental-initial',
-		matcherMode: 'complete',
-	}, enrichment, timingTraceId);
+	const batchResponse = await collectObservationBatchFromTab(
+		tab.id,
+		tab.url,
+		compiledRegistryArtifact,
+		initialPass.plan.tier,
+		timingTraceId,
+		initialPass.plan,
+	);
+	if (!batchResponse.ok) {
+		endTimingSpan(totalSpan, { ok: false, failedAt: 'collect-initial' });
+		return batchResponse;
+	}
 
-	if (response.ok && enrichment.status === 'pending') {
-		scheduleDeferredEnrichment(tab, batchResponse.value, session, response.value, timingTraceId);
+	const response = await analyzeAndPersistObservationBatch(tab, batchResponse.value, compiledRegistryArtifact, cacheStatus, session, {
+		refreshKind: 'evidence-pass:initial',
+		matcherMode: 'complete',
+	}, undefined, timingTraceId);
+
+	if (response.ok && remainingPasses.length > 0) {
+		scheduleIncrementalEvidencePasses({
+			tab,
+			initialBatch: batchResponse.value,
+			compiledRegistryArtifact,
+			cacheStatus: 'bypassed',
+			session,
+			passes: remainingPasses,
+			initialTimingTraceId: timingTraceId,
+		});
 	}
 
 	endTimingSpan(totalSpan, {
 		ok: response.ok,
 		resultCount: response.ok ? response.value.analysis.results.length : 0,
-		enrichmentStatus: enrichment.status,
+		remainingEvidencePassCount: remainingPasses.length,
 	});
 	return response;
 }
 
 
-function getInitialEnrichmentState(
-	tab: InspectableTab,
-	session: ObservationSessionState | undefined,
-	hasEnrichmentWorkAvailable: boolean,
-): AnalysisEnrichmentState {
-	if (tab.incognito) {
-		return { status: 'skipped', reason: 'incognito' };
-	}
-	if (!session?.sessionId) {
-		return { status: 'skipped', reason: 'no-observation-session' };
-	}
-	return hasEnrichmentWorkAvailable
-		? { status: 'pending', reason: 'evidence-surfaces-queued' }
-		: { status: 'skipped', reason: 'no-enrichment-work' };
-}
 
-function hasEnrichmentWork(compiledRegistryArtifact: CompiledRegistry): boolean {
-	const enrichment = compiledRegistryArtifact.collectionPlan.enrichment;
-	return (
-		enrichment.htmlProbeList.length > 0 ||
-		enrichment.needsHeaders ||
-		enrichment.needsScriptContent ||
-		enrichment.needsStylesheetContent ||
-		enrichment.needsText
-	);
-}
+type IncrementalEvidencePassInput = {
+	/** Tab and URL identity that owns the evidence sequence. */
+	readonly tab: InspectableTab;
+	/** First-pass batch already matched and saved for the popup. */
+	readonly initialBatch: ObservationBatch;
+	/** Full registry artifact used for every pass and final graph refinement. */
+	readonly compiledRegistryArtifact: CompiledRegistry;
+	/** Cache status attached to follow-up pass outputs. */
+	readonly cacheStatus: AnalyzeActiveTabOutput['cache']['status'];
+	/** Active observation session, when the popup asked for continuous updates. */
+	readonly session?: ObservationSessionState;
+	/** Follow-up evidence passes that should publish normal snapshot revisions. */
+	readonly passes: readonly CollectionEvidencePass[];
+	/** Trace id of the first request, used as a prefix for pass-level timing logs. */
+	readonly initialTimingTraceId?: string;
+};
 
-function scheduleDeferredEnrichment(
-	tab: InspectableTab,
-	initialBatch: ObservationBatch,
-	session?: ObservationSessionState,
-	initialOutput?: AnalyzeActiveTabOutput,
-	initialTimingTraceId?: string,
-): void {
-	if (!session?.sessionId || !initialOutput || tab.incognito) {
+/**
+ * Schedule expensive evidence surfaces as normal detector revisions.
+ *
+ * The previous runtime treated broad HTML, headers, text, and source content as
+ * one large deferred evidence job. That made the popup render one small result and
+ * then wait. Continuous evidence passes keep the same first-paint win while each
+ * surface can independently merge, match, and publish a newer snapshot.
+ */
+function scheduleIncrementalEvidencePasses(input: IncrementalEvidencePassInput): void {
+	if (input.tab.incognito || input.passes.length === 0) {
 		return;
 	}
 
-	const sessionId = session.sessionId;
-	void (async () => {
-		const timingTraceId = initialTimingTraceId ? `${initialTimingTraceId}:enrichment` : createTimingTraceId('enrichment');
+	const sequenceId = crypto.randomUUID();
+	evidencePassSequenceByTab.set(input.tab.id, sequenceId);
+	void runIncrementalEvidencePasses(input, sequenceId);
+}
+
+async function runIncrementalEvidencePasses(
+	input: IncrementalEvidencePassInput,
+	sequenceId: string,
+): Promise<void> {
+	let mergedBatch = input.initialBatch;
+	for (const pass of input.passes) {
+		if (evidencePassSequenceByTab.get(input.tab.id) !== sequenceId) {
+			return;
+		}
+
+		const timingTraceId = input.initialTimingTraceId
+			? `${input.initialTimingTraceId}:evidence:${pass.id}`
+			: createTimingTraceId(`evidence-${pass.id}`);
 		const timingContext: TimingContext = {
 			traceId: timingTraceId,
 			surface: 'background',
 			details: {
-				...summarizeTab(tab),
-				sessionId,
+				...summarizeTab(input.tab),
+				passId: pass.id,
+				sequenceId,
 			},
 		};
-		const enrichmentSpan = startTimingSpan('background.analysis-enrichment.total', timingContext);
-		logBackgroundEvent('analysis-enrichment-start', {
-			...summarizeTab(tab),
-			sessionId: session.sessionId,
+		const passSpan = startTimingSpan('background.evidence-pass.total', timingContext);
+		logBackgroundEvent('evidence-pass-start', {
+			...summarizeTab(input.tab),
+			passId: pass.id,
 			timingTraceId,
 		});
+
 		try {
-
-			const compiledRegistryArtifact = await timeAsyncSpan(
-				'background.registry.get-enrichment-compiled',
-				timingContext,
-				() => bundledTechnologyRegistryProvider.getCompiledRegistry(),
-				summarizeCompiledRegistryArtifact,
-			);
-
-			if (!hasEnrichmentWork(compiledRegistryArtifact)) {
-				await persistTerminalEnrichmentSnapshot(tab, initialOutput, { status: 'not-needed', reason: 'no-enrichment-work' });
-				endTimingSpan(enrichmentSpan, { ok: true, skipped: 'no-enrichment-work' });
-				return;
-			}
-
-			const enrichmentBatch = await runEnrichmentWithTimeout(() => collectObservationBatchFromTab(
-				tab.id,
-				tab.url,
-				compiledRegistryArtifact,
-				'enrichment',
+			const passBatch = await runEvidencePassWithTimeout(() => collectObservationBatchFromTab(
+				input.tab.id,
+				input.tab.url,
+				input.compiledRegistryArtifact,
+				pass.plan.tier,
 				timingTraceId,
+				pass.plan,
 			));
-			if (!enrichmentBatch.ok) {
-				logBackgroundEvent('analysis-enrichment-failed', {
-					...summarizeTab(tab),
-					sessionId,
-					code: enrichmentBatch.error.code,
-					message: enrichmentBatch.error.message,
+			if (!passBatch.ok) {
+				logBackgroundEvent('evidence-pass-failed', {
+					...summarizeTab(input.tab),
+					passId: pass.id,
+					code: passBatch.error.code,
+					message: passBatch.error.message,
 				});
-				await persistTerminalEnrichmentSnapshot(tab, initialOutput, {
-					status: enrichmentBatch.error.message.includes('timed out') ? 'timed-out' : 'failed',
-					reason: enrichmentBatch.error.message,
-				});
-				endTimingSpan(enrichmentSpan, { ok: false, failedAt: 'collect-enrichment' });
-				return;
+				endTimingSpan(passSpan, { ok: false, failedAt: 'collect' });
+				continue;
 			}
 
-			const mergedBatch = mergeObservationBatches(initialBatch, enrichmentBatch.value);
-			const completedAt = Date.now();
+			mergedBatch = mergeObservationBatches(mergedBatch, passBatch.value);
 			const response = await analyzeAndPersistObservationBatch(
-				tab,
+				input.tab,
 				mergedBatch,
-				compiledRegistryArtifact,
-				'bypassed',
-				session,
-				{ refreshKind: 'enrichment', matcherMode: 'enrichment' },
-				{ status: 'complete', completedAt },
+				input.compiledRegistryArtifact,
+				input.cacheStatus,
+				input.session,
+				{ refreshKind: `evidence-pass:${pass.id}`, matcherMode: 'evidence-pass', evidencePassId: pass.id },
+				undefined,
 				timingTraceId,
 			);
 			if (!response.ok) {
-				logBackgroundEvent('analysis-enrichment-persist-failed', {
-					...summarizeTab(tab),
-					sessionId,
+				logBackgroundEvent('evidence-pass-persist-failed', {
+					...summarizeTab(input.tab),
+					passId: pass.id,
 					code: response.error.code,
 					message: response.error.message,
 				});
-				await persistTerminalEnrichmentSnapshot(tab, initialOutput, { status: 'failed', reason: response.error.message });
-				endTimingSpan(enrichmentSpan, { ok: false, failedAt: 'persist-enrichment' });
-				return;
+				endTimingSpan(passSpan, { ok: false, failedAt: 'persist' });
+				continue;
 			}
 
-			completedEnrichmentBySession.set(sessionId, { tabId: tab.id, completedAt });
-			logBackgroundEvent('analysis-enrichment-complete', {
-				...summarizeTab(tab),
-				sessionId,
-				completedAt,
+			logBackgroundEvent('evidence-pass-complete', {
+				...summarizeTab(input.tab),
+				passId: pass.id,
 				resultCount: response.value.analysis.results.length,
 				timingTraceId,
 			});
-			endTimingSpan(enrichmentSpan, {
-				ok: true,
-				resultCount: response.value.analysis.results.length,
-			});
+			endTimingSpan(passSpan, { ok: true, resultCount: response.value.analysis.results.length });
 		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Deep evidence collection failed.';
-			await persistTerminalEnrichmentSnapshot(tab, initialOutput, { status: 'failed', reason: message });
-			endTimingSpan(enrichmentSpan, { ok: false, failedAt: 'unexpected-enrichment-error' });
+			logBackgroundEvent('evidence-pass-unexpected-error', {
+				...summarizeTab(input.tab),
+				passId: pass.id,
+				message: error instanceof Error ? error.message : 'Evidence pass failed.',
+			});
+			endTimingSpan(passSpan, { ok: false, failedAt: 'unexpected-error' });
 		}
-	})();
+	}
 }
 
+async function runEvidencePassWithTimeout<T>(
+	operation: () => Promise<AppResult<T>>,
+): Promise<AppResult<T>> {
+	try {
+		return await withTimeout(
+			operation(),
+			EVIDENCE_PASS_TIMEOUT_MS,
+			'Evidence collection pass timed out before it could update the popup.',
+		);
+	} catch (error) {
+		if (error instanceof RpcTimeoutError) {
+			return errorResponse('CONTENT_SCRIPT_UNAVAILABLE', error.message, error.stack);
+		}
+
+		const message = error instanceof Error ? error.message : 'Evidence collection pass failed.';
+		const stack = error instanceof Error ? error.stack : undefined;
+		return errorResponse('UNKNOWN', message, stack);
+	}
+}
 
 function createMatcherJobRecord(
 	tab: InspectableTab,
@@ -1042,7 +1061,7 @@ function createMatcherJobRecord(
 }
 
 function getMatcherJobMode(value: unknown, _session?: ObservationSessionState): MatcherJobMode {
-	if (value === 'enrichment' || value === 'complete' || value === 'bootstrap') {
+	if (value === 'complete' || value === 'evidence-pass') {
 		return value;
 	}
 	return 'complete';
@@ -1060,37 +1079,6 @@ async function canPersistMatcherResult(tab: InspectableTab, expectedUrl: string)
 	}
 }
 
-async function runEnrichmentWithTimeout<T>(
-	operation: () => Promise<AppResult<T>>,
-): Promise<AppResult<T>> {
-	try {
-		return await withTimeout(
-			operation(),
-			ENRICHMENT_TIMEOUT_MS,
-			'Deep evidence collection timed out before it could update the popup.',
-		);
-	} catch (error) {
-		if (error instanceof RpcTimeoutError) {
-			return errorResponse('CONTENT_SCRIPT_UNAVAILABLE', error.message, error.stack);
-		}
-
-		const message = error instanceof Error ? error.message : 'Deep evidence collection failed.';
-		const stack = error instanceof Error ? error.stack : undefined;
-		return errorResponse('UNKNOWN', message, stack);
-	}
-}
-
-async function persistTerminalEnrichmentSnapshot(
-	tab: InspectableTab,
-	output: AnalyzeActiveTabOutput,
-	enrichment: AnalysisEnrichmentState,
-): Promise<void> {
-	await saveDetectionSnapshotForPopup(
-		tab,
-		Object.assign({}, output, { enrichment }),
-		'background',
-	);
-}
 
 async function analyzeAndPersistObservationBatch(
 	tab: InspectableTab,
@@ -1123,7 +1111,6 @@ async function analyzeAndPersistObservationBatch(
 		compiledRegistryArtifact,
 		cacheStatus,
 		...(session ? { session } : {}),
-		...(enrichment ? { enrichment } : {}),
 		partitions: [],
 	});
 	await updateMatcherJobRecord(matcherJob.jobId, { status: 'dispatching' });
@@ -1301,7 +1288,7 @@ async function refreshObservationSessionTarget(
 		return sessionResponse;
 	}
 
-	const resolvedSession = markSessionDirtyWhenEnrichmentCompleted(sessionResponse.value, target);
+	const resolvedSession = sessionResponse.value;
 	const targetValidation = validateObservationSessionTarget(resolvedSession, target);
 	if (!targetValidation.ok) {
 		return targetValidation;
@@ -1327,9 +1314,6 @@ async function refreshObservationSessionTarget(
 		);
 	}
 
-	const completedEnrichment = target.sessionId
-		? completedEnrichmentBySession.get(target.sessionId)
-		: undefined;
 	const batchResponse = await timeAsyncSpan(
 		'background.observation-refresh.flush-batch',
 		timingContext,
@@ -1344,17 +1328,11 @@ async function refreshObservationSessionTarget(
 		return batchResponse;
 	}
 
-	const response = await analyzeObservationBatchRefresh(
+	return analyzeObservationBatchRefresh(
 		tab,
 		batchResponse.value,
-		completedEnrichment ? { status: 'complete', completedAt: completedEnrichment.completedAt } : undefined,
 		timingTraceId,
 	);
-	if (response.ok && target.sessionId) {
-		completedEnrichmentBySession.delete(target.sessionId);
-	}
-
-	return response;
 }
 
 async function stopObservationSessionTarget(
@@ -1377,38 +1355,6 @@ async function stopObservationSessionTarget(
 }
 
 
-/**
- * Surface completed background enrichment through the existing live-update contract.
- *
- * Deeper evidence collection runs after the first popup response and does not
- * come from the content-script mutation observer. Marking the targeted session
- * as dirty lets the popup reuse the same refresh path and receive the enriched
- * cached analysis. Expired sessions remain eligible because enrichment can take
- * longer than the observation window; manual stops, navigation, and invalidation
- * still keep their stopped state.
- */
-function markSessionDirtyWhenEnrichmentCompleted(
-	session: ObservationSessionState,
-	target: ObservationSessionTarget,
-): ObservationSessionState {
-	if (!target.sessionId) {
-		return session;
-	}
-
-	const completed = completedEnrichmentBySession.get(target.sessionId);
-	if (!completed || completed.tabId !== target.tabId) {
-		return session;
-	}
-	if (session.status === 'stopped' && session.stopReason !== 'expired') {
-		return session;
-	}
-
-	return Object.assign({}, session, {
-		status: 'dirty' as const,
-		lastObservedAt: Math.max(session.lastObservedAt ?? 0, completed.completedAt),
-	});
-}
-
 async function getObservationSessionStateForTarget(
 	target: ObservationSessionTarget,
 ): Promise<AppResult<ObservationSessionState>> {
@@ -1422,17 +1368,16 @@ async function getObservationSessionStateForTarget(
 		return targetValidation;
 	}
 
-	return ok(markSessionDirtyWhenEnrichmentCompleted(response.value, target));
+	return ok(response.value);
 }
 
 /**
  * Read the newest stored analysis for a known popup session target.
  *
- * Deferred enrichment writes the completed analysis to storage before the popup
- * can necessarily refresh the content-script observer. Reading storage by the
- * session target keeps progressive updates durable across observer expiry and
- * Manifest V3 service-worker restarts, where in-memory completion markers are
- * lost.
+ * Continuous evidence passes and late observation refreshes write completed
+ * analyses to storage before the popup necessarily has a direct RPC response.
+ * Reading storage by the session target keeps these revisions durable across
+ * observer expiry and Manifest V3 service-worker restarts.
  */
 async function getLatestAnalysisForObservationSession(
 	input: ObservationSessionTarget & { readonly afterAnalyzedAt: number },
@@ -1493,7 +1438,6 @@ async function getLatestAnalysisForObservationSession(
 		replayTrace ?? undefined,
 		replayHistory,
 		input,
-		{ status: 'complete', completedAt: cached.analyzedAt },
 	));
 }
 
@@ -1771,10 +1715,6 @@ async function handleMatcherPartitionProgressUpdate(
 		undefined,
 		undefined,
 		createObservationSessionTarget(context.tab, context.session),
-		context.enrichment ?? {
-			status: 'pending',
-			reason: `matched ${context.partitions.length} of ${message.partitionCount} evidence groups`,
-		},
 	);
 	await saveDetectionSnapshotForPopup(context.tab, output, 'background');
 }

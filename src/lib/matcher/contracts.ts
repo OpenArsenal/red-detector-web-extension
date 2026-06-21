@@ -14,7 +14,7 @@ import type {
  *
  * Lower numbers run first. The popup needs cheap document facts before deep
  * source and asset scans, so scheduler priority replaces the older hard split
- * between an "initial" detector and a later enrichment detector.
+ * between an early detector and a later detector.
  */
 export type MatcherPartitionPriority = 1 | 2 | 3 | 4;
 
@@ -40,7 +40,7 @@ export type MatcherJobTerminalReason =
 	| 'worker-failed';
 
 /** Scheduler mode for one matcher job. */
-export type MatcherJobMode = 'bootstrap' | 'complete' | 'enrichment';
+export type MatcherJobMode = 'complete' | 'evidence-pass';
 
 /** Stable ids used by background, offscreen, and worker messages for one matcher run. */
 export interface MatcherJobIdentity {
