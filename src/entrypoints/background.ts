@@ -674,9 +674,9 @@ async function analyzeObservationBatchRefresh(
 	const lateBatch = flush.batch;
 	const baseBatch = eventObservationBatchByTab.get(tab.id);
 	const compiledRegistryArtifact = await timeAsyncSpan(
-		'background.registry.get-bootstrap-compiled',
+		'background.registry.get-refresh-compiled',
 		timingContext,
-		() => bundledTechnologyRegistryProvider.getCompiledBootstrapRegistry(),
+		() => bundledTechnologyRegistryProvider.getCompiledRegistry(),
 		summarizeCompiledRegistryArtifact,
 	);
 	const batchResponse = baseBatch && isSameObservationTarget(baseBatch, lateBatch)
@@ -694,6 +694,7 @@ async function analyzeObservationBatchRefresh(
 
 	const response = await analyzeAndPersistObservationBatch(tab, batchResponse.value, compiledRegistryArtifact, 'bypassed', flush.session, {
 		refreshKind: enrichment?.status === 'complete' ? 'enrichment' : baseBatch ? 'incremental' : 'recovered',
+		matcherMode: 'complete',
 		queuedCount: flush.stats.queuedCount,
 		lateObservationCount: lateBatch.observations.length,
 	}, enrichment, timingTraceId);
@@ -830,10 +831,15 @@ async function analyzeFreshActiveTab(
 			observe: input.observe,
 		},
 	};
+	const shouldUseBootstrapRegistry = shouldStartObservationForAnalysis(input) && !tab.incognito;
 	const compiledRegistryArtifact = await timeAsyncSpan(
-		'background.registry.get-bootstrap-compiled',
+		shouldUseBootstrapRegistry
+			? 'background.registry.get-bootstrap-compiled'
+			: 'background.registry.get-complete-compiled',
 		timingContext,
-		() => bundledTechnologyRegistryProvider.getCompiledBootstrapRegistry(),
+		() => shouldUseBootstrapRegistry
+			? bundledTechnologyRegistryProvider.getCompiledBootstrapRegistry()
+			: bundledTechnologyRegistryProvider.getCompiledRegistry(),
 		summarizeCompiledRegistryArtifact,
 	);
 	const batchResponse = await collectObservationBatchFromTab(tab.id, tab.url, compiledRegistryArtifact, 'initial', timingTraceId);
@@ -944,15 +950,16 @@ function scheduleDeferredEnrichment(
 				() => bundledTechnologyRegistryProvider.getCompiledRegistry(),
 				summarizeCompiledRegistryArtifact,
 			);
-			if (!hasEnrichmentWork(compiledRegistryArtifact)) {
-				if (hasDeferredMatcherWork) {
-					await runDeferredMatcherCompletion(tab, initialBatch, compiledRegistryArtifact, session, timingTraceId);
-					endTimingSpan(enrichmentSpan, { ok: true, completedMatcher: true });
-					return;
-				}
 
-				await persistTerminalEnrichmentSnapshot(tab, initialOutput, { status: 'not-needed', reason: 'no-enrichment-work' });
-				endTimingSpan(enrichmentSpan, { ok: true, skipped: 'no-enrichment-work' });
+			if (hasDeferredMatcherWork) {
+				await runDeferredMatcherCompletion(tab, initialBatch, compiledRegistryArtifact, session, timingTraceId);
+			}
+
+			if (!hasEnrichmentWork(compiledRegistryArtifact)) {
+				if (!hasDeferredMatcherWork) {
+					await persistTerminalEnrichmentSnapshot(tab, initialOutput, { status: 'not-needed', reason: 'no-enrichment-work' });
+				}
+				endTimingSpan(enrichmentSpan, { ok: true, skipped: 'no-enrichment-work', completedMatcher: hasDeferredMatcherWork });
 				return;
 			}
 
@@ -1596,12 +1603,32 @@ export function createBackgroundApi(): BackgroundApi {
 							sessionStatus: 'none',
 							timingTraceId: requestTimingTraceId,
 						});
+						let session: ObservationSessionState | undefined;
+						if (shouldStartObservationForAnalysis(input)) {
+							const sessionResponse = await timeAsyncSpan(
+								'background.observation-session.begin-cached',
+								requestTimingContext,
+								() => beginObservationSessionForTab(tab.id, tab.url, tab.incognito),
+								(response) => ({ ok: response.ok, status: response.ok ? response.value.status : undefined }),
+							);
+							if (sessionResponse.ok) {
+								session = sessionResponse.value;
+							} else {
+								logBackgroundEvent('analysis-cache-observation-unavailable', {
+									...summarizeTab(tab),
+									code: sessionResponse.error.code,
+									message: sessionResponse.error.message,
+								});
+							}
+						}
+
 						const output = createAnalysisOutput(
 							cached,
 							'hit',
-							undefined,
+							session,
 							replayTrace ?? undefined,
 							replayHistory,
+							createObservationSessionTarget(tab, session),
 						);
 						await saveDetectionSnapshotForPopup(tab, output, 'cache');
 
