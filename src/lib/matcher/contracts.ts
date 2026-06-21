@@ -232,11 +232,8 @@ export interface MatcherWorkerRunMessage {
 	readonly type: 'matcher-worker.run-partition';
 	/** Partition to process. */
 	readonly task: MatcherPartitionTask;
-	/** Registry shared by the offscreen host with the dedicated worker. */
-	readonly registry: readonly TechnologyDefinition[];
-	/** Prebuilt matcher index cloned into the worker for this partition. */
-	readonly index: ObservationMatcherIndex;
 }
+
 
 /** Worker response for a completed or failed partition. */
 export type MatcherWorkerResponseMessage =

@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { createMatcherPartitionTasks, hasDeferredMatcherPartitions } from '../../lib/matcher';
-import { normalizePageSignals } from '../../lib/observations';
+import { matchIndexedObservationBatch } from '../../lib/detection/observation-matcher-index';
+import { createObservationMatcherIndex } from '../../lib/detection/observation-matcher-index';
+import { createCompiledDetectionRegistry } from '../../lib/detection/registry-graph';
+import type { TechnologyDefinition } from '../../lib/detection/types';
+import { createMatcherPartitionTasks, createMatcherPipelineResult, hasDeferredMatcherPartitions } from '../../lib/matcher';
+import type { MatcherPartitionResult } from '../../lib/matcher';
+import { normalizePageSignals, type ObservationBatch } from '../../lib/observations';
+import { createObservationKindTechnologyRegistry } from '../../lib/registry';
 import { makePageSignals } from '../support/factories';
 
 const job = {
@@ -45,5 +51,117 @@ describe('matcher partitions', () => {
 		const partitions = createMatcherPartitionTasks({ job, batch, bootstrapOnly: true });
 
 		expect(partitions.map((partition) => partition.kind)).toEqual(['meta', 'url']);
+	});
+
+
+	/** HTML probe observations use full-registry rule indexes as their lookup key. */
+	it('matches html probes after a shard preserves full-registry rule indexes', () => {
+		const registry: readonly TechnologyDefinition[] = [{
+			id: 'html-probed-tech',
+			name: 'HTML Probed Tech',
+			website: 'https://html-probed-tech.example',
+			categories: ['developer-tooling'],
+			rules: [
+				{ kind: 'url', pattern: /html-probed-tech/ },
+				{ kind: 'html', pattern: /data-html-probed-tech/ },
+			],
+		}];
+		const batch: ObservationBatch = {
+			target: { url: 'https://example.com/', hostname: 'example.com' },
+			interface: 'extension',
+			observedAt: 1,
+			observations: [{
+				kind: 'htmlMatch',
+				interface: 'extension',
+				collector: 'content-snapshot',
+				target: { url: 'https://example.com/', hostname: 'example.com' },
+				key: 'html-probed-tech:1',
+				value: 'data-html-probed-tech',
+				observedAt: 1,
+			}],
+		};
+		const shardRegistry = createObservationKindTechnologyRegistry(registry, 'htmlMatch');
+		const shardIndex = createObservationMatcherIndex(shardRegistry);
+		const indexed = matchIndexedObservationBatch({ registry: shardRegistry, batch, index: shardIndex });
+
+		expect(shardRegistry[0]?.rules[0]?.sourceRuleIndex).toBe(1);
+		expect(indexed.matches).toHaveLength(1);
+		expect(indexed.matches[0]?.technologyId).toBe('html-probed-tech');
+		expect(indexed.matches[0]?.ruleIndex).toBe(1);
+	});
+
+	/**
+	 * Kind shards must preserve the same final detections as the complete registry.
+	 *
+	 * Workers only receive the narrowed rules for their observation kind. The
+	 * coordinator still merges all evidence against the full registry graph, so
+	 * splitting matcher assets must not change the final technology set.
+	 */
+	it('merges kind-sharded partition results back to complete-registry detections', () => {
+		const registry: readonly TechnologyDefinition[] = [
+			{
+				id: 'meta-cms',
+				name: 'Meta CMS',
+				website: 'https://meta-cms.example',
+				categories: ['platform-cms-builder'],
+				rules: [{ kind: 'meta', key: 'generator', valuePattern: /Meta CMS/ }],
+			},
+			{
+				id: 'script-runtime',
+				name: 'Script Runtime',
+				website: 'https://script-runtime.example',
+				categories: ['framework'],
+				rules: [{ kind: 'scriptSrc', pattern: /runtime\.js/ }],
+			},
+			{
+				id: 'resource-tool',
+				name: 'Resource Tool',
+				website: 'https://resource-tool.example',
+				categories: ['developer-tooling'],
+				rules: [{ kind: 'resourceUrl', pattern: /resource-tool\.js/ }],
+			},
+		];
+		const batch = normalizePageSignals(makePageSignals({
+			meta: { generator: ['Meta CMS'] },
+			scripts: ['https://cdn.example/runtime.js'],
+			resources: [{ url: 'https://cdn.example/resource-tool.js', initiatorType: 'script' }],
+		}));
+		const relationshipGraph = createCompiledDetectionRegistry(registry);
+		const partitions: MatcherPartitionResult[] = createMatcherPartitionTasks({ job, batch }).map((task) => {
+			const shardRegistry = createObservationKindTechnologyRegistry(registry, task.kind);
+			const shardIndex = createObservationMatcherIndex(shardRegistry);
+			const indexed = matchIndexedObservationBatch({ registry: shardRegistry, batch: task.batch, index: shardIndex });
+			const observationIndexes = new Map(task.batch.observations.map((observation, index) => [
+				observation,
+				task.observationIndexes[index] ?? index,
+			]));
+
+			return {
+				job: task.job,
+				partitionId: task.partitionId,
+				kind: task.kind,
+				priority: task.priority,
+				observationCount: task.batch.observations.length,
+				matches: indexed.matches.map((match, matchIndex) => ({
+					observationIndex: observationIndexes.get(match.observation) ?? matchIndex,
+					matchIndex,
+					match,
+				})),
+				diagnostics: indexed.diagnostics,
+				completedAt: batch.observedAt,
+			};
+		});
+		const result = createMatcherPipelineResult({
+			batch,
+			registry,
+			compiledRegistryArtifact: { relationshipGraph },
+			partitions,
+		});
+
+		expect(result.analysis.results.map((detection) => detection.technologyId).sort()).toEqual([
+			'meta-cms',
+			'resource-tool',
+			'script-runtime',
+		]);
 	});
 });

@@ -64,7 +64,7 @@ class MatcherWorkerPool {
 					continue;
 				}
 
-				const result = await worker.run(request, task);
+				const result = await worker.run(task);
 				if (canceledJobs.has(task.job.jobId)) {
 					continue;
 				}
@@ -95,7 +95,7 @@ class MatcherWorkerSlot {
 		});
 	}
 
-	run(request: RunMatcherJobRequest, task: MatcherPartitionTask): Promise<MatcherPartitionResult> {
+	run(task: MatcherPartitionTask): Promise<MatcherPartitionResult> {
 		return new Promise((resolve, reject) => {
 			const cleanup = (): void => {
 				this.#worker.removeEventListener('message', onMessage);
@@ -122,8 +122,6 @@ class MatcherWorkerSlot {
 			const message: MatcherWorkerRunMessage = {
 				type: 'matcher-worker.run-partition',
 				task,
-				registry: request.registry,
-				index: request.index,
 			};
 			this.#worker.postMessage(message);
 		});
