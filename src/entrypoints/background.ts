@@ -117,6 +117,12 @@ const CONTENT_SCRIPT_PING_TIMEOUT_MS = 750;
 /** Each follow-up evidence surface is bounded so one slow collector cannot own the UX. */
 const EVIDENCE_PASS_TIMEOUT_MS = 10_000;
 
+/** Minimum wall-clock gap between visible partial detector revisions. */
+const MATCHER_VISIBLE_REVISION_MIN_INTERVAL_MS = 250;
+
+/** Minimum new detections that justify an immediate visible partial revision. */
+const MATCHER_VISIBLE_REVISION_MIN_RESULT_DELTA = 4;
+
 /**
  * In-flight runtime injections are deduplicated per tab.
  *
@@ -156,6 +162,10 @@ interface ActiveMatcherProgressContext {
 	readonly session?: ObservationSessionState;
 	/** Completed partition results accumulated in original completion order. */
 	readonly partitions: MatcherPartitionResult[];
+	/** Last time a partial detector revision was written for popup consumption. */
+	lastVisibleRevisionAt: number;
+	/** Result count written in the last visible detector revision. */
+	lastVisibleResultCount: number;
 }
 
 /** Matcher jobs currently able to publish real incremental popup revisions. */
@@ -1147,6 +1157,8 @@ async function analyzeAndPersistObservationBatch(
 		cacheStatus,
 		...(session ? { session } : {}),
 		partitions: [],
+		lastVisibleRevisionAt: 0,
+		lastVisibleResultCount: 0,
 	});
 	await updateMatcherJobRecord(matcherJob.jobId, { status: 'dispatching' });
 	let matcherResult: Awaited<ReturnType<typeof runMatcherJobWithOffscreenFallback>>;
@@ -1882,6 +1894,25 @@ async function handleMatcherPartitionProgressUpdate(
 		analyzedAt: Date.now(),
 		source: 'fresh',
 	});
+	const now = Date.now();
+	const isFinalPartition = message.completedPartitionCount >= message.partitionCount;
+	const resultDelta = Math.max(0, partial.analysis.results.length - context.lastVisibleResultCount);
+	const elapsedSinceVisibleRevision = now - context.lastVisibleRevisionAt;
+	if (
+		!isFinalPartition &&
+		context.lastVisibleRevisionAt > 0 &&
+		elapsedSinceVisibleRevision < MATCHER_VISIBLE_REVISION_MIN_INTERVAL_MS &&
+		resultDelta < MATCHER_VISIBLE_REVISION_MIN_RESULT_DELTA
+	) {
+		logBackgroundEvent('matcher-partition-revision-coalesced', {
+			jobId,
+			resultCount: partial.analysis.results.length,
+			resultDelta,
+			elapsedSinceVisibleRevision,
+		});
+		return;
+	}
+
 	const output = createAnalysisOutput(
 		partial.analysis,
 		context.cacheStatus,
@@ -1891,7 +1922,10 @@ async function handleMatcherPartitionProgressUpdate(
 		createObservationSessionTarget(context.tab, context.session),
 	);
 	await saveDetectionSnapshotForPopup(context.tab, output, 'background');
+	context.lastVisibleRevisionAt = now;
+	context.lastVisibleResultCount = partial.analysis.results.length;
 }
+
 
 const [provideBackgroundApi] = defineProxy(() => createBackgroundApi(), {
 	namespace: BACKGROUND_RPC_NAMESPACE,
