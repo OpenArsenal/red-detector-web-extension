@@ -199,7 +199,7 @@ function createActiveTabIdentity(tab: InspectableTab): ActiveTabIdentity {
 
 function summarizeSession(session: ObservationSessionState): Record<string, unknown> {
 	return {
-		sessionId,
+		sessionId: session.sessionId,
 		status: session.status,
 		startedAt: session.startedAt,
 		expiresAt: session.expiresAt,
@@ -419,7 +419,7 @@ function createObservationSessionTarget(
 
 	return {
 		tabId: tab.id,
-		sessionId,
+		sessionId: session.sessionId,
 		expectedUrl: tab.url,
 		...(tab.incognito ? { incognito: true } : {}),
 	};
@@ -939,7 +939,7 @@ function scheduleDeferredEnrichment(
 		const enrichmentSpan = startTimingSpan('background.analysis-enrichment.total', timingContext);
 		logBackgroundEvent('analysis-enrichment-start', {
 			...summarizeTab(tab),
-			sessionId,
+			sessionId: session.sessionId,
 			timingTraceId,
 		});
 		try {
