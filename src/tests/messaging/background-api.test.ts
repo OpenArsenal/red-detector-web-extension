@@ -191,12 +191,21 @@ async function loadBackgroundApiHarness(input: {
 
 	const executeScript = vi.fn(async () => [{ frameId: 0, result: undefined }]);
 	const tabsOnRemovedAddListener = vi.fn();
+	const runtimeOnMessageAddListener = vi.fn();
 	vi.doMock('wxt/browser', () => ({
 		browser: {
+			runtime: {
+				onMessage: {
+					addListener: runtimeOnMessageAddListener,
+				},
+				sendMessage: vi.fn(async () => ({ ok: false, message: 'offscreen unavailable in test' })),
+				getURL: vi.fn((path: string) => `chrome-extension://red-detector${path}`),
+			},
 			scripting: {
 				executeScript,
 			},
 			tabs: {
+				get: vi.fn(async () => input.tab ?? HTTP_TAB),
 				onRemoved: {
 					addListener: tabsOnRemovedAddListener,
 				},
@@ -267,6 +276,8 @@ async function loadBackgroundApiHarness(input: {
 	const getStatus = vi.fn(async () => ({ totalAnalyses: 0, trackedOrigins: 0 }));
 	const saveAnalysis = vi.fn(async (analysis: SiteAnalysis) => analysis);
 	const saveReplayTrace = vi.fn(async (trace: DetectionReplayTrace) => trace);
+	const saveMatcherJobRecord = vi.fn(async (record: unknown) => record);
+	const updateMatcherJobRecord = vi.fn(async () => null);
 	const getLatestDetectionSessionSnapshot = vi.fn(async () => null);
 	const saveDetectionSessionSnapshot = vi.fn(async (snapshot: DetectionSessionSnapshot) => ({
 		accepted: true,
@@ -302,7 +313,9 @@ async function loadBackgroundApiHarness(input: {
 			listBootstrapTechnologies,
 			saveAnalysis,
 			saveDetectionSessionSnapshot,
+			saveMatcherJobRecord,
 			saveReplayTrace,
+			updateMatcherJobRecord,
 		},
 	};
 }
