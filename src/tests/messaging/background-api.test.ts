@@ -473,6 +473,8 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 		});
 
 		expect(collectObservationBatch).not.toHaveBeenCalled();
+		expect(harness.mocks.getCompiledRegistry).not.toHaveBeenCalled();
+		expect(harness.mocks.saveMatcherJobRecord).not.toHaveBeenCalled();
 		expect(harness.contentApi.beginObservationSession).toHaveBeenCalledOnce();
 		expect(harness.mocks.getCachedReplayTrace).toHaveBeenCalledWith(HTTP_TAB.url);
 	});

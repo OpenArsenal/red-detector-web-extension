@@ -7,6 +7,7 @@ import {
 	getPopupObservationLabel,
 	getPopupObservationModeFromAnalysis,
 	getPopupObservationModeFromSession,
+	getPopupObservationModeFromSnapshot,
 	groupDetectionsByPrimaryCategory,
 	shouldApplyPopupSnapshotRevision,
 	shouldKeepPopupLiveUpdatesActive,
@@ -126,7 +127,7 @@ describe('popup view model', () => {
 
 		expect(update.addedDetectionIds).toEqual(['shopify']);
 		expect(update.lateDetectionIds).toEqual(['shopify']);
-		expect(update.notice?.text).toBe('Observation found 1 new late detection on example.com.');
+		expect(update.notice?.text).toBe('Analysis update found 1 additional detection on example.com.');
 	});
 
 	it('refreshes observed changes when the session is dirty or newer than analysis', () => {
@@ -153,6 +154,17 @@ describe('popup view model', () => {
 		});
 
 		expect(shouldApplyPopupSnapshotRevision({ currentAnalysis, snapshot })).toBe(false);
+	});
+
+
+	it('maps durable stopped snapshots to stopped popup controls without requiring analysis replacement', () => {
+		const snapshot = makeDetectionSessionSnapshot({
+			source: 'content',
+			status: 'stopped',
+		});
+
+		expect(getPopupObservationModeFromSnapshot(snapshot)).toBe('stopped');
+		expect(shouldKeepPopupLiveUpdatesActive(getPopupObservationModeFromSnapshot(snapshot))).toBe(false);
 	});
 
 	it('preserves replay state when a lifecycle snapshot repeats the same analysis', () => {
