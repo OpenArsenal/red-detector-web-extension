@@ -11,7 +11,7 @@ export default defineConfig({
 			default_title: 'Detect technologies',
 			default_popup: 'popup.html',
 		},
-		permissions: ['activeTab', 'scripting', 'storage', 'tabs'],
+		permissions: ['activeTab', 'scripting', 'storage', 'tabs', 'offscreen'],
 		host_permissions: [],
 	},
 });

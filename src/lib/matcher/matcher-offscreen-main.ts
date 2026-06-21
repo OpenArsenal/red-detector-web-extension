@@ -1,0 +1,287 @@
+import { browser } from 'wxt/browser';
+
+import {
+	MATCHER_OFFSCREEN_CHANNEL,
+	type MatcherOffscreenRequestMessage,
+	type MatcherOffscreenResponse,
+	type MatcherPartitionProgressMessage,
+	type MatcherPartitionResult,
+	type MatcherPartitionTask,
+	type MatcherWorkerResponseMessage,
+	type MatcherWorkerRunMessage,
+	type RunMatcherJobRequest,
+} from './contracts';
+import { createMatcherPartitionTasks, createMatcherPipelineResult } from './partition';
+
+/** Default worker count used before benchmark data justifies a larger pool. */
+const DEFAULT_WORKER_COUNT = 2;
+
+/** Jobs canceled by the background before their queued partitions finish. */
+const canceledJobs = new Set<string>();
+
+/** Pending matcher jobs waiting for the shared worker pool. */
+const queuedJobs: QueuedMatcherJob[] = [];
+
+/** Whether the offscreen host is currently feeding partitions to the pool. */
+let matcherQueueRunning = false;
+
+/** Matcher job queued with the promise callbacks returned to the background. */
+interface QueuedMatcherJob {
+	/** Request sent by the background. */
+	readonly request: RunMatcherJobRequest;
+	/** Lower values run before deferred enrichment or inactive work. */
+	readonly priority: number;
+	/** Resolve the background runtime message when the job completes. */
+	readonly resolve: (result: Awaited<ReturnType<typeof runMatcherJob>>) => void;
+	/** Reject the background runtime message when the job fails. */
+	readonly reject: (error: unknown) => void;
+}
+
+/**
+ * Offscreen matcher host loaded in a hidden extension page.
+ *
+ * Chrome only exposes the `runtime` extension API to offscreen documents, so the
+ * host does not read tabs, storage, or privileged page data. It owns worker
+ * lifetimes and returns public pipeline output to the background, which remains
+ * responsible for tab lifecycle and persistence decisions.
+ */
+class MatcherWorkerPool {
+	readonly #workers: MatcherWorkerSlot[];
+
+	constructor(workerCount: number) {
+		this.#workers = Array.from({ length: Math.max(1, workerCount) }, (_item, index) => new MatcherWorkerSlot(index));
+	}
+
+	async run(request: RunMatcherJobRequest, tasks: readonly MatcherPartitionTask[]): Promise<readonly MatcherPartitionResult[]> {
+		const results: MatcherPartitionResult[] = [];
+		let nextTaskIndex = 0;
+
+		await Promise.all(this.#workers.map(async (worker) => {
+			while (nextTaskIndex < tasks.length) {
+				const task = tasks[nextTaskIndex]!;
+				nextTaskIndex += 1;
+				if (canceledJobs.has(task.job.jobId)) {
+					continue;
+				}
+
+				const result = await worker.run(request, task);
+				if (canceledJobs.has(task.job.jobId)) {
+					continue;
+				}
+
+				results.push(result);
+				emitPartitionProgress(result, results.length, tasks.length);
+			}
+		}));
+
+		return results.sort(comparePartitionResults);
+	}
+
+	dispose(): void {
+		for (const worker of this.#workers) {
+			worker.dispose();
+		}
+	}
+}
+
+/** Dedicated worker wrapper that runs one partition at a time. */
+class MatcherWorkerSlot {
+	readonly #worker: Worker;
+
+	constructor(index: number) {
+		this.#worker = new Worker(new URL('./matcher.worker.ts', import.meta.url), {
+			type: 'module',
+			name: `red-detector-matcher-${index}`,
+		});
+	}
+
+	run(request: RunMatcherJobRequest, task: MatcherPartitionTask): Promise<MatcherPartitionResult> {
+		return new Promise((resolve, reject) => {
+			const cleanup = (): void => {
+				this.#worker.removeEventListener('message', onMessage);
+				this.#worker.removeEventListener('error', onError);
+			};
+			const onMessage = (event: MessageEvent<MatcherWorkerResponseMessage>): void => {
+				if (event.data.type === 'matcher-worker.partition-complete') {
+					cleanup();
+					resolve(event.data.result);
+					return;
+				}
+				if (event.data.partitionId === task.partitionId) {
+					cleanup();
+					reject(new Error(event.data.message));
+				}
+			};
+			const onError = (event: ErrorEvent): void => {
+				cleanup();
+				reject(new Error(event.message));
+			};
+
+			this.#worker.addEventListener('message', onMessage);
+			this.#worker.addEventListener('error', onError);
+			const message: MatcherWorkerRunMessage = {
+				type: 'matcher-worker.run-partition',
+				task,
+				registry: request.registry,
+				index: request.index,
+			};
+			this.#worker.postMessage(message);
+		});
+	}
+
+	dispose(): void {
+		this.#worker.terminate();
+	}
+}
+
+browser.runtime.onMessage.addListener((message: unknown): Promise<MatcherOffscreenResponse> | undefined => {
+	if (!isMatcherOffscreenRequest(message)) {
+		return undefined;
+	}
+
+	if (message.type === 'matcher.ping') {
+		return Promise.resolve({ ok: true, ready: true });
+	}
+	if (message.type === 'matcher.cancel-job') {
+		canceledJobs.add(message.jobId);
+		cancelQueuedMatcherJob(message.jobId);
+		return Promise.resolve({ ok: true, canceled: true, jobId: message.jobId });
+	}
+
+	return enqueueMatcherJob(message.request)
+		.then((value): MatcherOffscreenResponse => ({ ok: true, value }))
+		.catch((error): MatcherOffscreenResponse => ({
+			ok: false,
+			message: error instanceof Error ? error.message : 'Offscreen matcher host failed.',
+		}));
+});
+
+function enqueueMatcherJob(request: RunMatcherJobRequest): Promise<Awaited<ReturnType<typeof runMatcherJob>>> {
+	return new Promise((resolve, reject) => {
+		queuedJobs.push({
+			request,
+			priority: getJobQueuePriority(request),
+			resolve,
+			reject,
+		});
+		drainMatcherQueue();
+	});
+}
+
+function cancelQueuedMatcherJob(jobId: string): void {
+	for (let index = queuedJobs.length - 1; index >= 0; index -= 1) {
+		if (queuedJobs[index]?.request.job.jobId === jobId) {
+			const [queued] = queuedJobs.splice(index, 1);
+			queued?.reject(new Error('Matcher job was canceled before dispatch.'));
+		}
+	}
+}
+
+function drainMatcherQueue(): void {
+	if (matcherQueueRunning) {
+		return;
+	}
+
+	const next = takeNextQueuedMatcherJob();
+	if (!next) {
+		return;
+	}
+
+	matcherQueueRunning = true;
+	void runMatcherJob(next.request)
+		.then(next.resolve, next.reject)
+		.finally(() => {
+			matcherQueueRunning = false;
+			drainMatcherQueue();
+		});
+}
+
+function takeNextQueuedMatcherJob(): QueuedMatcherJob | undefined {
+	if (queuedJobs.length === 0) {
+		return undefined;
+	}
+
+	queuedJobs.sort((left, right) => left.priority - right.priority);
+	return queuedJobs.shift();
+}
+
+function getJobQueuePriority(request: RunMatcherJobRequest): number {
+	if (request.mode === 'bootstrap') {
+		return 0;
+	}
+	if (request.mode === 'complete') {
+		return 1;
+	}
+	return 2;
+}
+
+async function runMatcherJob(request: RunMatcherJobRequest) {
+	const tasks = createMatcherPartitionTasks({
+		job: request.job,
+		batch: request.batch,
+		options: request.options,
+		bootstrapOnly: request.mode === 'bootstrap',
+	});
+	const workerCount = Math.min(
+		request.maxWorkerCount ?? DEFAULT_WORKER_COUNT,
+		Math.max(1, tasks.length),
+	);
+	const pool = new MatcherWorkerPool(workerCount);
+
+	try {
+		const partitions = await pool.run(request, tasks);
+		if (canceledJobs.has(request.job.jobId)) {
+			throw new Error('Matcher job was canceled before completion.');
+		}
+
+		const result = createMatcherPipelineResult({
+			batch: request.batch,
+			registry: request.registry,
+			compiledRegistryArtifact: { relationshipGraph: request.relationshipGraph },
+			partitions,
+			analyzedAt: request.analyzedAt,
+			source: request.source,
+		});
+
+		return {
+			job: request.job,
+			mode: request.mode,
+			result,
+			partitions,
+			executor: 'offscreen-worker-pool' as const,
+			completedAt: Date.now(),
+		};
+	} finally {
+		pool.dispose();
+	}
+}
+
+function emitPartitionProgress(
+	partition: MatcherPartitionResult,
+	completedPartitionCount: number,
+	partitionCount: number,
+): void {
+	const message: MatcherPartitionProgressMessage = {
+		channel: MATCHER_OFFSCREEN_CHANNEL,
+		type: 'matcher.partition-complete',
+		partition,
+		completedPartitionCount,
+		partitionCount,
+	};
+	void browser.runtime.sendMessage(message).catch(() => undefined);
+}
+
+function comparePartitionResults(left: MatcherPartitionResult, right: MatcherPartitionResult): number {
+	const priorityDelta = left.priority - right.priority;
+	return priorityDelta === 0 ? left.kind.localeCompare(right.kind) : priorityDelta;
+}
+
+function isMatcherOffscreenRequest(message: unknown): message is MatcherOffscreenRequestMessage {
+	return Boolean(
+		message &&
+		typeof message === 'object' &&
+		'channel' in message &&
+		message.channel === MATCHER_OFFSCREEN_CHANNEL &&
+		'type' in message,
+	);
+}
