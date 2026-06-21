@@ -1617,6 +1617,42 @@ function enqueueAnalysisPersistence(input: {
 	});
 }
 
+/**
+ * Refresh cached popup output without blocking cache-first rendering.
+ *
+ * Cache-first should paint immediately, but a cache entry can represent an older
+ * partial run. When observation is requested, the background revalidates the
+ * active document through the same non-blocking queue used by fresh analysis so
+ * the popup can converge on current full-registry detections.
+ */
+async function revalidateCachedAnalysis(
+	tab: InspectableTab,
+	session: ObservationSessionState | undefined,
+	parentTimingTraceId: string,
+): Promise<void> {
+	const response = await analyzeFreshActiveTab(
+		tab,
+		{ mode: 'refresh', observe: 'none' },
+		'hit',
+	);
+	if (!response.ok) {
+		logBackgroundEvent('analysis-cache-revalidate-failed', {
+			...summarizeTab(tab),
+			code: response.error.code,
+			message: response.error.message,
+			parentTimingTraceId,
+		});
+		return;
+	}
+
+	logBackgroundEvent('analysis-cache-revalidate-queued', {
+		...summarizeTab(tab),
+		resultCount: response.value.analysis.results.length,
+		sessionStatus: session?.status ?? 'none',
+		parentTimingTraceId,
+	});
+}
+
 export function createBackgroundApi(): BackgroundApi {
 	return {
 		async getAnalysisStatus() {
@@ -1712,6 +1748,9 @@ export function createBackgroundApi(): BackgroundApi {
 							createObservationSessionTarget(tab, session),
 						);
 						await saveDetectionSnapshotForPopup(tab, output, 'cache');
+						if (shouldStartObservationForAnalysis(input)) {
+							void revalidateCachedAnalysis(tab, session, requestTimingTraceId);
+						}
 
 						return ok(output);
 					}
