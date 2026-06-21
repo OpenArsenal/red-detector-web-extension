@@ -40,6 +40,33 @@ describe('matcher partitions', () => {
 		]);
 	});
 
+	/**
+	 * Large URL-like surfaces must produce multiple progress events. A single
+	 * kind-sized partition would recreate the old quiet wait where Vercel-style
+	 * resource fan-out blocked popup revisions until the whole kind completed.
+	 */
+	it('chunks high-fan-out resource observations into smaller matcher tasks', () => {
+		const batch: ObservationBatch = {
+			target: { url: 'https://example.com/', hostname: 'example.com' },
+			interface: 'extension',
+			observedAt: 1,
+			observations: Array.from({ length: 130 }, (_item, index) => ({
+				kind: 'resourceUrl' as const,
+				interface: 'extension' as const,
+				collector: 'content-snapshot',
+				target: { url: 'https://example.com/', hostname: 'example.com' },
+				value: `https://cdn.example/assets/${index}.js`,
+				observedAt: 1,
+			})),
+		};
+
+		const partitions = createMatcherPartitionTasks({ job, batch });
+
+		expect(partitions).toHaveLength(3);
+		expect(partitions.map((partition) => partition.observationCount)).toEqual([48, 48, 34]);
+		expect(partitions.every((partition) => partition.kind === 'resourceUrl')).toBe(true);
+	});
+
 	/** HTML probe observations use full-registry rule indexes as their lookup key. */
 	it('matches html probes after a shard preserves full-registry rule indexes', () => {
 		const registry: readonly TechnologyDefinition[] = [{
