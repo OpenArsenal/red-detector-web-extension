@@ -140,6 +140,39 @@ describe('popup view model', () => {
 		expect(shouldApplyPopupSnapshotRevision({ currentAnalysis, snapshot })).toBe(false);
 	});
 
+	/**
+	 * Worker partitions can finish out of order across an initial run and a dirty
+	 * refresh. A lower-count partial should not replace richer visible results; the
+	 * replay-backed final snapshot remains the authoritative place to remove a
+	 * candidate when graph refinement proves it should not survive.
+	 */
+	it('ignores lower-count partial background snapshots for the same page', () => {
+		const currentAnalysis = makeAnalysis([
+			makeDetection('react'),
+			makeDetection('nextjs'),
+		]);
+		const partialSnapshot = makeDetectionSessionSnapshot({
+			source: 'background',
+			analysis: makeAnalysis([makeDetection('react')], { url: currentAnalysis.url }),
+			detectionCount: 1,
+		});
+		const finalSnapshot = makeDetectionSessionSnapshot({
+			source: 'background',
+			analysis: makeAnalysis([makeDetection('react')], { url: currentAnalysis.url }),
+			detectionCount: 1,
+			replaySummary: {
+				analyzedAt: currentAnalysis.analyzedAt,
+				eventCount: 1,
+				explanationCount: 1,
+				resultCount: 1,
+				stages: ['detections-emitted'],
+			},
+		});
+
+		expect(shouldApplyPopupSnapshotRevision({ currentAnalysis, snapshot: partialSnapshot })).toBe(false);
+		expect(shouldApplyPopupSnapshotRevision({ currentAnalysis, snapshot: finalSnapshot })).toBe(true);
+	});
+
 
 	it('maps durable stopped snapshots to stopped popup controls without requiring analysis replacement', () => {
 		const snapshot = makeDetectionSessionSnapshot({
