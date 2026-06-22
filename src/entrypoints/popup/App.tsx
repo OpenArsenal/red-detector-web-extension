@@ -33,7 +33,6 @@ import {
   groupDetectionsByPrimaryCategory,
   shouldApplyPopupSnapshotRevision,
   shouldPreservePopupReplayState,
-  shouldRefreshObservedSnapshot,
   type PopupExplanationLookup,
   type PopupNotice,
   type PopupObservationMode,
@@ -92,8 +91,6 @@ export default function App() {
   let pendingManualRefresh = false;
   let unsubscribeSnapshotRevisions: (() => void) | undefined;
   let appliedSnapshotRevision: DetectionSessionSnapshot | null = null;
-  let latestSnapshotRefreshRequestKey: string | undefined;
-  let snapshotRefreshInFlight = false;
 
   function resultCount() {
     return analysis()?.results.length ?? 0;
@@ -116,6 +113,23 @@ export default function App() {
 
   function formatReplaySummary(trace: DetectionReplayTrace) {
     return `${trace.resultCount} detection${trace.resultCount === 1 ? "" : "s"} · ${trace.completedMode} pipeline`;
+  }
+
+  async function hydrateReplayHistoryIfMissing(response: AnalyzeActiveTabOutput) {
+    if (response.replayHistory) {
+      return;
+    }
+
+    try {
+      const historyResponse = await backgroundApi.getActiveReplayTraceHistory();
+      if (historyResponse.ok) {
+        setReplayHistory(historyResponse.value);
+      }
+    } catch (error) {
+      logPopupEvent("replay-history-hydration-failed", {
+        message: normalizeError(error),
+      });
+    }
   }
 
 
@@ -167,7 +181,6 @@ export default function App() {
         source: snapshot.source,
         reason: snapshot.enrichment.reason ?? "content-lifecycle-without-detector-output",
       });
-      void requestObservationRefreshFromSnapshot(snapshot);
       return;
     }
 
@@ -182,48 +195,6 @@ export default function App() {
       analysis: snapshot.analysis,
       snapshot,
     }), { source: "auto" });
-    void requestObservationRefreshFromSnapshot(snapshot);
-  }
-
-  async function requestObservationRefreshFromSnapshot(snapshot: DetectionSessionSnapshot): Promise<void> {
-    if (!shouldRefreshObservedSnapshot({ snapshot, sessionTarget: sessionTarget() })) {
-      return;
-    }
-
-    const refreshKey = `${snapshot.key.documentId}:${snapshot.revision}`;
-    if (snapshotRefreshInFlight || latestSnapshotRefreshRequestKey === refreshKey) {
-      return;
-    }
-
-    latestSnapshotRefreshRequestKey = refreshKey;
-    snapshotRefreshInFlight = true;
-    try {
-      const target = sessionTarget();
-      if (!target) {
-        return;
-      }
-
-      logPopupEvent("snapshot-observation-refresh-requested", {
-        sessionId: target.sessionId,
-        revision: snapshot.revision,
-        reason: snapshot.enrichment.reason,
-      });
-      const response = await backgroundApi.refreshObservationSession(target);
-      if (!response.ok) {
-        logPopupEvent("snapshot-observation-refresh-failed", {
-          code: response.error.code,
-          message: response.error.message,
-        });
-        return;
-      }
-
-      applyAnalysisResponse(response.value, { source: "auto" });
-      await refreshStatus();
-    } catch (error) {
-      logPopupEvent("snapshot-observation-refresh-threw", { message: normalizeError(error) });
-    } finally {
-      snapshotRefreshInFlight = false;
-    }
   }
 
   async function renderStoredAnalysisForActiveTab(identity: ActiveTabIdentity) {
@@ -316,6 +287,8 @@ export default function App() {
     if (update.notice) {
       setNotice(update.notice);
     }
+
+    void hydrateReplayHistoryIfMissing(response);
   }
 
   async function syncObservationState() {
@@ -495,16 +468,9 @@ export default function App() {
     unsubscribeSnapshotRevisions?.();
     unsubscribeSnapshotRevisions = undefined;
     const target = sessionTarget();
-    if (!target) {
-      logPopupEvent("cleanup-without-owned-session");
-      return;
-    }
-
-    logPopupEvent("cleanup-stop-observation", {
-      sessionId: target.sessionId,
-      tabId: target.tabId,
-    });
-    void backgroundApi.stopObservationSession(target);
+    logPopupEvent(target ? "cleanup-retain-observation" : "cleanup-without-owned-session", target
+      ? { sessionId: target.sessionId, tabId: target.tabId }
+      : undefined);
   });
 
   return (
