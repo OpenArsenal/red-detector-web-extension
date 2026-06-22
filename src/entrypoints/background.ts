@@ -59,6 +59,7 @@ import {
 	createBackgroundServerAdapter,
 	createContentClientAdapter,
 } from '../lib/messaging';
+import { isObservationDirtyNotification } from '../lib/messaging/observation-notifications';
 import {
 	runMatcherJobWithOffscreenFallback,
 } from '../lib/lifecycle/offscreen-matcher';
@@ -114,6 +115,9 @@ const backgroundLogger = getRedDetectorLogger('background');
 const CONTENT_SCRIPT_FILE = '/content-scripts/content.js';
 const CONTENT_SCRIPT_PING_TIMEOUT_MS = 750;
 
+/** Dirty observation notifications are coalesced before background flushes queued facts. */
+const BACKGROUND_OBSERVATION_REFRESH_DELAY_MS = 250;
+
 /** Each follow-up evidence surface is bounded so one slow collector cannot own the UX. */
 const EVIDENCE_PASS_TIMEOUT_MS = 10_000;
 
@@ -147,6 +151,9 @@ const evidencePassSequenceByTab = new Map<number, string>();
 
 /** Latest matcher job created for each tab while the background is alive. */
 const latestMatcherJobByTab = new Map<number, string>();
+
+/** Dirty content-session notifications waiting for a background-owned flush. */
+const scheduledObservationRefreshBySession = new Map<string, ReturnType<typeof globalThis.setTimeout>>();
 
 /** Partial matcher state used to turn worker partition completions into popup revisions. */
 interface ActiveMatcherProgressContext {
@@ -183,6 +190,7 @@ function forgetTabRuntimeState(tabId: number): void {
 	contentScriptInjectionByTab.delete(tabId);
 	eventObservationBatchByTab.delete(tabId);
 	latestMatcherJobByTab.delete(tabId);
+	clearScheduledObservationRefreshesForTab(tabId);
 
 	for (const [jobId, context] of activeMatcherProgressByJob) {
 		if (context.tab.id === tabId) {
@@ -191,6 +199,56 @@ function forgetTabRuntimeState(tabId: number): void {
 	}
 
 	evidencePassSequenceByTab.delete(tabId);
+}
+
+function createObservationRefreshScheduleKey(tabId: number, sessionId: string): string {
+	return `${tabId}:${sessionId}`;
+}
+
+function clearScheduledObservationRefreshesForTab(tabId: number): void {
+	const tabPrefix = `${tabId}:`;
+	for (const [key, timer] of scheduledObservationRefreshBySession) {
+		if (!key.startsWith(tabPrefix)) {
+			continue;
+		}
+
+		globalThis.clearTimeout(timer);
+		scheduledObservationRefreshBySession.delete(key);
+	}
+}
+
+function scheduleObservationRefreshFromContent(
+	target: ObservationSessionTarget,
+	details: Record<string, unknown>,
+): void {
+	const key = createObservationRefreshScheduleKey(target.tabId, target.sessionId);
+	if (scheduledObservationRefreshBySession.has(key)) {
+		logBackgroundEvent('observation-refresh-already-scheduled', details);
+		return;
+	}
+
+	logBackgroundEvent('observation-refresh-scheduled', details);
+	const timer = globalThis.setTimeout(() => {
+		scheduledObservationRefreshBySession.delete(key);
+		void refreshObservationSessionTarget(target).then((response) => {
+			if (!response.ok) {
+				logBackgroundEvent('observation-refresh-background-failed', {
+					...details,
+					code: response.error.code,
+					message: response.error.message,
+				});
+				return;
+			}
+
+			logBackgroundEvent('observation-refresh-background-complete', {
+				...details,
+				resultCount: response.value.analysis.results.length,
+				analyzedAt: response.value.analysis.analyzedAt,
+			});
+		});
+	}, BACKGROUND_OBSERVATION_REFRESH_DELAY_MS);
+
+	scheduledObservationRefreshBySession.set(key, timer);
 }
 
 function logBackgroundEvent(event: string, details?: Record<string, unknown>): void {
@@ -1934,7 +1992,29 @@ const [provideBackgroundApi] = defineProxy(() => createBackgroundApi(), {
 });
 
 export default defineBackground(() => {
-	browser.runtime.onMessage.addListener(handleMatcherPartitionProgress);
+	browser.runtime.onMessage.addListener((message, sender) => {
+		handleMatcherPartitionProgress(message);
+
+		if (!isObservationDirtyNotification(message) || typeof sender.tab?.id !== 'number') {
+			return;
+		}
+
+		scheduleObservationRefreshFromContent(
+			{
+				tabId: sender.tab.id,
+				sessionId: message.sessionId,
+				expectedUrl: message.expectedUrl,
+				...(sender.tab.incognito ? { incognito: true } : {}),
+			},
+			{
+				tabId: sender.tab.id,
+				sessionId: message.sessionId,
+				hostname: new URL(message.expectedUrl).hostname,
+				observedAt: message.observedAt,
+				pendingMutationCount: message.pendingMutationCount,
+			},
+		);
+	});
 	registerBackgroundLifecycleListeners({
 		onTabRemoved: forgetTabRuntimeState,
 		log: logBackgroundEvent,
