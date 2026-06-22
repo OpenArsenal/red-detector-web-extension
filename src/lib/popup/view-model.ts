@@ -278,7 +278,15 @@ export function shouldApplyPopupSnapshotRevision(input: {
 	readonly snapshot: DetectionSessionSnapshot;
 }): boolean {
 	const currentAnalysis = input.currentAnalysis;
-	if (!currentAnalysis || input.snapshot.source !== 'content') {
+	if (!currentAnalysis) {
+		return true;
+	}
+
+	if (isLowerCompletenessDetectorRevision(currentAnalysis, input.snapshot)) {
+		return false;
+	}
+
+	if (input.snapshot.source !== 'content') {
 		return true;
 	}
 
@@ -291,6 +299,27 @@ export function shouldApplyPopupSnapshotRevision(input: {
 	}
 
 	return false;
+}
+
+/**
+ * Keep older partial matcher snapshots from making the count visibly move backward.
+ *
+ * Partial background revisions are useful while the first scan is growing, but a
+ * lower-count partial from a slower worker batch or a deferred refresh should not
+ * replace a richer visible snapshot for the same URL. Final detector snapshots
+ * include a replay summary and remain authoritative, even if graph refinement
+ * legitimately removes a candidate.
+ */
+function isLowerCompletenessDetectorRevision(
+	currentAnalysis: SiteAnalysis,
+	snapshot: DetectionSessionSnapshot,
+): boolean {
+	return (
+		snapshot.source === 'background' &&
+		snapshot.replaySummary === undefined &&
+		snapshot.analysis.url === currentAnalysis.url &&
+		snapshot.analysis.results.length < currentAnalysis.results.length
+	);
 }
 
 /**
