@@ -6,7 +6,6 @@ import { canInspectTab, getActiveTab } from '../lib/browser/active-tab';
 import { collectExtensionObservationBatch } from '../lib/collectors/extension-page-collector';
 import {
 	createIncrementalCollectionPasses,
-	type CollectionEvidencePass,
 	type CollectionTierPlan,
 } from '../lib/collectors/planning';
 import { bundledTechnologyRegistryProvider } from '../lib/detection/registry-provider';
@@ -146,9 +145,6 @@ const contentScriptInjectionByTab = new Map<number, Promise<AppResult<void>>>();
  */
 const eventObservationBatchByTab = new Map<number, ObservationBatch>();
 
-/** Latest scheduled evidence-pass sequence for each tab while the background is alive. */
-const evidencePassSequenceByTab = new Map<number, string>();
-
 /** Latest matcher job created for each tab while the background is alive. */
 const latestMatcherJobByTab = new Map<number, string>();
 
@@ -198,7 +194,6 @@ function forgetTabRuntimeState(tabId: number): void {
 		}
 	}
 
-	evidencePassSequenceByTab.delete(tabId);
 }
 
 function createObservationRefreshScheduleKey(tabId: number, sessionId: string): string {
@@ -1039,129 +1034,6 @@ async function analyzeFreshActiveTab(
 
 
 
-type IncrementalEvidencePassInput = {
-	/** Tab and URL identity that owns the evidence sequence. */
-	readonly tab: InspectableTab;
-	/** First-pass batch already matched and saved for the popup. */
-	readonly initialBatch: ObservationBatch;
-	/** Full registry artifact used for every pass and final graph refinement. */
-	readonly compiledRegistryArtifact: CompiledRegistry;
-	/** Cache status attached to follow-up pass outputs. */
-	readonly cacheStatus: AnalyzeActiveTabOutput['cache']['status'];
-	/** Active observation session, when the popup asked for continuous updates. */
-	readonly session?: ObservationSessionState;
-	/** Follow-up evidence passes that should publish normal snapshot revisions. */
-	readonly passes: readonly CollectionEvidencePass[];
-	/** Trace id of the first request, used as a prefix for pass-level timing logs. */
-	readonly initialTimingTraceId?: string;
-};
-
-/**
- * Schedule expensive evidence surfaces as normal detector revisions.
- *
- * The previous runtime treated broad HTML, headers, text, and source content as
- * one large deferred evidence job. That made the popup render one small result and
- * then wait. Continuous evidence passes keep the same first-paint win while each
- * surface can independently merge, match, and publish a newer snapshot.
- */
-function scheduleIncrementalEvidencePasses(input: IncrementalEvidencePassInput): void {
-	if (input.tab.incognito || input.passes.length === 0) {
-		return;
-	}
-
-	const sequenceId = crypto.randomUUID();
-	evidencePassSequenceByTab.set(input.tab.id, sequenceId);
-	void runIncrementalEvidencePasses(input, sequenceId);
-}
-
-async function runIncrementalEvidencePasses(
-	input: IncrementalEvidencePassInput,
-	sequenceId: string,
-): Promise<void> {
-	let mergedBatch = input.initialBatch;
-	for (const pass of input.passes) {
-		if (evidencePassSequenceByTab.get(input.tab.id) !== sequenceId) {
-			return;
-		}
-
-		const timingTraceId = input.initialTimingTraceId
-			? `${input.initialTimingTraceId}:evidence:${pass.id}`
-			: createTimingTraceId(`evidence-${pass.id}`);
-		const timingContext: TimingContext = {
-			traceId: timingTraceId,
-			surface: 'background',
-			details: {
-				...summarizeTab(input.tab),
-				passId: pass.id,
-				sequenceId,
-			},
-		};
-		const passSpan = startTimingSpan('background.evidence-pass.total', timingContext);
-		logBackgroundEvent('evidence-pass-start', {
-			...summarizeTab(input.tab),
-			passId: pass.id,
-			timingTraceId,
-		});
-
-		try {
-			const passBatch = await runEvidencePassWithTimeout(() => collectObservationBatchFromTab(
-				input.tab.id,
-				input.tab.url,
-				input.compiledRegistryArtifact,
-				pass.plan.tier,
-				timingTraceId,
-				pass.plan,
-			));
-			if (!passBatch.ok) {
-				logBackgroundEvent('evidence-pass-failed', {
-					...summarizeTab(input.tab),
-					passId: pass.id,
-					code: passBatch.error.code,
-					message: passBatch.error.message,
-				});
-				endTimingSpan(passSpan, { ok: false, failedAt: 'collect' });
-				continue;
-			}
-
-			mergedBatch = mergeObservationBatches(mergedBatch, passBatch.value);
-			const response = await analyzeAndPersistObservationBatch(
-				input.tab,
-				mergedBatch,
-				input.compiledRegistryArtifact,
-				input.cacheStatus,
-				input.session,
-				{ refreshKind: `evidence-pass:${pass.id}`, matcherMode: 'evidence-pass', evidencePassId: pass.id },
-				undefined,
-				timingTraceId,
-			);
-			if (!response.ok) {
-				logBackgroundEvent('evidence-pass-persist-failed', {
-					...summarizeTab(input.tab),
-					passId: pass.id,
-					code: response.error.code,
-					message: response.error.message,
-				});
-				endTimingSpan(passSpan, { ok: false, failedAt: 'persist' });
-				continue;
-			}
-
-			logBackgroundEvent('evidence-pass-complete', {
-				...summarizeTab(input.tab),
-				passId: pass.id,
-				resultCount: response.value.analysis.results.length,
-				timingTraceId,
-			});
-			endTimingSpan(passSpan, { ok: true, resultCount: response.value.analysis.results.length });
-		} catch (error) {
-			logBackgroundEvent('evidence-pass-unexpected-error', {
-				...summarizeTab(input.tab),
-				passId: pass.id,
-				message: error instanceof Error ? error.message : 'Evidence pass failed.',
-			});
-			endTimingSpan(passSpan, { ok: false, failedAt: 'unexpected-error' });
-		}
-	}
-}
 
 async function runEvidencePassWithTimeout<T>(
 	operation: () => Promise<AppResult<T>>,
