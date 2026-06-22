@@ -1,10 +1,12 @@
 import { browser } from 'wxt/browser';
 
+import type { DetectionSessionSnapshot } from '../contracts/detection-session';
 import type { AnalysisStatus, SiteAnalysis } from '../detection/types';
 import type { DetectionReplayTrace } from '../pipeline';
 import { tryGetOrigin } from '../shared/url';
 import {
 	ANALYSIS_CACHE_PREFIX,
+	DETECTION_ORIGIN_SNAPSHOT_PREFIX,
 	REPLAY_TRACE_CACHE_PREFIX,
 	REPLAY_TRACE_HISTORY_CACHE_PREFIX,
 	STORAGE_LIMITS,
@@ -49,6 +51,21 @@ function isDetectionReplayTrace(value: unknown): value is DetectionReplayTrace {
 		'analyzedAt' in value &&
 		'events' in value &&
 		'explanations' in value
+	);
+}
+
+/** Return whether an unknown storage value looks like a detector snapshot. */
+function isDetectionSessionSnapshot(value: unknown): value is DetectionSessionSnapshot {
+	return (
+		typeof value === 'object' &&
+		value !== null &&
+		'schemaVersion' in value &&
+		'key' in value &&
+		'urlHash' in value &&
+		'hostname' in value &&
+		'analysis' in value &&
+		'detectionCount' in value &&
+		'updatedAt' in value
 	);
 }
 
@@ -155,20 +172,28 @@ export async function getStatus(): Promise<AnalysisStatus> {
 	const analyses = Object.entries(all)
 		.filter(([key, value]) => key.startsWith(ANALYSIS_CACHE_PREFIX) && isSiteAnalysis(value))
 		.map(([, value]) => value as SiteAnalysis);
+	const originSnapshots = Object.entries(all)
+		.filter(([key, value]) => key.startsWith(DETECTION_ORIGIN_SNAPSHOT_PREFIX) && isDetectionSessionSnapshot(value))
+		.map(([, value]) => value as DetectionSessionSnapshot);
 
 	const lastAnalyzedAt = analyses.reduce(
 		(latest, analysis) => Math.max(latest, analysis.analyzedAt),
+		0,
+	);
+	const lastSnapshotUpdatedAt = originSnapshots.reduce(
+		(latest, snapshot) => Math.max(latest, snapshot.analysis.analyzedAt, snapshot.updatedAt),
 		0,
 	);
 
 	const trackedOrigins = analyses
 		.map((analysis) => tryGetOrigin(analysis.url))
 		.filter((origin): origin is string => origin !== null);
+	const trackedSnapshotOrigins = originSnapshots.map((snapshot) => snapshot.key.originHash);
 
 	return {
-		totalAnalyses: analyses.length,
-		trackedOrigins: new Set(trackedOrigins).size,
-		lastAnalyzedAt: lastAnalyzedAt || undefined,
+		totalAnalyses: Math.max(analyses.length, originSnapshots.length),
+		trackedOrigins: Math.max(new Set(trackedOrigins).size, new Set(trackedSnapshotOrigins).size),
+		lastAnalyzedAt: Math.max(lastAnalyzedAt, lastSnapshotUpdatedAt) || undefined,
 	};
 }
 
