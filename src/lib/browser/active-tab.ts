@@ -2,6 +2,17 @@ import { browser } from 'wxt/browser';
 
 type BrowserTab = Awaited<ReturnType<typeof browser.tabs.query>>[number];
 
+let lastInspectableTab: BrowserTab | undefined;
+
+/** Remember the last website tab found before popup or DevTools focus changes. */
+function rememberInspectableTab(tab: BrowserTab | undefined): BrowserTab | undefined {
+	if (tab && canInspectTab(tab)) {
+		lastInspectableTab = tab;
+	}
+
+	return tab;
+}
+
 /**
  * Return the inspectable tab that should own a popup command.
  *
@@ -14,15 +25,20 @@ type BrowserTab = Awaited<ReturnType<typeof browser.tabs.query>>[number];
 export async function getActiveTab() {
 	const focusedTab = await getFocusedWindowActiveTab();
 	if (focusedTab && canInspectTab(focusedTab)) {
-		return focusedTab;
+		return rememberInspectableTab(focusedTab);
 	}
 
 	const currentWindowTab = await getCurrentWindowActiveTab();
 	if (currentWindowTab && canInspectTab(currentWindowTab)) {
-		return currentWindowTab;
+		return rememberInspectableTab(currentWindowTab);
 	}
 
-	return getMostRecentInspectableActiveTab();
+	const mostRecentTab = await getMostRecentInspectableActiveTab();
+	if (mostRecentTab) {
+		return rememberInspectableTab(mostRecentTab);
+	}
+
+	return getLastInspectableTab();
 }
 
 /** Keep unsupported browser/internal URLs out of the content-script pipeline. */
@@ -72,4 +88,20 @@ async function getMostRecentInspectableActiveTab(): Promise<BrowserTab | undefin
 		.sort((left, right) => (right.focused === true ? 1 : 0) - (left.focused === true ? 1 : 0))
 		.flatMap((window) => window.tabs ?? [])
 		.find((tab) => tab.active === true && canInspectTab(tab));
+}
+
+
+/** Return the remembered website tab when popup or DevTools focus hides all active tab queries. */
+async function getLastInspectableTab(): Promise<BrowserTab | undefined> {
+	if (!lastInspectableTab?.id) {
+		return undefined;
+	}
+
+	try {
+		const tab = await browser.tabs.get(lastInspectableTab.id);
+		return canInspectTab(tab) ? rememberInspectableTab(tab) : undefined;
+	} catch {
+		lastInspectableTab = undefined;
+		return undefined;
+	}
 }
