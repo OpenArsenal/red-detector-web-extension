@@ -185,6 +185,7 @@ export function createObservedPageSignals(
 
 	function rememberResourceTimings(): void {
 		const resources = collectResourceTimings();
+		const acceptedBeforeScan = observationBatchController.stats().acceptedCount;
 		rememberSnapshot({
 			...emptySnapshot(),
 			resources,
@@ -193,6 +194,11 @@ export function createObservedPageSignals(
 				type: resource.initiatorType,
 			})),
 		});
+
+		if (resources.length > 0) {
+			lastObservedAt = Date.now();
+			publishQueuedObservationBatch(acceptedBeforeScan);
+		}
 	}
 
 	function startResourceObserver(): void {

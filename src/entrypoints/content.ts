@@ -1,4 +1,5 @@
 import { defineProxy } from "comctx";
+import { browser } from "wxt/browser";
 
 import { collectPageSignals } from "../lib/content/collect-page-signals";
 import {
@@ -14,6 +15,7 @@ import {
   CONTENT_RPC_NAMESPACE,
   createContentServerAdapter,
 } from "../lib/messaging";
+import { createObservationDirtyNotification } from "../lib/messaging/observation-notifications";
 import type {
   ContentPageSessionSnapshotTarget,
   ObservationStopReason,
@@ -67,6 +69,20 @@ function logContentEvent(event: string, details?: Record<string, unknown>): void
   contentLogger.debug("[red-detector][content] {event}", {
     event,
     ...(details ?? {}),
+  });
+}
+
+function notifyBackgroundObservationDirty(event: ObservedPageSignalsQueuedBatchEvent): void {
+  const message = createObservationDirtyNotification(event.session, event.observedAt);
+  if (!message) {
+    return;
+  }
+
+  void browser.runtime.sendMessage(message).catch((error: unknown) => {
+    logContentEvent("observation-dirty-notify-failed", {
+      sessionId: event.session.sessionId,
+      message: error instanceof Error ? error.message : "Background notification failed",
+    });
   });
 }
 
@@ -402,6 +418,7 @@ export default defineContentScript({
       throttleMs: DOM_MUTATION_THROTTLE_MS,
       onObservationBatchQueued(event) {
         runtime?.publishObservedBatchQueued(event);
+        notifyBackgroundObservationDirty(event);
       },
     });
     runtime = createContentRuntime(observedSignals);
