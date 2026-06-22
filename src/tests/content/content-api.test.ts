@@ -88,12 +88,19 @@ async function loadContentApiFactory() {
 	vi.doMock('../../lib/content/page-session-snapshots', () => ({
 		writeContentPageSessionSnapshot,
 	}));
+	const sendMessage = vi.fn(async () => undefined);
+	vi.doMock('wxt/browser', () => ({
+		browser: {
+			runtime: { sendMessage },
+		},
+	}));
 	vi.doMock('comctx', () => ({
 		defineProxy: vi.fn(() => [vi.fn()]),
 	}));
 
 	return {
 		...(await import('../../entrypoints/content')),
+		sendMessage,
 		writeContentPageSessionSnapshot,
 	};
 }
@@ -105,6 +112,7 @@ afterEach(() => {
 	vi.doUnmock('../../lib/content/observed-page-signals');
 	vi.doUnmock('../../lib/detection/validate');
 	vi.doUnmock('../../lib/content/page-session-snapshots');
+	vi.doUnmock('wxt/browser');
 	vi.doUnmock('comctx');
 	vi.resetModules();
 });
@@ -374,8 +382,8 @@ describe.sequential('content API observation baseline', () => {
 	 * background flush request. That keeps popup storage revisions moving at the
 	 * content observer throttle, while the detector rerun remains background-owned.
 	 */
-	it('publishes a content snapshot when the observer queues late facts directly', async () => {
-		const { createContentRuntime, writeContentPageSessionSnapshot } = await loadContentApiFactory();
+	it('publishes content and background notifications when the observer queues late facts directly', async () => {
+		const { createContentRuntime, sendMessage, writeContentPageSessionSnapshot } = await loadContentApiFactory();
 		const session = makeState({
 			status: 'observing',
 			sessionId: 'session-1',
@@ -414,6 +422,13 @@ describe.sequential('content API observation baseline', () => {
 			status: 'observing',
 			observedAt: 1_700_000_000_250,
 			reason: 'observation-batch-queued',
+		});
+		expect(sendMessage).toHaveBeenCalledWith({
+			type: 'red-detector.observation-dirty.v1',
+			sessionId: 'session-1',
+			expectedUrl: 'https://example.com/products',
+			observedAt: 1_700_000_000_250,
+			pendingMutationCount: 0,
 		});
 	});
 
