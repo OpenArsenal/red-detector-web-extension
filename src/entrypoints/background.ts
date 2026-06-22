@@ -542,6 +542,14 @@ async function getExistingObservationSessionForCachedAnalysis(
 		return undefined;
 	}
 
+	if (!(await pingContentScript(tab.id))) {
+		logBackgroundEvent('analysis-cache-observation-not-reused', {
+			...summarizeTab(tab),
+			reason: 'content-runtime-not-ready',
+		});
+		return undefined;
+	}
+
 	const response = await timeAsyncSpan(
 		'background.cache-hit.observation-session.reuse',
 		timingContext,
