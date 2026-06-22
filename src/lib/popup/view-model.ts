@@ -264,20 +264,6 @@ export function shouldKeepPopupLiveUpdatesActive(mode: PopupObservationMode): bo
 	return mode === 'active';
 }
 
-/**
- * Returns whether observed page changes should trigger a background refresh.
- */
-export function shouldRefreshObservedChange(
-	input: ShouldRefreshObservedChangeInput,
-): boolean {
-	if (input.session.status === 'dirty') {
-		return true;
-	}
-
-	const latestObservedAt = input.session.lastObservedAt ?? 0;
-	const latestAnalyzedAt = input.analysis?.analyzedAt ?? 0;
-	return !input.analysis || latestObservedAt > latestAnalyzedAt;
-}
 
 /**
  * Decide whether a storage snapshot can replace the detector output already shown.

@@ -12,7 +12,6 @@ import {
 	shouldApplyPopupSnapshotRevision,
 	shouldKeepPopupLiveUpdatesActive,
 	shouldPreservePopupReplayState,
-	shouldRefreshObservedChange,
 } from '../../lib/popup/view-model';
 import {
 	makeAnalysis,
@@ -129,20 +128,6 @@ describe('popup view model', () => {
 		expect(update.notice?.text).toBe('Analysis update found 1 additional detection on example.com.');
 	});
 
-	it('refreshes observed changes when the session is dirty or newer than analysis', () => {
-		expect(shouldRefreshObservedChange({
-			session: { ...makeObservationSession('dirty'), lastObservedAt: 1_700_000_000_001 },
-			analysis: makeAnalysis([], { analyzedAt: 1_700_000_000_000 }),
-		})).toBe(true);
-		expect(shouldRefreshObservedChange({
-			session: { ...makeObservationSession('observing'), lastObservedAt: 1_700_000_000_001 },
-			analysis: makeAnalysis([], { analyzedAt: 1_700_000_000_000 }),
-		})).toBe(true);
-		expect(shouldRefreshObservedChange({
-			session: { ...makeObservationSession('observing'), lastObservedAt: 1_699_999_999_999 },
-			analysis: makeAnalysis([], { analyzedAt: 1_700_000_000_000 }),
-		})).toBe(false);
-	});
 
 	it('ignores empty content lifecycle snapshots when detector output is already visible', () => {
 		const currentAnalysis = makeAnalysis([makeDetection('react')]);
