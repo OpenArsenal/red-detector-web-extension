@@ -1,13 +1,28 @@
 import { browser } from 'wxt/browser';
 
-/** Background-only helper for the user-selected tab that initiated analysis. */
+type BrowserTab = Awaited<ReturnType<typeof browser.tabs.query>>[number];
+
+/**
+ * Return the inspectable tab that should own a popup command.
+ *
+ * Chrome can report no `lastFocusedWindow` tab when extension UI or DevTools has
+ * focus. The detector still needs the user's active website tab in that case, so
+ * the lookup tries the focused window first, then falls back to active tabs from
+ * normal browser windows. Unsupported extension and browser pages are filtered at
+ * each step so a focused popup never becomes the analysis target.
+ */
 export async function getActiveTab() {
-	const [tab] = await browser.tabs.query({
-		active: true,
-		lastFocusedWindow: true,
-	});
-	
-	return tab;
+	const focusedTab = await getFocusedWindowActiveTab();
+	if (focusedTab && canInspectTab(focusedTab)) {
+		return focusedTab;
+	}
+
+	const currentWindowTab = await getCurrentWindowActiveTab();
+	if (currentWindowTab && canInspectTab(currentWindowTab)) {
+		return currentWindowTab;
+	}
+
+	return getMostRecentInspectableActiveTab();
 }
 
 /** Keep unsupported browser/internal URLs out of the content-script pipeline. */
@@ -22,4 +37,39 @@ export function canInspectTab(tab: { url?: string }): boolean {
 	} catch {
 		return false;
 	}
+}
+
+async function getFocusedWindowActiveTab(): Promise<BrowserTab | undefined> {
+	const [tab] = await browser.tabs.query({
+		active: true,
+		lastFocusedWindow: true,
+	});
+
+	return tab;
+}
+
+async function getCurrentWindowActiveTab(): Promise<BrowserTab | undefined> {
+	try {
+		const [tab] = await browser.tabs.query({
+			active: true,
+			currentWindow: true,
+		});
+
+		return tab;
+	} catch {
+		return undefined;
+	}
+}
+
+async function getMostRecentInspectableActiveTab(): Promise<BrowserTab | undefined> {
+	const windows = await browser.windows.getAll({
+		populate: true,
+		windowTypes: ['normal'],
+	});
+
+	return windows
+		.slice()
+		.sort((left, right) => (right.focused === true ? 1 : 0) - (left.focused === true ? 1 : 0))
+		.flatMap((window) => window.tabs ?? [])
+		.find((tab) => tab.active === true && canInspectTab(tab));
 }
