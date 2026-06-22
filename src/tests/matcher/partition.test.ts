@@ -62,8 +62,8 @@ describe('matcher partitions', () => {
 
 		const partitions = createMatcherPartitionTasks({ job, batch });
 
-		expect(partitions).toHaveLength(3);
-		expect(partitions.map((partition) => partition.observationCount)).toEqual([48, 48, 34]);
+		expect(partitions).toHaveLength(6);
+		expect(partitions.map((partition) => partition.observationCount)).toEqual([24, 24, 24, 24, 24, 10]);
 		expect(partitions.every((partition) => partition.kind === 'resourceUrl')).toBe(true);
 	});
 
@@ -177,4 +177,67 @@ describe('matcher partitions', () => {
 			'script-runtime',
 		]);
 	});
+
+	/**
+	 * Chrome runtime messages do not preserve `Map` instances inside compiled
+	 * relationship graphs. The offscreen matcher can receive a JSON-shaped graph,
+	 * then must rebuild live lookup maps before candidate refinement applies
+	 * `implies`, `requires`, and `excludes` relationships.
+	 */
+	it('rebuilds serialized relationship graphs before candidate refinement', () => {
+		const registry: readonly TechnologyDefinition[] = [
+			{
+				id: 'source-runtime',
+				name: 'Source Runtime',
+				website: 'https://source-runtime.example',
+				categories: ['framework'],
+				implies: ['implied-runtime'],
+				rules: [{ kind: 'meta', key: 'generator', valuePattern: /Source Runtime/ }],
+			},
+			{
+				id: 'implied-runtime',
+				name: 'Implied Runtime',
+				website: 'https://implied-runtime.example',
+				categories: ['framework'],
+				rules: [],
+			},
+		];
+		const batch = normalizePageSignals(makePageSignals({
+			meta: { generator: ['Source Runtime'] },
+		}));
+		const relationshipGraph = createCompiledDetectionRegistry(registry);
+		const serializedRelationshipGraph = JSON.parse(JSON.stringify(relationshipGraph)) as unknown as ReturnType<typeof createCompiledDetectionRegistry>;
+		const partitions: MatcherPartitionResult[] = createMatcherPartitionTasks({ job, batch }).map((task) => {
+			const shardRegistry = createObservationKindTechnologyRegistry(registry, task.kind);
+			const shardIndex = createObservationMatcherIndex(shardRegistry);
+			const indexed = matchIndexedObservationBatch({ registry: shardRegistry, batch: task.batch, index: shardIndex });
+
+			return {
+				job: task.job,
+				partitionId: task.partitionId,
+				kind: task.kind,
+				priority: task.priority,
+				observationCount: task.batch.observations.length,
+				matches: indexed.matches.map((match, matchIndex) => ({
+					observationIndex: task.observationIndexes[matchIndex] ?? matchIndex,
+					matchIndex,
+					match,
+				})),
+				diagnostics: indexed.diagnostics,
+				completedAt: batch.observedAt,
+			};
+		});
+		const result = createMatcherPipelineResult({
+			batch,
+			registry,
+			compiledRegistryArtifact: { relationshipGraph: serializedRelationshipGraph },
+			partitions,
+		});
+
+		expect(result.analysis.results.map((detection) => detection.technologyId).sort()).toEqual([
+			'implied-runtime',
+			'source-runtime',
+		]);
+	});
+
 });

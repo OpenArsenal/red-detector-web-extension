@@ -2,7 +2,7 @@ import type { DetectionPipelineEventDetails, DetectionPipelineRuntimeEvent } fro
 import type { ObservationPatternMatchBatch } from '../detection/observation-match-types';
 import type { DetectionRunOptions, SiteAnalysis, TechnologyDefinition } from '../detection/types';
 import { createEvidenceCandidateBatch, refineEvidenceCandidateBatch } from '../candidates';
-import { createCompiledDetectionRegistry } from '../detection/registry-graph';
+import { createCompiledDetectionRegistry, type CompiledDetectionRegistry } from '../detection/registry-graph';
 import { emitSiteAnalysisFromRefinedCandidates } from '../emission';
 import type { CompiledTechnologyRegistryArtifact } from '../registry';
 import type {
@@ -203,7 +203,7 @@ export function createMatcherPipelineResult(
 
 	const refined = refineEvidenceCandidateBatch({
 		batch: candidates,
-		compiledRegistry: input.compiledRegistryArtifact?.relationshipGraph ?? createCompiledDetectionRegistry(input.registry),
+		compiledRegistry: resolvePartitionRelationshipGraph(input),
 	});
 	record('candidates-refined', refined.candidates.length, {
 		rejectionCount: refined.rejections.length,
@@ -226,6 +226,39 @@ export function createMatcherPipelineResult(
 		events,
 		emission: emitted.metadata,
 	};
+}
+
+/**
+ * Return a relationship graph with live lookup maps for candidate refinement.
+ *
+ * Browser runtime messages serialize plain JSON rather than preserving every
+ * JavaScript object shape. When the background sends a compiled graph to the
+ * offscreen document, its `Map` fields can arrive as ordinary objects. Graph
+ * refinement depends on `.get(...)` lookups, so serialized graphs are rebuilt
+ * from the registry before detections are emitted.
+ */
+function resolvePartitionRelationshipGraph(
+	input: CreateMatcherPipelineResultInput,
+): CompiledDetectionRegistry {
+	const graph = input.compiledRegistryArtifact?.relationshipGraph;
+	if (isUsableRelationshipGraph(graph)) {
+		return graph;
+	}
+
+	return createCompiledDetectionRegistry(input.registry);
+}
+
+/** Relationship graphs are usable only when their lookup tables survived intact. */
+function isUsableRelationshipGraph(
+	graph: CompiledDetectionRegistry | undefined,
+): graph is CompiledDetectionRegistry {
+	return Boolean(
+		graph &&
+		Array.isArray(graph.technologies) &&
+		graph.definitionsById instanceof Map &&
+		graph.registryOrderById instanceof Map &&
+		Array.isArray(graph.relationshipEdges),
+	);
 }
 
 /** Merge partition matches into the same shape used by downstream pipeline stages. */
