@@ -151,6 +151,30 @@ const latestMatcherJobByTab = new Map<number, string>();
 /** Dirty content-session notifications waiting for a background-owned flush. */
 const scheduledObservationRefreshBySession = new Map<string, ReturnType<typeof globalThis.setTimeout>>();
 
+/**
+ * Fresh active-tab collection blocks observer flushes until the first matcher job is queued.
+ *
+ * Content observers can report dirty facts while the background is still collecting
+ * the initial evidence passes. Those facts stay queued in the content script until
+ * the first matcher job has a chance to publish detector output, otherwise each
+ * dirty notification can start a newer matcher job and make every earlier job
+ * stale before anything is persisted.
+ */
+const activeFreshAnalysisByTab = new Set<number>();
+
+/** Matcher persistence jobs that have been queued but may not have registered progress yet. */
+const pendingMatcherPersistenceByTab = new Set<number>();
+
+interface PendingObservationRefresh {
+	/** Session target whose content queue still needs to be flushed by background. */
+	readonly target: ObservationSessionTarget;
+	/** Summary-only debug details carried into the eventual scheduled refresh. */
+	readonly details: Record<string, unknown>;
+}
+
+/** Dirty notifications deferred while another matcher job owns the document. */
+const deferredObservationRefreshBySession = new Map<string, PendingObservationRefresh>();
+
 /** Partial matcher state used to turn worker partition completions into popup revisions. */
 interface ActiveMatcherProgressContext {
 	/** Tab and URL identity that owns the matcher job. */
@@ -186,7 +210,10 @@ function forgetTabRuntimeState(tabId: number): void {
 	contentScriptInjectionByTab.delete(tabId);
 	eventObservationBatchByTab.delete(tabId);
 	latestMatcherJobByTab.delete(tabId);
+	activeFreshAnalysisByTab.delete(tabId);
+	pendingMatcherPersistenceByTab.delete(tabId);
 	clearScheduledObservationRefreshesForTab(tabId);
+	clearDeferredObservationRefreshesForTab(tabId);
 
 	for (const [jobId, context] of activeMatcherProgressByJob) {
 		if (context.tab.id === tabId) {
@@ -212,6 +239,63 @@ function clearScheduledObservationRefreshesForTab(tabId: number): void {
 	}
 }
 
+function clearDeferredObservationRefreshesForTab(tabId: number): void {
+	const tabPrefix = `${tabId}:`;
+	for (const key of deferredObservationRefreshBySession.keys()) {
+		if (key.startsWith(tabPrefix)) {
+			deferredObservationRefreshBySession.delete(key);
+		}
+	}
+}
+
+function hasMatcherWorkForTab(tabId: number): boolean {
+	if (activeFreshAnalysisByTab.has(tabId) || pendingMatcherPersistenceByTab.has(tabId)) {
+		return true;
+	}
+
+	for (const context of activeMatcherProgressByJob.values()) {
+		if (context.tab.id === tabId) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+ * Keep dirty observer flushes behind the matcher job that already owns the page.
+ *
+ * Content queues are durable for the current page runtime, so a dirty notification
+ * does not need to start a competing matcher immediately. Deferring the flush
+ * lets the first complete matcher publish detections before later page facts
+ * enqueue another revision.
+ */
+function deferObservationRefresh(
+	target: ObservationSessionTarget,
+	details: Record<string, unknown>,
+): void {
+	const key = createObservationRefreshScheduleKey(target.tabId, target.sessionId);
+	deferredObservationRefreshBySession.set(key, { target, details });
+	logBackgroundEvent('observation-refresh-deferred-during-match', details);
+}
+
+function flushDeferredObservationRefreshesForTab(tabId: number): void {
+	const tabPrefix = `${tabId}:`;
+	const pending: PendingObservationRefresh[] = [];
+	for (const [key, refresh] of deferredObservationRefreshBySession) {
+		if (!key.startsWith(tabPrefix)) {
+			continue;
+		}
+
+		deferredObservationRefreshBySession.delete(key);
+		pending.push(refresh);
+	}
+
+	for (const refresh of pending) {
+		scheduleObservationRefreshFromContent(refresh.target, refresh.details);
+	}
+}
+
 function scheduleObservationRefreshFromContent(
 	target: ObservationSessionTarget,
 	details: Record<string, unknown>,
@@ -222,9 +306,19 @@ function scheduleObservationRefreshFromContent(
 		return;
 	}
 
+	if (hasMatcherWorkForTab(target.tabId)) {
+		deferObservationRefresh(target, details);
+		return;
+	}
+
 	logBackgroundEvent('observation-refresh-scheduled', details);
 	const timer = globalThis.setTimeout(() => {
 		scheduledObservationRefreshBySession.delete(key);
+		if (hasMatcherWorkForTab(target.tabId)) {
+			deferObservationRefresh(target, details);
+			return;
+		}
+
 		void refreshObservationSessionTarget(target).then((response) => {
 			if (!response.ok) {
 				logBackgroundEvent('observation-refresh-background-failed', {
@@ -937,6 +1031,7 @@ async function analyzeFreshActiveTab(
 		pipeline: 'event',
 		timingTraceId,
 	});
+	activeFreshAnalysisByTab.add(tab.id);
 
 	const timingContext: TimingContext = {
 		traceId: timingTraceId,
@@ -956,6 +1051,7 @@ async function analyzeFreshActiveTab(
 	const collectionPasses = createIncrementalCollectionPasses(compiledRegistryArtifact.collectionPlan);
 	const [initialPass, ...remainingPasses] = collectionPasses;
 	if (!initialPass) {
+		activeFreshAnalysisByTab.delete(tab.id);
 		endTimingSpan(totalSpan, { ok: false, failedAt: 'create-collection-passes' });
 		return errorResponse('VALIDATION_ERROR', 'No collection pass was available for the active registry.');
 	}
@@ -987,6 +1083,7 @@ async function analyzeFreshActiveTab(
 		initialPass.plan,
 	);
 	if (!batchResponse.ok) {
+		activeFreshAnalysisByTab.delete(tab.id);
 		endTimingSpan(totalSpan, { ok: false, failedAt: 'collect-initial' });
 		return batchResponse;
 	}
@@ -1028,6 +1125,7 @@ async function analyzeFreshActiveTab(
 		},
 		timingTraceId,
 	});
+	activeFreshAnalysisByTab.delete(tab.id);
 
 	const response = await createQueuedAnalysisOutput(tab, cacheStatus, session, timingTraceId);
 	endTimingSpan(totalSpan, {
@@ -1581,6 +1679,7 @@ function enqueueAnalysisPersistence(input: {
 	readonly enrichment?: AnalysisEnrichmentState;
 	readonly timingTraceId?: string;
 }): void {
+	pendingMatcherPersistenceByTab.add(input.tab.id);
 	void analyzeAndPersistObservationBatch(
 		input.tab,
 		input.batch,
@@ -1609,6 +1708,9 @@ function enqueueAnalysisPersistence(input: {
 			...summarizeTab(input.tab),
 			message: error instanceof Error ? error.message : 'Queued matcher persistence failed.',
 		});
+	}).finally(() => {
+		pendingMatcherPersistenceByTab.delete(input.tab.id);
+		flushDeferredObservationRefreshesForTab(input.tab.id);
 	});
 }
 
