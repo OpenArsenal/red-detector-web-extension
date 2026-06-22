@@ -87,6 +87,60 @@ function getMatcherStatusLabel(status: PopupMatcherStatus): string {
   return "idle";
 }
 
+/** Whether the popup should render animated progress affordances. */
+function isMatcherBusy(status: PopupMatcherStatus): boolean {
+  return status === "collecting" || status === "matching" || status === "recording";
+}
+
+/** User-facing headline for the current matcher lane. */
+function getMatcherActivityHeadline(status: PopupMatcherStatus): string {
+  if (status === "collecting") return "Collecting page signals";
+  if (status === "matching") return "Matching evidence batches";
+  if (status === "recording") return "Recording replay trace";
+  return "Analysis complete";
+}
+
+/** Short progress copy used near the animated activity indicator. */
+function getMatcherActivityDescription(status: PopupMatcherStatus): string {
+  if (status === "collecting") {
+    return "Reading DOM, resource, metadata, and page-surface signals before worker matching starts.";
+  }
+
+  if (status === "matching") {
+    return "Worker batches are resolving detections. The count may climb as stronger evidence arrives.";
+  }
+
+  if (status === "recording") {
+    return "Final detector output is being written so replay history and explanations can reopen later.";
+  }
+
+  return "The latest detector snapshot is ready.";
+}
+
+/**
+ * Translate an analysis response into the matcher lane without relying on count alone.
+ *
+ * Cache hits and stored snapshots are already completed work, while cache misses
+ * without a replay trace represent queued matcher work that will publish storage
+ * revisions later. Auto-applied storage revisions keep the status chosen from the
+ * snapshot itself so final replay-backed snapshots can clear the busy state.
+ */
+function getMatcherStatusForAnalysisResponse(
+  response: AnalyzeActiveTabOutput,
+  source: "initial" | "manual" | "auto",
+  currentStatus: PopupMatcherStatus,
+): PopupMatcherStatus {
+  if (response.replayTrace || response.cache.status === "hit") {
+    return "idle";
+  }
+
+  if (source === "auto") {
+    return currentStatus;
+  }
+
+  return response.analysis.results.length > 0 ? "matching" : "recording";
+}
+
 function isSameActiveTabIdentity(left: ActiveTabIdentity | null, right: ActiveTabIdentity): boolean {
   return Boolean(
     left &&
@@ -119,6 +173,7 @@ export default function App() {
   let pendingManualRefresh = false;
   let unsubscribeSnapshotRevisions: (() => void) | undefined;
   let activeTabPollTimer: ReturnType<typeof globalThis.setInterval> | undefined;
+  let pendingActiveTabAnalysisSync = false;
   let appliedSnapshotRevision: DetectionSessionSnapshot | null = null;
 
   function resultCount() {
@@ -187,8 +242,14 @@ export default function App() {
   }
 
   function updateMatcherStatusFromSnapshot(snapshot: DetectionSessionSnapshot): void {
-    if (snapshot.source !== "background") return;
-    setMatcherStatus(snapshot.replaySummary ? "idle" : "matching");
+    if (snapshot.source !== "background" && snapshot.source !== "cache") return;
+
+    if (snapshot.replaySummary || snapshot.status === "complete" || snapshot.status === "cached") {
+      setMatcherStatus("idle");
+      return;
+    }
+
+    setMatcherStatus(snapshot.detectionCount > 0 ? "matching" : "recording");
   }
 
   function applySnapshotRevision(snapshot: DetectionSessionSnapshot) {
@@ -248,7 +309,11 @@ export default function App() {
         revision: stored.snapshot?.revision ?? 0,
       });
       appliedSnapshotRevision = stored.snapshot ?? null;
-      setMatcherStatus("idle");
+      if (stored.snapshot) {
+        updateMatcherStatusFromSnapshot(stored.snapshot);
+      } else {
+        setMatcherStatus("idle");
+      }
       applyAnalysisResponse(createStoredPopupAnalysisOutput(stored), {
         source: "initial",
         resetLateMarkers: true,
@@ -294,7 +359,7 @@ export default function App() {
       preserveReplayState ? explanationsByTechnologyId() : update.explanationsByTechnologyId,
     );
     setPipelineMode(response.replayTrace?.completedMode ?? (preserveReplayState ? pipelineMode() : "event"));
-    setMatcherStatus(response.replayTrace ? "idle" : update.analysis.results.length > 0 ? "matching" : matcherStatus());
+    setMatcherStatus(getMatcherStatusForAnalysisResponse(response, options.source, matcherStatus()));
     setReplayHistory(response.replayHistory ?? (preserveReplayState ? replayHistory() : []));
     setSessionTarget(response.sessionTarget ?? sessionTarget());
 
@@ -404,9 +469,6 @@ export default function App() {
       }
 
       applyAnalysisResponse(response.value, options);
-      if (!response.value.replayTrace) {
-        setMatcherStatus(response.value.analysis.results.length > 0 ? "matching" : "recording");
-      }
 
       await refreshStatus();
     } catch (error) {
@@ -423,6 +485,10 @@ export default function App() {
         setBusy(false);
       }
       refreshInFlight = false;
+      if (pendingActiveTabAnalysisSync) {
+        pendingActiveTabAnalysisSync = false;
+        void syncActiveTabIdentity("tab-change");
+      }
       schedulePendingManualRefresh();
     }
   }
@@ -516,11 +582,6 @@ export default function App() {
   }
 
   async function syncActiveTabIdentity(reason: "initial" | "tab-change"): Promise<void> {
-    if (reason === "tab-change" && refreshInFlight) {
-      logPopupEvent("active-tab-identity-deferred-during-refresh");
-      return;
-    }
-
     const identityResponse = await backgroundApi.getActiveTabIdentity();
     if (!identityResponse.ok) {
       logPopupEvent("active-tab-identity-unavailable", {
@@ -531,6 +592,25 @@ export default function App() {
       if (reason === "initial") {
         setErrorMessage(formatPopupAppError(identityResponse.error));
       }
+      return;
+    }
+
+    if (isSameActiveTabIdentity(activeTabIdentity(), identityResponse.value)) {
+      return;
+    }
+
+    if (reason === "tab-change" && refreshInFlight) {
+      pendingActiveTabAnalysisSync = true;
+      logPopupEvent("active-tab-identity-rendered-during-refresh", {
+        tabId: identityResponse.value.tabId,
+        hostname: identityResponse.value.hostname,
+      });
+      resetVisibleStateForActiveTab(identityResponse.value);
+      await renderStoredAnalysisForActiveTab(identityResponse.value);
+      setNotice({
+        variant: "warning",
+        text: "Active tab changed. Cached detections are shown while the previous analysis finishes.",
+      });
       return;
     }
 
@@ -631,6 +711,19 @@ export default function App() {
               {value().text}
             </p>
           )}
+        </Show>
+        <Show when={isMatcherBusy(matcherStatus())}>
+          <div class="scan-activity" role="status" aria-live="polite">
+            <div class="scan-activity-orb" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </div>
+            <div class="scan-activity-copy">
+              <strong>{getMatcherActivityHeadline(matcherStatus())}</strong>
+              <p>{getMatcherActivityDescription(matcherStatus())}</p>
+            </div>
+          </div>
         </Show>
       </PopupShell.Feedback>
 
