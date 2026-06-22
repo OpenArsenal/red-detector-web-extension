@@ -336,30 +336,6 @@ export function shouldPreservePopupReplayState(input: {
 	return previousIds.length === nextIds.length && previousIds.every((id, index) => id === nextIds[index]);
 }
 
-/**
- * Return whether a content snapshot should ask background to flush queued facts.
- *
- * The trigger is storage-driven: content writes a revision after its throttled
- * observer queues or flushes late observations, and the popup asks the existing
- * targeted session API for a detector refresh. No interval or timer loop is
- * required.
- */
-export function shouldRefreshObservedSnapshot(input: {
-	readonly snapshot: DetectionSessionSnapshot;
-	readonly sessionTarget: ObservationSessionTarget | null;
-}): boolean {
-	const target = input.sessionTarget;
-	if (!target || input.snapshot.source !== 'content' || input.snapshot.status !== 'observing') {
-		return false;
-	}
-
-	if (input.snapshot.key.tabId !== target.tabId || input.snapshot.key.documentId !== target.sessionId) {
-		return false;
-	}
-
-	const reason = input.snapshot.enrichment.reason;
-	return reason === 'observation-batch-queued' || reason === 'observation-batch-flushed';
-}
 
 /**
  * Convert replay explanations into a popup lookup keyed by technology id.

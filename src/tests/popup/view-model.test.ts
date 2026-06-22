@@ -13,7 +13,6 @@ import {
 	shouldKeepPopupLiveUpdatesActive,
 	shouldPreservePopupReplayState,
 	shouldRefreshObservedChange,
-	shouldRefreshObservedSnapshot,
 } from '../../lib/popup/view-model';
 import {
 	makeAnalysis,
@@ -180,25 +179,6 @@ describe('popup view model', () => {
 		})).toBe(false);
 	});
 
-	it('uses queued content snapshots as storage-driven refresh triggers', () => {
-		const snapshot = makeDetectionSessionSnapshot({
-			source: 'content',
-			status: 'observing',
-			key: { tabId: 7, frameId: 0, documentId: 'session-1', originHash: 'origin-example' },
-			enrichment: { status: 'not-needed', reason: 'observation-batch-queued' },
-		});
-		const sessionTarget = {
-			tabId: 7,
-			sessionId: 'session-1',
-			expectedUrl: 'https://example.com/products',
-		};
-
-		expect(shouldRefreshObservedSnapshot({ snapshot, sessionTarget })).toBe(true);
-		expect(shouldRefreshObservedSnapshot({
-			snapshot: { ...snapshot, enrichment: { status: 'not-needed', reason: 'observation-session-started' } },
-			sessionTarget,
-		})).toBe(false);
-	});
 
 	it('maps replay explanations into popup summaries keyed by technology id', () => {
 		const lookup = buildPopupExplanationLookup({
