@@ -1193,6 +1193,20 @@ function getMatcherJobMode(value: unknown, _session?: ObservationSessionState): 
 	return 'complete';
 }
 
+
+/**
+ * Store one replay history entry for each user-visible scan run.
+ *
+ * Background-owned dirty refreshes are detector revisions inside an existing
+ * observation window. They should update cached analysis and snapshots, but they
+ * should not appear as separate top-level replay runs because the user did not
+ * start a new scan and the popup would show duplicate histories for one action.
+ */
+function shouldStoreReplayHistoryForMatcherJob(details: Record<string, unknown>): boolean {
+	const refreshKind = details.refreshKind;
+	return refreshKind !== 'incremental' && refreshKind !== 'recovered';
+}
+
 async function canPersistMatcherResult(tab: InspectableTab, expectedUrl: string): Promise<boolean> {
 	try {
 		const current = await browser.tabs.get(tab.id);
@@ -1319,17 +1333,24 @@ async function analyzeAndPersistObservationBatch(
 			: await saveAnalysis(pipelineResult.analysis),
 		(analysis) => ({ resultCount: analysis.results.length, incognito: tab.incognito }),
 	);
-	const savedReplayTrace = await timeAsyncSpan(
-		'storage.save-replay-trace',
-		timingContext,
-		async () => tab.incognito ? replayTrace : await saveReplayTrace(replayTrace),
-		() => ({ incognito: tab.incognito }),
-	);
+	const shouldStoreReplayTrace = shouldStoreReplayHistoryForMatcherJob(details);
+	const savedReplayTrace = shouldStoreReplayTrace
+		? await timeAsyncSpan(
+			'storage.save-replay-trace',
+			timingContext,
+			async () => tab.incognito ? replayTrace : await saveReplayTrace(replayTrace),
+			() => ({ incognito: tab.incognito, stored: true }),
+		)
+		: replayTrace;
 	const replayHistory = await timeAsyncSpan(
 		'storage.get-replay-history',
 		timingContext,
 		async () => tab.incognito ? [] : await getCachedReplayTraceHistory(tab.url),
-		(history) => ({ replayHistoryCount: history.length, incognito: tab.incognito }),
+		(history) => ({
+			replayHistoryCount: history.length,
+			incognito: tab.incognito,
+			storedCurrentRun: shouldStoreReplayTrace,
+		}),
 	);
 	const sessionTarget = createObservationSessionTarget(tab, session);
 
