@@ -531,6 +531,51 @@ function createContentPageSessionSnapshotTarget(
 }
 
 /**
+ * Reuse an already-running content observation session for cache-hit responses.
+ *
+ * Opening the popup should be a storage read when detector output is fresh. If a
+ * content session already belongs to the same document, the response keeps that
+ * handle so Stop observation can target it. A cache hit does not start a new
+ * observer or matcher job on its own.
+ */
+async function getExistingObservationSessionForCachedAnalysis(
+	tab: InspectableTab,
+	input: AnalyzeActiveTabInput,
+	timingContext: TimingContext,
+): Promise<ObservationSessionState | undefined> {
+	if (!shouldStartObservationForAnalysis(input)) {
+		return undefined;
+	}
+
+	const response = await timeAsyncSpan(
+		'background.cache-hit.observation-session.reuse',
+		timingContext,
+		() => getObservationSessionStateForTab(tab.id),
+		(value) => ({ ok: value.ok, status: value.ok ? value.value.status : undefined }),
+	);
+	if (!response.ok) {
+		logBackgroundEvent('analysis-cache-observation-unavailable', {
+			...summarizeTab(tab),
+			code: response.error.code,
+			message: response.error.message,
+		});
+		return undefined;
+	}
+
+	const blockReason = getObservationRefreshBlockReason(response.value, tab.url);
+	if (blockReason) {
+		logBackgroundEvent('analysis-cache-observation-not-reused', {
+			...summarizeTab(tab),
+			reason: blockReason,
+			sessionStatus: response.value.status,
+		});
+		return undefined;
+	}
+
+	return response.value;
+}
+
+/**
  * Persist the analysis response as the popup's storage update stream.
  *
  * The legacy analysis cache remains useful for compatibility, but snapshot
@@ -1754,24 +1799,11 @@ export function createBackgroundApi(): BackgroundApi {
 							sessionStatus: 'none',
 							timingTraceId: requestTimingTraceId,
 						});
-						let session: ObservationSessionState | undefined;
-						if (shouldStartObservationForAnalysis(input)) {
-							const sessionResponse = await timeAsyncSpan(
-								'background.observation-session.begin-cached',
-								requestTimingContext,
-								() => beginObservationSessionForTab(tab.id, tab.url, tab.incognito),
-								(response) => ({ ok: response.ok, status: response.ok ? response.value.status : undefined }),
-							);
-							if (sessionResponse.ok) {
-								session = sessionResponse.value;
-							} else {
-								logBackgroundEvent('analysis-cache-observation-unavailable', {
-									...summarizeTab(tab),
-									code: sessionResponse.error.code,
-									message: sessionResponse.error.message,
-								});
-							}
-						}
+						const session = await getExistingObservationSessionForCachedAnalysis(
+							tab,
+							input,
+							requestTimingContext,
+						);
 
 						const output = createAnalysisOutput(
 							cached,
