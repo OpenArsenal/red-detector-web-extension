@@ -15,7 +15,9 @@ Popup visible tab
   -> ignore stale RPC responses from older targets
 ```
 
-This keeps the UI aligned with the target the user is looking at. Cached detections, replay summaries, matcher executor state, and observation status all come from the same visible snapshot or from a command whose target still matches the visible tab.
+This keeps the UI aligned with the target the user is looking at. Cached detections, replay summaries, matcher lifecycle state, and observation status all come from the same visible snapshot or from a command whose target still matches the visible tab.
+
+The popup consumes a `PopupVisibleRevision`, not the raw background command as its rendering contract. Background commands acknowledge that analysis was queued or that a stored snapshot was found; storage revisions remain the receive stream for exact visible state.
 
 ## Runtime ownership
 
@@ -30,13 +32,14 @@ BACKGROUND
   owns browser tab lookup and privileged browser APIs
   queues the first matcher revision after the cheap collection pass
   schedules enrichment passes after initial matcher persistence
-  clears volatile tab work on navigation
-  records matcher executor metadata on snapshots
+  cancels session-keyed matcher work on navigation, tab close, and superseding refresh
+  records matcher lifecycle diagnostics on snapshots
 
 STORAGE
   owns the durable visible state
   rejects stale snapshot revisions
   keeps origin latest and per-session snapshots recoverable after service-worker restart
+  keeps origin summaries and compact status separate from exact visible-tab snapshots
 ```
 
 ## Why targetless browser-tab helpers were removed from the popup path
@@ -57,7 +60,7 @@ Fresh analysis now queues matcher persistence after the initial collection pass.
 
 ```text
 initial cheap observations
-  -> queue matcher revision
+  -> register and dispatch matcher revision
   -> popup can render queued or cached output
   -> enrichment pass collects deeper evidence
   -> queue newer matcher revision
@@ -66,9 +69,9 @@ initial cheap observations
 
 That prevents deeper collection from owning first paint. The user can see initial detections sooner, then watch them improve through the same snapshot stream.
 
-## Development matcher mode
+## Development matcher diagnostics
 
-WXT development mode can be hostile to extension worker pools because dev-time worker transforms and hot module machinery do not always behave like packaged extension runtime. The development executor therefore avoids constructing the offscreen worker pool and records a `dev-fallback` executor on snapshots. Production builds can still use the offscreen worker pool, and the popup can display the executor that produced the visible revision.
+WXT development mode can be hostile to extension worker pools because dev-time worker transforms and hot module machinery do not always behave like packaged extension runtime. The development executor therefore avoids constructing the offscreen worker pool and records a `dev-fallback` executor on snapshots. Production builds can still use the offscreen worker pool, and backend diagnostics can show which executor produced a revision without making that an end-user popup label.
 
 ## Review checklist
 
@@ -76,8 +79,9 @@ Use this checklist when changing popup, background, storage, or matcher code:
 
 - Does the command carry the session, URL, or tab identity already visible in the popup?
 - Can a late response from an old tab overwrite the current tab?
-- Does a navigation clear volatile tab maps before old observations can merge into the new page?
-- Does the first matcher job start before enrichment collection?
+- Does a tab-change event during an in-flight identity sync rerun once for the newest visible tab?
+- Does navigation, tab close, or newer visible-session work cancel active matcher jobs before stale progress can write?
+- Does the first matcher job register before enrichment collection starts?
 - Does replay UI render from the snapshot summary even if full history hydration fails?
-- Does the snapshot show which matcher executor produced the visible revision?
+- Does the snapshot carry enough matcher lifecycle metadata to debug dev/build execution without exposing executor details in the popup?
 - Does storage remain the only source of truth for visible detector state after service-worker restart?

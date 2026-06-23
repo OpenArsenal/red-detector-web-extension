@@ -70,7 +70,7 @@ Incognito visible-tab analysis now skips persistent analysis and replay writes. 
 
 ## Popup access to past results
 
-Active-tab analysis responses include bounded replay history for the current origin. The popup renders a Replay History region below the technology groups. Users can open a stored run to inspect the saved pipeline stages and result count.
+Active-tab analysis responses include bounded replay history for the current origin. The popup renders a Replay History region below the technology groups. Users can open a stored run to inspect the saved explanations and result count.
 
 Technology cards show concrete evidence previews even when replay explanations exist. A detection can show both the short explanation summary and the underlying proof, such as a script URL, HTML snippet, header key/value, DOM selector, version capture, or relationship source.
 

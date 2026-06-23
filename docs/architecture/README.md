@@ -12,7 +12,7 @@ Start with the overview when you need the runtime map, then use the workflow or 
 | [`content-page-session-runtime.md`](content-page-session-runtime.md) | You are changing content-owned page observation, snapshot targets, or popup-visible lifecycle revisions. |
 | [`background-coordinator-runtime.md`](background-coordinator-runtime.md) | You are changing background service-worker lifecycle listeners, tab cleanup, or disposable coordinator state. |
 | [`kind-sharded-incremental-matcher.md`](kind-sharded-incremental-matcher.md) | You are changing continuous evidence passes, kind-sharded matcher workers, or popup snapshot revisions. |
-| [`live-revision-ownership.md`](live-revision-ownership.md) | You are changing popup target ownership, snapshot revision application, tab switching, replay hydration, or matcher executor visibility. |
+| [`live-revision-ownership.md`](live-revision-ownership.md) | You are changing popup target ownership, snapshot revision application, tab switching, replay hydration, or matcher lifecycle state. |
 | [`../migration/status.md`](../migration/status.md) | You need the current migration status matrix and remaining completion notes. |
 
 Migration phase notes remain under [`../migration/`](../migration/). Older notes document how the event path was introduced; the overview records the current shape after the legacy extension path was removed from the background runtime.

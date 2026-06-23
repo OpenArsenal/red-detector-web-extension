@@ -24,7 +24,9 @@ A `DetectionSessionSnapshot` contains the visible state needed for snapshot-firs
 - `enrichment` records whether deeper evidence is pending, complete, failed, timed out, skipped, or unnecessary.
 - `replaySummary` records counts and stage names from a full replay trace without embedding the full trace.
 
-The origin-level latest key stores a complete snapshot too. That lets popup startup show the latest origin result while the background resolves the exact active document session.
+The origin-level latest key stores a complete snapshot as a compatibility fallback. Popup startup prefers the exact session index for the visible tab, frame, and URL hash before falling back to that origin pointer.
+
+Origin-level counts and warm startup metadata live in separate summary records. A summary can tell the popup and status UI that an origin has recent detector output, but it is not exact visible-tab state and should not be rendered as the current page result by itself.
 
 ## Storage keys
 
@@ -33,9 +35,13 @@ The storage helpers create two snapshot keys:
 ```text
 rd:session:<tabId>:<frameId>:<documentId>
 rd:origin:<originHash>:latest
+rd:origin-summary:<originHash>
+rd:status
 ```
 
 The exact session key is the source of truth for one page document. The origin key is a convenience pointer to the newest known snapshot for that origin hash. Revision numbers are only comparable within one exact session, so the origin record is promoted by `updatedAt`, then by revision when timestamps are equal.
+
+`DetectionOriginSummary` mirrors only compact facts such as origin hash, URL hash, hostname, latest session key, detection count, and update time. `DetectionStorageStatusSnapshot` stores aggregate counts. Older storage that lacks summary records is still accepted: status reads can scan origin snapshots and refresh the compact status record lazily.
 
 ## Why this comes before popup streaming
 
@@ -60,4 +66,6 @@ The storage tests protect the invariants that later popup and content phases dep
 - newer revisions replace older revisions
 - exact session lookup returns the latest session record
 - origin lookup returns the newest snapshot for the origin hash
+- origin summary writes stay separate from exact session snapshots
+- status counts can refresh from summaries or fall back to old summary-less storage
 - accidental raw page-signal fields attached to a submitted object are not persisted

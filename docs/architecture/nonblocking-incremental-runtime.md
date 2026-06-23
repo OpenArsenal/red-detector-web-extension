@@ -7,8 +7,9 @@ This fixes the older staged shape where the popup waited for one large matcher j
 ```text
 popup opens
   -> background reads the visible snapshot or returns a pending response
-  -> content/background collectors gather all planned evidence surfaces
-  -> matcher job is queued without blocking the popup RPC
+  -> content/background collectors gather cheap first-pass observations
+  -> matcher job is registered and dispatched without blocking the popup RPC
+  -> enrichment collectors gather deeper evidence as follow-up revisions
   -> offscreen workers process small kind chunks
   -> each completed chunk publishes a detector snapshot revision
   -> final result updates the detector snapshot and replay storage
@@ -33,6 +34,14 @@ This keeps popup reopen behavior stable. Opening and closing the popup should sh
 Large observation kinds are chunked before they enter the offscreen pool. A single Vercel-style `resourceUrl` or `requestUrl` partition can otherwise block visible progress until the entire kind completes. Chunking turns high-fan-out surfaces into multiple progress events while preserving deterministic merge order through original observation indexes.
 
 The offscreen document keeps a shared worker pool alive for its lifetime. Worker-local shard caches stay warm across initial analysis, refreshes, and follow-up observation jobs. Background logs must show whether each job completed through `offscreen-worker-pool` or fell back to `background-fallback`.
+
+Active work is keyed by visible session rather than only by tab id:
+
+```text
+tabId:frameId:documentId:urlHash
+```
+
+Navigation, tab close, or a newer job for the same visible session cancels the old matcher job and drops late partition progress before it can write snapshot lifecycle updates.
 
 ## Trace markers
 
