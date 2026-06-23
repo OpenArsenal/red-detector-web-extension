@@ -124,6 +124,12 @@ export type ObservationSessionAnalysisSnapshotInput = ObservationSessionTarget &
 	afterAnalyzedAt: number;
 };
 
+/** Request for replay history tied to the analysis currently visible in the popup. */
+export type ReplayTraceHistoryInput = {
+	/** Analysis URL that owns the replay history record. */
+	readonly url: string;
+};
+
 /**
  * Response returned to the popup after active-tab analysis.
  *
@@ -288,6 +294,8 @@ export interface BackgroundApi {
 	getActiveObservationSessionState(): Promise<AppResult<ObservationSessionState>>;
 	/** Return bounded replay history for the active tab's origin. */
 	getActiveReplayTraceHistory(): Promise<AppResult<readonly DetectionReplayTrace[]>>;
+	/** Return bounded replay history for the analysis URL already visible in the popup. */
+	getReplayTraceHistory(input: ReplayTraceHistoryInput): Promise<AppResult<readonly DetectionReplayTrace[]>>;
 }
 
 /** Background-to-content API exposed through the content-script messaging adapter. */

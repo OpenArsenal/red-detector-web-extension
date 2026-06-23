@@ -11,6 +11,7 @@ export type {
 	ObservationSessionTarget,
 	ObservationSessionTargetInput,
 	ObservationSessionAnalysisSnapshotInput,
+	ReplayTraceHistoryInput,
 	BeginObservationSessionInput,
 	CollectObservationBatchOutput,
 	CollectPageSignalsInput,

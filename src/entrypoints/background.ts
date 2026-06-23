@@ -1996,6 +1996,10 @@ export function createBackgroundApi(): BackgroundApi {
 
 			return ok(await getCachedReplayTraceHistory(tabResponse.value.url));
 		},
+
+		async getReplayTraceHistory(input) {
+			return ok(await getCachedReplayTraceHistory(input.url));
+		},
 	};
 }
 
