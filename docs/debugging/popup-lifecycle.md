@@ -34,4 +34,4 @@ A fresh cache hit should show storage reads and `analysis-cache-hit`. It should 
 
 When continuous observation looks stuck, check the content log for `session-dirty` and the background log for `observation-refresh-scheduled`. The popup should not log a snapshot-owned refresh request. It should only log stored snapshot application and lifecycle rendering.
 
-When replay history disappears after reopen, verify that the popup receives replay history from the cache-hit response or hydrates it through `getActiveReplayTraceHistory` after applying a stored detector snapshot.
+When replay history disappears after reopen, verify that the popup receives replay history from the cache-hit response or hydrates it through `getReplayTraceHistory` with the URL already visible in the popup after applying a stored detector snapshot.
