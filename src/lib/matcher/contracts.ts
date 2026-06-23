@@ -152,6 +152,9 @@ export interface RunMatcherJobRequest {
 	readonly maxWorkerCount?: number;
 }
 
+/** Executor path that produced a matcher job result. */
+export type MatcherJobExecutor = 'offscreen-worker-pool' | 'background-fallback' | 'dev-fallback';
+
 /** Completed matcher job returned to the background. */
 export interface MatcherJobRunResult {
 	/** Identity supplied by the background. */
@@ -163,7 +166,7 @@ export interface MatcherJobRunResult {
 	/** Partitions completed by the offscreen worker pool. */
 	readonly partitions: readonly MatcherPartitionResult[];
 	/** Whether the offscreen worker path or background fallback produced the result. */
-	readonly executor: 'offscreen-worker-pool' | 'background-fallback';
+	readonly executor: MatcherJobExecutor;
 	/** Timestamp when the executor completed the final merge. */
 	readonly completedAt: number;
 }

@@ -110,6 +110,19 @@ export interface DetectionReplaySummary {
 export type DetectionSessionSnapshotSource = 'cache' | 'content' | 'background';
 
 /**
+ * Executor that produced detector output for a snapshot revision.
+ *
+ * The popup can show this in diagnostics so worker crashes, development-mode
+ * fallbacks, and service-worker-bound matching are visible instead of being
+ * misread as page collection or replay latency.
+ */
+export type DetectionMatcherExecutor =
+	| 'offscreen-worker-pool'
+	| 'background-fallback'
+	| 'dev-fallback'
+	| 'unknown';
+
+/**
  * Durable popup-facing result for one inspected document.
  *
  * Each write advances a monotonically increasing `revision` for the same
@@ -140,6 +153,8 @@ export interface DetectionSessionSnapshot {
 	readonly analysis: SiteAnalysis;
 	/** Stored deeper-evidence state for cache-first popup recovery. */
 	readonly enrichment: DetectionEnrichmentState;
+	/** Matcher executor path that produced this revision, when known. */
+	readonly matcherExecutor?: DetectionMatcherExecutor;
 	/** Optional public-safe replay progress summary. */
 	readonly replaySummary?: DetectionReplaySummary;
 }

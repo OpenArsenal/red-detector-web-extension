@@ -3,6 +3,7 @@ import type {
 	DetectionReplaySummary,
 	DetectionSessionKey,
 	DetectionSessionSnapshot,
+	DetectionMatcherExecutor,
 	DetectionSessionSnapshotSource,
 	DetectionSessionStatus,
 } from '../contracts/detection-session';
@@ -308,6 +309,7 @@ export function isDetectionSessionSnapshot(value: unknown): value is DetectionSe
 		typeof candidate.detectionCount === 'number' &&
 		isSnapshotSiteAnalysis(candidate.analysis) &&
 		isDetectionEnrichmentState(candidate.enrichment) &&
+		(candidate.matcherExecutor === undefined || isDetectionMatcherExecutor(candidate.matcherExecutor)) &&
 		(candidate.replaySummary === undefined || isDetectionReplaySummary(candidate.replaySummary))
 	);
 }
@@ -375,6 +377,16 @@ function isDetectionSessionStatus(value: unknown): value is DetectionSessionStat
 /** Guard snapshot write sources with the narrow persisted source set. */
 function isDetectionSessionSnapshotSource(value: unknown): value is DetectionSessionSnapshotSource {
 	return value === 'cache' || value === 'content' || value === 'background';
+}
+
+/** Guard matcher executor diagnostics while accepting older snapshots without the field. */
+function isDetectionMatcherExecutor(value: unknown): value is DetectionMatcherExecutor {
+	return (
+		value === 'offscreen-worker-pool' ||
+		value === 'background-fallback' ||
+		value === 'dev-fallback' ||
+		value === 'unknown'
+	);
 }
 
 /** Guard enrichment state while accepting older records with only the required status. */
@@ -456,6 +468,7 @@ function cloneDetectionSessionSnapshot(snapshot: DetectionSessionSnapshot): Dete
 		detectionCount: snapshot.detectionCount,
 		analysis: cloneSiteAnalysis(snapshot.analysis),
 		enrichment: cloneDetectionEnrichmentState(snapshot.enrichment),
+		...(snapshot.matcherExecutor ? { matcherExecutor: snapshot.matcherExecutor } : {}),
 		...(snapshot.replaySummary ? { replaySummary: cloneDetectionReplaySummary(snapshot.replaySummary) } : {}),
 	};
 }
