@@ -78,6 +78,7 @@ export function makeDetectionSessionSnapshot(
 		detectionCount: overrides.detectionCount ?? analysis.results.length,
 		analysis,
 		enrichment: overrides.enrichment ?? { status: 'not-needed' },
+		...(overrides.matcherExecutor ? { matcherExecutor: overrides.matcherExecutor } : {}),
 		...(overrides.replaySummary ? { replaySummary: overrides.replaySummary } : {}),
 	};
 }
