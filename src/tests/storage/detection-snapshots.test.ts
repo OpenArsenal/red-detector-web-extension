@@ -150,6 +150,27 @@ describe.sequential('detection session snapshots', () => {
 		expect(storage.values.has(getDetectionOriginSnapshotKey(first.key.originHash))).toBe(true);
 	});
 
+	/**
+	 * Matcher executor metadata tells the popup whether a revision came from the
+	 * normal offscreen worker pool or a slower fallback. Persisting it with the
+	 * snapshot keeps performance diagnostics tied to the visible detector state.
+	 */
+	it('preserves matcher executor metadata on stored snapshots', async () => {
+		const storage = await loadStorageHarness();
+		const snapshot = makeDetectionSessionSnapshot({
+			revision: 3,
+			matcherExecutor: 'offscreen-worker-pool',
+		});
+
+		await storage.saveDetectionSessionSnapshot(snapshot);
+		const stored = await storage.getLatestDetectionSessionSnapshot(snapshot.key);
+
+		expect(stored).toMatchObject({
+			revision: 3,
+			matcherExecutor: 'offscreen-worker-pool',
+		});
+	});
+
 	it('does not persist raw page signal payloads attached to the submitted object', async () => {
 		const storage = await loadStorageHarness();
 		const snapshot = Object.assign(
