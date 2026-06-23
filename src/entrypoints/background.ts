@@ -1941,51 +1941,12 @@ export function createBackgroundApi(): BackgroundApi {
 			}
 		},
 
-		async refreshActiveObservationSession() {
-			const tabResponse = await getInspectableActiveTab();
-			if (!tabResponse.ok) {
-				return tabResponse;
-			}
-
-			const sessionResponse = await getObservationSessionStateForTab(tabResponse.value.id);
-			if (!sessionResponse.ok) {
-				return sessionResponse;
-			}
-
-			const target = createObservationSessionTarget(tabResponse.value, sessionResponse.value);
-			if (!target) {
-				return errorResponse('OBSERVATION_SESSION_UNAVAILABLE', 'No active observation session exists for the current tab.');
-			}
-
-			return refreshObservationSessionTarget(target, sessionResponse.value);
-		},
-
 		async stopObservationSession(target) {
 			return stopObservationSessionTarget(target);
 		},
 
-		async stopActiveObservationSession() {
-			const tabResponse = await getInspectableActiveTab();
-			if (!tabResponse.ok) {
-				return tabResponse;
-			}
-
-			logBackgroundEvent('observation-stop-api', summarizeTab(tabResponse.value));
-			forgetTabRuntimeState(tabResponse.value.id);
-			return stopObservationSessionForTab(tabResponse.value.id);
-		},
-
 		async getObservationSessionState(target) {
 			return getObservationSessionStateForTarget(target);
-		},
-
-		async getActiveObservationSessionState() {
-			const tabResponse = await getInspectableActiveTab();
-			if (!tabResponse.ok) {
-				return tabResponse;
-			}
-
-			return getObservationSessionStateForTab(tabResponse.value.id);
 		},
 
 

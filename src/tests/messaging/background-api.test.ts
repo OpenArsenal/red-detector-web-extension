@@ -28,6 +28,12 @@ const HTTP_TAB: TestTab = {
 	url: 'https://example.com/products',
 };
 
+const OBSERVATION_TARGET = {
+	tabId: 7,
+	sessionId: 'session-1',
+	expectedUrl: 'https://example.com/products',
+} as const;
+
 const SOURCE_LIMITS_STUB = {
 	htmlChars: 200_000,
 	textChars: 80_000,
@@ -730,7 +736,7 @@ describe.sequential('background observation session baseline', () => {
 			},
 		});
 
-		await expect(harness.api.refreshActiveObservationSession()).resolves.toMatchObject({
+		await expect(harness.api.refreshObservationSession(OBSERVATION_TARGET)).resolves.toMatchObject({
 			ok: true,
 			value: {
 				cache: {
@@ -791,7 +797,7 @@ describe.sequential('background observation session baseline', () => {
 			session: dirtyState,
 		}));
 
-		await expect(harness.api.refreshActiveObservationSession()).resolves.toMatchObject({
+		await expect(harness.api.refreshObservationSession(OBSERVATION_TARGET)).resolves.toMatchObject({
 			ok: true,
 			value: {
 				cache: { status: 'bypassed' },
@@ -848,7 +854,7 @@ describe.sequential('background observation session baseline', () => {
 			},
 		});
 
-		await expect(harness.api.refreshActiveObservationSession()).resolves.toMatchObject({
+		await expect(harness.api.refreshObservationSession(OBSERVATION_TARGET)).resolves.toMatchObject({
 			ok: true,
 			value: {
 				cache: { status: 'bypassed' },
@@ -876,7 +882,7 @@ describe.sequential('background observation session baseline', () => {
 			},
 		});
 
-		await expect(harness.api.refreshActiveObservationSession()).resolves.toMatchObject({
+		await expect(harness.api.refreshObservationSession(OBSERVATION_TARGET)).resolves.toMatchObject({
 			ok: false,
 			error: {
 				code: 'OBSERVATION_SESSION_UNAVAILABLE',
@@ -888,10 +894,10 @@ describe.sequential('background observation session baseline', () => {
 		expect(harness.contentApi.beginObservationSession).not.toHaveBeenCalled();
 	});
 
-	it('rejects observation refresh when the current tab has no active session', async () => {
+	it('rejects observation refresh when the targeted session is unavailable', async () => {
 		const harness = await loadBackgroundApiHarness({ tab: HTTP_TAB });
 
-		await expect(harness.api.refreshActiveObservationSession()).resolves.toMatchObject({
+		await expect(harness.api.refreshObservationSession(OBSERVATION_TARGET)).resolves.toMatchObject({
 			ok: false,
 			error: {
 				code: 'OBSERVATION_SESSION_UNAVAILABLE',
@@ -902,10 +908,10 @@ describe.sequential('background observation session baseline', () => {
 		expect(harness.mocks.saveAnalysis).not.toHaveBeenCalled();
 	});
 
-	it('forwards stop requests to the active tab content script', async () => {
+	it('forwards stop requests to the targeted content script session', async () => {
 		const harness = await loadBackgroundApiHarness({ tab: HTTP_TAB });
 
-		await expect(harness.api.stopActiveObservationSession()).resolves.toMatchObject({
+		await expect(harness.api.stopObservationSession(OBSERVATION_TARGET)).resolves.toMatchObject({
 			ok: true,
 			value: {
 				status: 'stopped',

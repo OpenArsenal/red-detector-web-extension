@@ -292,9 +292,7 @@ export default function App() {
 
   async function readObservationSessionState() {
     const target = sessionTarget();
-    return target
-      ? backgroundApi.getObservationSessionState(target)
-      : backgroundApi.getActiveObservationSessionState();
+    return target ? backgroundApi.getObservationSessionState(target) : null;
   }
 
   function updateMatcherStatusFromSnapshot(snapshot: DetectionSessionSnapshot): void {
@@ -472,6 +470,11 @@ export default function App() {
   async function syncObservationState() {
     try {
       const response = await readObservationSessionState();
+      if (!response) {
+        setLiveUpdateMode("unknown");
+        return;
+      }
+
       if (!response.ok) {
         logPopupEvent("observation-sync-unavailable", {
           code: response.error.code,
@@ -594,10 +597,17 @@ export default function App() {
     setNotice(null);
     try {
       const target = sessionTarget();
-      logPopupEvent("observation-stop-requested", target ? { sessionId: target.sessionId, tabId: target.tabId } : undefined);
-      const response = target
-        ? await backgroundApi.stopObservationSession(target)
-        : await backgroundApi.stopActiveObservationSession();
+      if (!target) {
+        setNotice({
+          variant: "warning",
+          text: "No active observation session is attached to this popup. Refresh starts a new session for the visible tab.",
+        });
+        setLiveUpdateMode("unknown");
+        return;
+      }
+
+      logPopupEvent("observation-stop-requested", { sessionId: target.sessionId, tabId: target.tabId });
+      const response = await backgroundApi.stopObservationSession(target);
       if (!response.ok) {
         logPopupEvent("observation-stop-failed", {
           code: response.error.code,

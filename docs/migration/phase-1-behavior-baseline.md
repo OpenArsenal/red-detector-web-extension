@@ -60,8 +60,8 @@ Current rules to preserve:
 
 - Cache hits do not start observation.
 - Fresh analysis starts observation only when `observe !== "none"`.
-- `refreshActiveObservationSession()` re-analyzes only when the content session is `observing` or `dirty`.
-- `stopActiveObservationSession()` forwards a stop request to the content script.
+- `refreshObservationSession(target)` re-analyzes only when the targeted content session is `observing` or `dirty`.
+- `stopObservationSession(target)` forwards a stop request to the content script for the targeted session.
 - Content-script observation expiry uses the same `stopObservationSession("expired")` path as other stop reasons.
 - Manual content stops clear the expiry timer so expiration does not fire later.
 

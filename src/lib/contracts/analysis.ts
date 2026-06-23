@@ -282,16 +282,10 @@ export interface BackgroundApi {
 	refreshObservationSession(input: ObservationSessionTargetInput): Promise<AppResult<AnalyzeActiveTabOutput>>;
 	/** Return the newest persisted analysis for a known session when storage has advanced. */
 	getObservationSessionLatestAnalysis(input: ObservationSessionAnalysisSnapshotInput): Promise<AppResult<AnalyzeActiveTabOutput>>;
-	/** Re-analyze the active tab when its content-script observation session is dirty. */
-	refreshActiveObservationSession(): Promise<AppResult<AnalyzeActiveTabOutput>>;
 	/** Stop a known content-script observation session. */
 	stopObservationSession(input: ObservationSessionTargetInput): Promise<AppResult<ObservationSessionState>>;
-	/** Stop the active tab's content-script observation session. */
-	stopActiveObservationSession(): Promise<AppResult<ObservationSessionState>>;
 	/** Read a known content-script observation session state. */
 	getObservationSessionState(input: ObservationSessionTargetInput): Promise<AppResult<ObservationSessionState>>;
-	/** Read the active tab's current content-script observation state. */
-	getActiveObservationSessionState(): Promise<AppResult<ObservationSessionState>>;
 	/** Return bounded replay history for the analysis URL already visible in the popup. */
 	getReplayTraceHistory(input: ReplayTraceHistoryInput): Promise<AppResult<readonly DetectionReplayTrace[]>>;
 }
