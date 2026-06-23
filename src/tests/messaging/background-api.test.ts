@@ -714,9 +714,14 @@ describe.sequential('background analyzeVisibleTab messaging hardening', () => {
 		await vi.waitFor(() => expect(harness.mocks.saveMatcherJobRecord).toHaveBeenCalledTimes(2));
 		await vi.waitFor(() => expect(harness.mocks.saveDetectionSessionSnapshot).toHaveBeenCalledTimes(2));
 		expect(harness.mocks.saveReplayTrace).toHaveBeenCalledOnce();
-		expect(harness.mocks.saveDetectionSessionSnapshot.mock.calls.map(([snapshot]) =>
-			(snapshot as DetectionSessionSnapshot).enrichment.status
-		)).toEqual(['pending', 'complete']);
+		const savedSnapshots = harness.mocks.saveDetectionSessionSnapshot.mock.calls.map(([snapshot]) =>
+			snapshot as DetectionSessionSnapshot
+		);
+		expect(savedSnapshots.map((snapshot) => snapshot.enrichment.status)).toEqual(['pending', 'complete']);
+		expect(savedSnapshots[0]?.replaySummary).toBeUndefined();
+		expect(savedSnapshots[1]?.replaySummary).toMatchObject({
+			resultCount: expect.any(Number),
+		});
 		expect(collectObservationBatch.mock.calls.map(([input]) => (input as { tier?: string }).tier)).toEqual([
 			'initial',
 			'enrichment',

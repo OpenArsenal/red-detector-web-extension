@@ -100,6 +100,67 @@ describe.sequential('detection session snapshots', () => {
 		});
 	});
 
+	it('publishes lower-count preview progress without shrinking richer exact state', async () => {
+		const storage = await loadStorageHarness();
+		const existing = makeDetectionSessionSnapshot({
+			source: 'background',
+			revision: 2,
+			status: 'complete',
+			analysis: makeAnalysis([makeDetection('react'), makeDetection('shopify')]),
+			detectionCount: 2,
+			replaySummary: {
+				analyzedAt: 1_700_000_000_000,
+				eventCount: 5,
+				explanationCount: 2,
+				resultCount: 2,
+				stages: ['detections-emitted'],
+			},
+		});
+		const preview = makeDetectionSessionSnapshot({
+			...existing,
+			source: 'background',
+			revision: 3,
+			status: 'complete',
+			analysis: makeAnalysis([makeDetection('react')], { url: existing.analysis.url }),
+			detectionCount: 1,
+			replaySummary: undefined,
+			matcherProgress: {
+				jobId: 'job-preview',
+				mode: 'initial',
+				completedPartitionCount: 3,
+				partitionCount: 10,
+				latestPartitionKind: 'resourceUrl',
+				resultCount: 1,
+				updatedAt: 1_700_000_000_100,
+			},
+		});
+
+		await storage.saveDetectionSessionSnapshot(existing);
+		const result = await storage.saveDetectionSessionSnapshot(preview);
+		const stored = await storage.getLatestDetectionSessionSnapshot(existing.key);
+
+		expect(result).toMatchObject({
+			accepted: true,
+			snapshot: {
+				revision: 3,
+				detectionCount: 2,
+				matcherProgress: {
+					completedPartitionCount: 3,
+					partitionCount: 10,
+				},
+			},
+		});
+		expect(stored).toMatchObject({
+			revision: 3,
+			detectionCount: 2,
+			replaySummary: expect.objectContaining({ resultCount: 2 }),
+			matcherProgress: expect.objectContaining({
+				completedPartitionCount: 3,
+				partitionCount: 10,
+			}),
+		});
+	});
+
 	it('reads the latest snapshot by session key', async () => {
 		const storage = await loadStorageHarness();
 		const snapshot = makeDetectionSessionSnapshot({
@@ -152,6 +213,49 @@ describe.sequential('detection session snapshots', () => {
 		expect(storage.values.has(getDetectionOriginSnapshotKey(first.key.originHash))).toBe(true);
 	});
 
+	it('keeps replay-backed origin startup state ahead of newer lower-count previews', async () => {
+		const storage = await loadStorageHarness();
+		const finalSnapshot = makeDetectionSessionSnapshot({
+			key: { tabId: 7, frameId: 0, documentId: 'session-final', originHash: 'origin-example' },
+			source: 'background',
+			revision: 2,
+			updatedAt: 1_700_000_000_010,
+			analysis: makeAnalysis([makeDetection('react'), makeDetection('shopify')]),
+			detectionCount: 2,
+			replaySummary: {
+				analyzedAt: 1_700_000_000_000,
+				eventCount: 5,
+				explanationCount: 2,
+				resultCount: 2,
+				stages: ['detections-emitted'],
+			},
+		});
+		const previewSnapshot = makeDetectionSessionSnapshot({
+			key: { tabId: 7, frameId: 0, documentId: 'session-preview', originHash: 'origin-example' },
+			source: 'background',
+			revision: 1,
+			updatedAt: 1_700_000_000_020,
+			analysis: makeAnalysis([makeDetection('react')], { url: finalSnapshot.analysis.url }),
+			detectionCount: 1,
+		});
+
+		await storage.saveDetectionSessionSnapshot(finalSnapshot);
+		const previewResult = await storage.saveDetectionSessionSnapshot(previewSnapshot);
+		const originSnapshot = await storage.getLatestDetectionOriginSnapshot(finalSnapshot.key.originHash);
+		const exactPreviewSnapshot = await storage.getLatestDetectionSessionSnapshot(previewSnapshot.key);
+
+		expect(previewResult.accepted).toBe(true);
+		expect(exactPreviewSnapshot).toMatchObject({
+			key: previewSnapshot.key,
+			detectionCount: 1,
+		});
+		expect(originSnapshot).toMatchObject({
+			key: finalSnapshot.key,
+			detectionCount: 2,
+			replaySummary: expect.objectContaining({ resultCount: 2 }),
+		});
+	});
+
 	it('writes a lightweight origin summary alongside the promoted origin snapshot', async () => {
 		const storage = await loadStorageHarness();
 		const snapshot = makeDetectionSessionSnapshot({
@@ -198,9 +302,10 @@ describe.sequential('detection session snapshots', () => {
 	});
 
 	/**
-	 * Matcher executor metadata tells the popup whether a revision came from the
-	 * normal offscreen worker pool or a slower fallback. Persisting it with the
-	 * snapshot keeps performance diagnostics tied to the visible detector state.
+	 * Matcher executor metadata records whether a revision came from the normal
+	 * offscreen worker pool or a slower fallback. Persisting it with the snapshot
+	 * keeps performance diagnostics tied to the visible detector state without
+	 * exposing the executor in the popup.
 	 */
 	it('preserves matcher executor metadata on stored snapshots', async () => {
 		const storage = await loadStorageHarness();

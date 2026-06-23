@@ -99,6 +99,27 @@ describe('popup view model', () => {
 		});
 	});
 
+	it('describes matcher partition progress when snapshot revisions include counters', () => {
+		const activity = getPopupAnalysisActivity({
+			matcherStatus: 'matching',
+			workflowBusy: false,
+			analysisRequestInFlight: false,
+			queuedVisibleAnalysis: false,
+			matcherProgress: {
+				completedPartitionCount: 7,
+				partitionCount: 12,
+				latestPartitionKind: 'scriptContent',
+				resultCount: 34,
+			},
+		});
+
+		expect(activity).toMatchObject({
+			busy: true,
+			label: 'matching evidence 7/12',
+			description: expect.stringContaining('Matched 7 of 12 evidence batches.'),
+		});
+	});
+
 	it('reports idle only when no visible tab workflow owns progress', () => {
 		const activity = getPopupAnalysisActivity({
 			matcherStatus: 'idle',
@@ -136,6 +157,32 @@ describe('popup view model', () => {
 
 		expect(getPopupMatcherStatusFromSnapshot(partialSnapshot)).toBe('matching');
 		expect(getPopupMatcherStatusFromSnapshot(finalSnapshot)).toBe('idle');
+	});
+
+	it('keeps replay-backed snapshots in matching state when newer matcher progress exists', () => {
+		const snapshot = makeDetectionSessionSnapshot({
+			source: 'background',
+			status: 'complete',
+			analysis: makeAnalysis([makeDetection('react'), makeDetection('nextjs')]),
+			detectionCount: 2,
+			replaySummary: {
+				analyzedAt: 1_700_000_000_000,
+				eventCount: 5,
+				explanationCount: 2,
+				resultCount: 2,
+				stages: ['detections-emitted'],
+			},
+			matcherProgress: {
+				jobId: 'job-late',
+				mode: 'enrichment',
+				completedPartitionCount: 2,
+				partitionCount: 8,
+				resultCount: 3,
+				updatedAt: 1_700_000_000_500,
+			},
+		});
+
+		expect(getPopupMatcherStatusFromSnapshot(snapshot)).toBe('matching');
 	});
 
 	it('treats stored partial snapshot revisions as pending and blocks stale replay state', () => {

@@ -79,6 +79,7 @@ export function makeDetectionSessionSnapshot(
 		analysis,
 		enrichment: overrides.enrichment ?? { status: 'not-needed' },
 		...(overrides.matcherExecutor ? { matcherExecutor: overrides.matcherExecutor } : {}),
+		...(overrides.matcherProgress ? { matcherProgress: overrides.matcherProgress } : {}),
 		...(overrides.replaySummary ? { replaySummary: overrides.replaySummary } : {}),
 	};
 }
