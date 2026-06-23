@@ -16,6 +16,8 @@ export type BackgroundLifecycleLogger = (event: string, details?: Record<string,
 
 /** Options for registering lightweight background lifecycle listeners. */
 export interface RegisterBackgroundLifecycleListenersInput {
+	/** Remove volatile tab-scoped maps when Chrome reports that a document is being replaced. */
+	readonly onTabNavigation?: BackgroundTabCleanup;
 	/** Remove volatile tab-scoped maps when Chrome reports a closed tab. */
 	readonly onTabRemoved: BackgroundTabCleanup;
 	/** Optional summary logger for lifecycle events and cleanup failures. */
@@ -38,6 +40,7 @@ export function registerBackgroundLifecycleListeners(
 			return;
 		}
 
+		input.onTabNavigation?.(tabId);
 		void markTabSnapshots(tabId, 'stale', 'tab-navigation', input.log);
 	});
 

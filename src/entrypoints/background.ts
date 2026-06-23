@@ -2065,6 +2065,7 @@ export default defineBackground(() => {
 		);
 	});
 	registerBackgroundLifecycleListeners({
+		onTabNavigation: forgetTabRuntimeState,
 		onTabRemoved: forgetTabRuntimeState,
 		log: logBackgroundEvent,
 	});

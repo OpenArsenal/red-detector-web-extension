@@ -57,11 +57,13 @@ describe.sequential('background lifecycle listeners', () => {
 	it('marks indexed tab snapshots stale when a tab starts navigation', async () => {
 		const harness = await loadLifecycleHarness();
 		const log = vi.fn();
-		harness.registerBackgroundLifecycleListeners({ onTabRemoved: vi.fn(), log });
+		const onTabNavigation = vi.fn();
+		harness.registerBackgroundLifecycleListeners({ onTabNavigation, onTabRemoved: vi.fn(), log });
 
 		harness.onUpdated.emit(7, { status: 'loading' });
 		await Promise.resolve();
 
+		expect(onTabNavigation).toHaveBeenCalledWith(7);
 		expect(harness.markDetectionSessionSnapshotsForTab).toHaveBeenCalledWith(7, 'stale', 'tab-navigation');
 		expect(harness.removeDetectionSessionIndex).not.toHaveBeenCalled();
 	});
