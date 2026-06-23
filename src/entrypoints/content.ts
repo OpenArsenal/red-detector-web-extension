@@ -21,7 +21,11 @@ import type {
   ObservationStopReason,
 } from "@/lib/contracts/analysis";
 import { timeAsyncSpan, timeSyncSpan, type TimingContext } from "@/lib/diagnostics/timing";
-import { normalizePageSignals } from "@/lib/observations";
+import {
+  normalizePageSignals,
+  type ObservationBatch,
+  type ObservationBatchControllerStats,
+} from "@/lib/observations";
 import { errorResponse, ok } from "@/lib/shared/result";
 
 configureRedDetectorLogging("content");
@@ -66,10 +70,96 @@ function clearRuntimeState(state: ContentRuntimeState): void {
 }
 
 function logContentEvent(event: string, details?: Record<string, unknown>): void {
-  contentLogger.debug("[red-detector][content] {event}", {
+  contentLogger.debug("[red-detector][content] {event}{summary}", {
     event,
+    summary: formatContentLogSummary(details),
     ...(details ?? {}),
   });
+}
+
+function formatContentLogSummary(details?: Record<string, unknown>): string {
+  if (!details) {
+    return "";
+  }
+
+  const fields: string[] = [];
+  const keys = [
+    "tabId",
+    "frameId",
+    "documentId",
+    "sessionId",
+    "hostname",
+    "status",
+    "observationCount",
+    "acceptedCount",
+    "queuedCount",
+    "resultCount",
+    "timingTraceId",
+  ];
+  for (const key of keys) {
+    const value = details[key];
+    if (value !== undefined && value !== null && value !== "") {
+      fields.push(`${key}=${String(value)}`);
+    }
+  }
+
+  return fields.length ? ` ${fields.join(" ")}` : "";
+}
+
+function summarizeCurrentDocument(): Record<string, unknown> {
+  return {
+    url: globalThis.location?.href,
+    hostname: globalThis.location?.hostname,
+    readyState: globalThis.document?.readyState,
+  };
+}
+
+function summarizeSnapshotTarget(
+  target: ContentPageSessionSnapshotTarget | undefined,
+): Record<string, unknown> {
+  if (!target) {
+    return {};
+  }
+
+  return {
+    tabId: target.key.tabId,
+    frameId: target.key.frameId,
+    documentId: target.key.documentId,
+    originHash: target.key.originHash,
+    urlHash: target.urlHash,
+    snapshotHostname: target.hostname,
+  };
+}
+
+function summarizeObservationStats(
+  stats: ObservationBatchControllerStats,
+): Record<string, unknown> {
+  return {
+    queuedCount: stats.queuedCount,
+    acceptedCount: stats.acceptedCount,
+    duplicateDropCount: stats.duplicateDropCount,
+    queueLimitDropCount: stats.queueLimitDropCount,
+    stormLimitDropCount: stats.stormLimitDropCount,
+    acceptedInStormWindow: stats.acceptedInStormWindow,
+  };
+}
+
+function summarizeObservationBatch(batch: ObservationBatch | undefined): Record<string, unknown> {
+  if (!batch) {
+    return { observationCount: 0 };
+  }
+
+  const kindCounts = batch.observations.reduce<Record<string, number>>((counts, observation) => {
+    counts[observation.kind] = (counts[observation.kind] ?? 0) + 1;
+    return counts;
+  }, {});
+
+  return {
+    hostname: batch.target.hostname,
+    observationCount: batch.observations.length,
+    observedAt: batch.observedAt,
+    kindCounts,
+  };
 }
 
 function notifyBackgroundObservationDirty(event: ObservedPageSignalsQueuedBatchEvent): void {
@@ -214,18 +304,24 @@ async function collectInitialObservationBatch(
     return response;
   }
 
-  return ok({
-    batch: timeSyncSpan(
-      'content.collect-observation-batch.normalize-page-signals',
-      timingContext,
-      () => normalizePageSignals(response.value, {
-        collector: "content-snapshot",
-        interface: "extension",
-        observedAt: response.value.collectedAt,
-      }),
-      (value) => ({ observationCount: value.observations.length }),
-    ),
+  const batch = timeSyncSpan(
+    'content.collect-observation-batch.normalize-page-signals',
+    timingContext,
+    () => normalizePageSignals(response.value, {
+      collector: "content-snapshot",
+      interface: "extension",
+      observedAt: response.value.collectedAt,
+    }),
+    (value) => ({ observationCount: value.observations.length }),
+  );
+  logContentEvent("observation-batch-collected", {
+    ...summarizeCurrentDocument(),
+    ...summarizeObservationBatch(batch),
+    timingTraceId: input.timingTraceId,
+    tier: input.tier ?? "initial",
   });
+
+  return ok({ batch });
 }
 
 /**
@@ -284,8 +380,10 @@ export function createContentRuntime(observedSignals: ObservedPageSignals): Cont
       clearObservationExpiry();
 
       logContentEvent("observation-start", {
-        hostname: globalThis.location?.hostname,
+        ...summarizeCurrentDocument(),
+        ...summarizeSnapshotTarget(input.snapshotTarget),
         sessionId: input.sessionId,
+        expectedUrl: input.expectedUrl,
         durationMs: input.policy.durationMs,
         throttleMs: input.policy.throttleMs,
         maxPendingNodes: input.policy.maxPendingNodes,
@@ -320,7 +418,8 @@ export function createContentRuntime(observedSignals: ObservedPageSignals): Cont
       }, input.policy.durationMs);
 
       logContentEvent("observation-active", {
-        hostname: globalThis.location?.hostname,
+        ...summarizeCurrentDocument(),
+        ...summarizeSnapshotTarget(activeSnapshotTarget),
         sessionId: session.sessionId,
         status: session.status,
         expiresAt: session.expiresAt,
@@ -331,6 +430,15 @@ export function createContentRuntime(observedSignals: ObservedPageSignals): Cont
 
     async flushObservationBatch() {
       const flush = observedSignals.flushObservationBatch();
+      logContentEvent("observation-flush", {
+        ...summarizeCurrentDocument(),
+        ...summarizeSnapshotTarget(activeSnapshotTarget),
+        ...summarizeObservationBatch(flush.batch),
+        ...summarizeObservationStats(flush.stats),
+        sessionId: flush.session.sessionId,
+        status: flush.session.status,
+        pendingMutationCount: flush.session.pendingMutationCount,
+      });
       if (flush.batch && flush.batch.observations.length > 0) {
         publishContentSnapshot("observing", {
           observedAt: flush.batch.observedAt,
@@ -350,7 +458,8 @@ export function createContentRuntime(observedSignals: ObservedPageSignals): Cont
       });
       activeSnapshotTarget = undefined;
       logContentEvent("observation-stopped", {
-        hostname: globalThis.location?.hostname,
+        ...summarizeCurrentDocument(),
+        ...summarizeSnapshotTarget(activeSnapshotTarget),
         sessionId: session.sessionId,
         status: session.status,
         stopReason: session.stopReason,
@@ -359,17 +468,37 @@ export function createContentRuntime(observedSignals: ObservedPageSignals): Cont
     },
 
     async getObservationSessionState() {
-      return ok(observedSignals.status());
+      const session = observedSignals.status();
+      logContentEvent("observation-state-read", {
+        ...summarizeCurrentDocument(),
+        ...summarizeSnapshotTarget(activeSnapshotTarget),
+        sessionId: session.sessionId,
+        status: session.status,
+        pendingMutationCount: session.pendingMutationCount,
+        lastObservedAt: session.lastObservedAt,
+        stopReason: session.stopReason,
+      });
+      return ok(session);
     },
   };
 
   return {
     contentApi,
     publishObservedBatchQueued(event) {
+      logContentEvent("observation-batch-queued", {
+        ...summarizeCurrentDocument(),
+        ...summarizeSnapshotTarget(activeSnapshotTarget),
+        ...summarizeObservationStats(event.stats),
+        sessionId: event.session.sessionId,
+        status: event.session.status,
+        observedAt: event.observedAt,
+        pendingMutationCount: event.session.pendingMutationCount,
+      });
       publishContentSnapshot("observing", {
         observedAt: event.observedAt,
         reason: "observation-batch-queued",
       });
+      notifyBackgroundObservationDirty(event);
     },
     dispose(reason) {
       clearObservationExpiry();
@@ -403,13 +532,13 @@ export default defineContentScript({
   main(ctx) {
     if (getRuntimeState()) {
       logContentEvent("runtime-already-active", {
-        hostname: globalThis.location?.hostname,
+        ...summarizeCurrentDocument(),
       });
       return;
     }
 
     logContentEvent("runtime-ready", {
-      hostname: globalThis.location?.hostname,
+      ...summarizeCurrentDocument(),
       throttleMs: DOM_MUTATION_THROTTLE_MS,
     });
 
@@ -418,7 +547,6 @@ export default defineContentScript({
       throttleMs: DOM_MUTATION_THROTTLE_MS,
       onObservationBatchQueued(event) {
         runtime?.publishObservedBatchQueued(event);
-        notifyBackgroundObservationDirty(event);
       },
     });
     runtime = createContentRuntime(observedSignals);
@@ -427,7 +555,7 @@ export default defineContentScript({
     const state: ContentRuntimeState = {
       dispose() {
         logContentEvent("runtime-dispose", {
-          hostname: globalThis.location?.hostname,
+          ...summarizeCurrentDocument(),
         });
         runtime.dispose("invalidated");
         clearRuntimeState(state);
