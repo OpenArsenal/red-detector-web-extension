@@ -1,18 +1,17 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import type { ActiveTabIdentity } from '../../lib/messaging';
+import type { VisibleTabIdentity } from '@/lib/messaging';
 import {
 	createDetectionStorageHash,
-	getAnalysisCacheKey,
 	getDetectionOriginSnapshotKey,
-} from '../../lib/storage/contracts';
+} from '@/lib/storage/contracts';
 import { makeAnalysis, makeDetection, makeDetectionSessionSnapshot } from '../support/factories';
 import {
 	createMockBrowserStorageArea,
 	createMockBrowserStorageChangeEvent,
 } from '../support/mock-browser';
 
-const ACTIVE_IDENTITY: ActiveTabIdentity = {
+const ACTIVE_IDENTITY: VisibleTabIdentity = {
 	tabId: 7,
 	frameId: 0,
 	url: 'https://example.com/products',
@@ -36,7 +35,7 @@ async function loadSnapshotStateHarness(initialValues: Record<string, unknown> =
 		},
 	}));
 
-	const snapshotState = await import('../../lib/popup/snapshot-state');
+	const snapshotState = await import('@/lib/popup/snapshot-state');
 	return { ...snapshotState, storage, onChanged };
 }
 
@@ -46,17 +45,15 @@ afterEach(() => {
 });
 
 describe.sequential('popup snapshot state', () => {
-	it('reads a same-tab origin snapshot before the legacy analysis cache', async () => {
+	it('reads a same-tab origin snapshot as the startup source', async () => {
 		const snapshot = makeDetectionSessionSnapshot({
 			key: { tabId: ACTIVE_IDENTITY.tabId, frameId: ACTIVE_IDENTITY.frameId, documentId: 'document-1', originHash: ACTIVE_IDENTITY.originHash },
 			analysis: makeAnalysis([makeDetection('solidjs')], { source: 'fresh' }),
 			revision: 2,
 			status: 'complete',
 		});
-		const cached = makeAnalysis([makeDetection('react')], { source: 'cache', analyzedAt: Date.now() });
 		const harness = await loadSnapshotStateHarness({
 			[getDetectionOriginSnapshotKey(ACTIVE_IDENTITY.originHash)]: snapshot,
-			[getAnalysisCacheKey(ACTIVE_IDENTITY.url)]: cached,
 		});
 
 		const stored = await harness.readStoredPopupAnalysis(ACTIVE_IDENTITY);
@@ -68,16 +65,12 @@ describe.sequential('popup snapshot state', () => {
 		});
 	});
 
-	it('falls back to the legacy analysis cache when no same-tab snapshot exists', async () => {
-		const cached = makeAnalysis([makeDetection('react')], { source: 'cache', analyzedAt: Date.now() });
-		const harness = await loadSnapshotStateHarness({ [getAnalysisCacheKey(ACTIVE_IDENTITY.url)]: cached });
+	it('returns null when no matching snapshot exists for the visible tab', async () => {
+		const harness = await loadSnapshotStateHarness();
 
 		const stored = await harness.readStoredPopupAnalysis(ACTIVE_IDENTITY);
 
-		expect(stored).toMatchObject({
-			source: 'analysis-cache',
-			analysis: { results: [expect.objectContaining({ technologyId: 'react' })] },
-		});
+		expect(stored).toBeNull();
 	});
 
 	it('subscribes to newer same-tab snapshot revisions while ignoring other tabs and page URLs', async () => {

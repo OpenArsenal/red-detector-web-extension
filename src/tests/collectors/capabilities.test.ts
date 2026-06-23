@@ -4,8 +4,8 @@ import {
 	EXTENSION_COLLECTOR_CAPABILITIES,
 	getExtensionCollectorCapability,
 	listUnsupportedExtensionCollectorKinds,
-} from '../../lib/collectors/capabilities';
-import type { RuntimeDetectionKind } from '../../lib/detection/types';
+} from '@/lib/collectors/capabilities';
+import type { RuntimeDetectionKind } from '@/lib/detection/types';
 
 const RUNTIME_DETECTION_KINDS: readonly RuntimeDetectionKind[] = [
 	'dom',

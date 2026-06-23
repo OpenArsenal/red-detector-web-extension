@@ -1,47 +1,47 @@
 import { describe, expect, it } from 'vitest';
 
-import { normalizePageSignals } from '../../lib/observations';
-import { runObservationBatchPipeline } from '../../lib/pipeline';
-import { pusherTechnologyDefinition } from '../../lib/detection/rules/email-messaging/pusher';
-import { opentelemetryTechnologyDefinition } from '../../lib/detection/rules/monitoring-error-tracking/opentelemetry';
-import { amazonS3TechnologyDefinition } from '../../lib/detection/rules/infrastructure-hosting/amazon-s3';
-import { amazonWebServicesTechnologyDefinition } from '../../lib/detection/rules/infrastructure-hosting/amazon-web-services';
-import { fidesTechnologyDefinition } from '../../lib/detection/rules/privacy-compliance/fides';
-import { contentfulTechnologyDefinition } from '../../lib/detection/rules/platform-cms-builder/contentful';
-import { kasadaTechnologyDefinition } from '../../lib/detection/rules/security/kasada';
-import { googleFontApiTechnologyDefinition } from '../../lib/detection/rules/styling-library/google-font-api';
-import { nextJsTechnologyDefinition } from '../../lib/detection/rules/ui-library/next-js';
-import { turbopackTechnologyDefinition } from '../../lib/detection/rules/bundler/turbopack';
-import { webpackTechnologyDefinition } from '../../lib/detection/rules/bundler/webpack';
-import { reactServerComponentsTechnologyDefinition } from '../../lib/detection/rules/framework/react-server-components';
-import { nextJsPrerenderCacheTechnologyDefinition } from '../../lib/detection/rules/framework/next-js-prerender-cache';
-import { vercelBlobStorageTechnologyDefinition } from '../../lib/detection/rules/infrastructure-hosting/vercel-blob-storage';
-import { vercelMicrofrontendsTechnologyDefinition } from '../../lib/detection/rules/infrastructure-hosting/vercel-microfrontends';
-import { cloudinaryTechnologyDefinition } from '../../lib/detection/rules/infrastructure-hosting/cloudinary';
-import { rudderstackTechnologyDefinition } from '../../lib/detection/rules/marketing-automation/rudderstack';
-import { featurePolicyTechnologyDefinition } from '../../lib/detection/rules/security/feature-policy';
-import { crossOriginResourcePolicyTechnologyDefinition } from '../../lib/detection/rules/security/cross-origin-resource-policy';
-import { referrerPolicyHeaderTechnologyDefinition } from '../../lib/detection/rules/security/referrer-policy-header';
-import { xFrameOptionsTechnologyDefinition } from '../../lib/detection/rules/security/x-frame-options';
-import { xContentTypeOptionsTechnologyDefinition } from '../../lib/detection/rules/security/x-content-type-options';
-import { clientHintsTechnologyDefinition } from '../../lib/detection/rules/widgets-misc/client-hints';
-import { criticalClientHintsTechnologyDefinition } from '../../lib/detection/rules/widgets-misc/critical-client-hints';
-import { htmlInertAttributeTechnologyDefinition } from '../../lib/detection/rules/widgets-misc/html-inert-attribute';
-import { beaconApiTechnologyDefinition } from '../../lib/detection/rules/widgets-misc/beacon-api';
-import { performanceObserverApiTechnologyDefinition } from '../../lib/detection/rules/widgets-misc/performance-observer-api';
-import { resizeObserverApiTechnologyDefinition } from '../../lib/detection/rules/widgets-misc/resize-observer-api';
-import { streamsApiTechnologyDefinition } from '../../lib/detection/rules/widgets-misc/streams-api';
-import { cssCascadeLayersTechnologyDefinition } from '../../lib/detection/rules/styling-processor/css-cascade-layers';
-import { cssSubgridTechnologyDefinition } from '../../lib/detection/rules/styling-processor/css-subgrid';
-import { cssPropertyRuleTechnologyDefinition } from '../../lib/detection/rules/styling-processor/css-property-rule';
-import { cssHasSelectorTechnologyDefinition } from '../../lib/detection/rules/styling-processor/css-has-selector';
-import { cssStartingStyleTechnologyDefinition } from '../../lib/detection/rules/styling-processor/css-starting-style';
-import { cssContentVisibilityTechnologyDefinition } from '../../lib/detection/rules/styling-processor/css-content-visibility';
-import { cssContainerQueryUnitsTechnologyDefinition } from '../../lib/detection/rules/styling-processor/css-container-query-units';
-import { shikiTechnologyDefinition } from '../../lib/detection/rules/developer-tooling/shiki';
-import { viewTransitionsApiTechnologyDefinition } from '../../lib/detection/rules/animation/view-transitions-api';
-import { offscreenCanvasTechnologyDefinition } from '../../lib/detection/rules/graphics-visualization/offscreen-canvas';
-import { webglApiTechnologyDefinition } from '../../lib/detection/rules/graphics-visualization/webgl-api';
+import { normalizePageSignals } from '@/lib/observations';
+import { runObservationBatchPipeline } from '@/lib/pipeline';
+import { pusherTechnologyDefinition } from '@/lib/detection/rules/email-messaging/pusher';
+import { opentelemetryTechnologyDefinition } from '@/lib/detection/rules/monitoring-error-tracking/opentelemetry';
+import { amazonS3TechnologyDefinition } from '@/lib/detection/rules/infrastructure-hosting/amazon-s3';
+import { amazonWebServicesTechnologyDefinition } from '@/lib/detection/rules/infrastructure-hosting/amazon-web-services';
+import { fidesTechnologyDefinition } from '@/lib/detection/rules/privacy-compliance/fides';
+import { contentfulTechnologyDefinition } from '@/lib/detection/rules/platform-cms-builder/contentful';
+import { kasadaTechnologyDefinition } from '@/lib/detection/rules/security/kasada';
+import { googleFontApiTechnologyDefinition } from '@/lib/detection/rules/styling-library/google-font-api';
+import { nextJsTechnologyDefinition } from '@/lib/detection/rules/ui-library/next-js';
+import { turbopackTechnologyDefinition } from '@/lib/detection/rules/bundler/turbopack';
+import { webpackTechnologyDefinition } from '@/lib/detection/rules/bundler/webpack';
+import { reactServerComponentsTechnologyDefinition } from '@/lib/detection/rules/framework/react-server-components';
+import { nextJsPrerenderCacheTechnologyDefinition } from '@/lib/detection/rules/framework/next-js-prerender-cache';
+import { vercelBlobStorageTechnologyDefinition } from '@/lib/detection/rules/infrastructure-hosting/vercel-blob-storage';
+import { vercelMicrofrontendsTechnologyDefinition } from '@/lib/detection/rules/infrastructure-hosting/vercel-microfrontends';
+import { cloudinaryTechnologyDefinition } from '@/lib/detection/rules/infrastructure-hosting/cloudinary';
+import { rudderstackTechnologyDefinition } from '@/lib/detection/rules/marketing-automation/rudderstack';
+import { featurePolicyTechnologyDefinition } from '@/lib/detection/rules/security/feature-policy';
+import { crossOriginResourcePolicyTechnologyDefinition } from '@/lib/detection/rules/security/cross-origin-resource-policy';
+import { referrerPolicyHeaderTechnologyDefinition } from '@/lib/detection/rules/security/referrer-policy-header';
+import { xFrameOptionsTechnologyDefinition } from '@/lib/detection/rules/security/x-frame-options';
+import { xContentTypeOptionsTechnologyDefinition } from '@/lib/detection/rules/security/x-content-type-options';
+import { clientHintsTechnologyDefinition } from '@/lib/detection/rules/widgets-misc/client-hints';
+import { criticalClientHintsTechnologyDefinition } from '@/lib/detection/rules/widgets-misc/critical-client-hints';
+import { htmlInertAttributeTechnologyDefinition } from '@/lib/detection/rules/widgets-misc/html-inert-attribute';
+import { beaconApiTechnologyDefinition } from '@/lib/detection/rules/widgets-misc/beacon-api';
+import { performanceObserverApiTechnologyDefinition } from '@/lib/detection/rules/widgets-misc/performance-observer-api';
+import { resizeObserverApiTechnologyDefinition } from '@/lib/detection/rules/widgets-misc/resize-observer-api';
+import { streamsApiTechnologyDefinition } from '@/lib/detection/rules/widgets-misc/streams-api';
+import { cssCascadeLayersTechnologyDefinition } from '@/lib/detection/rules/styling-processor/css-cascade-layers';
+import { cssSubgridTechnologyDefinition } from '@/lib/detection/rules/styling-processor/css-subgrid';
+import { cssPropertyRuleTechnologyDefinition } from '@/lib/detection/rules/styling-processor/css-property-rule';
+import { cssHasSelectorTechnologyDefinition } from '@/lib/detection/rules/styling-processor/css-has-selector';
+import { cssStartingStyleTechnologyDefinition } from '@/lib/detection/rules/styling-processor/css-starting-style';
+import { cssContentVisibilityTechnologyDefinition } from '@/lib/detection/rules/styling-processor/css-content-visibility';
+import { cssContainerQueryUnitsTechnologyDefinition } from '@/lib/detection/rules/styling-processor/css-container-query-units';
+import { shikiTechnologyDefinition } from '@/lib/detection/rules/developer-tooling/shiki';
+import { viewTransitionsApiTechnologyDefinition } from '@/lib/detection/rules/animation/view-transitions-api';
+import { offscreenCanvasTechnologyDefinition } from '@/lib/detection/rules/graphics-visualization/offscreen-canvas';
+import { webglApiTechnologyDefinition } from '@/lib/detection/rules/graphics-visualization/webgl-api';
 import { makePageSignals, TEST_NOW } from '../support/factories';
 
 const VERCEL_CSP = [
@@ -81,8 +81,8 @@ const VERCEL_STANDARDS_CSS = `
 	.shiki { --shiki-token-keyword: #fff; }
 `;
 
-describe('vercel active-tab evidence parity', () => {
-	// Protects the active-tab subset of competitor reports without pulling DNS,
+describe('vercel visible-tab evidence parity', () => {
+	// Protects the visible-tab subset of competitor reports without pulling DNS,
 	// WHOIS, or contact intelligence into page-local detections.
 	it('detects technologies visible from active page HTML and HAR surfaces', () => {
 		const registry = [

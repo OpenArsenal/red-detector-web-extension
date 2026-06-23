@@ -1,9 +1,9 @@
 import { fc, test } from '@fast-check/vitest';
 import { describe, expect, it } from 'vitest';
 
-import { analyzeCompiledSite, analyzeSite } from '../../lib/detection/engine';
-import { createCompiledDetectionRegistry } from '../../lib/detection/registry-graph';
-import type { PageSignals, TechnologyDefinition } from '../../lib/detection/types';
+import { analyzeCompiledSite, analyzeSite } from '@/lib/detection/engine';
+import { createCompiledDetectionRegistry } from '@/lib/detection/registry-graph';
+import type { PageSignals, TechnologyDefinition } from '@/lib/detection/types';
 
 function createSignals(overrides: Partial<PageSignals> = {}): PageSignals {
 	return {

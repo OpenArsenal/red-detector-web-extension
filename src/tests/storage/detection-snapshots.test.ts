@@ -4,7 +4,7 @@ import {
 	getDetectionOriginSnapshotKey,
 	getDetectionSessionIndexKey,
 	getDetectionSessionSnapshotKey,
-} from '../../lib/storage/contracts';
+} from '@/lib/storage/contracts';
 import { makeAnalysis, makeDetection, makeDetectionSessionSnapshot } from '../support/factories';
 import { createMockBrowserStorageArea } from '../support/mock-browser';
 
@@ -20,7 +20,7 @@ async function loadStorageHarness() {
 		},
 	}));
 
-	const storage = await import('../../lib/storage');
+	const storage = await import('@/lib/storage');
 	return { ...storage, local, values };
 }
 

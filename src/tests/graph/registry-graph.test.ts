@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest';
 import {
 	createCompiledDetectionRegistry,
 	listRegistryRelationshipTargets,
-} from '../../lib/detection/registry-graph';
-import type { TechnologyDefinition } from '../../lib/detection/types';
+} from '@/lib/detection/registry-graph';
+import type { TechnologyDefinition } from '@/lib/detection/types';
 
 function technology(input: Partial<TechnologyDefinition> & Pick<TechnologyDefinition, 'id'>): TechnologyDefinition {
 	return {

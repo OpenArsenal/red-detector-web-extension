@@ -1,7 +1,7 @@
-import type { ContentPageSessionSnapshotTarget } from '../../lib/contracts/analysis';
+import type { ContentPageSessionSnapshotTarget } from '@/lib/contracts/analysis';
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { getDetectionSessionSnapshotKey } from '../../lib/storage/contracts';
+import { getDetectionSessionSnapshotKey } from '@/lib/storage/contracts';
 import { makeAnalysis, makeDetection, makeDetectionSessionSnapshot } from '../support/factories';
 import { createMockBrowserStorageArea } from '../support/mock-browser';
 
@@ -29,7 +29,7 @@ async function loadPageSessionSnapshotHarness(initialValues: Record<string, unkn
 	}));
 
 	return {
-		...(await import('../../lib/content/page-session-snapshots')),
+		...(await import('@/lib/content/page-session-snapshots')),
 		storage,
 	};
 }

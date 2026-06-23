@@ -3,10 +3,10 @@ import { describe, expect, it, vi } from 'vitest';
 import {
 	BACKGROUND_RPC_CHANNEL,
 	BACKGROUND_RPC_NAMESPACE,
-} from '../../lib/messaging/adapters/background';
-import { CONTENT_RPC_CHANNEL, CONTENT_RPC_NAMESPACE } from '../../lib/messaging/adapters/content';
-import { RpcTimeoutError, contentScriptFailure, withTimeout } from '../../lib/messaging/rpc';
-import { errorResponse, ok } from '../../lib/shared/result';
+} from '@/lib/messaging/adapters/background';
+import { CONTENT_RPC_CHANNEL, CONTENT_RPC_NAMESPACE } from '@/lib/messaging/adapters/content';
+import { RpcTimeoutError, contentScriptFailure, withTimeout } from '@/lib/messaging/rpc';
+import { errorResponse, ok } from '@/lib/shared/result';
 
 describe('messaging contract helpers', () => {
 	it('returns stable success envelopes', () => {

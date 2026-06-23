@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import type { TechnologyDefinition } from '../../lib/detection/types';
-import { matchObservationBatch } from '../../lib/detection/observation-matcher';
+import type { TechnologyDefinition } from '@/lib/detection/types';
+import { matchObservationBatch } from '@/lib/detection/observation-matcher';
 import {
 	createObservationMatcherIndex,
 	findIndexedObservationRules,
 	matchIndexedObservationBatch,
-} from '../../lib/detection/observation-matcher-index';
-import { normalizePageSignals } from '../../lib/observations';
+} from '@/lib/detection/observation-matcher-index';
+import { normalizePageSignals } from '@/lib/observations';
 import { makePageSignals } from '../support/factories';
 
 function makeIndexedRegistry(): TechnologyDefinition[] {

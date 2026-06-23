@@ -1,7 +1,7 @@
 import { fc, test } from '@fast-check/vitest';
 import { describe, expect, it } from 'vitest';
 
-import { normalizePageSignals } from '../../lib/observations';
+import { normalizePageSignals } from '@/lib/observations';
 import { makePageSignals, TEST_NOW } from '../support/factories';
 
 describe('page-signal observation normalization', () => {

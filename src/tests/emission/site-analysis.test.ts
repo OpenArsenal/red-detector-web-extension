@@ -1,17 +1,17 @@
 import { fc, test } from '@fast-check/vitest';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('../../lib/detection/rules', () => ({
+vi.mock('@/lib/detection/rules', () => ({
 	SOURCE_LIMITS: { evidenceValueChars: 160 },
 }));
 
-import type { PageSignals, SiteAnalysis, TechnologyDefinition } from '../../lib/detection/types';
-import { createEvidenceCandidateBatch, refineEvidenceCandidateBatch } from '../../lib/candidates';
-import { analyzeSite } from '../../lib/detection/engine';
-import { createCompiledDetectionRegistry } from '../../lib/detection/registry-graph';
-import { matchObservationBatch } from '../../lib/detection/observation-matcher';
-import { emitSiteAnalysisFromRefinedCandidates } from '../../lib/emission';
-import { normalizePageSignals } from '../../lib/observations';
+import type { PageSignals, SiteAnalysis, TechnologyDefinition } from '@/lib/detection/types';
+import { createEvidenceCandidateBatch, refineEvidenceCandidateBatch } from '@/lib/candidates';
+import { analyzeSite } from '@/lib/detection/engine';
+import { createCompiledDetectionRegistry } from '@/lib/detection/registry-graph';
+import { matchObservationBatch } from '@/lib/detection/observation-matcher';
+import { emitSiteAnalysisFromRefinedCandidates } from '@/lib/emission';
+import { normalizePageSignals } from '@/lib/observations';
 import { makePageSignals, TEST_NOW } from '../support/factories';
 
 function makeTechnology(

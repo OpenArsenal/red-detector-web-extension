@@ -1,25 +1,34 @@
 import { describe, expect, it } from 'vitest';
 
-import type { AnalyzeActiveTabInput, AnalyzeActiveTabOutput } from '../../lib/contracts/analysis';
+import type { AnalyzeVisibleTabInput, AnalyzeVisibleTabOutput } from '@/lib/contracts/analysis';
 import {
-	ANALYSIS_CACHE_STATUSES,
+	SNAPSHOT_REUSE_STATUSES,
 	ANALYSIS_MODES,
 	OBSERVATION_MODES,
-} from '../../lib/contracts/analysis';
+} from '@/lib/contracts/analysis';
 
-describe('active-tab analysis contract', () => {
+describe('visible-tab analysis contract', () => {
 	it('keeps request modes and observation values stable', () => {
-		expect(ANALYSIS_MODES).toEqual(['cache-first', 'refresh']);
+		expect(ANALYSIS_MODES).toEqual(['snapshot-first', 'refresh']);
 		expect(OBSERVATION_MODES).toEqual(['none', 'while-popup-open', 'bounded']);
-		expect(ANALYSIS_CACHE_STATUSES).toEqual(['hit', 'miss', 'bypassed']);
+		expect(SNAPSHOT_REUSE_STATUSES).toEqual(['hit', 'miss', 'bypassed']);
 	});
 
 	it('keeps the popup analysis response JSON-safe', () => {
-		const input: AnalyzeActiveTabInput = {
-			mode: 'cache-first',
+		const input: AnalyzeVisibleTabInput = {
+			target: {
+				tabId: 7,
+				frameId: 0,
+				url: 'https://example.com/products',
+				hostname: 'example.com',
+				originHash: 'origin-example',
+				urlHash: 'url-example-products',
+				incognito: false,
+			},
+			mode: 'snapshot-first',
 			observe: 'while-popup-open',
 		};
-		const output: AnalyzeActiveTabOutput = {
+		const output: AnalyzeVisibleTabOutput = {
 			analysis: {
 				url: 'https://example.com/products',
 				hostname: 'example.com',
@@ -28,7 +37,7 @@ describe('active-tab analysis contract', () => {
 				results: [],
 				errors: [],
 			},
-			cache: {
+			snapshot: {
 				status: 'miss',
 				key: 'analysis:https://example.com',
 				expiresAt: 1_700_086_400_000,
@@ -42,7 +51,11 @@ describe('active-tab analysis contract', () => {
 			},
 		};
 
-		expect(input).toEqual({ mode: 'cache-first', observe: 'while-popup-open' });
+		expect(input).toMatchObject({
+			target: { tabId: 7, url: 'https://example.com/products' },
+			mode: 'snapshot-first',
+			observe: 'while-popup-open',
+		});
 		expect(JSON.parse(JSON.stringify(output))).toEqual(output);
 	});
 });

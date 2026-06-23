@@ -1,5 +1,5 @@
-import { createDetectionStorageHash } from "../../lib/storage/contracts";
-import { createFnv1a32Hash } from "../../lib/storage/hash";
+import { createDetectionStorageHash } from "@/lib/storage/contracts";
+import { createFnv1a32Hash } from "@/lib/storage/hash";
 import { describe, expect, it } from "vitest";
 
 describe("createDetectionStorageHash", () => {
@@ -16,7 +16,7 @@ describe("createDetectionStorageHash", () => {
 		expect(fragment).not.toContain("private");
 		expect(fragment).not.toContain("https");
   });
-  
+
 	it("matches FNV-1a 32-bit vectors formatted as base-36 storage fragments", () => {
 		expect(createDetectionStorageHash("")).toBe(Number.parseInt("811c9dc5", 16).toString(36));
 		expect(createDetectionStorageHash("a")).toBe(Number.parseInt("e40c292c", 16).toString(36));

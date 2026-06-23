@@ -1,17 +1,17 @@
-import type { ObservationSessionState } from '../../lib/content/observed-page-signals';
-import type { AnalyzeActiveTabOutput } from '../../lib/contracts/analysis';
-import type { DetectionSessionSnapshot } from '../../lib/contracts/detection-session';
+import type { ObservationSessionState } from '@/lib/content/observed-page-signals';
+import type { AnalyzeVisibleTabOutput } from '@/lib/contracts/analysis';
+import type { DetectionSessionSnapshot } from '@/lib/contracts/detection-session';
 import type {
 	CategoryId,
 	ConfidenceScore,
 	DetectionResult,
 	PageSignals,
 	SiteAnalysis,
-} from '../../lib/detection/types';
+} from '@/lib/detection/types';
 import {
 	DETECTION_REPLAY_TRACE_SCHEMA_VERSION,
 	type DetectionReplayTrace,
-} from '../../lib/pipeline';
+} from '@/lib/pipeline';
 
 /**
  * Stable timestamp used by test factories that do not care about time itself.
@@ -28,8 +28,8 @@ export const HIGH_CONFIDENCE: ConfidenceScore = { value: 95, level: 'certain' };
 /**
  * Create a normalized analysis fixture for storage, popup, and background tests.
  *
- * The default URL matches the active-tab fixture used in background tests so a
- * cache record, analysis response, and page-signal snapshot can be combined
+ * The default URL matches the visible-tab fixture used in background tests so a
+ * snapshot response record, analysis response, and page-signal snapshot can be combined
  * without each test repeating the same hostname setup.
  */
 export function makeAnalysis(
@@ -51,7 +51,7 @@ export function makeAnalysis(
 /**
  * Create a durable detection session snapshot for storage and popup tests.
  *
- * The default key mirrors a top-frame active-tab document. Tests can override
+ * The default key mirrors a top-frame visible-tab document. Tests can override
  * the revision, status, or analysis without repeating the storage identity that
  * every snapshot needs before it can be compared in browser storage.
  */
@@ -203,13 +203,13 @@ export function makeObservationSession(
 /**
  * Create a background analysis response fixture for popup and extension tests.
  */
-export function makeAnalyzeActiveTabOutput(
-	overrides: Partial<AnalyzeActiveTabOutput> = {},
-): AnalyzeActiveTabOutput {
+export function makeAnalyzeVisibleTabOutput(
+	overrides: Partial<AnalyzeVisibleTabOutput> = {},
+): AnalyzeVisibleTabOutput {
 	const analysis = overrides.analysis ?? makeAnalysis();
 	return {
 		analysis,
-		cache: overrides.cache ?? {
+		snapshot: overrides.snapshot ?? {
 			status: 'miss',
 			key: 'analysis:https://example.com',
 			expiresAt: analysis.analyzedAt + 86_400_000,

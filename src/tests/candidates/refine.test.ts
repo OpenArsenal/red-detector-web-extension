@@ -1,10 +1,10 @@
 import { fc, test } from '@fast-check/vitest';
 import { describe, expect, it } from 'vitest';
 
-import type { TechnologyDefinition } from '../../lib/detection/types';
-import type { EvidenceEntry } from '../../lib/evidence';
-import { createEvidenceCandidateBatch, refineEvidenceCandidateBatch } from '../../lib/candidates';
-import { createCompiledDetectionRegistry } from '../../lib/detection/registry-graph';
+import type { TechnologyDefinition } from '@/lib/detection/types';
+import type { EvidenceEntry } from '@/lib/evidence';
+import { createEvidenceCandidateBatch, refineEvidenceCandidateBatch } from '@/lib/candidates';
+import { createCompiledDetectionRegistry } from '@/lib/detection/registry-graph';
 
 const TEST_NOW = 1_700_000_000_000;
 

@@ -4,10 +4,10 @@ import type {
 	FlushObservedObservationBatchOutput,
 	ObservedPageSignals,
 	ObservationSessionState,
-} from '../../lib/content/observed-page-signals';
-import type { ContentPageSessionSnapshotTarget } from '../../lib/contracts/analysis';
-import type { PageSignals } from '../../lib/detection/types';
-import type { ObservationBatch } from '../../lib/observations';
+} from '@/lib/content/observed-page-signals';
+import type { ContentPageSessionSnapshotTarget } from '@/lib/contracts/analysis';
+import type { PageSignals } from '@/lib/detection/types';
+import type { ObservationBatch } from '@/lib/observations';
 
 function makeSignals(overrides: Partial<PageSignals> = {}): PageSignals {
 	return {
@@ -75,17 +75,17 @@ const SNAPSHOT_TARGET: ContentPageSessionSnapshotTarget = {
 async function loadContentApiFactory() {
 	vi.resetModules();
 	vi.stubGlobal('defineContentScript', (options: unknown) => options);
-	vi.doMock('../../lib/content/collect-page-signals', () => ({
+	vi.doMock('@/lib/content/collect-page-signals', () => ({
 		collectPageSignals: vi.fn(() => makeSignals()),
 	}));
-	vi.doMock('../../lib/content/observed-page-signals', () => ({
+	vi.doMock('@/lib/content/observed-page-signals', () => ({
 		createObservedPageSignals: vi.fn(),
 	}));
-	vi.doMock('../../lib/detection/validate', () => ({
+	vi.doMock('@/lib/detection/validate', () => ({
 		validatePageSignals: vi.fn(() => null),
 	}));
 	const writeContentPageSessionSnapshot = vi.fn(async () => null);
-	vi.doMock('../../lib/content/page-session-snapshots', () => ({
+	vi.doMock('@/lib/content/page-session-snapshots', () => ({
 		writeContentPageSessionSnapshot,
 	}));
 	const sendMessage = vi.fn(async () => undefined);
@@ -99,7 +99,7 @@ async function loadContentApiFactory() {
 	}));
 
 	return {
-		...(await import('../../entrypoints/content')),
+		...(await import('@/entrypoints/content')),
 		sendMessage,
 		writeContentPageSessionSnapshot,
 	};
@@ -108,10 +108,10 @@ async function loadContentApiFactory() {
 afterEach(() => {
 	vi.useRealTimers();
 	vi.unstubAllGlobals();
-	vi.doUnmock('../../lib/content/collect-page-signals');
-	vi.doUnmock('../../lib/content/observed-page-signals');
-	vi.doUnmock('../../lib/detection/validate');
-	vi.doUnmock('../../lib/content/page-session-snapshots');
+	vi.doUnmock('@/lib/content/collect-page-signals');
+	vi.doUnmock('@/lib/content/observed-page-signals');
+	vi.doUnmock('@/lib/detection/validate');
+	vi.doUnmock('@/lib/content/page-session-snapshots');
 	vi.doUnmock('wxt/browser');
 	vi.doUnmock('comctx');
 	vi.resetModules();

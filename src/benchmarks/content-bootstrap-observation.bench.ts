@@ -1,7 +1,7 @@
 import { bench, describe } from 'vitest';
 
-import type { PageSignals } from '../lib/detection/types';
-import { normalizePageSignals } from '../lib/observations';
+import type { PageSignals } from '@/lib/detection/types';
+import { normalizePageSignals } from '@/lib/observations';
 import { makePageSignals } from '../tests/support/factories';
 
 /** Vitest benchmark settings tuned for local regression checks without making CI runs excessive. */

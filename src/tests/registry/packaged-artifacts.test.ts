@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import type { TechnologyDefinition } from '../../lib/detection/types';
-import { compileTechnologyRegistry } from '../../lib/registry';
+import type { TechnologyDefinition } from '@/lib/detection/types';
+import { compileTechnologyRegistry } from '@/lib/registry';
 import {
 	PACKAGED_REGISTRY_ASSET_PATHS,
 	PACKAGED_REGISTRY_ASSET_SCHEMA_VERSION,
@@ -12,8 +12,8 @@ import {
 	isPackagedTechnologyRegistryAsset,
 	isPackagedTechnologyRegistryShardAsset,
 	renderPackagedRegistryJson,
-} from '../../lib/registry/packaged-artifacts';
-import { createPackagedTechnologyRegistryProvider } from '../../lib/registry/packaged-provider';
+} from '@/lib/registry/packaged-artifacts';
+import { createPackagedTechnologyRegistryProvider } from '@/lib/registry/packaged-provider';
 
 function makeRegistry(): readonly TechnologyDefinition[] {
 	return [

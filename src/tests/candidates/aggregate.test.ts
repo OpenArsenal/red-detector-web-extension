@@ -1,11 +1,11 @@
 import { fc, test } from '@fast-check/vitest';
 import { describe, expect, it } from 'vitest';
 
-import type { TechnologyDefinition } from '../../lib/detection/types';
-import type { EvidenceEntry } from '../../lib/evidence';
-import { createEvidenceCandidateBatch } from '../../lib/candidates';
-import { matchObservationBatch } from '../../lib/detection/observation-matcher';
-import { normalizePageSignals } from '../../lib/observations';
+import type { TechnologyDefinition } from '@/lib/detection/types';
+import type { EvidenceEntry } from '@/lib/evidence';
+import { createEvidenceCandidateBatch } from '@/lib/candidates';
+import { matchObservationBatch } from '@/lib/detection/observation-matcher';
+import { normalizePageSignals } from '@/lib/observations';
 import { makePageSignals, TEST_NOW } from '../support/factories';
 
 const TARGET = {

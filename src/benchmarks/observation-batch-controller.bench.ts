@@ -4,7 +4,7 @@ import {
 	createObservationBatchController,
 	type NormalizedObservation,
 	type ObservationBatchPolicy,
-} from '../lib/observations';
+} from '@/lib/observations';
 
 /** Number of observations used to approximate one heavy mutation burst. */
 const OBSERVATION_COUNT = 2_000;

@@ -1,10 +1,10 @@
 import { bench, describe } from 'vitest';
 
-import { buildCollectionPlan } from '../lib/collectors/planning';
-import { createObservationMatcherIndex } from '../lib/detection/observation-matcher-index';
-import { createCompiledDetectionRegistry } from '../lib/detection/registry-graph';
-import type { DetectionRule, TechnologyDefinition } from '../lib/detection/types';
-import { compileTechnologyRegistry } from '../lib/registry';
+import { buildCollectionPlan } from '@/lib/collectors/planning';
+import { createObservationMatcherIndex } from '@/lib/detection/observation-matcher-index';
+import { createCompiledDetectionRegistry } from '@/lib/detection/registry-graph';
+import type { DetectionRule, TechnologyDefinition } from '@/lib/detection/types';
+import { compileTechnologyRegistry } from '@/lib/registry';
 
 /** Number of generated technologies used to approximate a large bundled registry. */
 const LARGE_REGISTRY_SIZE = 1_000;

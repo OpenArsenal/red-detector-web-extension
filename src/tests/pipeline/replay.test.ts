@@ -1,16 +1,16 @@
 import { describe, expect, it, vi } from 'vitest';
 
-vi.mock('../../lib/detection/rules', () => ({
+vi.mock('@/lib/detection/rules', () => ({
 	SOURCE_LIMITS: { evidenceValueChars: 160 },
 }));
 
-import type { SiteAnalysis, TechnologyDefinition } from '../../lib/detection/types';
+import type { SiteAnalysis, TechnologyDefinition } from '@/lib/detection/types';
 import {
 	DETECTION_REPLAY_TRACE_SCHEMA_VERSION,
 	createDetectionExplanations,
 	createDetectionReplayTrace,
 	runDetectionPipeline,
-} from '../../lib/pipeline';
+} from '@/lib/pipeline';
 import { makeAnalysis, makeDetection, makePageSignals, TEST_NOW } from '../support/factories';
 
 /**

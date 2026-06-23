@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import type { TechnologyDefinition } from '../../lib/detection/types';
-import { createStaticTechnologyRegistryProvider } from '../../lib/detection/registry-provider';
+import type { TechnologyDefinition } from '@/lib/detection/types';
+import { createStaticTechnologyRegistryProvider } from '@/lib/detection/registry-provider';
 
 function makeTechnology(id: string): TechnologyDefinition {
 	return {

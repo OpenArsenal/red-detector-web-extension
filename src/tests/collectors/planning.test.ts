@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildCollectionPlan, createIncrementalCollectionPasses, toCollectPageSignalsInput } from '../../lib/collectors/planning';
-import { SOURCE_LIMITS } from '../../lib/detection/source-limits';
-import type { TechnologyDefinition } from '../../lib/detection/types';
+import { buildCollectionPlan, createIncrementalCollectionPasses, toCollectPageSignalsInput } from '@/lib/collectors/planning';
+import { SOURCE_LIMITS } from '@/lib/detection/source-limits';
+import type { TechnologyDefinition } from '@/lib/detection/types';
 
 function makeTechnology(
 	id: string,

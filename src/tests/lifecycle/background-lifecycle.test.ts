@@ -28,13 +28,13 @@ async function loadLifecycleHarness() {
 			},
 		},
 	}));
-	vi.doMock('../../lib/storage', () => ({
+	vi.doMock('@/lib/storage', () => ({
 		markDetectionSessionSnapshotsForTab,
 		removeDetectionSessionIndex,
 	}));
 
 	return {
-		...(await import('../../lib/background/lifecycle')),
+		...(await import('@/lib/background/lifecycle')),
 		onUpdated,
 		onRemoved,
 		markDetectionSessionSnapshotsForTab,
@@ -44,7 +44,7 @@ async function loadLifecycleHarness() {
 
 afterEach(() => {
 	vi.doUnmock('wxt/browser');
-	vi.doUnmock('../../lib/storage');
+	vi.doUnmock('@/lib/storage');
 	vi.resetModules();
 });
 

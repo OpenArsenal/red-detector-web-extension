@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { REGISTRY_SOURCE_SCHEMA_VERSION, validateRegistrySource } from '../../lib/registry';
+import { REGISTRY_SOURCE_SCHEMA_VERSION, validateRegistrySource } from '@/lib/registry';
 
 describe('registry source schema', () => {
 	it('accepts the current TypeScript technology shape', () => {

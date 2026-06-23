@@ -1,18 +1,18 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import type { PageSignalPollingState } from '../../lib/content/observed-page-signals';
-import type { DetectionSessionSnapshot } from '../../lib/contracts/detection-session';
-import type { PageSignals, SiteAnalysis } from '../../lib/detection/types';
-import type { ContentApi } from '../../lib/messaging';
-import { CONTENT_SCRIPT_TIMEOUT_MS } from '../../lib/messaging/rpc';
+import type { PageSignalPollingState } from '@/lib/content/observed-page-signals';
+import type { DetectionSessionSnapshot } from '@/lib/contracts/detection-session';
+import type { PageSignals, SiteAnalysis } from '@/lib/detection/types';
+import type { ContentApi } from '@/lib/messaging';
+import { CONTENT_SCRIPT_TIMEOUT_MS } from '@/lib/messaging/rpc';
 import {
 	createDetectionStorageHash,
 	getDetectionOriginSnapshotKey,
 	getDetectionSessionSnapshotKey,
-} from '../../lib/storage/contracts';
-import type { ObservationBatch } from '../../lib/observations';
-import type { DetectionReplayTrace } from '../../lib/pipeline';
-import { ok, type AppResult } from '../../lib/shared/result';
+} from '@/lib/storage/contracts';
+import type { ObservationBatch } from '@/lib/observations';
+import type { DetectionReplayTrace } from '@/lib/pipeline';
+import { ok, type AppResult } from '@/lib/shared/result';
 import { makeDetectionReplayTrace } from '../support/factories';
 
 vi.setConfig({ testTimeout: 20_000 });
@@ -27,6 +27,16 @@ const HTTP_TAB: TestTab = {
 	id: 7,
 	url: 'https://example.com/products',
 };
+
+const VISIBLE_TAB_TARGET = {
+	tabId: 7,
+	frameId: 0,
+	url: 'https://example.com/products',
+	hostname: 'example.com',
+	originHash: createDetectionStorageHash('https://example.com'),
+	urlHash: createDetectionStorageHash('https://example.com/products'),
+	incognito: false,
+} as const;
 
 const OBSERVATION_TARGET = {
 	tabId: 7,
@@ -131,6 +141,28 @@ function makeAnalysis(signals = makeSignals()): SiteAnalysis {
 	};
 }
 
+function makeDetectionSnapshotFromAnalysis(analysis: SiteAnalysis): DetectionSessionSnapshot {
+	return {
+		key: {
+			tabId: VISIBLE_TAB_TARGET.tabId,
+			frameId: VISIBLE_TAB_TARGET.frameId,
+			documentId: 'document-1',
+			originHash: VISIBLE_TAB_TARGET.originHash,
+		},
+		schemaVersion: 1,
+		revision: 1,
+		urlHash: VISIBLE_TAB_TARGET.urlHash,
+		hostname: analysis.hostname,
+		status: 'complete',
+		source: analysis.source === 'cache' ? 'cache' : 'background',
+		updatedAt: analysis.analyzedAt,
+		detectionCount: analysis.results.length,
+		analysis,
+		enrichment: { status: 'not-needed' },
+		matcherExecutor: 'unknown',
+	};
+}
+
 async function loadBackgroundApi(input: {
 	tab?: TestTab | null;
 	contentApi?: Partial<ContentApi>;
@@ -151,10 +183,10 @@ async function loadBackgroundApiHarness(input: {
 	vi.resetModules();
 	vi.stubGlobal('defineBackground', (setup: () => void) => setup);
 	vi.stubGlobal('fetch', vi.fn(async () => new Response('', { status: 204 })));
-	vi.doMock('../../data/technologies', () => ({
+	vi.doMock('@/data/technologies', () => ({
 		technologies: [],
 	}));
-	vi.doMock('../../lib/detection/rules', () => ({
+	vi.doMock('@/lib/detection/rules', () => ({
 		SOURCE_LIMITS: SOURCE_LIMITS_STUB,
 	}));
 
@@ -197,6 +229,7 @@ async function loadBackgroundApiHarness(input: {
 
 	const executeScript = vi.fn(async () => [{ frameId: 0, result: undefined }]);
 	const tabsOnRemovedAddListener = vi.fn();
+	const tabsOnUpdatedAddListener = vi.fn();
 	const runtimeOnMessageAddListener = vi.fn();
 	vi.doMock('wxt/browser', () => ({
 		browser: {
@@ -215,6 +248,9 @@ async function loadBackgroundApiHarness(input: {
 				onRemoved: {
 					addListener: tabsOnRemovedAddListener,
 				},
+				onUpdated: {
+					addListener: tabsOnUpdatedAddListener,
+				},
 			},
 		},
 	}));
@@ -229,19 +265,19 @@ async function loadBackgroundApiHarness(input: {
 		}),
 	}));
 
-	vi.doMock('../../lib/browser/active-tab', () => ({
+	vi.doMock('@/lib/browser/visible-tab', () => ({
 		getActiveTab: vi.fn(async () => input.tab ?? null),
 		canInspectTab: canInspectUrl,
 	}));
 
 	const analyzeSite = vi.fn((signals: PageSignals) => makeAnalysis(signals));
-	vi.doMock('../../lib/detection/engine', () => ({
+	vi.doMock('@/lib/detection/engine', () => ({
 		analyzeSite,
 	}));
 
-	const { buildCollectionPlan } = await import('../../lib/collectors/planning');
-	const { createObservationMatcherIndex } = await import('../../lib/detection/observation-matcher-index');
-	const { createCompiledDetectionRegistry } = await import('../../lib/detection/registry-graph');
+	const { buildCollectionPlan } = await import('@/lib/collectors/planning');
+	const { createObservationMatcherIndex } = await import('@/lib/detection/observation-matcher-index');
+	const { createCompiledDetectionRegistry } = await import('@/lib/detection/registry-graph');
 	const compiledRegistryArtifact = {
 		artifactVersion: 1,
 		sourceSchemaVersion: 1,
@@ -259,7 +295,7 @@ async function loadBackgroundApiHarness(input: {
 	const getCompiledRegistry = vi.fn(async () => compiledRegistryArtifact);
 	const getCompiledBootstrapRegistry = vi.fn(async () => compiledRegistryArtifact);
 	const getCompiledObservationKindRegistry = vi.fn(async () => compiledRegistryArtifact);
-	vi.doMock('../../lib/detection/registry-provider', () => ({
+	vi.doMock('@/lib/detection/registry-provider', () => ({
 		bundledTechnologyRegistryProvider: {
 			listTechnologies,
 			listBootstrapTechnologies,
@@ -269,23 +305,24 @@ async function loadBackgroundApiHarness(input: {
 		},
 	}));
 
-	vi.doMock('../../lib/messaging', () => ({
+	vi.doMock('@/lib/messaging', () => ({
 		BACKGROUND_RPC_NAMESPACE: 'red-detector.background-rpc.v1',
 		CONTENT_RPC_NAMESPACE: 'red-detector.content-rpc.v1',
 		createBackgroundServerAdapter: vi.fn(() => ({})),
 		createContentClientAdapter: vi.fn(() => ({})),
 	}));
 
-	const getCachedAnalysis = vi.fn(async () => input.cachedAnalysis ?? null);
-	const getCachedReplayTrace = vi.fn(async () => input.cachedReplayTrace ?? null);
+	const getCachedReplayTrace = vi.fn(async () => input.snapshotdReplayTrace ?? null);
 	const getCachedReplayTraceHistory = vi.fn(async () =>
-		input.cachedReplayHistory ?? (input.cachedReplayTrace ? [input.cachedReplayTrace] : []),
+		input.snapshotdReplayHistory ?? (input.snapshotdReplayTrace ? [input.snapshotdReplayTrace] : []),
 	);
 	const getStatus = vi.fn(async () => ({ totalAnalyses: 0, trackedOrigins: 0 }));
-	const saveAnalysis = vi.fn(async (analysis: SiteAnalysis) => analysis);
 	const saveReplayTrace = vi.fn(async (trace: DetectionReplayTrace) => trace);
 	const saveMatcherJobRecord = vi.fn(async (record: unknown) => record);
 	const updateMatcherJobRecord = vi.fn(async () => null);
+	const getLatestDetectionOriginSnapshot = vi.fn(async () => input.snapshotdAnalysis
+		? makeDetectionSnapshotFromAnalysis(input.snapshotdAnalysis)
+		: null);
 	const getLatestDetectionSessionSnapshot = vi.fn(async () => null);
 	const saveDetectionSessionSnapshot = vi.fn(async (snapshot: DetectionSessionSnapshot) => ({
 		accepted: true,
@@ -293,36 +330,34 @@ async function loadBackgroundApiHarness(input: {
 		originStorageKey: getDetectionOriginSnapshotKey(snapshot.key.originHash),
 		snapshot,
 	}));
-	vi.doMock('../../lib/storage', () => ({
-		getCachedAnalysis,
+	vi.doMock('@/lib/storage', () => ({
 		getCachedReplayTrace,
 		getCachedReplayTraceHistory,
 		getStatus,
+		getLatestDetectionOriginSnapshot,
 		getLatestDetectionSessionSnapshot,
-		saveAnalysis,
 		saveDetectionSessionSnapshot,
 		saveMatcherJobRecord,
 		saveReplayTrace,
 		updateMatcherJobRecord,
 	}));
 
-	const background = await import('../../entrypoints/background');
+	const background = await import('@/entrypoints/background');
 	return {
 		api: background.createBackgroundApi(),
 		contentApi,
 		mocks: {
 			analyzeSite,
 			executeScript,
-			getCachedAnalysis,
 			getCachedReplayTrace,
 			getCachedReplayTraceHistory,
+			getLatestDetectionOriginSnapshot,
 			getStatus,
 			getCompiledRegistry,
 			getCompiledBootstrapRegistry,
 			getCompiledObservationKindRegistry,
 			listTechnologies,
 			listBootstrapTechnologies,
-			saveAnalysis,
 			saveDetectionSessionSnapshot,
 			saveMatcherJobRecord,
 			saveReplayTrace,
@@ -336,22 +371,22 @@ afterEach(() => {
 	vi.unstubAllGlobals();
 	vi.doUnmock('comctx');
 	vi.doUnmock('wxt/browser');
-	vi.doUnmock('../../data/technologies');
-	vi.doUnmock('../../lib/browser/active-tab');
-	vi.doUnmock('../../lib/detection/engine');
-	vi.doUnmock('../../lib/detection/registry-provider');
-	vi.doUnmock('../../lib/detection/rules');
-	vi.doUnmock('../../lib/messaging');
-	vi.doUnmock('../../lib/storage');
+	vi.doUnmock('@/data/technologies');
+	vi.doUnmock('@/lib/browser/visible-tab');
+	vi.doUnmock('@/lib/detection/engine');
+	vi.doUnmock('@/lib/detection/registry-provider');
+	vi.doUnmock('@/lib/detection/rules');
+	vi.doUnmock('@/lib/messaging');
+	vi.doUnmock('@/lib/storage');
 	vi.resetModules();
 });
 
-describe.sequential('background active-tab identity', () => {
-	it('returns the active tab identity without contacting the content script', async () => {
+describe.sequential('background visible-tab identity', () => {
+	it('returns the visible tab identity without contacting the content script', async () => {
 		const collectObservationBatch = vi.fn(async () => ok({ batch: makeObservationBatch() }));
 		const harness = await loadBackgroundApiHarness({ tab: HTTP_TAB, contentApi: { collectObservationBatch } });
 
-		await expect(harness.api.getActiveTabIdentity()).resolves.toMatchObject({
+		await expect(harness.api.getVisibleTabIdentity()).resolves.toMatchObject({
 			ok: true,
 			value: {
 				tabId: 7,
@@ -369,12 +404,12 @@ describe.sequential('background active-tab identity', () => {
 	});
 });
 
-describe.sequential('background analyzeActiveTab messaging hardening', () => {
+describe.sequential('background analyzeVisibleTab messaging hardening', () => {
 	it('returns NO_ACTIVE_TAB when there is no selected tab', async () => {
 		const api = await loadBackgroundApi({ tab: null });
 
 		await expect(
-			api.analyzeActiveTab({ mode: 'cache-first', observe: 'while-popup-open' }),
+			api.analyzeVisibleTab({ target: VISIBLE_TAB_TARGET, mode: 'snapshot-first', observe: 'while-popup-open' }),
 		).resolves.toMatchObject({
 			ok: false,
 			error: {
@@ -391,7 +426,7 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 		});
 
 		await expect(
-			api.analyzeActiveTab({ mode: 'cache-first', observe: 'while-popup-open' }),
+			api.analyzeVisibleTab({ target: VISIBLE_TAB_TARGET, mode: 'snapshot-first', observe: 'while-popup-open' }),
 		).resolves.toMatchObject({
 			ok: false,
 			error: {
@@ -412,7 +447,7 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 		});
 
 		await expect(
-			api.analyzeActiveTab({ mode: 'refresh', observe: 'while-popup-open' }),
+			api.analyzeVisibleTab({ target: VISIBLE_TAB_TARGET, mode: 'refresh', observe: 'while-popup-open' }),
 		).resolves.toMatchObject({
 			ok: false,
 			error: {
@@ -431,7 +466,7 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 			},
 		});
 
-		const result = api.analyzeActiveTab({ mode: 'refresh', observe: 'while-popup-open' });
+		const result = api.analyzeVisibleTab({ target: VISIBLE_TAB_TARGET, mode: 'refresh', observe: 'while-popup-open' });
 		await vi.advanceTimersByTimeAsync(CONTENT_SCRIPT_TIMEOUT_MS);
 
 		await expect(result).resolves.toMatchObject({
@@ -443,7 +478,7 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 		});
 	});
 
-	it('returns cached analysis and reopens observation in cache-first mode', async () => {
+	it('returns stored snapshot analysis and reopens observation in snapshot-first mode', async () => {
 		const collectObservationBatch = vi.fn(async () => ok({ batch: makeObservationBatch() }));
 		const cachedAnalysis = { ...makeAnalysis(), source: 'cache' as const };
 		const cachedReplayTrace = makeDetectionReplayTrace({ completedMode: 'event' });
@@ -454,7 +489,7 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 			contentApi: { collectObservationBatch },
 		});
 
-		const result = await harness.api.analyzeActiveTab({ mode: 'cache-first', observe: 'while-popup-open' });
+		const result = await harness.api.analyzeVisibleTab({ target: VISIBLE_TAB_TARGET, mode: 'snapshot-first', observe: 'while-popup-open' });
 
 		expect(result).toMatchObject({
 			ok: true,
@@ -462,7 +497,7 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 				analysis: {
 					source: 'cache',
 				},
-				cache: {
+				snapshot: {
 					status: 'hit',
 				},
 				replayTrace: {
@@ -485,7 +520,7 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 		expect(harness.mocks.getCachedReplayTrace).toHaveBeenCalledWith(HTTP_TAB.url);
 	});
 
-	it('returns cached analysis without reopening observation when observation is disabled', async () => {
+	it('returns stored snapshot analysis without reopening observation when observation is disabled', async () => {
 		const cachedAnalysis = { ...makeAnalysis(), source: 'cache' as const };
 		const harness = await loadBackgroundApiHarness({
 			tab: HTTP_TAB,
@@ -493,12 +528,12 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 		});
 
 		await expect(
-			harness.api.analyzeActiveTab({ mode: 'cache-first', observe: 'none' }),
+			harness.api.analyzeVisibleTab({ target: VISIBLE_TAB_TARGET, mode: 'snapshot-first', observe: 'none' }),
 		).resolves.toMatchObject({
 			ok: true,
 			value: {
 				analysis: { source: 'cache' },
-				cache: { status: 'hit' },
+				snapshot: { status: 'hit' },
 				session: undefined,
 			},
 		});
@@ -510,14 +545,14 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 		const harness = await loadBackgroundApiHarness({ tab: HTTP_TAB });
 
 		await expect(
-			harness.api.analyzeActiveTab({ mode: 'cache-first', observe: 'none' }),
+			harness.api.analyzeVisibleTab({ target: VISIBLE_TAB_TARGET, mode: 'snapshot-first', observe: 'none' }),
 		).resolves.toMatchObject({
 			ok: true,
 			value: {
 				analysis: {
 					source: 'fresh',
 				},
-				cache: {
+				snapshot: {
 					status: 'miss',
 					key: 'analysis:https://example.com',
 				},
@@ -528,33 +563,35 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 			},
 		});
 
-		expect(harness.mocks.getCachedAnalysis).toHaveBeenCalledWith(HTTP_TAB.url);
+		expect(harness.mocks.getLatestDetectionOriginSnapshot).toHaveBeenCalledWith(VISIBLE_TAB_TARGET.originHash);
 		expect(harness.contentApi.collectObservationBatch).toHaveBeenCalledOnce();
 		expect(harness.mocks.getCompiledBootstrapRegistry).not.toHaveBeenCalled();
 		expect(harness.mocks.getCompiledRegistry).toHaveBeenCalledOnce();
 		expect(harness.mocks.analyzeSite).not.toHaveBeenCalled();
-		expect(harness.mocks.saveAnalysis).toHaveBeenCalledWith(expect.objectContaining({ source: 'fresh' }));
-		expect(harness.mocks.saveAnalysis).toHaveBeenCalledOnce();
+		expect(harness.mocks.saveDetectionSessionSnapshot).toHaveBeenCalledWith(expect.objectContaining({
+			analysis: expect.objectContaining({ source: 'fresh' }),
+		}));
+		expect(harness.mocks.saveDetectionSessionSnapshot).toHaveBeenCalledOnce();
 		expect(harness.mocks.saveReplayTrace).toHaveBeenCalledWith(expect.objectContaining({
 			completedMode: 'event',
 		}));
 		expect(harness.contentApi.beginObservationSession).not.toHaveBeenCalled();
 	});
 
-	it('skips persistent analysis and replay writes for incognito active tabs', async () => {
+	it('skips persistent analysis and replay writes for incognito visible tabs', async () => {
 		const harness = await loadBackgroundApiHarness({
 			tab: { ...HTTP_TAB, incognito: true },
 		});
 
 		await expect(
-			harness.api.analyzeActiveTab({ mode: 'cache-first', observe: 'while-popup-open' }),
+			harness.api.analyzeVisibleTab({ target: { ...VISIBLE_TAB_TARGET, incognito: true }, mode: 'snapshot-first', observe: 'while-popup-open' }),
 		).resolves.toMatchObject({
 			ok: true,
 			value: {
 				analysis: {
 					source: 'fresh',
 				},
-				cache: {
+				snapshot: {
 					status: 'miss',
 				},
 				sessionTarget: {
@@ -566,42 +603,42 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 			},
 		});
 
-		expect(harness.mocks.getCachedAnalysis).not.toHaveBeenCalled();
-		expect(harness.mocks.saveAnalysis).not.toHaveBeenCalled();
+		expect(harness.mocks.getLatestDetectionOriginSnapshot).not.toHaveBeenCalled();
+		expect(harness.mocks.saveDetectionSessionSnapshot).not.toHaveBeenCalled();
 		expect(harness.mocks.saveReplayTrace).not.toHaveBeenCalled();
 		expect(harness.contentApi.beginObservationSession).toHaveBeenCalledOnce();
 	});
 
-	it('bypasses cached analysis when refresh mode is requested', async () => {
+	it('bypasses stored snapshot analysis when refresh mode is requested', async () => {
 		const harness = await loadBackgroundApiHarness({
 			tab: HTTP_TAB,
 			cachedAnalysis: { ...makeAnalysis(), source: 'cache' as const },
 		});
 
 		await expect(
-			harness.api.analyzeActiveTab({ mode: 'refresh', observe: 'none' }),
+			harness.api.analyzeVisibleTab({ target: VISIBLE_TAB_TARGET, mode: 'refresh', observe: 'none' }),
 		).resolves.toMatchObject({
 			ok: true,
 			value: {
 				analysis: {
 					source: 'fresh',
 				},
-				cache: {
+				snapshot: {
 					status: 'bypassed',
 				},
 			},
 		});
 
-		expect(harness.mocks.getCachedAnalysis).not.toHaveBeenCalled();
+		expect(harness.mocks.getLatestDetectionOriginSnapshot).not.toHaveBeenCalled();
 		expect(harness.contentApi.collectObservationBatch).toHaveBeenCalledOnce();
-		expect(harness.mocks.saveAnalysis).toHaveBeenCalledOnce();
+		expect(harness.mocks.saveDetectionSessionSnapshot).toHaveBeenCalledOnce();
 	});
 
 	it('routes fresh analysis through the event pipeline', async () => {
 		const harness = await loadBackgroundApiHarness({ tab: HTTP_TAB });
 
 		await expect(
-			harness.api.analyzeActiveTab({ mode: 'refresh', observe: 'none' }),
+			harness.api.analyzeVisibleTab({ target: VISIBLE_TAB_TARGET, mode: 'refresh', observe: 'none' }),
 		).resolves.toMatchObject({
 			ok: true,
 			value: {
@@ -611,7 +648,7 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 					source: 'fresh',
 					results: [],
 				},
-				cache: {
+				snapshot: {
 					status: 'bypassed',
 					key: 'analysis:https://example.com',
 				},
@@ -624,11 +661,13 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 
 		expect(harness.contentApi.collectObservationBatch).toHaveBeenCalledOnce();
 		expect(harness.mocks.analyzeSite).not.toHaveBeenCalled();
-		expect(harness.mocks.saveAnalysis).toHaveBeenCalledWith(expect.objectContaining({
-			url: HTTP_TAB.url,
-			hostname: 'example.com',
-			source: 'fresh',
-			results: [],
+		expect(harness.mocks.saveDetectionSessionSnapshot).toHaveBeenCalledWith(expect.objectContaining({
+			analysis: expect.objectContaining({
+				url: HTTP_TAB.url,
+				hostname: 'example.com',
+				source: 'fresh',
+				results: [],
+			}),
 		}));
 		expect(harness.mocks.saveReplayTrace).toHaveBeenCalledWith(expect.objectContaining({
 			completedMode: 'event',
@@ -648,7 +687,7 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 		});
 
 		await expect(
-			harness.api.analyzeActiveTab({ mode: 'refresh', observe: 'none' }),
+			harness.api.analyzeVisibleTab({ target: VISIBLE_TAB_TARGET, mode: 'refresh', observe: 'none' }),
 		).resolves.toMatchObject({
 			ok: false,
 			error: {
@@ -657,21 +696,21 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 		});
 
 		expect(harness.mocks.analyzeSite).not.toHaveBeenCalled();
-		expect(harness.mocks.saveAnalysis).not.toHaveBeenCalled();
+		expect(harness.mocks.saveDetectionSessionSnapshot).not.toHaveBeenCalled();
 	});
 
 	it('starts an observation session after a fresh refresh analysis', async () => {
 		const harness = await loadBackgroundApiHarness({ tab: HTTP_TAB });
 
 		await expect(
-			harness.api.analyzeActiveTab({ mode: 'refresh', observe: 'while-popup-open' }),
+			harness.api.analyzeVisibleTab({ target: VISIBLE_TAB_TARGET, mode: 'refresh', observe: 'while-popup-open' }),
 		).resolves.toMatchObject({
 			ok: true,
 			value: {
 				analysis: {
 					source: 'fresh',
 				},
-				cache: {
+				snapshot: {
 					status: 'bypassed',
 				},
 				session: {
@@ -704,11 +743,11 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 		const harness = await loadBackgroundApiHarness({ tab: HTTP_TAB });
 
 		await expect(
-			harness.api.analyzeActiveTab({ mode: 'refresh', observe: 'bounded' }),
+			harness.api.analyzeVisibleTab({ target: VISIBLE_TAB_TARGET, mode: 'refresh', observe: 'bounded' }),
 		).resolves.toMatchObject({
 			ok: true,
 			value: {
-				cache: {
+				snapshot: {
 					status: 'bypassed',
 				},
 				session: {
@@ -739,7 +778,7 @@ describe.sequential('background observation session baseline', () => {
 		await expect(harness.api.refreshObservationSession(OBSERVATION_TARGET)).resolves.toMatchObject({
 			ok: true,
 			value: {
-				cache: {
+				snapshot: {
 					status: 'bypassed',
 				},
 				session: {
@@ -758,7 +797,7 @@ describe.sequential('background observation session baseline', () => {
 		const harness = await loadBackgroundApiHarness({ tab: HTTP_TAB });
 
 		await expect(
-			harness.api.analyzeActiveTab({ mode: 'refresh', observe: 'none' }),
+			harness.api.analyzeVisibleTab({ target: VISIBLE_TAB_TARGET, mode: 'refresh', observe: 'none' }),
 		).resolves.toMatchObject({ ok: true });
 
 		const dirtyState: PageSignalPollingState = {
@@ -800,7 +839,7 @@ describe.sequential('background observation session baseline', () => {
 		await expect(harness.api.refreshObservationSession(OBSERVATION_TARGET)).resolves.toMatchObject({
 			ok: true,
 			value: {
-				cache: { status: 'bypassed' },
+				snapshot: { status: 'bypassed' },
 				replayTrace: { completedMode: 'event' },
 			},
 		});
@@ -809,7 +848,7 @@ describe.sequential('background observation session baseline', () => {
 		expect(harness.contentApi.flushObservationBatch).toHaveBeenCalledOnce();
 		expect(harness.contentApi.beginObservationSession).not.toHaveBeenCalled();
 		expect(harness.mocks.getCompiledRegistry).toHaveBeenCalledTimes(2);
-		expect(harness.mocks.saveAnalysis).toHaveBeenCalledTimes(2);
+		expect(harness.mocks.saveDetectionSessionSnapshot).toHaveBeenCalledTimes(2);
 		expect(harness.mocks.analyzeSite).not.toHaveBeenCalled();
 	});
 
@@ -857,7 +896,7 @@ describe.sequential('background observation session baseline', () => {
 		await expect(harness.api.refreshObservationSession(OBSERVATION_TARGET)).resolves.toMatchObject({
 			ok: true,
 			value: {
-				cache: { status: 'bypassed' },
+				snapshot: { status: 'bypassed' },
 				replayTrace: { completedMode: 'event' },
 			},
 		});
@@ -865,7 +904,7 @@ describe.sequential('background observation session baseline', () => {
 		expect(harness.contentApi.collectObservationBatch).toHaveBeenCalledOnce();
 		expect(harness.contentApi.flushObservationBatch).toHaveBeenCalledOnce();
 		expect(harness.contentApi.beginObservationSession).not.toHaveBeenCalled();
-		expect(harness.mocks.saveAnalysis).toHaveBeenCalledOnce();
+		expect(harness.mocks.saveDetectionSessionSnapshot).toHaveBeenCalledOnce();
 	});
 
 	it('rejects observation refresh when the session belongs to a previous page path', async () => {
@@ -886,7 +925,7 @@ describe.sequential('background observation session baseline', () => {
 			ok: false,
 			error: {
 				code: 'OBSERVATION_SESSION_UNAVAILABLE',
-				message: 'The active tab navigated away from the observed document.',
+				message: 'The visible tab navigated away from the observed document.',
 			},
 		});
 
@@ -905,7 +944,7 @@ describe.sequential('background observation session baseline', () => {
 		});
 
 		expect(harness.contentApi.collectObservationBatch).not.toHaveBeenCalled();
-		expect(harness.mocks.saveAnalysis).not.toHaveBeenCalled();
+		expect(harness.mocks.saveDetectionSessionSnapshot).not.toHaveBeenCalled();
 	});
 
 	it('forwards stop requests to the targeted content script session', async () => {

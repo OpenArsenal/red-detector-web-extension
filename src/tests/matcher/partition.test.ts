@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { matchIndexedObservationBatch } from '../../lib/detection/observation-matcher-index';
-import { createObservationMatcherIndex } from '../../lib/detection/observation-matcher-index';
-import { createCompiledDetectionRegistry } from '../../lib/detection/registry-graph';
-import type { TechnologyDefinition } from '../../lib/detection/types';
-import { createMatcherPartitionTasks, createMatcherPipelineResult } from '../../lib/matcher';
-import type { MatcherPartitionResult } from '../../lib/matcher';
-import { normalizePageSignals, type ObservationBatch } from '../../lib/observations';
-import { createObservationKindTechnologyRegistry } from '../../lib/registry';
+import { matchIndexedObservationBatch } from '@/lib/detection/observation-matcher-index';
+import { createObservationMatcherIndex } from '@/lib/detection/observation-matcher-index';
+import { createCompiledDetectionRegistry } from '@/lib/detection/registry-graph';
+import type { TechnologyDefinition } from '@/lib/detection/types';
+import { createMatcherPartitionTasks, createMatcherPipelineResult } from '@/lib/matcher';
+import type { MatcherPartitionResult } from '@/lib/matcher';
+import { normalizePageSignals, type ObservationBatch } from '@/lib/observations';
+import { createObservationKindTechnologyRegistry } from '@/lib/registry';
 import { makePageSignals } from '../support/factories';
 
 const job = {

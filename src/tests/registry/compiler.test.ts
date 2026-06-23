@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import type { TechnologyDefinition } from '../../lib/detection/types';
+import type { TechnologyDefinition } from '@/lib/detection/types';
 import {
 	REGISTRY_COMPILER_ARTIFACT_VERSION,
 	REGISTRY_SOURCE_SCHEMA_VERSION,
 	compileTechnologyRegistry,
-} from '../../lib/registry';
+} from '@/lib/registry';
 
 function makeRegistry(): TechnologyDefinition[] {
 	return [

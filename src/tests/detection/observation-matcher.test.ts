@@ -1,12 +1,12 @@
 import { fc, test } from '@fast-check/vitest';
 import { describe, expect, it } from 'vitest';
 
-import type { TechnologyDefinition } from '../../lib/detection/types';
+import type { TechnologyDefinition } from '@/lib/detection/types';
 import {
 	matchObservationBatch,
 	matchObservationRule,
-} from '../../lib/detection/observation-matcher';
-import { normalizePageSignals } from '../../lib/observations';
+} from '@/lib/detection/observation-matcher';
+import { normalizePageSignals } from '@/lib/observations';
 import { makePageSignals, TEST_NOW } from '../support/factories';
 
 describe('observation pattern matcher', () => {

@@ -8,7 +8,7 @@ import {
 	collectScriptSources,
 	collectStylesheetContents,
 	collectStylesheetSources,
-} from '../../lib/content/collect-page-signals';
+} from '@/lib/content/collect-page-signals';
 
 function makeScript(input: { src?: string; text?: string }): HTMLScriptElement {
 	return {

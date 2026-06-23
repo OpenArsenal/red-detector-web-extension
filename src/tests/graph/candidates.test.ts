@@ -4,8 +4,8 @@ import {
 	createDirectDetectionCandidate,
 	createRelationshipDetectionCandidate,
 	detectionCandidateToResult,
-} from '../../lib/detection/candidates';
-import type { ConfidenceScore, Evidence, TechnologyDefinition } from '../../lib/detection/types';
+} from '@/lib/detection/candidates';
+import type { ConfidenceScore, Evidence, TechnologyDefinition } from '@/lib/detection/types';
 
 const confidence: ConfidenceScore = { value: 95, level: 'high' };
 

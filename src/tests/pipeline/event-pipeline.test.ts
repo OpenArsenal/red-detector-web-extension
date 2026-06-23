@@ -1,13 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 
-vi.mock('../../lib/detection/rules', () => ({
+vi.mock('@/lib/detection/rules', () => ({
 	SOURCE_LIMITS: { evidenceValueChars: 160 },
 }));
 
-import type { TechnologyDefinition } from '../../lib/detection/types';
-import { runDetectionPipeline, runObservationBatchPipeline } from '../../lib/pipeline';
-import { normalizePageSignals } from '../../lib/observations';
-import { compileTechnologyRegistry } from '../../lib/registry';
+import type { TechnologyDefinition } from '@/lib/detection/types';
+import { runDetectionPipeline, runObservationBatchPipeline } from '@/lib/pipeline';
+import { normalizePageSignals } from '@/lib/observations';
+import { compileTechnologyRegistry } from '@/lib/registry';
 import { makePageSignals, TEST_NOW } from '../support/factories';
 
 /**

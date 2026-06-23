@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { analyzeSite } from '../../lib/detection/engine';
-import type { PageSignals, TechnologyDefinition } from '../../lib/detection/types';
+import { analyzeSite } from '@/lib/detection/engine';
+import type { PageSignals, TechnologyDefinition } from '@/lib/detection/types';
 
 function createSignals(overrides: Partial<PageSignals> = {}): PageSignals {
 	return {

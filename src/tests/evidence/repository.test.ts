@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
 	createEvidenceBatchFromAnalysis,
 	createEvidenceRepository,
-} from '../../lib/evidence';
+} from '@/lib/evidence';
 import {
 	makeAnalysis,
 	makeDetection,

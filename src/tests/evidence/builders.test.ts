@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest';
 import {
 	createEvidenceBatchFromAnalysis,
 	createEvidenceEntryFromObservation,
-} from '../../lib/evidence';
-import { normalizePageSignals } from '../../lib/observations';
+} from '@/lib/evidence';
+import { normalizePageSignals } from '@/lib/observations';
 import {
 	makeAnalysis,
 	makeDetection,

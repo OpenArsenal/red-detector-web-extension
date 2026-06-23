@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { createObservedPageSignals } from '../../lib/content/observed-page-signals';
+import { createObservedPageSignals } from '@/lib/content/observed-page-signals';
 
 function makeScript(input: { src?: string; text?: string }): HTMLScriptElement {
 	return {

@@ -12,10 +12,10 @@ import {
 	shouldApplyPopupSnapshotRevision,
 	shouldKeepPopupLiveUpdatesActive,
 	shouldPreservePopupReplayState,
-} from '../../lib/popup/view-model';
+} from '@/lib/popup/view-model';
 import {
 	makeAnalysis,
-	makeAnalyzeActiveTabOutput,
+	makeAnalyzeVisibleTabOutput,
 	makeDetection,
 	makeDetectionReplayTrace,
 	makeDetectionSessionSnapshot,
@@ -38,9 +38,9 @@ describe('popup view model', () => {
 		expect(groups[0]).toMatchObject({ label: 'Framework', results: [{ technologyId: 'react' }] });
 	});
 
-	it('maps cache hits without an active session to idle state', () => {
-		const response = makeAnalyzeActiveTabOutput({
-			cache: {
+	it('maps snapshot hits without an active session to idle state', () => {
+		const response = makeAnalyzeVisibleTabOutput({
+			snapshot: {
 				status: 'hit',
 				key: 'analysis:https://example.com',
 			},
@@ -65,7 +65,7 @@ describe('popup view model', () => {
 	});
 
 	it('builds a manual refresh notice while preserving active observation state', () => {
-		const response = makeAnalyzeActiveTabOutput({
+		const response = makeAnalyzeVisibleTabOutput({
 			analysis: makeAnalysis([makeDetection('react')]),
 			session: makeObservationSession('observing'),
 		});
@@ -90,7 +90,7 @@ describe('popup view model', () => {
 
 
 	it('keeps continuous snapshot revisions tied to the active observer', () => {
-		const response = makeAnalyzeActiveTabOutput({
+		const response = makeAnalyzeVisibleTabOutput({
 			analysis: makeAnalysis([makeDetection('nextjs')]),
 			session: makeObservationSession('observing'),
 		});
@@ -111,7 +111,7 @@ describe('popup view model', () => {
 
 	it('marks newly added automatic observation detections without duplicating previous late ids', () => {
 		const previousAnalysis = makeAnalysis([makeDetection('react')]);
-		const response = makeAnalyzeActiveTabOutput({
+		const response = makeAnalyzeVisibleTabOutput({
 			analysis: makeAnalysis([makeDetection('react'), makeDetection('shopify', ['platform-cms-builder'])]),
 			session: makeObservationSession('dirty'),
 		});
@@ -186,7 +186,7 @@ describe('popup view model', () => {
 
 	it('preserves replay state when a lifecycle snapshot repeats the same analysis', () => {
 		const previousAnalysis = makeAnalysis([makeDetection('react')]);
-		const response = makeAnalyzeActiveTabOutput({
+		const response = makeAnalyzeVisibleTabOutput({
 			analysis: previousAnalysis,
 		});
 

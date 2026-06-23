@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import type { ObservationSessionState } from '../../lib/content/observed-page-signals';
+import type { ObservationSessionState } from '@/lib/content/observed-page-signals';
 import {
 	EXTENSION_OBSERVATION_POLICY,
 	canRefreshObservationSession,
 	getObservationRefreshBlockReason,
 	isObservationSessionForUrl,
 	shouldStartObservation,
-} from '../../lib/lifecycle/observation';
+} from '@/lib/lifecycle/observation';
 
 function makeSession(overrides: Partial<ObservationSessionState> = {}): ObservationSessionState {
 	return {

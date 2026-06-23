@@ -1,13 +1,13 @@
 import { bench, describe } from 'vitest';
 
-import { createEvidenceCandidateBatch, refineEvidenceCandidateBatch } from '../lib/candidates';
-import { matchIndexedObservationBatch } from '../lib/detection/observation-matcher-index';
-import { createCompiledDetectionRegistry } from '../lib/detection/registry-graph';
-import type { DetectionRule, TechnologyDefinition } from '../lib/detection/types';
-import { createMatcherPartitionTasks, createMatcherPipelineResult } from '../lib/matcher';
-import { createObservationKindTechnologyRegistry } from '../lib/registry';
-import { normalizePageSignals, type NormalizedObservationKind, type ObservationBatch } from '../lib/observations';
-import { createObservationMatcherIndex } from '../lib/detection/observation-matcher-index';
+import { createEvidenceCandidateBatch, refineEvidenceCandidateBatch } from '@/lib/candidates';
+import { matchIndexedObservationBatch } from '@/lib/detection/observation-matcher-index';
+import { createCompiledDetectionRegistry } from '@/lib/detection/registry-graph';
+import type { DetectionRule, TechnologyDefinition } from '@/lib/detection/types';
+import { createMatcherPartitionTasks, createMatcherPipelineResult } from '@/lib/matcher';
+import { createObservationKindTechnologyRegistry } from '@/lib/registry';
+import { normalizePageSignals, type NormalizedObservationKind, type ObservationBatch } from '@/lib/observations';
+import { createObservationMatcherIndex } from '@/lib/detection/observation-matcher-index';
 import { makePageSignals } from '../tests/support/factories';
 
 /** Number of generated technologies used to approximate the shipped registry scale. */

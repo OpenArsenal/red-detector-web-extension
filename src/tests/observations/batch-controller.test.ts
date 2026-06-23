@@ -4,7 +4,7 @@ import {
 	createObservationBatchController,
 	type NormalizedObservation,
 	type ObservationBatchPolicy,
-} from '../../lib/observations';
+} from '@/lib/observations';
 
 const target = { url: 'https://example.test/', hostname: 'example.test' };
 

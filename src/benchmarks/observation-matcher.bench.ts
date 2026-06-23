@@ -1,13 +1,13 @@
 import { bench, describe } from 'vitest';
 
-import type { DetectionRule, TechnologyDefinition } from '../lib/detection/types';
-import { matchObservationBatch } from '../lib/detection/observation-matcher';
+import type { DetectionRule, TechnologyDefinition } from '@/lib/detection/types';
+import { matchObservationBatch } from '@/lib/detection/observation-matcher';
 import {
 	createObservationMatcherIndex,
 	matchIndexedObservationBatch,
-} from '../lib/detection/observation-matcher-index';
-import type { ObservationBatch } from '../lib/observations';
-import { normalizePageSignals } from '../lib/observations';
+} from '@/lib/detection/observation-matcher-index';
+import type { ObservationBatch } from '@/lib/observations';
+import { normalizePageSignals } from '@/lib/observations';
 import { makePageSignals } from '../tests/support/factories';
 
 /** Number of synthetic technologies used to approximate a large bundled registry. */
@@ -27,7 +27,7 @@ const BENCHMARK_OPTIONS = {
 /** Workload names measured by the observation matcher benchmark. */
 const OBSERVATION_MATCHER_WORKLOADS = ['common', 'adversarial'] as const;
 
-/** URL-like surfaces deferred from the first visible active-tab pass. */
+/** URL-like surfaces deferred from the first visible visible-tab pass. */
 const INITIAL_DISABLED_KINDS = Object.freeze([
 	'resourceUrl',
 	'requestUrl',
