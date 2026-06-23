@@ -6,6 +6,7 @@ import { canInspectTab, getActiveTab } from '../lib/browser/active-tab';
 import { collectExtensionObservationBatch } from '../lib/collectors/extension-page-collector';
 import {
 	createIncrementalCollectionPasses,
+	type CollectionEvidencePass,
 	type CollectionTierPlan,
 } from '../lib/collectors/planning';
 import { bundledTechnologyRegistryProvider } from '../lib/detection/registry-provider';
@@ -896,7 +897,7 @@ async function analyzeObservationBatchRefresh(
 	}
 
 	eventObservationBatchByTab.set(tab.id, batchResponse.value);
-	enqueueAnalysisPersistence({
+	void enqueueAnalysisPersistence({
 		tab,
 		batch: batchResponse.value,
 		compiledRegistryArtifact,
@@ -1092,19 +1093,95 @@ async function analyzeFreshActiveTab(
 		return batchResponse;
 	}
 
-	let completeBatch = batchResponse.value;
-	for (const pass of remainingPasses) {
+	eventObservationBatchByTab.set(tab.id, batchResponse.value);
+	const initialMatcher = enqueueAnalysisPersistence({
+		tab,
+		batch: batchResponse.value,
+		compiledRegistryArtifact,
+		cacheStatus,
+		session,
+		details: {
+			refreshKind: 'queued-continuous-initial',
+			matcherMode: 'complete',
+			collectionPassId: initialPass.id,
+			collectionPassCount: collectionPasses.length,
+		},
+		timingTraceId,
+	});
+	activeFreshAnalysisByTab.delete(tab.id);
+	if (remainingPasses.length > 0) {
+		void initialMatcher.finally(() => {
+			void runIncrementalEvidencePasses({
+				tab,
+				baseBatch: batchResponse.value,
+				passes: remainingPasses,
+				compiledRegistryArtifact,
+				cacheStatus,
+				session,
+				timingTraceId,
+			});
+		});
+	}
+
+	const response = await createQueuedAnalysisOutput(tab, cacheStatus, session, timingTraceId);
+	endTimingSpan(totalSpan, {
+		ok: true,
+		returnedImmediately: true,
+		queuedObservationCount: batchResponse.value.observations.length,
+		deferredCollectionPassCount: remainingPasses.length,
+		returnedResultCount: response.analysis.results.length,
+	});
+	return ok(response);
+}
+
+interface IncrementalEvidencePassRun {
+	/** Tab and document identity that owns the staged enrichment work. */
+	readonly tab: InspectableTab;
+	/** First cheap observation batch already queued for matching. */
+	readonly baseBatch: ObservationBatch;
+	/** Follow-up collection passes that must not block the first matcher revision. */
+	readonly passes: readonly CollectionEvidencePass[];
+	/** Compiled registry artifact reused for matching every enriched batch. */
+	readonly compiledRegistryArtifact: CompiledRegistry;
+	/** Cache state attached to the visible analysis response. */
+	readonly cacheStatus: AnalyzeActiveTabOutput['cache']['status'];
+	/** Observation session that remains active while enrichment gathers later evidence. */
+	readonly session?: ObservationSessionState;
+	/** Timing trace shared with the initial popup command. */
+	readonly timingTraceId: string;
+}
+
+/**
+ * Run deeper evidence passes only after the first matcher revision has been queued.
+ *
+ * The old flow collected every enrichment surface before matching started, which
+ * made the popup wait even when cheap observations were already available. Each
+ * pass now merges into the latest known observation batch and queues an ordinary
+ * matcher revision, so deep evidence can improve the result without owning first
+ * paint.
+ */
+async function runIncrementalEvidencePasses(input: IncrementalEvidencePassRun): Promise<void> {
+	let currentBatch = eventObservationBatchByTab.get(input.tab.id) ?? input.baseBatch;
+	for (const pass of input.passes) {
+		if (!await canPersistMatcherResult(input.tab, currentBatch.target.url)) {
+			logBackgroundEvent('evidence-passes-stopped-after-navigation', {
+				...summarizeTab(input.tab),
+				passId: pass.id,
+			});
+			return;
+		}
+
 		const passBatch = await runEvidencePassWithTimeout(() => collectObservationBatchFromTab(
-			tab.id,
-			tab.url,
-			compiledRegistryArtifact,
+			input.tab.id,
+			input.tab.url,
+			input.compiledRegistryArtifact,
 			pass.plan.tier,
-			`${timingTraceId}:collect:${pass.id}`,
+			`${input.timingTraceId}:collect:${pass.id}`,
 			pass.plan,
 		));
 		if (!passBatch.ok) {
-			logBackgroundEvent('evidence-pass-collection-skipped-before-match', {
-				...summarizeTab(tab),
+			logBackgroundEvent('evidence-pass-collection-skipped', {
+				...summarizeTab(input.tab),
 				passId: pass.id,
 				code: passBatch.error.code,
 				message: passBatch.error.message,
@@ -1112,38 +1189,27 @@ async function analyzeFreshActiveTab(
 			continue;
 		}
 
-		completeBatch = mergeObservationBatches(completeBatch, passBatch.value);
+		const latestBatch = eventObservationBatchByTab.get(input.tab.id);
+		currentBatch = latestBatch && isSameObservationTarget(latestBatch, passBatch.value)
+			? mergeObservationBatches(latestBatch, passBatch.value)
+			: mergeObservationBatches(currentBatch, passBatch.value);
+		eventObservationBatchByTab.set(input.tab.id, currentBatch);
+		void enqueueAnalysisPersistence({
+			tab: input.tab,
+			batch: currentBatch,
+			compiledRegistryArtifact: input.compiledRegistryArtifact,
+			cacheStatus: input.cacheStatus,
+			session: input.session,
+			details: {
+				refreshKind: 'enrichment-pass',
+				matcherMode: 'evidence-pass',
+				collectionPassId: pass.id,
+				collectionPassCount: input.passes.length + 1,
+			},
+			timingTraceId: input.timingTraceId,
+		});
 	}
-
-	eventObservationBatchByTab.set(tab.id, completeBatch);
-	enqueueAnalysisPersistence({
-		tab,
-		batch: completeBatch,
-		compiledRegistryArtifact,
-		cacheStatus,
-		session,
-		details: {
-			refreshKind: 'queued-continuous-initial',
-			matcherMode: 'complete',
-			collectionPassCount: collectionPasses.length,
-		},
-		timingTraceId,
-	});
-	activeFreshAnalysisByTab.delete(tab.id);
-
-	const response = await createQueuedAnalysisOutput(tab, cacheStatus, session, timingTraceId);
-	endTimingSpan(totalSpan, {
-		ok: true,
-		returnedImmediately: true,
-		queuedObservationCount: completeBatch.observations.length,
-		collectionPassCount: collectionPasses.length,
-		returnedResultCount: response.analysis.results.length,
-	});
-	return ok(response);
 }
-
-
-
 
 async function runEvidencePassWithTimeout<T>(
 	operation: () => Promise<AppResult<T>>,
@@ -1713,9 +1779,9 @@ function enqueueAnalysisPersistence(input: {
 	readonly details?: Record<string, unknown>;
 	readonly enrichment?: AnalysisEnrichmentState;
 	readonly timingTraceId?: string;
-}): void {
+}): Promise<void> {
 	pendingMatcherPersistenceByTab.add(input.tab.id);
-	void analyzeAndPersistObservationBatch(
+	return analyzeAndPersistObservationBatch(
 		input.tab,
 		input.batch,
 		input.compiledRegistryArtifact,
