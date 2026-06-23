@@ -63,7 +63,7 @@ describe('matcher partitions', () => {
 		const partitions = createMatcherPartitionTasks({ job, batch });
 
 		expect(partitions).toHaveLength(6);
-		expect(partitions.map((partition) => partition.observationCount)).toEqual([24, 24, 24, 24, 24, 10]);
+		expect(partitions.map((partition) => partition.batch.observations.length)).toEqual([24, 24, 24, 24, 24, 10]);
 		expect(partitions.every((partition) => partition.kind === 'resourceUrl')).toBe(true);
 	});
 

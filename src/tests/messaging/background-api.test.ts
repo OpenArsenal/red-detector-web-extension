@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import type { CollectionPlan } from '@/lib/collectors/planning';
 import type { PageSignalPollingState } from '@/lib/content/observed-page-signals';
 import type { DetectionSessionSnapshot } from '@/lib/contracts/detection-session';
 import type { PageSignals, SiteAnalysis } from '@/lib/detection/types';
@@ -43,6 +44,16 @@ const OBSERVATION_TARGET = {
 	sessionId: 'session-1',
 	expectedUrl: 'https://example.com/products',
 } as const;
+
+type BackgroundApiHarnessOptions = {
+	tab?: TestTab | null;
+	contentApi?: Partial<ContentApi>;
+	cachedAnalysis?: SiteAnalysis | null;
+	cachedReplayTrace?: DetectionReplayTrace | null;
+	cachedReplayHistory?: DetectionReplayTrace[];
+	collectionPlan?: CollectionPlan;
+	updateMatcherJobRecord?: (jobId: string, patch?: unknown) => Promise<unknown>;
+};
 
 const SOURCE_LIMITS_STUB = {
 	htmlChars: 200_000,
@@ -130,6 +141,77 @@ function makeObservationBatch(signals = makeSignals()): ObservationBatch {
 	};
 }
 
+function makeDeferred<T = void>(): {
+	readonly promise: Promise<T>;
+	readonly resolve: (value: T | PromiseLike<T>) => void;
+	readonly reject: (reason?: unknown) => void;
+} {
+	let resolveDeferred: (value: T | PromiseLike<T>) => void = () => undefined;
+	let rejectDeferred: (reason?: unknown) => void = () => undefined;
+	const promise = new Promise<T>((resolve, reject) => {
+		resolveDeferred = resolve;
+		rejectDeferred = reject;
+	});
+
+	return {
+		promise,
+		resolve: resolveDeferred,
+		reject: rejectDeferred,
+	};
+}
+
+function makeTextEnrichmentCollectionPlan(): CollectionPlan {
+	const initial = {
+		tier: 'initial' as const,
+		selectorProbeList: [],
+		htmlProbeList: [],
+		jsGlobalPropertyList: [],
+		needsHeaders: false,
+		needsScriptContent: false,
+		needsStylesheetContent: false,
+		needsText: false,
+		needsStorage: false,
+	};
+	const enrichment = {
+		tier: 'enrichment' as const,
+		selectorProbeList: [],
+		htmlProbeList: [],
+		jsGlobalPropertyList: [],
+		needsHeaders: false,
+		needsScriptContent: false,
+		needsStylesheetContent: false,
+		needsText: true,
+		needsStorage: false,
+	};
+
+	return {
+		...initial,
+		initial,
+		enrichment,
+		costSummary: {
+			cheap: 0,
+			expensive: 1,
+			unsupported: 0,
+		},
+	};
+}
+
+function makeMultiSurfaceEnrichmentCollectionPlan(): CollectionPlan {
+	const plan = makeTextEnrichmentCollectionPlan();
+	return {
+		...plan,
+		enrichment: {
+			...plan.enrichment,
+			htmlProbeList: [{
+				technologyId: 'html-tech',
+				ruleIndex: 0,
+				source: 'html-tech',
+				flags: '',
+			}],
+		},
+	};
+}
+
 function makeAnalysis(signals = makeSignals()): SiteAnalysis {
 	return {
 		url: signals.url,
@@ -163,23 +245,11 @@ function makeDetectionSnapshotFromAnalysis(analysis: SiteAnalysis): DetectionSes
 	};
 }
 
-async function loadBackgroundApi(input: {
-	tab?: TestTab | null;
-	contentApi?: Partial<ContentApi>;
-	cachedAnalysis?: SiteAnalysis | null;
-	cachedReplayTrace?: DetectionReplayTrace | null;
-	cachedReplayHistory?: DetectionReplayTrace[];
-}) {
+async function loadBackgroundApi(input: BackgroundApiHarnessOptions) {
 	return (await loadBackgroundApiHarness(input)).api;
 }
 
-async function loadBackgroundApiHarness(input: {
-	tab?: TestTab | null;
-	contentApi?: Partial<ContentApi>;
-	cachedAnalysis?: SiteAnalysis | null;
-	cachedReplayTrace?: DetectionReplayTrace | null;
-	cachedReplayHistory?: DetectionReplayTrace[];
-}) {
+async function loadBackgroundApiHarness(input: BackgroundApiHarnessOptions) {
 	vi.resetModules();
 	vi.stubGlobal('defineBackground', (setup: () => void) => setup);
 	vi.stubGlobal('fetch', vi.fn(async () => new Response('', { status: 204 })));
@@ -265,7 +335,7 @@ async function loadBackgroundApiHarness(input: {
 		}),
 	}));
 
-	vi.doMock('@/lib/browser/visible-tab', () => ({
+	vi.doMock('@/lib/browser/active-tab', () => ({
 		getActiveTab: vi.fn(async () => input.tab ?? null),
 		canInspectTab: canInspectUrl,
 	}));
@@ -286,7 +356,7 @@ async function loadBackgroundApiHarness(input: {
 		patternTables: {},
 		relationshipGraph: createCompiledDetectionRegistry([]),
 		matcherIndex: createObservationMatcherIndex([]),
-		collectionPlan: buildCollectionPlan([]),
+		collectionPlan: input.collectionPlan ?? buildCollectionPlan([]),
 		sourceMap: {},
 		diagnostics: [],
 	};
@@ -312,16 +382,16 @@ async function loadBackgroundApiHarness(input: {
 		createContentClientAdapter: vi.fn(() => ({})),
 	}));
 
-	const getCachedReplayTrace = vi.fn(async () => input.snapshotdReplayTrace ?? null);
+	const getCachedReplayTrace = vi.fn(async () => input.cachedReplayTrace ?? null);
 	const getCachedReplayTraceHistory = vi.fn(async () =>
-		input.snapshotdReplayHistory ?? (input.snapshotdReplayTrace ? [input.snapshotdReplayTrace] : []),
+		input.cachedReplayHistory ?? (input.cachedReplayTrace ? [input.cachedReplayTrace] : []),
 	);
 	const getStatus = vi.fn(async () => ({ totalAnalyses: 0, trackedOrigins: 0 }));
 	const saveReplayTrace = vi.fn(async (trace: DetectionReplayTrace) => trace);
 	const saveMatcherJobRecord = vi.fn(async (record: unknown) => record);
-	const updateMatcherJobRecord = vi.fn(async () => null);
-	const getLatestDetectionOriginSnapshot = vi.fn(async () => input.snapshotdAnalysis
-		? makeDetectionSnapshotFromAnalysis(input.snapshotdAnalysis)
+	const updateMatcherJobRecord = vi.fn(input.updateMatcherJobRecord ?? (async () => null));
+	const getLatestDetectionOriginSnapshot = vi.fn(async () => input.cachedAnalysis
+		? makeDetectionSnapshotFromAnalysis(input.cachedAnalysis)
 		: null);
 	const getLatestDetectionSessionSnapshot = vi.fn(async () => null);
 	const saveDetectionSessionSnapshot = vi.fn(async (snapshot: DetectionSessionSnapshot) => ({
@@ -372,7 +442,7 @@ afterEach(() => {
 	vi.doUnmock('comctx');
 	vi.doUnmock('wxt/browser');
 	vi.doUnmock('@/data/technologies');
-	vi.doUnmock('@/lib/browser/visible-tab');
+	vi.doUnmock('@/lib/browser/active-tab');
 	vi.doUnmock('@/lib/detection/engine');
 	vi.doUnmock('@/lib/detection/registry-provider');
 	vi.doUnmock('@/lib/detection/rules');
@@ -383,7 +453,7 @@ afterEach(() => {
 
 describe.sequential('background visible-tab identity', () => {
 	it('returns the visible tab identity without contacting the content script', async () => {
-		const collectObservationBatch = vi.fn(async () => ok({ batch: makeObservationBatch() }));
+		const collectObservationBatch = vi.fn(async (_input: unknown) => ok({ batch: makeObservationBatch() }));
 		const harness = await loadBackgroundApiHarness({ tab: HTTP_TAB, contentApi: { collectObservationBatch } });
 
 		await expect(harness.api.getVisibleTabIdentity()).resolves.toMatchObject({
@@ -419,7 +489,7 @@ describe.sequential('background analyzeVisibleTab messaging hardening', () => {
 	});
 
 	it('returns UNSUPPORTED_URL before contacting the content script', async () => {
-		const collectObservationBatch = vi.fn(async () => ok({ batch: makeObservationBatch() }));
+		const collectObservationBatch = vi.fn(async (_input: unknown) => ok({ batch: makeObservationBatch() }));
 		const api = await loadBackgroundApi({
 			tab: { id: 7, url: 'chrome://extensions' },
 			contentApi: { collectObservationBatch },
@@ -478,7 +548,7 @@ describe.sequential('background analyzeVisibleTab messaging hardening', () => {
 		});
 	});
 
-	it('returns stored snapshot analysis and reopens observation in snapshot-first mode', async () => {
+	it('returns stored snapshot analysis without probing content runtime in snapshot-first mode', async () => {
 		const collectObservationBatch = vi.fn(async () => ok({ batch: makeObservationBatch() }));
 		const cachedAnalysis = { ...makeAnalysis(), source: 'cache' as const };
 		const cachedReplayTrace = makeDetectionReplayTrace({ completedMode: 'event' });
@@ -503,20 +573,16 @@ describe.sequential('background analyzeVisibleTab messaging hardening', () => {
 				replayTrace: {
 					completedMode: 'event',
 				},
-				session: {
-					status: 'observing',
-				},
-				sessionTarget: {
-					tabId: HTTP_TAB.id,
-					sessionId: 'session-1',
-				},
+				session: undefined,
 			},
 		});
 
 		expect(collectObservationBatch).not.toHaveBeenCalled();
 		expect(harness.mocks.getCompiledRegistry).not.toHaveBeenCalled();
 		expect(harness.mocks.saveMatcherJobRecord).not.toHaveBeenCalled();
-		expect(harness.contentApi.beginObservationSession).toHaveBeenCalledOnce();
+		expect(harness.mocks.saveDetectionSessionSnapshot).not.toHaveBeenCalled();
+		expect(harness.contentApi.getObservationSessionState).not.toHaveBeenCalled();
+		expect(harness.contentApi.beginObservationSession).not.toHaveBeenCalled();
 		expect(harness.mocks.getCachedReplayTrace).toHaveBeenCalledWith(HTTP_TAB.url);
 	});
 
@@ -541,7 +607,7 @@ describe.sequential('background analyzeVisibleTab messaging hardening', () => {
 		expect(harness.contentApi.beginObservationSession).not.toHaveBeenCalled();
 	});
 
-	it('returns a fresh cache-miss analysis and persists normalized output', async () => {
+	it('returns queued cache-miss output and persists normalized output later', async () => {
 		const harness = await loadBackgroundApiHarness({ tab: HTTP_TAB });
 
 		await expect(
@@ -557,9 +623,6 @@ describe.sequential('background analyzeVisibleTab messaging hardening', () => {
 					key: 'analysis:https://example.com',
 				},
 				session: undefined,
-				replayTrace: {
-					completedMode: 'event',
-				},
 			},
 		});
 
@@ -568,14 +631,155 @@ describe.sequential('background analyzeVisibleTab messaging hardening', () => {
 		expect(harness.mocks.getCompiledBootstrapRegistry).not.toHaveBeenCalled();
 		expect(harness.mocks.getCompiledRegistry).toHaveBeenCalledOnce();
 		expect(harness.mocks.analyzeSite).not.toHaveBeenCalled();
-		expect(harness.mocks.saveDetectionSessionSnapshot).toHaveBeenCalledWith(expect.objectContaining({
+		await vi.waitFor(() => expect(harness.mocks.saveDetectionSessionSnapshot).toHaveBeenCalledWith(expect.objectContaining({
 			analysis: expect.objectContaining({ source: 'fresh' }),
-		}));
+		})));
 		expect(harness.mocks.saveDetectionSessionSnapshot).toHaveBeenCalledOnce();
 		expect(harness.mocks.saveReplayTrace).toHaveBeenCalledWith(expect.objectContaining({
 			completedMode: 'event',
 		}));
 		expect(harness.contentApi.beginObservationSession).not.toHaveBeenCalled();
+	});
+
+	it('collects enrichment after registration but waits to dispatch until initial matching completes', async () => {
+		const initialCompletion = makeDeferred();
+		let completedUpdateCount = 0;
+		const updateMatcherJobRecord = vi.fn(async (_jobId: string, patch?: unknown) => {
+			if ((patch as { status?: string } | undefined)?.status === 'completed') {
+				completedUpdateCount += 1;
+				if (completedUpdateCount === 1) {
+					await initialCompletion.promise;
+				}
+			}
+
+			return null;
+		});
+		const collectObservationBatch = vi.fn(async (_input: unknown) => ok({ batch: makeObservationBatch() }));
+		const harness = await loadBackgroundApiHarness({
+			tab: HTTP_TAB,
+			collectionPlan: makeTextEnrichmentCollectionPlan(),
+			contentApi: { collectObservationBatch },
+			updateMatcherJobRecord,
+		});
+
+		await expect(
+			harness.api.analyzeVisibleTab({ target: VISIBLE_TAB_TARGET, mode: 'snapshot-first', observe: 'none' }),
+		).resolves.toMatchObject({
+			ok: true,
+			value: {
+				analysis: { source: 'fresh' },
+				snapshot: { status: 'miss' },
+				enrichment: { status: 'pending' },
+			},
+		});
+
+		expect(collectObservationBatch).toHaveBeenCalledOnce();
+		await vi.waitFor(() => expect(updateMatcherJobRecord).toHaveBeenCalledWith(
+			expect.any(String),
+			expect.objectContaining({ status: 'dispatching' }),
+		));
+		await vi.waitFor(() => expect(collectObservationBatch).toHaveBeenCalledTimes(2));
+		expect(harness.mocks.saveMatcherJobRecord).toHaveBeenCalledOnce();
+		expect(collectObservationBatch.mock.calls[1]?.[0]).toMatchObject({
+			includeText: true,
+			tier: 'enrichment',
+		});
+		initialCompletion.resolve(undefined);
+		await vi.waitFor(() => expect(harness.mocks.saveMatcherJobRecord).toHaveBeenCalledTimes(2));
+		expect(updateMatcherJobRecord).not.toHaveBeenCalledWith(
+			expect.any(String),
+			expect.objectContaining({ status: 'canceled', reason: 'newer-job' }),
+		);
+	});
+
+	it('merges multiple enrichment evidence passes into one follow-up matcher run', async () => {
+		const collectObservationBatch = vi.fn(async (_input: unknown) => ok({ batch: makeObservationBatch() }));
+		const harness = await loadBackgroundApiHarness({
+			tab: HTTP_TAB,
+			collectionPlan: makeMultiSurfaceEnrichmentCollectionPlan(),
+			contentApi: { collectObservationBatch },
+		});
+
+		await expect(
+			harness.api.analyzeVisibleTab({ target: VISIBLE_TAB_TARGET, mode: 'snapshot-first', observe: 'none' }),
+		).resolves.toMatchObject({
+			ok: true,
+			value: {
+				analysis: { source: 'fresh' },
+				snapshot: { status: 'miss' },
+			},
+		});
+
+		await vi.waitFor(() => expect(collectObservationBatch).toHaveBeenCalledTimes(3));
+		await vi.waitFor(() => expect(harness.mocks.saveMatcherJobRecord).toHaveBeenCalledTimes(2));
+		await vi.waitFor(() => expect(harness.mocks.saveDetectionSessionSnapshot).toHaveBeenCalledTimes(2));
+		expect(harness.mocks.saveReplayTrace).toHaveBeenCalledOnce();
+		expect(harness.mocks.saveDetectionSessionSnapshot.mock.calls.map(([snapshot]) =>
+			(snapshot as DetectionSessionSnapshot).enrichment.status
+		)).toEqual(['pending', 'complete']);
+		expect(collectObservationBatch.mock.calls.map(([input]) => (input as { tier?: string }).tier)).toEqual([
+			'initial',
+			'enrichment',
+			'enrichment',
+		]);
+	});
+
+	it('cancels active visible-session matcher work when a newer analysis supersedes it', async () => {
+		const firstDispatchRegistered = makeDeferred();
+		let dispatchingUpdateCount = 0;
+		const updateMatcherJobRecord = vi.fn(async (_jobId: string, patch?: unknown) => {
+			if ((patch as { status?: string } | undefined)?.status === 'dispatching') {
+				dispatchingUpdateCount += 1;
+				if (dispatchingUpdateCount === 1) {
+					await firstDispatchRegistered.promise;
+				}
+			}
+
+			return null;
+		});
+		const collectObservationBatch = vi.fn(async (_input: unknown) => ok({ batch: makeObservationBatch() }));
+		const harness = await loadBackgroundApiHarness({
+			tab: HTTP_TAB,
+			contentApi: { collectObservationBatch },
+			updateMatcherJobRecord,
+		});
+
+		await expect(
+			harness.api.analyzeVisibleTab({ target: VISIBLE_TAB_TARGET, mode: 'snapshot-first', observe: 'none' }),
+		).resolves.toMatchObject({
+			ok: true,
+			value: { snapshot: { status: 'miss' } },
+		});
+		await vi.waitFor(() => expect(updateMatcherJobRecord).toHaveBeenCalledWith(
+			expect.any(String),
+			expect.objectContaining({ status: 'dispatching' }),
+		));
+
+		await expect(
+			harness.api.analyzeVisibleTab({ target: VISIBLE_TAB_TARGET, mode: 'refresh', observe: 'none' }),
+		).resolves.toMatchObject({
+			ok: true,
+			value: { snapshot: { status: 'bypassed' } },
+		});
+
+		await vi.waitFor(() => expect(updateMatcherJobRecord).toHaveBeenCalledWith(
+			expect.any(String),
+			expect.objectContaining({ status: 'canceled', reason: 'newer-job' }),
+		));
+		const canceledJobId = updateMatcherJobRecord.mock.calls.find(([, patch]) =>
+			(patch as { status?: string; reason?: string } | undefined)?.status === 'canceled' &&
+			(patch as { status?: string; reason?: string } | undefined)?.reason === 'newer-job'
+		)?.[0];
+
+		firstDispatchRegistered.resolve(undefined);
+		await vi.waitFor(() => expect(updateMatcherJobRecord).toHaveBeenCalledWith(
+			expect.any(String),
+			expect.objectContaining({ status: 'completed' }),
+		));
+		const completedJobIds = updateMatcherJobRecord.mock.calls
+			.filter(([, patch]) => (patch as { status?: string } | undefined)?.status === 'completed')
+			.map(([jobId]) => jobId);
+		expect(completedJobIds).not.toContain(canceledJobId);
 	});
 
 	it('skips persistent analysis and replay writes for incognito visible tabs', async () => {
@@ -609,7 +813,7 @@ describe.sequential('background analyzeVisibleTab messaging hardening', () => {
 		expect(harness.contentApi.beginObservationSession).toHaveBeenCalledOnce();
 	});
 
-	it('bypasses stored snapshot analysis when refresh mode is requested', async () => {
+	it('queues a refresh while returning the latest stored output when one exists', async () => {
 		const harness = await loadBackgroundApiHarness({
 			tab: HTTP_TAB,
 			cachedAnalysis: { ...makeAnalysis(), source: 'cache' as const },
@@ -621,17 +825,20 @@ describe.sequential('background analyzeVisibleTab messaging hardening', () => {
 			ok: true,
 			value: {
 				analysis: {
-					source: 'fresh',
+					source: 'cache',
 				},
 				snapshot: {
-					status: 'bypassed',
+					status: 'hit',
+				},
+				enrichment: {
+					status: 'pending',
 				},
 			},
 		});
 
-		expect(harness.mocks.getLatestDetectionOriginSnapshot).not.toHaveBeenCalled();
+		expect(harness.mocks.getLatestDetectionOriginSnapshot).toHaveBeenCalledWith(VISIBLE_TAB_TARGET.originHash);
 		expect(harness.contentApi.collectObservationBatch).toHaveBeenCalledOnce();
-		expect(harness.mocks.saveDetectionSessionSnapshot).toHaveBeenCalledOnce();
+		await vi.waitFor(() => expect(harness.mocks.saveDetectionSessionSnapshot).toHaveBeenCalledOnce());
 	});
 
 	it('routes fresh analysis through the event pipeline', async () => {
@@ -653,22 +860,19 @@ describe.sequential('background analyzeVisibleTab messaging hardening', () => {
 					key: 'analysis:https://example.com',
 				},
 				session: undefined,
-				replayTrace: {
-					completedMode: 'event',
-				},
 			},
 		});
 
 		expect(harness.contentApi.collectObservationBatch).toHaveBeenCalledOnce();
 		expect(harness.mocks.analyzeSite).not.toHaveBeenCalled();
-		expect(harness.mocks.saveDetectionSessionSnapshot).toHaveBeenCalledWith(expect.objectContaining({
+		await vi.waitFor(() => expect(harness.mocks.saveDetectionSessionSnapshot).toHaveBeenCalledWith(expect.objectContaining({
 			analysis: expect.objectContaining({
 				url: HTTP_TAB.url,
 				hostname: 'example.com',
 				source: 'fresh',
 				results: [],
 			}),
-		}));
+		})));
 		expect(harness.mocks.saveReplayTrace).toHaveBeenCalledWith(expect.objectContaining({
 			completedMode: 'event',
 		}));
@@ -730,13 +934,13 @@ describe.sequential('background analyzeVisibleTab messaging hardening', () => {
 			cachedReplayHistory: [trace],
 		});
 
-		await expect(harness.api.getReplayTraceHistory({ url: HTTP_TAB.url })).resolves.toMatchObject({
+		await expect(harness.api.getReplayTraceHistory({ url: HTTP_TAB.url! })).resolves.toMatchObject({
 			ok: true,
 			value: [
 				expect.objectContaining({ resultCount: 2 }),
 			],
 		});
-		expect(harness.mocks.getCachedReplayTraceHistory).toHaveBeenCalledWith(HTTP_TAB.url);
+		expect(harness.mocks.getCachedReplayTraceHistory).toHaveBeenCalledWith(HTTP_TAB.url!);
 	});
 
 	it('currently treats bounded observation as a fresh observation request', async () => {
@@ -840,7 +1044,6 @@ describe.sequential('background observation session baseline', () => {
 			ok: true,
 			value: {
 				snapshot: { status: 'bypassed' },
-				replayTrace: { completedMode: 'event' },
 			},
 		});
 
@@ -897,7 +1100,6 @@ describe.sequential('background observation session baseline', () => {
 			ok: true,
 			value: {
 				snapshot: { status: 'bypassed' },
-				replayTrace: { completedMode: 'event' },
 			},
 		});
 
@@ -948,7 +1150,18 @@ describe.sequential('background observation session baseline', () => {
 	});
 
 	it('forwards stop requests to the targeted content script session', async () => {
-		const harness = await loadBackgroundApiHarness({ tab: HTTP_TAB });
+		const harness = await loadBackgroundApiHarness({
+			tab: HTTP_TAB,
+			contentApi: {
+				getObservationSessionState: vi.fn(async () => ok({
+					status: 'observing' as const,
+					throttleMs: 1_500,
+					pendingMutationCount: 0,
+					sessionId: 'session-1',
+					expectedUrl: HTTP_TAB.url!,
+				})),
+			},
+		});
 
 		await expect(harness.api.stopObservationSession(OBSERVATION_TARGET)).resolves.toMatchObject({
 			ok: true,

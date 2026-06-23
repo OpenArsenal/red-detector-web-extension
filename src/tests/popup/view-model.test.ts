@@ -3,12 +3,17 @@ import { describe, expect, it } from 'vitest';
 import {
 	buildPopupAnalysisUpdate,
 	buildPopupExplanationLookup,
+	createPopupVisibleRevisionFromAnalysisResponse,
 	formatPopupAppError,
+	getPopupAnalysisActivity,
+	getPopupMatcherStatusFromSnapshot,
 	getPopupObservationLabel,
 	getPopupObservationModeFromAnalysis,
 	getPopupObservationModeFromSession,
 	getPopupObservationModeFromSnapshot,
 	groupDetectionsByPrimaryCategory,
+	isPopupVisibleRevisionPending,
+	shouldApplyPopupReplayState,
 	shouldApplyPopupSnapshotRevision,
 	shouldKeepPopupLiveUpdatesActive,
 	shouldPreservePopupReplayState,
@@ -64,6 +69,106 @@ describe('popup view model', () => {
 		expect(getPopupObservationLabel('stopped')).toBe('Stopped');
 	});
 
+	it('describes queued visible-tab work ahead of stale matcher work', () => {
+		const activity = getPopupAnalysisActivity({
+			matcherStatus: 'matching',
+			workflowBusy: false,
+			analysisRequestInFlight: false,
+			queuedVisibleAnalysis: true,
+		});
+
+		expect(activity).toMatchObject({
+			busy: true,
+			label: 'queued for this tab',
+			headline: 'Waiting to scan this tab',
+		});
+	});
+
+	it('keeps the popup in a loading state while the current tab request has no matcher revision yet', () => {
+		const activity = getPopupAnalysisActivity({
+			matcherStatus: 'idle',
+			workflowBusy: false,
+			analysisRequestInFlight: true,
+			queuedVisibleAnalysis: false,
+		});
+
+		expect(activity).toMatchObject({
+			busy: true,
+			label: 'loading current tab',
+			headline: 'Loading latest detections',
+		});
+	});
+
+	it('reports idle only when no visible tab workflow owns progress', () => {
+		const activity = getPopupAnalysisActivity({
+			matcherStatus: 'idle',
+			workflowBusy: false,
+			analysisRequestInFlight: false,
+			queuedVisibleAnalysis: false,
+		});
+
+		expect(activity).toMatchObject({
+			busy: false,
+			label: 'idle',
+		});
+	});
+
+	it('keeps partial background snapshots in the matching lane until replay summary arrives', () => {
+		const partialSnapshot = makeDetectionSessionSnapshot({
+			source: 'background',
+			status: 'complete',
+			analysis: makeAnalysis([makeDetection('react')]),
+			detectionCount: 1,
+		});
+		const finalSnapshot = makeDetectionSessionSnapshot({
+			source: 'background',
+			status: 'complete',
+			analysis: makeAnalysis([makeDetection('react')]),
+			detectionCount: 1,
+			replaySummary: {
+				analyzedAt: 1_700_000_000_000,
+				eventCount: 5,
+				explanationCount: 1,
+				resultCount: 1,
+				stages: ['detections-emitted'],
+			},
+		});
+
+		expect(getPopupMatcherStatusFromSnapshot(partialSnapshot)).toBe('matching');
+		expect(getPopupMatcherStatusFromSnapshot(finalSnapshot)).toBe('idle');
+	});
+
+	it('treats stored partial snapshot revisions as pending and blocks stale replay state', () => {
+		const pendingRevision = createPopupVisibleRevisionFromAnalysisResponse(makeAnalyzeVisibleTabOutput({
+			analysis: makeAnalysis([makeDetection('react')]),
+			enrichment: { status: 'pending' },
+			replayHistory: [makeDetectionReplayTrace({ resultCount: 1 })],
+		}));
+		const storedPartialRevision = {
+			...pendingRevision,
+			source: 'snapshot' as const,
+			enrichment: { status: 'not-needed' as const },
+			sessionSnapshotStatus: 'complete' as const,
+			sessionSnapshotSource: 'background' as const,
+		};
+		const storedCacheRevision = {
+			...storedPartialRevision,
+			sessionSnapshotSource: 'cache' as const,
+		};
+		const finalRevision = createPopupVisibleRevisionFromAnalysisResponse(makeAnalyzeVisibleTabOutput({
+			analysis: makeAnalysis([makeDetection('react')]),
+			replayTrace: makeDetectionReplayTrace({ resultCount: 1 }),
+		}));
+
+		expect(isPopupVisibleRevisionPending(pendingRevision)).toBe(true);
+		expect(shouldApplyPopupReplayState(pendingRevision)).toBe(false);
+		expect(isPopupVisibleRevisionPending(storedPartialRevision)).toBe(true);
+		expect(shouldApplyPopupReplayState(storedPartialRevision)).toBe(false);
+		expect(isPopupVisibleRevisionPending(storedCacheRevision)).toBe(false);
+		expect(isPopupVisibleRevisionPending(finalRevision)).toBe(false);
+		expect(shouldApplyPopupReplayState(finalRevision)).toBe(true);
+	});
+
 	it('builds a manual refresh notice while preserving active observation state', () => {
 		const response = makeAnalyzeVisibleTabOutput({
 			analysis: makeAnalysis([makeDetection('react')]),
@@ -72,7 +177,7 @@ describe('popup view model', () => {
 
 		const update = buildPopupAnalysisUpdate({
 			previousAnalysis: null,
-			response,
+			revision: createPopupVisibleRevisionFromAnalysisResponse(response),
 			source: 'manual',
 			resetLateMarkers: true,
 		});
@@ -97,7 +202,7 @@ describe('popup view model', () => {
 
 		const update = buildPopupAnalysisUpdate({
 			previousAnalysis: null,
-			response,
+			revision: createPopupVisibleRevisionFromAnalysisResponse(response),
 			source: 'initial',
 		});
 
@@ -118,7 +223,7 @@ describe('popup view model', () => {
 
 		const update = buildPopupAnalysisUpdate({
 			previousAnalysis,
-			response,
+			revision: createPopupVisibleRevisionFromAnalysisResponse(response),
 			source: 'auto',
 			currentLateDetectionIds: ['shopify'],
 		});
@@ -190,10 +295,13 @@ describe('popup view model', () => {
 			analysis: previousAnalysis,
 		});
 
-		expect(shouldPreservePopupReplayState({ previousAnalysis, response })).toBe(true);
 		expect(shouldPreservePopupReplayState({
 			previousAnalysis,
-			response: { ...response, replayTrace: makeDetectionReplayTrace() },
+			revision: createPopupVisibleRevisionFromAnalysisResponse(response),
+		})).toBe(true);
+		expect(shouldPreservePopupReplayState({
+			previousAnalysis,
+			revision: createPopupVisibleRevisionFromAnalysisResponse({ ...response, replayTrace: makeDetectionReplayTrace() }),
 		})).toBe(false);
 	});
 

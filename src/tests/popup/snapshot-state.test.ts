@@ -4,6 +4,8 @@ import type { VisibleTabIdentity } from '@/lib/messaging';
 import {
 	createDetectionStorageHash,
 	getDetectionOriginSnapshotKey,
+	getDetectionSessionIndexKey,
+	getDetectionSessionSnapshotKey,
 } from '@/lib/storage/contracts';
 import { makeAnalysis, makeDetection, makeDetectionSessionSnapshot } from '../support/factories';
 import {
@@ -62,6 +64,51 @@ describe.sequential('popup snapshot state', () => {
 			source: 'origin-snapshot',
 			analysis: { results: [expect.objectContaining({ technologyId: 'solidjs' })] },
 			snapshot: { revision: 2 },
+		});
+	});
+
+	it('prefers exact visible session snapshots over origin fallback records', async () => {
+		const originSnapshot = makeDetectionSessionSnapshot({
+			key: { tabId: ACTIVE_IDENTITY.tabId, frameId: ACTIVE_IDENTITY.frameId, documentId: 'older-document', originHash: ACTIVE_IDENTITY.originHash },
+			analysis: makeAnalysis([makeDetection('older')], { source: 'fresh' }),
+			urlHash: ACTIVE_IDENTITY.urlHash,
+			updatedAt: 1_700_000_000_001,
+			source: 'background',
+		});
+		const exactSnapshot = makeDetectionSessionSnapshot({
+			key: { tabId: ACTIVE_IDENTITY.tabId, frameId: ACTIVE_IDENTITY.frameId, documentId: 'exact-document', originHash: ACTIVE_IDENTITY.originHash },
+			analysis: makeAnalysis([makeDetection('solidjs')], { source: 'fresh' }),
+			urlHash: ACTIVE_IDENTITY.urlHash,
+			updatedAt: 1_700_000_000_002,
+			source: 'background',
+		});
+		const harness = await loadSnapshotStateHarness({
+			[getDetectionOriginSnapshotKey(ACTIVE_IDENTITY.originHash)]: originSnapshot,
+			[getDetectionSessionSnapshotKey(exactSnapshot.key)]: exactSnapshot,
+			[getDetectionSessionIndexKey(ACTIVE_IDENTITY.tabId)]: {
+				tabId: ACTIVE_IDENTITY.tabId,
+				entries: [{
+					key: exactSnapshot.key,
+					urlHash: exactSnapshot.urlHash,
+					status: exactSnapshot.status,
+					updatedAt: exactSnapshot.updatedAt,
+				}],
+				updatedAt: exactSnapshot.updatedAt,
+			},
+		});
+
+		const stored = await harness.readStoredPopupAnalysis(ACTIVE_IDENTITY);
+
+		expect(stored).toMatchObject({
+			source: 'session-snapshot',
+			analysis: { results: [expect.objectContaining({ technologyId: 'solidjs' })] },
+			snapshot: { key: exactSnapshot.key },
+			revision: {
+				source: 'snapshot',
+				analysis: { results: [expect.objectContaining({ technologyId: 'solidjs' })] },
+				sessionSnapshotStatus: exactSnapshot.status,
+				sessionSnapshotSource: exactSnapshot.source,
+			},
 		});
 	});
 

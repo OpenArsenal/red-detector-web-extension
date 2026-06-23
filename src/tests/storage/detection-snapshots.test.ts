@@ -2,6 +2,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
 	getDetectionOriginSnapshotKey,
+	getDetectionOriginSummaryKey,
+	DETECTION_STORAGE_STATUS_KEY,
 	getDetectionSessionIndexKey,
 	getDetectionSessionSnapshotKey,
 } from '@/lib/storage/contracts';
@@ -148,6 +150,51 @@ describe.sequential('detection session snapshots', () => {
 			detectionCount: 2,
 		});
 		expect(storage.values.has(getDetectionOriginSnapshotKey(first.key.originHash))).toBe(true);
+	});
+
+	it('writes a lightweight origin summary alongside the promoted origin snapshot', async () => {
+		const storage = await loadStorageHarness();
+		const snapshot = makeDetectionSessionSnapshot({
+			revision: 2,
+			status: 'complete',
+			source: 'background',
+			detectionCount: 3,
+			matcherExecutor: 'offscreen-worker-pool',
+			updatedAt: 1_700_000_000_010,
+		});
+
+		await storage.saveDetectionSessionSnapshot(snapshot);
+		const summary = await storage.getLatestDetectionOriginSummary(snapshot.key.originHash);
+
+		expect(summary).toMatchObject({
+			originHash: snapshot.key.originHash,
+			urlHash: snapshot.urlHash,
+			sessionKey: snapshot.key,
+			status: 'complete',
+			source: 'background',
+			detectionCount: 3,
+			matcherExecutor: 'offscreen-worker-pool',
+			updatedAt: 1_700_000_000_010,
+		});
+		expect(storage.values.has(getDetectionOriginSummaryKey(snapshot.key.originHash))).toBe(true);
+	});
+
+	it('updates compact storage status from origin summaries', async () => {
+		const storage = await loadStorageHarness();
+		const snapshot = makeDetectionSessionSnapshot({
+			key: { tabId: 7, frameId: 0, documentId: 'session-1', originHash: 'origin-example' },
+			updatedAt: 1_700_000_000_050,
+		});
+
+		await storage.saveDetectionSessionSnapshot(snapshot);
+		const status = await storage.getDetectionStorageStatusSnapshot();
+
+		expect(status).toMatchObject({
+			totalAnalyses: 1,
+			trackedOrigins: 1,
+			lastAnalyzedAt: 1_700_000_000_050,
+		});
+		expect(storage.values.has(DETECTION_STORAGE_STATUS_KEY)).toBe(true);
 	});
 
 	/**
