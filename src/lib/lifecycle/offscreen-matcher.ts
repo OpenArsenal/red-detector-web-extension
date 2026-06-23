@@ -32,12 +32,26 @@ let creatingOffscreenDocument: Promise<void> | undefined;
 export async function runMatcherJobWithOffscreenFallback(
 	request: RunMatcherJobRequest,
 ): Promise<MatcherJobRunResult> {
+	if (shouldUseDevelopmentMatcherFallback()) {
+		return runMatcherJobInBackgroundFallback(request, 'dev-fallback');
+	}
+
 	const offscreenResult = await tryRunMatcherJobInOffscreen(request);
 	if (offscreenResult) {
 		return offscreenResult;
 	}
 
-	return runMatcherJobInBackgroundFallback(request);
+	return runMatcherJobInBackgroundFallback(request, 'background-fallback');
+}
+
+/**
+ * WXT development builds can serve worker modules through Vite's dev server.
+ * Running the same CPU work in the background during development keeps the
+ * extension reloadable while production builds still use the offscreen worker
+ * pool that represents the real user runtime.
+ */
+function shouldUseDevelopmentMatcherFallback(): boolean {
+	return import.meta.env.DEV;
 }
 
 async function tryRunMatcherJobInOffscreen(
@@ -111,6 +125,7 @@ async function hasMatcherOffscreenDocument(): Promise<boolean> {
 
 async function runMatcherJobInBackgroundFallback(
 	request: RunMatcherJobRequest,
+	executor: MatcherJobRunResult['executor'],
 ): Promise<MatcherJobRunResult> {
 	const partitions = createMatcherPartitionTasks({
 		job: request.job,
@@ -157,7 +172,7 @@ async function runMatcherJobInBackgroundFallback(
 		mode: request.mode,
 		result,
 		partitions,
-		executor: 'background-fallback',
+		executor,
 		completedAt: Date.now(),
 	};
 }

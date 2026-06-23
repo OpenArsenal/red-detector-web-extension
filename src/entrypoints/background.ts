@@ -187,6 +187,8 @@ interface ActiveMatcherProgressContext {
 	readonly cacheStatus: AnalyzeActiveTabOutput['cache']['status'];
 	/** Active observation session, when the popup asked for live updates. */
 	readonly session?: ObservationSessionState;
+	/** Matcher executor path known for partial snapshot revisions. */
+	matcherExecutor: DetectionSessionSnapshot['matcherExecutor'];
 	/** Completed partition results accumulated in original completion order. */
 	readonly partitions: MatcherPartitionResult[];
 	/** Last time a partial detector revision was written for popup consumption. */
@@ -683,6 +685,7 @@ async function saveDetectionSnapshotForPopup(
 	tab: InspectableTab,
 	output: AnalyzeActiveTabOutput,
 	source: DetectionSessionSnapshotSource,
+	matcherExecutor: DetectionSessionSnapshot['matcherExecutor'] = 'unknown',
 ): Promise<void> {
 	if (tab.incognito) {
 		return;
@@ -703,6 +706,7 @@ async function saveDetectionSnapshotForPopup(
 		detectionCount: output.analysis.results.length,
 		analysis: output.analysis,
 		enrichment: toDetectionEnrichmentState(output.enrichment),
+		matcherExecutor,
 		...(replaySummary ? { replaySummary } : {}),
 	};
 
@@ -1250,6 +1254,7 @@ async function analyzeAndPersistObservationBatch(
 		batch,
 		compiledRegistryArtifact,
 		cacheStatus,
+		matcherExecutor: 'unknown',
 		...(session ? { session } : {}),
 		partitions: [],
 		lastVisibleRevisionAt: 0,
@@ -1283,9 +1288,15 @@ async function analyzeAndPersistObservationBatch(
 				executor: result.executor,
 			}),
 		);
-	} finally {
+	} catch (error) {
 		activeMatcherProgressByJob.delete(matcherJob.jobId);
+		throw error;
 	}
+	const progressContext = activeMatcherProgressByJob.get(matcherJob.jobId);
+	if (progressContext) {
+		progressContext.matcherExecutor = matcherResult.executor;
+	}
+
 	logBackgroundEvent('matcher-job-complete', {
 		...summarizeTab(tab),
 		jobId: matcherJob.jobId,
@@ -1303,12 +1314,14 @@ async function analyzeAndPersistObservationBatch(
 
 	const newestJobId = latestMatcherJobByTab.get(tab.id);
 	if (newestJobId && newestJobId !== matcherJob.jobId) {
+		activeMatcherProgressByJob.delete(matcherJob.jobId);
 		await updateMatcherJobRecord(matcherJob.jobId, { status: 'stale', reason: 'newer-job' });
 		return errorResponse('VALIDATION_ERROR', 'Matcher result was superseded by a newer analysis job.');
 	}
 
 	const cacheable = await canPersistMatcherResult(tab, batch.target.url);
 	if (!cacheable) {
+		activeMatcherProgressByJob.delete(matcherJob.jobId);
 		await updateMatcherJobRecord(matcherJob.jobId, { status: 'stale', reason: 'navigation' });
 		return errorResponse('VALIDATION_ERROR', 'Matcher result belongs to a document that is no longer active.');
 	}
@@ -1376,7 +1389,8 @@ async function analyzeAndPersistObservationBatch(
 		sessionTarget,
 		enrichment,
 	);
-	await saveDetectionSnapshotForPopup(tab, output, 'background');
+	await saveDetectionSnapshotForPopup(tab, output, 'background', matcherResult.executor);
+	activeMatcherProgressByJob.delete(matcherJob.jobId);
 
 	return ok(output);
 }
@@ -2014,7 +2028,7 @@ async function handleMatcherPartitionProgressUpdate(
 		undefined,
 		createObservationSessionTarget(context.tab, context.session),
 	);
-	await saveDetectionSnapshotForPopup(context.tab, output, 'background');
+	await saveDetectionSnapshotForPopup(context.tab, output, 'background', context.matcherExecutor ?? 'unknown');
 	context.lastVisibleRevisionAt = now;
 	context.lastVisibleResultCount = partial.analysis.results.length;
 }
