@@ -3,7 +3,7 @@
 The popup should not wait for every detector surface before it shows useful results. Storage-backed snapshots make the visible state durable, and observation-kind matcher shards let the runtime publish real revisions as groups of evidence complete.
 
 ```text
-popup asks for active-tab analysis
+popup asks for visible-tab analysis
   -> background loads the complete registry for planning and graph refinement
   -> content collects initial observations from the complete collection plan
   -> background queues matcher tasks by observation kind

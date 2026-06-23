@@ -1,6 +1,6 @@
 # Live revision ownership
 
-The popup is the product surface. Runtime internals only matter when they help the popup show the right state for the right tab without getting stuck. The live revision model therefore treats storage snapshots as the receive stream and treats active-tab commands as ways to start or steer work.
+The popup is the product surface. Runtime internals only matter when they help the popup show the right state for the right tab without getting stuck. The live revision model therefore treats storage snapshots as the receive stream and treats visible-tab commands as ways to start or steer work.
 
 The cleanup removes targetless observation and replay reads from the popup path. A command that can change visible state must carry the session, tab, or URL that the popup already rendered. If the user switches tabs while background work is still finishing, the old response is ignored instead of being allowed to overwrite the new tab.
 
@@ -27,7 +27,7 @@ POPUP
   sends commands with explicit targets whenever a known session or URL exists
 
 BACKGROUND
-  owns active-tab lookup and privileged browser APIs
+  owns browser tab lookup and privileged browser APIs
   queues the first matcher revision after the cheap collection pass
   schedules enrichment passes after initial matcher persistence
   clears volatile tab work on navigation
@@ -39,9 +39,9 @@ STORAGE
   keeps origin latest and per-session snapshots recoverable after service-worker restart
 ```
 
-## Why the old active-tab helpers were removed from the popup path
+## Why targetless browser-tab helpers were removed from the popup path
 
-Targetless helpers are convenient but unsafe in a popup that can stay open while the user changes tabs. A request might start for Tab A, then the user activates Tab B before the response resolves. If the response asks the background for “the active tab” again, it can accidentally read or mutate Tab B even though the command was created by Tab A state.
+Targetless helpers are convenient but unsafe in a popup that can stay open while the user changes tabs. A request might start for Tab A, then the user activates Tab B before the response resolves. If the response asks the background for “the visible tab” again, it can accidentally read or mutate Tab B even though the command was created by Tab A state.
 
 The safer rule is:
 

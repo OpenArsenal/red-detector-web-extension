@@ -56,7 +56,7 @@ background starts
 
 The startup invariant is still the important part: listener registration must not depend on the full registry payload. Fresh analysis can pay the JSON parse and compiler cost, but that work happens after a user-invoked analysis request and can be measured separately from service-worker cold start.
 
-The old bootstrap artifact is no longer the normal active-tab truth surface. It exists so compatibility tests, benchmarks, and migration comparisons can still prove why the older staged model under-detected compared with the complete registry.
+The old bootstrap artifact is no longer the normal visible-tab truth surface. It exists so compatibility tests, benchmarks, and migration comparisons can still prove why the older staged model under-detected compared with the complete registry.
 
 ## Validation targets
 
@@ -69,7 +69,7 @@ A healthy build should prove these facts:
 background entrypoint no longer imports #/compiled-registry
 packaged registry hydration preserves detector order and regular expressions
 observation-kind shards only contain rules that can receive that kind
-active-tab analysis plans from the complete registry, not registry.bootstrap.json
+visible-tab analysis plans from the complete registry, not registry.bootstrap.json
 ```
 
 The benchmark `src/benchmarks/registry-json-hydration.bench.ts` compares packaged JSON parse and hydration against the previous in-memory registry compilation baseline. It does not claim the JSON path is faster. It measures the cost accepted in order to keep the background startup bundle smaller.

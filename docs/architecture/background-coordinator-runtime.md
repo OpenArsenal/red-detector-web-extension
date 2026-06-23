@@ -5,14 +5,14 @@ The background service worker is a coordinator, not the only owner of visible ex
 ```text
 popup command or tab event
   -> lightweight background listener
-  -> content RPC, storage update, or cache promotion
+  -> content RPC, storage update, or snapshot promotion
   -> durable snapshot revision
   -> popup storage subscription
 ```
 
 ## What the coordinator owns
 
-The background still owns work that needs privileged extension APIs: active-tab identity, content-script injection, page-main-world probes, same-origin enrichment fetches, response-header collection, and detector promotion. Those operations happen after a popup command or a refresh request. They do not become background startup work.
+The background still owns work that needs privileged extension APIs: visible-tab identity, content-script injection, page-main-world probes, same-origin enrichment fetches, response-header collection, and detector promotion. Those operations happen after a popup command or a refresh request. They do not become background startup work.
 
 The background also owns tab lifecycle cleanup. A saved snapshot now refreshes a small tab-session index in storage. When Chrome reports navigation or tab closure, the lifecycle listener can mark old session snapshots `stale` or `stopped` even if the service worker has already lost the in-memory observer maps.
 

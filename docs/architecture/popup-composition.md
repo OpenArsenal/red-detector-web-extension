@@ -63,7 +63,7 @@ Keep reactive reads in `App.tsx` or in JSX passed into a region. Do not destruct
 | `HeroCopy` | Product copy placement. | Product copy generation. |
 | `Actions` | Button row layout. | Refresh or stop handlers. |
 | `Stats` and `Stat` | Metric card layout and labels. | Where metric values come from. |
-| `Metrics` | Compact source, host, and polling layout. | Observation-mode derivation. |
+| `Metrics` | Compact source, host, and live-update layout. | Observation-mode derivation. |
 | `Feedback` | Placement for errors and notices. | Error formatting or notice rules. |
 | `ResultPanel` | Result heading, mode chip, metadata, and live region. | Detection grouping or card rendering. |
 

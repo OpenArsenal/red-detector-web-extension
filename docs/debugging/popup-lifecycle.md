@@ -1,12 +1,12 @@
-# Popup cache and observation lifecycle
+# Popup snapshot and observation lifecycle
 
-The popup has one job when it opens: show the newest detector state already stored for the active tab. A cache hit is a read path. It can reuse a content observation session that already exists, but it must not start a new observer or enqueue matcher work just because the window mounted.
+The popup has one job when it opens: show the newest detector state already stored for the visible tab. A snapshot hit is a read path. It can reuse a content observation session that already exists, but it must not start a new observer or enqueue matcher work just because the window mounted.
 
 The runtime now keeps three state lanes separate:
 
 ```text
 POPUP OPEN
-  -> read stored detector snapshot or analysis cache
+  -> read stored detector snapshot
   -> render replay history when available
   -> subscribe to snapshot revisions
 
@@ -28,10 +28,10 @@ Dirty observation notifications are coalesced in the background per tab and sess
 
 ## Debugging checklist
 
-When cache-first popup rendering looks wrong, check the background log order.
+When snapshot-first popup rendering looks wrong, check the background log order.
 
-A fresh cache hit should show storage reads and `analysis-cache-hit`. It should not immediately show `analysis-fresh-start` or `matcher-job-dispatch` unless the user clicked Refresh, the cache was stale or missing, or content sent an observation-dirty notification.
+A fresh snapshot hit should show storage reads and `analysis-snapshot-hit`. It should not immediately show `analysis-fresh-start` or `matcher-job-dispatch` unless the user clicked Refresh, the snapshot was stale or missing, or content sent an observation-dirty notification.
 
 When continuous observation looks stuck, check the content log for `session-dirty` and the background log for `observation-refresh-scheduled`. The popup should not log a snapshot-owned refresh request. It should only log stored snapshot application and lifecycle rendering.
 
-When replay history disappears after reopen, verify that the popup receives replay history from the cache-hit response or hydrates it through `getReplayTraceHistory` with the URL already visible in the popup after applying a stored detector snapshot.
+When replay history disappears after reopen, verify that the popup receives replay history from the snapshot-backed response or hydrates it through `getReplayTraceHistory` with the URL already visible in the popup after applying a stored detector snapshot.

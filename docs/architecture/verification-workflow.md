@@ -49,17 +49,17 @@ Use targeted tests to answer a specific review question. For example, a popup-re
 
 ## Manual Chrome QA
 
-Manual Chrome QA remains necessary for runtime behavior because Vitest does not model Manifest V3 lifecycle, real runtime content-script injection, active-tab permission revocation, popup close cleanup, or page main-world execution.
+Manual Chrome QA remains necessary for runtime behavior because Vitest does not model Manifest V3 lifecycle, real runtime content-script injection, visible-tab permission timing, popup close cleanup, or page main-world execution.
 
 Run this checklist after changes that touch popup, background, content, lifecycle, messaging adapters, collection, permissions, or WXT configuration.
 
 1. Build and load the extension from the WXT output directory.
 2. Open a normal `https://` page and confirm the popup returns either detections or a stable empty result.
 3. Open an unsupported page such as `chrome://extensions` and confirm the popup shows `UNSUPPORTED_URL` without hanging.
-4. Open the popup twice on the same origin and confirm the cache-hit path renders without starting live observation.
-5. Click Refresh and confirm analysis bypasses cache and starts observation again.
-6. Close the popup and confirm observation stops for the active tab.
-7. Test a page that lazy-loads scripts, links, or meta tags and confirm late detections can appear while polling is active.
+4. Open the popup twice on the same origin and confirm the snapshot-hit path renders without starting live observation.
+5. Click Refresh and confirm analysis bypasses stored snapshot reuse and starts observation again.
+6. Close the popup and confirm observation stops for the visible tab.
+7. Test a page that lazy-loads scripts, links, or meta tags and confirm late detections can appear while the popup is subscribed to storage revisions.
 8. Navigate within the tab and confirm old observation state does not refresh the new page.
 
 If a step cannot be verified, record the browser, page URL type, and failure mode in the pull request notes.

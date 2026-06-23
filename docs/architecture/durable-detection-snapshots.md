@@ -15,7 +15,7 @@ The key behavior is revision ordering. For the same tab, frame, and document, a 
 
 ## What the snapshot stores
 
-A `DetectionSessionSnapshot` contains the visible state needed for cache-first rendering:
+A `DetectionSessionSnapshot` contains the visible state needed for snapshot-first rendering:
 
 - `DetectionSessionKey` identifies the tab, frame, document, and origin hash.
 - `revision` orders updates for the same document session.

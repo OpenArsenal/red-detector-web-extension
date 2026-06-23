@@ -1,6 +1,6 @@
 # Event runtime hardening validation
 
-The extension runtime now follows the event architecture more directly during active-tab analysis. The background uses the compiled registry artifact for collection planning, then sends normalized observations through indexed matching, evidence aggregation, graph refinement, final emission, replay trace creation, storage, and popup rendering.
+The extension runtime now follows the event architecture more directly during visible-tab analysis. The background uses the compiled registry artifact for collection planning, then sends normalized observations through indexed matching, evidence aggregation, graph refinement, final emission, replay trace creation, storage, and popup rendering.
 
 Read the flow from left to right:
 
@@ -17,7 +17,7 @@ compiled registry
 
 ## Compiled registry and initial detection work
 
-The compiled registry owns the active collection plan used by the background collector. The background no longer asks the collector to rebuild selector, HTML, and global probes from the full technology registry for every active-tab analysis.
+The compiled registry owns the active collection plan used by the background collector. The background no longer asks the collector to rebuild selector, HTML, and global probes from the full technology registry for every visible-tab analysis.
 
 The collection plan records which evidence surfaces are needed by the active registry:
 
@@ -56,7 +56,7 @@ The exact solver is used for small conflict components. Large components keep a 
 
 ## Replay history storage
 
-Replay traces are separate from `SiteAnalysis`. The latest trace remains available for cache-first explanation summaries, and bounded per-origin history stores recent replay runs under a dedicated storage key.
+Replay traces are separate from `SiteAnalysis`. The latest trace remains available for snapshot-first explanation summaries, and bounded per-origin history stores recent replay runs under a dedicated storage key.
 
 ```text
 analysis:https://example.com        -> latest normalized SiteAnalysis
@@ -66,7 +66,7 @@ replay-history:https://example.com  -> bounded newest-first replay traces
 
 The history is TTL-bound and capped per origin. Expired analysis records remove paired replay and replay-history entries, and expired replay histories are pruned before callers receive them.
 
-Incognito active-tab analysis now skips persistent analysis and replay writes. The popup can still render the current incognito result returned from memory, but the extension does not leave replay-history records in extension storage for that incognito page.
+Incognito visible-tab analysis now skips persistent analysis and replay writes. The popup can still render the current incognito result returned from memory, but the extension does not leave replay-history records in extension storage for that incognito page.
 
 ## Popup access to past results
 
@@ -82,8 +82,8 @@ The static architecture check passes for the targeted changes:
 
 | Architecture target | Current status |
 | --- | --- |
-| Event-shaped active-tab pipeline | Implemented through normalized observation batches, indexed matching, evidence, graph refinement, emission, replay, and popup rendering. |
-| Compiled registry informs initial collection | Implemented by passing the compiled `collectionPlan` into active-tab collection. |
+| Event-shaped visible-tab pipeline | Implemented through normalized observation batches, indexed matching, evidence, graph refinement, emission, replay, and popup rendering. |
+| Compiled registry informs initial collection | Implemented by passing the compiled `collectionPlan` into visible-tab collection. |
 | Initial detections avoid unnecessary expensive evidence | Implemented with explicit `initial` and `enrichment` collection tiers. First results avoid HTML/text/source/header enrichment; a deferred enrichment pass persists deeper evidence and marks the session dirty for popup refresh. |
 | Matcher indexes reduce rule work | Preserved through the compiled matcher index in the event pipeline. |
 | Graph refinement is constraint-shaped | Improved by solving exclusion conflict components, suppressing removed inferred conflicts, and preserving fixed-point repair. |
@@ -91,8 +91,8 @@ The static architecture check passes for the targeted changes:
 | Users can access replay history | Implemented in the popup Replay History section for the active origin. |
 | Popup evidence includes concrete details | Implemented by rendering evidence previews alongside explanation summaries. |
 | Session lifecycle targets the correct analysis | Implemented through `ObservationSessionTarget` on analysis responses and targeted refresh/stop/state APIs. |
-| Privacy posture avoids incognito persistence | Implemented by bypassing persistent analysis and replay writes for incognito active-tab analysis. |
-| Permission surface follows active-tab flow | Improved by removing the broad `tabs` permission from the manifest. |
+| Privacy posture avoids incognito persistence | Implemented by bypassing persistent analysis and replay writes for incognito visible-tab analysis. |
+| Permission surface follows visible-tab flow | Improved by removing the broad `tabs` permission from the manifest. |
 
 The literal greenfield architecture still contains work outside this browser-extension hardening pass. The CLI interface and full YAML/JSON registry-source migration remain out of scope. The registry authoring source remains TypeScript by design; the build-time artifact is the runtime optimization layer, not a source-format migration.
 

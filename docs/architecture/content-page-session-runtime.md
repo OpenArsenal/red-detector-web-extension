@@ -2,10 +2,10 @@
 
 Content page sessions make the first visible page lifecycle state durable before the background finishes privileged work. The popup already knows how to render stored snapshot revisions. The next step is letting the content script publish safe lifecycle revisions for the current document while the background remains disposable.
 
-The content script still does not own the full detector. It owns page-local observation: the initial page facts, mutation-driven updates, resource timing updates, and stop/expiry state for the document it can see. Background still owns tab identity, active-tab permission flow, page-main-world global probes, same-origin source fetch policy, headers, enrichment, and cache promotion.
+The content script still does not own the full detector. It owns page-local observation: the initial page facts, mutation-driven updates, resource timing updates, and stop/expiry state for the document it can see. Background still owns tab identity, visible-tab permission flow, page-main-world global probes, same-origin source fetch policy, headers, enrichment, and snapshot promotion.
 
 ```text
-background receives active tab identity
+background receives visible tab identity
   -> background sends snapshot target to content
   -> content starts page-local observation
   -> content writes revision 1 as observing

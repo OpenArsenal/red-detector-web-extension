@@ -17,7 +17,7 @@ That means the next runtime work should optimize or relocate matching before add
 
 ## Immediate fix before worker migration
 
-The initial active-tab pass disables high-fan-out URL-like evidence surfaces so the popup can show cheap page-local detections first. The matcher must honor that decision before routing observations into candidate-rule buckets.
+The initial visible-tab pass disables high-fan-out URL-like evidence surfaces so the popup can show cheap page-local detections first. The matcher must honor that decision before routing observations into candidate-rule buckets.
 
 ```text
 observation arrives
