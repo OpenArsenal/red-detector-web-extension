@@ -7,6 +7,18 @@ export const DETECTION_SESSION_SNAPSHOT_SCHEMA_VERSION = 1 as const;
 /** Version marker carried by every stored detection session snapshot. */
 export type DetectionSessionSnapshotSchemaVersion = typeof DETECTION_SESSION_SNAPSHOT_SCHEMA_VERSION;
 
+/** Schema marker for origin-level detector summaries. */
+export const DETECTION_ORIGIN_SUMMARY_SCHEMA_VERSION = 1 as const;
+
+/** Version marker carried by every stored origin summary. */
+export type DetectionOriginSummarySchemaVersion = typeof DETECTION_ORIGIN_SUMMARY_SCHEMA_VERSION;
+
+/** Schema marker for the compact aggregate storage status record. */
+export const DETECTION_STORAGE_STATUS_SCHEMA_VERSION = 1 as const;
+
+/** Version marker carried by the compact aggregate storage status record. */
+export type DetectionStorageStatusSchemaVersion = typeof DETECTION_STORAGE_STATUS_SCHEMA_VERSION;
+
 /**
  * Lifecycle state for the visible detection result associated with one page document.
  *
@@ -123,6 +135,34 @@ export type DetectionMatcherExecutor =
 	| 'unknown';
 
 /**
+ * Public-safe matcher progress embedded in a partial snapshot revision.
+ *
+ * The popup does not need raw observations or match details to show that work is
+ * still moving. Keeping only partition counters gives users a trustworthy
+ * progress cue even when a partial write preserves an older, richer result list.
+ */
+export interface DetectionMatcherProgressSummary {
+	/** Matcher job that produced the latest progress receipt. */
+	readonly jobId: string;
+	/** Matcher lane that owns the job, such as initial or enrichment. */
+	readonly mode: string;
+	/** Number of worker partitions that have completed for the job. */
+	readonly completedPartitionCount: number;
+	/** Total worker partitions scheduled for the job. */
+	readonly partitionCount: number;
+	/** Observation surface from the latest completed partition. */
+	readonly latestPartitionKind?: string;
+	/** Number of observations handled by the latest completed partition. */
+	readonly latestPartitionObservationCount?: number;
+	/** Number of matches emitted by the latest completed partition. */
+	readonly latestPartitionMatchCount?: number;
+	/** Detection count visible after the latest progress receipt. */
+	readonly resultCount: number;
+	/** Millisecond timestamp when this progress receipt was written. */
+	readonly updatedAt: number;
+}
+
+/**
  * Durable popup-facing result for one inspected document.
  *
  * Each write advances a monotonically increasing `revision` for the same
@@ -155,6 +195,64 @@ export interface DetectionSessionSnapshot {
 	readonly enrichment: DetectionEnrichmentState;
 	/** Matcher executor path that produced this revision, when known. */
 	readonly matcherExecutor?: DetectionMatcherExecutor;
+	/** Optional public-safe matcher progress for in-flight partial revisions. */
+	readonly matcherProgress?: DetectionMatcherProgressSummary;
 	/** Optional public-safe replay progress summary. */
 	readonly replaySummary?: DetectionReplaySummary;
+}
+
+/**
+ * Lightweight origin-level summary derived from the newest promoted snapshot.
+ *
+ * This record is not a render model. It lets popup startup, status counts, and
+ * diagnostics know which origin has recent detector state without treating an
+ * origin pointer as proof that a snapshot belongs to the currently visible tab.
+ */
+export interface DetectionOriginSummary {
+	/** Storage schema version for future migrations. */
+	readonly schemaVersion: DetectionOriginSummarySchemaVersion;
+	/** Stable non-raw key for the origin represented by this summary. */
+	readonly originHash: string;
+	/** Hostname safe for popup display. */
+	readonly hostname: string;
+	/** Full URL from the snapshot that produced this summary. */
+	readonly url: string;
+	/** Stable non-raw key for the full URL that produced this summary. */
+	readonly urlHash: string;
+	/** Exact session key that owns the renderable snapshot. */
+	readonly sessionKey: DetectionSessionKey;
+	/** Snapshot lifecycle state at the time this summary was derived. */
+	readonly status: DetectionSessionStatus;
+	/** Extension context or cache path that produced the summarized snapshot. */
+	readonly source: DetectionSessionSnapshotSource;
+	/** Number of detections in the summarized snapshot. */
+	readonly detectionCount: number;
+	/** Analysis timestamp copied from the summarized snapshot. */
+	readonly analyzedAt: number;
+	/** Summary update timestamp copied from the summarized snapshot. */
+	readonly updatedAt: number;
+	/** Matcher executor path copied from the summarized snapshot, when known. */
+	readonly matcherExecutor?: DetectionMatcherExecutor;
+	/** Optional public-safe replay progress summary copied from the summarized snapshot. */
+	readonly replaySummary?: DetectionReplaySummary;
+}
+
+/**
+ * Compact aggregate storage status updated with snapshot writes.
+ *
+ * `getStatus()` can still rebuild this from existing records, but keeping a
+ * bounded status record means the popup does not need to scan all storage after
+ * every revision once summaries exist.
+ */
+export interface DetectionStorageStatusSnapshot {
+	/** Storage schema version for future migrations. */
+	readonly schemaVersion: DetectionStorageStatusSchemaVersion;
+	/** Number of origin summaries currently tracked. */
+	readonly totalAnalyses: number;
+	/** Number of unique origins represented by summaries. */
+	readonly trackedOrigins: number;
+	/** Newest analysis or summary update timestamp, when any summary exists. */
+	readonly lastAnalyzedAt?: number;
+	/** Timestamp when this aggregate record was written. */
+	readonly updatedAt: number;
 }

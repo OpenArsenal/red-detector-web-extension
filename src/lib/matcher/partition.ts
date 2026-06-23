@@ -57,17 +57,17 @@ const DEFAULT_PARTITION_CHUNK_SIZE = 128;
  * detector snapshots while the rest of the same kind continues matching.
  */
 const KIND_PARTITION_CHUNK_SIZES = Object.freeze({
-	scriptSrc: 24,
-	stylesheetHref: 24,
-	resourceUrl: 24,
-	requestUrl: 24,
-	html: 8,
-	text: 8,
-	scriptContent: 8,
-	stylesheetContent: 8,
-	htmlMatch: 16,
-	dom: 32,
-} satisfies Partial<Record<NormalizedObservationKind, number>>);
+	scriptSrc: 16,
+	stylesheetHref: 16,
+	resourceUrl: 16,
+	requestUrl: 16,
+	html: 4,
+	text: 4,
+	scriptContent: 4,
+	stylesheetContent: 4,
+	htmlMatch: 8,
+	dom: 16,
+} satisfies Partial<Record<NormalizedObservationKind, number>>) as Partial<Record<NormalizedObservationKind, number>>;
 
 /** Input for splitting one observation batch into kind-routed matcher tasks. */
 export interface CreateMatcherPartitionTasksInput {

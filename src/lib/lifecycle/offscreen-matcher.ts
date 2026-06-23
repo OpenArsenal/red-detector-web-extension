@@ -3,6 +3,7 @@ import { browser } from 'wxt/browser';
 import { matchIndexedObservationBatch } from '../detection/observation-matcher-index';
 import {
 	MATCHER_OFFSCREEN_CHANNEL,
+	type CancelMatcherJobMessage,
 	createMatcherPartitionTasks,
 	createMatcherPipelineResult,
 	type MatcherJobRunResult,
@@ -19,6 +20,13 @@ const MATCHER_OFFSCREEN_TIMEOUT_MS = 120_000;
 
 /** Promise shared by concurrent requests creating the same offscreen document. */
 let creatingOffscreenDocument: Promise<void> | undefined;
+
+class OffscreenMatcherJobCanceledError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = 'OffscreenMatcherJobCanceledError';
+	}
+}
 
 /**
  * Run matcher work through the offscreen host and fall back in-process if needed.
@@ -42,6 +50,22 @@ export async function runMatcherJobWithOffscreenFallback(
 	}
 
 	return runMatcherJobInBackgroundFallback(request, 'background-fallback');
+}
+
+/** Ask the offscreen matcher host to cancel queued or running work for a job. */
+export async function cancelOffscreenMatcherJob(jobId: string): Promise<void> {
+	const message: CancelMatcherJobMessage = {
+		channel: MATCHER_OFFSCREEN_CHANNEL,
+		type: 'matcher.cancel-job',
+		jobId,
+	};
+
+	try {
+		await browser.runtime.sendMessage(message);
+	} catch {
+		// Cancellation is best-effort. The background still drops local context and
+		// marks the durable job record canceled so stale progress cannot update UI.
+	}
 }
 
 /**
@@ -74,12 +98,22 @@ async function tryRunMatcherJobInOffscreen(
 		if (response.ok && 'value' in response) {
 			return response.value;
 		}
+		if (!response.ok && isOffscreenMatcherCancellationMessage(response.message)) {
+			throw new OffscreenMatcherJobCanceledError(response.message);
+		}
 		console.warn('[red-detector] offscreen matcher returned no job result', response);
 		return null;
 	} catch (error) {
+		if (error instanceof OffscreenMatcherJobCanceledError) {
+			throw error;
+		}
 		console.warn('[red-detector] offscreen matcher failed; using background fallback', error);
 		return null;
 	}
+}
+
+function isOffscreenMatcherCancellationMessage(message: string): boolean {
+	return message.toLowerCase().includes('canceled');
 }
 
 async function ensureMatcherOffscreenDocument(): Promise<boolean> {

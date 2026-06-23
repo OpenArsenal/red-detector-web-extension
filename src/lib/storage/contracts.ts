@@ -9,8 +9,14 @@ export const DETECTION_SESSION_SNAPSHOT_PREFIX = 'rd:session:';
 /** Prefix used for the newest detection snapshot associated with an origin hash. */
 export const DETECTION_ORIGIN_SNAPSHOT_PREFIX = 'rd:origin:';
 
+/** Prefix used for lightweight origin-level detector summary records. */
+export const DETECTION_ORIGIN_SUMMARY_PREFIX = 'rd:origin-summary:';
+
 /** Prefix used for tab-owned detection snapshot index records. */
 export const DETECTION_SESSION_INDEX_PREFIX = 'rd:session-index:';
+
+/** Key used for the compact aggregate detection storage status record. */
+export const DETECTION_STORAGE_STATUS_KEY = 'rd:status';
 
 /** Prefix used for durable matcher job lifecycle records. */
 export const MATCHER_JOB_CACHE_PREFIX = 'matcher-job:';
@@ -109,6 +115,11 @@ export function getDetectionSessionSnapshotKey(key: DetectionSessionKey): string
  */
 export function getDetectionOriginSnapshotKey(originHash: string): string {
 	return `${DETECTION_ORIGIN_SNAPSHOT_PREFIX}${encodeStorageKeyPart(originHash)}:latest`;
+}
+
+/** Build the storage key for the latest lightweight summary associated with an origin hash. */
+export function getDetectionOriginSummaryKey(originHash: string): string {
+	return `${DETECTION_ORIGIN_SUMMARY_PREFIX}${encodeStorageKeyPart(originHash)}:latest`;
 }
 
 /** Build the storage key for the known page sessions owned by one browser tab. */

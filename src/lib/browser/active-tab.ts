@@ -1,6 +1,6 @@
-import { browser } from 'wxt/browser';
+import { browser, type Browser } from 'wxt/browser';
 
-type BrowserTab = Awaited<ReturnType<typeof browser.tabs.query>>[number];
+type BrowserTab = Browser.tabs.Tab;
 
 let lastInspectableTab: BrowserTab | undefined;
 

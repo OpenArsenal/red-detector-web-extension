@@ -1,7 +1,18 @@
 import { categories } from '@/data/categories';
 import type { ObservationSessionState } from '../content/observed-page-signals';
-import type { AnalyzeVisibleTabOutput, ObservationSessionTarget } from '../contracts/analysis';
-import type { DetectionSessionSnapshot } from '../contracts/detection-session';
+import type {
+	AnalysisEnrichmentState,
+	AnalyzeVisibleTabOutput,
+	ObservationSessionTarget,
+	SnapshotReuseStatus,
+} from '../contracts/analysis';
+import type {
+	DetectionReplaySummary,
+	DetectionMatcherProgressSummary,
+	DetectionSessionSnapshotSource,
+	DetectionSessionStatus,
+	DetectionSessionSnapshot,
+} from '../contracts/detection-session';
 import type { CategoryId, ConfidenceScore, DetectionResult, SiteAnalysis } from '../detection/types';
 import type { DetectionExplanation, DetectionExplanationEvidenceSummary, DetectionReplayTrace } from '../pipeline';
 import type { AppError } from '../shared/errors';
@@ -26,6 +37,82 @@ export type PopupObservationMode = typeof POPUP_OBSERVATION_MODES[number];
  * whether to create manual refresh copy, late-observation copy, or no notice.
  */
 export type PopupAnalysisRequestSource = 'initial' | 'manual' | 'auto';
+
+/** Detector work lane shown by the popup. */
+export type PopupMatcherStatus = 'idle' | 'collecting' | 'matching' | 'recording';
+
+/** Matcher progress counters safe for popup display. */
+export type PopupMatcherProgress = Pick<
+	DetectionMatcherProgressSummary,
+	'completedPartitionCount' | 'partitionCount' | 'latestPartitionKind' | 'resultCount'
+>;
+
+/** User-facing progress state for visible-tab analysis work. */
+export type PopupAnalysisActivity = {
+	/** Whether the popup should render active progress affordances. */
+	readonly busy: boolean;
+	/** Compact label used in metrics. */
+	readonly label: string;
+	/** Headline used beside the spinner. */
+	readonly headline: string;
+	/** Short explanatory copy used near progress affordances. */
+	readonly description: string;
+};
+
+/** Popup workflow state owned by visible tab/session transitions. */
+export type PopupSessionState =
+	| { readonly kind: 'empty' }
+	| { readonly kind: 'loading-visible-tab' }
+	| { readonly kind: 'showing-snapshot'; readonly revision: PopupVisibleRevision }
+	| { readonly kind: 'requesting-analysis'; readonly previous?: PopupVisibleRevision }
+	| { readonly kind: 'streaming-revisions'; readonly revision: PopupVisibleRevision }
+	| { readonly kind: 'stopped'; readonly revision?: PopupVisibleRevision }
+	| { readonly kind: 'failed'; readonly message: string };
+
+/** Replay state normalized for popup rendering. */
+export type PopupReplayState =
+	| { readonly kind: 'none' }
+	| { readonly kind: 'summary'; readonly summary: DetectionReplaySummary }
+	| { readonly kind: 'loading-history'; readonly summary: DetectionReplaySummary }
+	| {
+		readonly kind: 'history';
+		readonly summary: DetectionReplaySummary;
+		readonly history: readonly DetectionReplayTrace[];
+	};
+
+/** Popup-visible detector revision independent from background command envelopes. */
+export type PopupVisibleRevision = {
+	/** Origin of this visible revision in the popup data flow. */
+	readonly source: 'command' | 'snapshot';
+	/** Normalized detector output safe for popup rendering. */
+	readonly analysis: SiteAnalysis;
+	/** Snapshot reuse metadata used for copy and diagnostics. */
+	readonly snapshot: {
+		readonly status: SnapshotReuseStatus;
+		readonly key: string;
+		readonly expiresAt?: number;
+	};
+	/** Durable snapshot lifecycle status when this revision was derived from storage. */
+	readonly sessionSnapshotStatus?: DetectionSessionStatus;
+	/** Durable snapshot writer when this revision was derived from storage. */
+	readonly sessionSnapshotSource?: DetectionSessionSnapshotSource;
+	/** Live observation state when this revision owns a content session. */
+	readonly session?: ObservationSessionState;
+	/** Stable session handle for refresh, stop, and cleanup. */
+	readonly sessionTarget?: ObservationSessionTarget;
+	/** Latest full replay trace, when hydrated. */
+	readonly replayTrace?: DetectionReplayTrace;
+	/** Bounded newest-first replay traces, when hydrated. */
+	readonly replayHistory?: readonly DetectionReplayTrace[];
+	/** Compact replay summary stored on detector snapshots. */
+	readonly replaySummary?: DetectionReplaySummary;
+	/** Compact matcher progress stored on partial snapshot revisions. */
+	readonly matcherProgress?: DetectionMatcherProgressSummary;
+	/** Deeper evidence lifecycle state attached to the revision. */
+	readonly enrichment?: AnalysisEnrichmentState;
+	/** Revision write timestamp when the value came from storage. */
+	readonly updatedAt?: number;
+};
 
 /** User-visible notice severity supported by the current popup shell. */
 export type PopupNoticeVariant = 'success' | 'warning';
@@ -107,8 +194,8 @@ export type PopupExplanationLookup = Readonly<Record<string, PopupDetectionExpla
 export type BuildPopupAnalysisUpdateInput = {
 	/** Analysis currently rendered by the popup before the new response arrives. */
 	previousAnalysis: SiteAnalysis | null;
-	/** Background response returned by `analyzeVisibleTab` or observation refresh. */
-	response: AnalyzeVisibleTabOutput;
+	/** Popup-visible revision from a command or storage snapshot. */
+	revision: PopupVisibleRevision;
 	/** UI request source that controls notice copy. */
 	source: PopupAnalysisRequestSource;
 	/** Current late-detection ids already marked in the popup. */
@@ -136,6 +223,238 @@ export type PopupAnalysisUpdate = {
 	/** Optional notice to display after applying the response. */
 	notice: PopupNotice | null;
 };
+
+/** Whether matcher work is active enough to deserve visible progress UI. */
+export function isPopupMatcherBusy(status: PopupMatcherStatus): boolean {
+	return status === 'collecting' || status === 'matching' || status === 'recording';
+}
+
+/** Returns the compact matcher label for popup metrics. */
+export function getPopupMatcherStatusLabel(status: PopupMatcherStatus, progress?: PopupMatcherProgress): string {
+	if (status === 'collecting') return 'collecting page signals';
+	if (status === 'matching') {
+		if (progress && progress.partitionCount > 0) {
+			const completed = Math.min(progress.completedPartitionCount, progress.partitionCount);
+			return `matching evidence ${completed}/${progress.partitionCount}`;
+		}
+		return 'matching evidence';
+	}
+	if (status === 'recording') return 'recording replay';
+	return 'idle';
+}
+
+/** User-facing headline for the current matcher lane. */
+export function getPopupMatcherActivityHeadline(status: PopupMatcherStatus): string {
+	if (status === 'collecting') return 'Collecting page signals';
+	if (status === 'matching') return 'Matching evidence batches';
+	if (status === 'recording') return 'Recording replay trace';
+	return 'Analysis complete';
+}
+
+/** Short progress copy used near the animated activity indicator. */
+export function getPopupMatcherActivityDescription(status: PopupMatcherStatus, progress?: PopupMatcherProgress): string {
+	if (status === 'collecting') {
+		return 'Reading DOM, resource, metadata, and page-surface signals before worker matching starts.';
+	}
+
+	if (status === 'matching') {
+		if (progress && progress.partitionCount > 0) {
+			const completed = Math.min(progress.completedPartitionCount, progress.partitionCount);
+			const surface = progress.latestPartitionKind ? ` Latest surface: ${progress.latestPartitionKind}.` : '';
+			return `Matched ${completed} of ${progress.partitionCount} evidence batches.${surface} The count can still climb as stronger evidence arrives.`;
+		}
+		return 'Worker batches are resolving detections. The count may climb as stronger evidence arrives.';
+	}
+
+	if (status === 'recording') {
+		return 'Final detector output is being written so replay history and explanations can reopen later.';
+	}
+
+	return 'The latest detector snapshot is ready.';
+}
+
+/**
+ * Derives visible popup progress from command, tab-switch, and matcher lanes.
+ *
+ * A queued visible tab wins over matcher status because any in-flight matcher may
+ * still belong to the previous tab. The popup should describe the tab the user is
+ * currently looking at, not a stale request that is only blocking the queue.
+ */
+export function getPopupAnalysisActivity(input: {
+	readonly matcherStatus: PopupMatcherStatus;
+	readonly workflowBusy: boolean;
+	readonly analysisRequestInFlight: boolean;
+	readonly queuedVisibleAnalysis: boolean;
+	readonly matcherProgress?: PopupMatcherProgress;
+}): PopupAnalysisActivity {
+	if (input.queuedVisibleAnalysis) {
+		return {
+			busy: true,
+			label: 'queued for this tab',
+			headline: 'Waiting to scan this tab',
+			description: 'The visible tab changed while another scan was finishing. This tab will start next.',
+		};
+	}
+
+	if (isPopupMatcherBusy(input.matcherStatus)) {
+		return {
+			busy: true,
+			label: getPopupMatcherStatusLabel(input.matcherStatus, input.matcherProgress),
+			headline: getPopupMatcherActivityHeadline(input.matcherStatus),
+			description: getPopupMatcherActivityDescription(input.matcherStatus, input.matcherProgress),
+		};
+	}
+
+	if (input.analysisRequestInFlight) {
+		return {
+			busy: true,
+			label: 'loading current tab',
+			headline: 'Loading latest detections',
+			description: 'The popup is waiting for the active tab scan to publish its first detector revision.',
+		};
+	}
+
+	if (input.workflowBusy) {
+		return {
+			busy: true,
+			label: 'preparing current tab',
+			headline: 'Preparing active tab',
+			description: 'Stored detections and live session state are being loaded for the visible tab.',
+		};
+	}
+
+	return {
+		busy: false,
+		label: 'idle',
+		headline: 'Analysis complete',
+		description: 'The latest detector snapshot is ready.',
+	};
+}
+
+/**
+ * Derives the matcher lane from a storage snapshot revision.
+ *
+ * Partition-progress snapshots can carry `status: complete` before the final
+ * replay-backed write lands. A background snapshot is only truly idle when it is
+ * cached or has the replay summary that proves the current matcher run finished.
+ */
+export function getPopupMatcherStatusFromSnapshot(
+	snapshot: DetectionSessionSnapshot,
+): PopupMatcherStatus | null {
+	if (snapshot.enrichment.status === 'pending') {
+		return 'matching';
+	}
+
+	if (
+		snapshot.matcherProgress &&
+		(!snapshot.replaySummary || snapshot.matcherProgress.updatedAt >= snapshot.replaySummary.analyzedAt)
+	) {
+		return 'matching';
+	}
+
+	if (snapshot.source === 'cache' || snapshot.status === 'cached') {
+		return 'idle';
+	}
+
+	if (snapshot.source !== 'background') {
+		return null;
+	}
+
+	if (snapshot.replaySummary) {
+		return 'idle';
+	}
+
+	if (snapshot.status === 'failed' || snapshot.status === 'stale' || snapshot.status === 'stopped') {
+		return 'idle';
+	}
+
+	return 'matching';
+}
+
+/** Returns whether this revision still represents in-flight matcher work. */
+export function isPopupVisibleRevisionPending(revision: PopupVisibleRevision): boolean {
+	if (revision.enrichment?.status === 'pending') {
+		return true;
+	}
+
+	if (revision.replayTrace || revision.replaySummary) {
+		return false;
+	}
+
+	if (revision.sessionSnapshotStatus) {
+		return getPopupMatcherStatusFromSnapshot({
+			key: { tabId: 0, frameId: 0, documentId: 'revision', originHash: 'revision' },
+			schemaVersion: 1,
+			revision: 0,
+			urlHash: 'revision',
+			hostname: revision.analysis.hostname,
+			status: revision.sessionSnapshotStatus,
+			source: revision.sessionSnapshotSource ?? (revision.source === 'snapshot' ? 'background' : 'cache'),
+			updatedAt: revision.updatedAt ?? revision.analysis.analyzedAt,
+			detectionCount: revision.analysis.results.length,
+			analysis: revision.analysis,
+			enrichment: { status: revision.enrichment?.status ?? 'not-needed' },
+			...(revision.matcherProgress ? { matcherProgress: revision.matcherProgress } : {}),
+		}) !== 'idle';
+	}
+
+	return false;
+}
+
+/** Returns whether replay details belong to the current visible revision. */
+export function shouldApplyPopupReplayState(revision: PopupVisibleRevision): boolean {
+	return !isPopupVisibleRevisionPending(revision);
+}
+
+/** Convert the current background command response into a popup revision bridge. */
+export function createPopupVisibleRevisionFromAnalysisResponse(
+	response: AnalyzeVisibleTabOutput,
+): PopupVisibleRevision {
+	return {
+		source: 'command',
+		analysis: response.analysis,
+		snapshot: { ...response.snapshot },
+		...(response.session ? { session: response.session } : {}),
+		...(response.sessionTarget ? { sessionTarget: response.sessionTarget } : {}),
+		...(response.replayTrace ? { replayTrace: response.replayTrace } : {}),
+		...(response.replayHistory ? { replayHistory: response.replayHistory } : {}),
+		...(response.enrichment ? { enrichment: response.enrichment } : {}),
+	};
+}
+
+/** Return the normalized replay rendering state for a popup revision. */
+export function getPopupReplayState(revision: PopupVisibleRevision): PopupReplayState {
+	if (revision.replayHistory?.length) {
+		const summary = revision.replaySummary ?? createReplaySummaryFromTrace(revision.replayHistory[0]!);
+		return { kind: 'history', summary, history: revision.replayHistory };
+	}
+
+	if (revision.replaySummary) {
+		return { kind: 'summary', summary: revision.replaySummary };
+	}
+
+	if (revision.replayTrace) {
+		return { kind: 'summary', summary: createReplaySummaryFromTrace(revision.replayTrace) };
+	}
+
+	return { kind: 'none' };
+}
+
+/** Convert a full trace into the compact replay summary shape used by snapshots. */
+export function createReplaySummaryFromTrace(trace: DetectionReplayTrace): DetectionReplaySummary {
+	const stages: DetectionReplayTrace['events'][number]['stage'][] = [];
+	for (const event of trace.events) {
+		if (!stages.includes(event.stage)) stages.push(event.stage);
+	}
+
+	return {
+		analyzedAt: trace.analyzedAt,
+		eventCount: trace.events.length,
+		explanationCount: trace.explanations.length,
+		resultCount: trace.resultCount,
+		stages,
+	};
+}
 
 /**
  * Input used when the popup decides whether observation state should trigger a refresh.
@@ -250,7 +569,7 @@ export function getPopupObservationModeFromSnapshot(
  * current copy that tells users refresh is needed to resume observation.
  */
 export function getPopupObservationModeFromAnalysis(
-	response: Pick<AnalyzeVisibleTabOutput, 'cache' | 'session'>,
+	response: Pick<PopupVisibleRevision, 'snapshot' | 'session'>,
 ): PopupObservationMode {
 	if (response.session) {
 		return getPopupObservationModeFromSession(response.session);
@@ -332,22 +651,22 @@ function isLowerCompletenessDetectorRevision(
  */
 export function shouldPreservePopupReplayState(input: {
 	readonly previousAnalysis: SiteAnalysis | null;
-	readonly response: Pick<AnalyzeVisibleTabOutput, 'analysis' | 'enrichment' | 'replayHistory' | 'replayTrace'>;
+	readonly revision: Pick<PopupVisibleRevision, 'analysis' | 'enrichment' | 'replayHistory' | 'replayTrace'>;
 }): boolean {
-	if (!input.previousAnalysis || input.response.replayTrace || input.response.replayHistory !== undefined) {
+	if (!input.previousAnalysis || input.revision.replayTrace || input.revision.replayHistory !== undefined) {
 		return false;
 	}
 
-	if (input.previousAnalysis.url !== input.response.analysis.url) {
+	if (input.previousAnalysis.url !== input.revision.analysis.url) {
 		return false;
 	}
 
-	if (input.previousAnalysis.analyzedAt !== input.response.analysis.analyzedAt) {
+	if (input.previousAnalysis.analyzedAt !== input.revision.analysis.analyzedAt) {
 		return false;
 	}
 
 	const previousIds = input.previousAnalysis.results.map((result) => result.technologyId);
-	const nextIds = input.response.analysis.results.map((result) => result.technologyId);
+	const nextIds = input.revision.analysis.results.map((result) => result.technologyId);
 	return previousIds.length === nextIds.length && previousIds.every((id, index) => id === nextIds[index]);
 }
 
@@ -433,7 +752,7 @@ export function formatPopupAppError(error: AppError): string {
 export function buildPopupAnalysisUpdate(
 	input: BuildPopupAnalysisUpdateInput,
 ): PopupAnalysisUpdate {
-	const nextAnalysis = input.response.analysis;
+	const nextAnalysis = input.revision.analysis;
 	const addedDetectionIds = input.previousAnalysis
 		? getAddedDetectionIds(input.previousAnalysis.results, nextAnalysis.results)
 		: [];
@@ -441,8 +760,8 @@ export function buildPopupAnalysisUpdate(
 		? []
 		: input.currentLateDetectionIds ?? [];
 	const lateDetectionIds = mergeUniqueIds(lateMarkerBase, addedDetectionIds);
-	const explanationsByTechnologyId = buildPopupExplanationLookup(input.response.replayTrace);
-	const observationMode = getPopupObservationModeFromAnalysis(input.response);
+	const explanationsByTechnologyId = buildPopupExplanationLookup(input.revision.replayTrace);
+	const observationMode = getPopupObservationModeFromAnalysis(input.revision);
 	/**
 	 * Storage revisions are the receive stream for continuous matching. The popup
 	 * stays live only when an observation session is active; follow-up evidence
@@ -452,7 +771,7 @@ export function buildPopupAnalysisUpdate(
 	const notice = getPopupAnalysisNotice({
 		addedDetectionIds,
 		nextAnalysis,
-		response: input.response,
+		revision: input.revision,
 		source: input.source,
 	});
 
@@ -473,7 +792,7 @@ export function buildPopupAnalysisUpdate(
 function getPopupAnalysisNotice(input: {
 	addedDetectionIds: readonly string[];
 	nextAnalysis: SiteAnalysis;
-	response: AnalyzeVisibleTabOutput;
+	revision: PopupVisibleRevision;
 	source: PopupAnalysisRequestSource;
 }): PopupNotice | null {
 	if (input.addedDetectionIds.length) {
@@ -494,7 +813,7 @@ function getPopupAnalysisNotice(input: {
 	if (input.source === 'manual') {
 		return {
 			variant: 'success',
-			text: `Refreshed ${input.nextAnalysis.results.length} technologies for ${input.nextAnalysis.hostname}. ${input.response.session ? 'Observation is active again.' : 'Showing the latest cached state.'}`,
+			text: `Refreshed ${input.nextAnalysis.results.length} technologies for ${input.nextAnalysis.hostname}. ${input.revision.session ? 'Observation is active again.' : 'Showing the latest cached state.'}`,
 		};
 	}
 

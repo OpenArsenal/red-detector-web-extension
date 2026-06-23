@@ -6,10 +6,13 @@ import type { VisibleTabIdentity, AnalysisEnrichmentState, AnalyzeVisibleTabOutp
 import {
   getCachedReplayTrace,
   getCachedReplayTraceHistory,
+  getDetectionSessionIndex,
   getLatestDetectionOriginSnapshot,
+  getLatestDetectionSessionSnapshot,
   isDetectionSessionSnapshot,
 } from '../storage';
 import { STORAGE_LIMITS, getAnalysisResponseKey, getDetectionOriginSnapshotKey } from '../storage/contracts';
+import type { PopupVisibleRevision } from './view-model';
 
 /** Handler invoked when storage publishes a matching snapshot revision. */
 export type PopupSnapshotRevisionHandler = (snapshot: DetectionSessionSnapshot) => void;
@@ -18,7 +21,7 @@ export type PopupSnapshotRevisionHandler = (snapshot: DetectionSessionSnapshot) 
 export type PopupSnapshotUnsubscribe = () => void;
 
 /** Stored analysis source that can paint the popup before background analysis runs. */
-export type PopupStoredAnalysisSource = 'origin-snapshot';
+export type PopupStoredAnalysisSource = 'session-snapshot' | 'origin-snapshot';
 
 /**
  * Stored detector output that can be rendered during popup startup.
@@ -30,6 +33,8 @@ export type PopupStoredAnalysisSource = 'origin-snapshot';
 export type PopupStoredAnalysisResult = {
   /** Storage path that produced the analysis shown in the popup. */
   readonly source: PopupStoredAnalysisSource;
+  /** Popup-visible revision derived from storage state. */
+  readonly revision: PopupVisibleRevision;
   /** Normalized analysis output safe for current popup rendering. */
   readonly analysis: AnalyzeVisibleTabOutput['analysis'];
   /** Snapshot revision used when the storage-backed stream already has state. */
@@ -54,13 +59,54 @@ export async function readStoredPopupAnalysis(
     return null;
   }
 
-  const snapshot = await getLatestDetectionOriginSnapshot(identity.originHash);
-  if (!snapshot || !isSnapshotForActiveTab(identity, snapshot) || !isDetectorStartupSnapshot(snapshot)) {
+  const storedSnapshot = await getStoredVisibleSnapshot(identity);
+  if (
+    !storedSnapshot ||
+    !isSnapshotForActiveTab(identity, storedSnapshot.snapshot) ||
+    !isDetectorStartupSnapshot(storedSnapshot.snapshot)
+  ) {
     return null;
   }
 
-  const replay = await readStoredReplayState(snapshot.analysis.url);
-  return { source: 'origin-snapshot', analysis: snapshot.analysis, snapshot, ...replay };
+  const replay = await readStoredReplayState(storedSnapshot.snapshot.analysis.url);
+  const stored = {
+    source: storedSnapshot.source,
+    analysis: storedSnapshot.snapshot.analysis,
+    snapshot: storedSnapshot.snapshot,
+    ...replay,
+  };
+  return { ...stored, revision: createStoredPopupVisibleRevision(stored) };
+}
+
+type StoredVisibleSnapshot = {
+	readonly source: PopupStoredAnalysisSource;
+	readonly snapshot: DetectionSessionSnapshot;
+};
+
+/** Prefer exact session snapshots for the visible tab, falling back to old origin pointers. */
+async function getStoredVisibleSnapshot(identity: VisibleTabIdentity): Promise<StoredVisibleSnapshot | null> {
+	const index = await getDetectionSessionIndex(identity.tabId);
+	const exactSnapshots: DetectionSessionSnapshot[] = [];
+
+	for (const entry of index.entries) {
+		if (entry.key.frameId !== identity.frameId || entry.urlHash !== identity.urlHash) {
+			continue;
+		}
+
+		const snapshot = await getLatestDetectionSessionSnapshot(entry.key);
+		if (snapshot && isSnapshotForActiveTab(identity, snapshot) && isDetectorStartupSnapshot(snapshot)) {
+			exactSnapshots.push(snapshot);
+		}
+	}
+
+	const newestExactSnapshot = exactSnapshots
+		.sort((left, right) => right.updatedAt - left.updatedAt || right.revision - left.revision)[0];
+	if (newestExactSnapshot) {
+		return { source: 'session-snapshot', snapshot: newestExactSnapshot };
+	}
+
+	const originSnapshot = await getLatestDetectionOriginSnapshot(identity.originHash);
+	return originSnapshot ? { source: 'origin-snapshot', snapshot: originSnapshot } : null;
 }
 
 /**
@@ -102,6 +148,18 @@ function isDetectorStartupSnapshot(snapshot: DetectionSessionSnapshot): boolean 
  */
 export function createStoredPopupAnalysisOutput(stored: PopupStoredAnalysisResult): AnalyzeVisibleTabOutput {
   return {
+    analysis: stored.revision.analysis,
+    snapshot: { ...stored.revision.snapshot },
+    ...(stored.revision.replayTrace ? { replayTrace: stored.revision.replayTrace } : {}),
+    ...(stored.revision.replayHistory ? { replayHistory: stored.revision.replayHistory } : {}),
+    enrichment: stored.revision.enrichment,
+  };
+}
+
+/** Convert stored snapshot state into the popup's revision model. */
+export function createStoredPopupVisibleRevision(stored: Omit<PopupStoredAnalysisResult, 'revision'>): PopupVisibleRevision {
+  return {
+    source: 'snapshot',
     analysis: stored.analysis,
     snapshot: {
       status: 'hit',
@@ -110,7 +168,14 @@ export function createStoredPopupAnalysisOutput(stored: PopupStoredAnalysisResul
     },
     ...(stored.replayTrace ? { replayTrace: stored.replayTrace } : {}),
     ...(stored.replayHistory ? { replayHistory: stored.replayHistory } : {}),
-    enrichment: stored.snapshot ? toAnalysisEnrichmentState(stored.snapshot) : undefined,
+    ...(stored.snapshot?.replaySummary ? { replaySummary: stored.snapshot.replaySummary } : {}),
+    ...(stored.snapshot?.matcherProgress ? { matcherProgress: stored.snapshot.matcherProgress } : {}),
+    ...(stored.snapshot ? {
+      sessionSnapshotStatus: stored.snapshot.status,
+      sessionSnapshotSource: stored.snapshot.source,
+      enrichment: toAnalysisEnrichmentState(stored.snapshot),
+      updatedAt: stored.snapshot.updatedAt,
+    } : {}),
   };
 }
 

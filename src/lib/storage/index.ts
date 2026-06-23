@@ -1,16 +1,27 @@
 import { browser } from 'wxt/browser';
 
-import type { DetectionSessionSnapshot } from '../contracts/detection-session';
+import type {
+	DetectionOriginSummary,
+	DetectionSessionSnapshot,
+	DetectionStorageStatusSnapshot,
+} from '../contracts/detection-session';
 import type { AnalysisStatus } from '../detection/types';
 import type { DetectionReplayTrace } from '../pipeline';
 import {
 	DETECTION_ORIGIN_SNAPSHOT_PREFIX,
+	DETECTION_ORIGIN_SUMMARY_PREFIX,
+	DETECTION_STORAGE_STATUS_KEY,
 	REPLAY_TRACE_CACHE_PREFIX,
 	REPLAY_TRACE_HISTORY_CACHE_PREFIX,
 	STORAGE_LIMITS,
 	getReplayTraceCacheKey,
 	getReplayTraceHistoryCacheKey,
 } from './contracts';
+import {
+	isDetectionOriginSummary,
+	isDetectionStorageStatusSnapshot,
+	refreshDetectionStorageStatusSnapshot,
+} from './detection-snapshots';
 
 /**
  * Return whether an unknown storage value looks like a replay trace.
@@ -114,7 +125,22 @@ export async function saveReplayTrace(trace: DetectionReplayTrace): Promise<Dete
 }
 
 export async function getStatus(): Promise<AnalysisStatus> {
+	const storedStatus = await getStoredDetectionStatus();
+	if (storedStatus) {
+		return toAnalysisStatus(storedStatus);
+	}
+
 	const all = await browser.storage.local.get(null);
+	const originSummaries = Object.entries(all)
+		.filter((entry): entry is [string, DetectionOriginSummary] =>
+			entry[0].startsWith(DETECTION_ORIGIN_SUMMARY_PREFIX) && isDetectionOriginSummary(entry[1])
+		)
+		.map(([, value]) => value);
+	if (originSummaries.length > 0) {
+		const status = await refreshDetectionStorageStatusSnapshot();
+		return toAnalysisStatus(status);
+	}
+
 	const originSnapshots = Object.entries(all)
 		.filter(([key, value]) => key.startsWith(DETECTION_ORIGIN_SNAPSHOT_PREFIX) && isDetectionSessionSnapshot(value))
 		.map(([, value]) => value as DetectionSessionSnapshot);
@@ -128,6 +154,21 @@ export async function getStatus(): Promise<AnalysisStatus> {
 		totalAnalyses: originSnapshots.length,
 		trackedOrigins: new Set(trackedSnapshotOrigins).size,
 		lastAnalyzedAt: lastSnapshotUpdatedAt || undefined,
+	};
+}
+
+async function getStoredDetectionStatus(): Promise<DetectionStorageStatusSnapshot | null> {
+	const raw = await browser.storage.local.get(DETECTION_STORAGE_STATUS_KEY);
+	const value = raw[DETECTION_STORAGE_STATUS_KEY];
+
+	return isDetectionStorageStatusSnapshot(value) ? value : null;
+}
+
+function toAnalysisStatus(status: DetectionStorageStatusSnapshot): AnalysisStatus {
+	return {
+		totalAnalyses: status.totalAnalyses,
+		trackedOrigins: status.trackedOrigins,
+		lastAnalyzedAt: status.lastAnalyzedAt,
 	};
 }
 
@@ -216,11 +257,15 @@ function cloneReplayTrace(trace: DetectionReplayTrace): DetectionReplayTrace {
 
 export type { DetectionSessionIndexEntry, DetectionSessionIndexRecord, DetectionSessionSnapshotWriteResult } from './detection-snapshots';
 export {
+	getDetectionStorageStatusSnapshot,
 	getDetectionSessionIndex,
+	getLatestDetectionOriginSummary,
 	getLatestDetectionOriginSnapshot,
 	getLatestDetectionSessionSnapshot,
+	isDetectionOriginSummary,
 	markDetectionSessionSnapshotsForTab,
 	isDetectionSessionSnapshot,
+	refreshDetectionStorageStatusSnapshot,
 	removeDetectionSessionIndex,
 	saveDetectionSessionSnapshot,
 } from './detection-snapshots';

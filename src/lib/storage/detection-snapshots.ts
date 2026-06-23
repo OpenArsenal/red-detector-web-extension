@@ -1,9 +1,12 @@
 import type {
 	DetectionEnrichmentState,
+	DetectionMatcherProgressSummary,
+	DetectionOriginSummary,
 	DetectionReplaySummary,
 	DetectionSessionKey,
 	DetectionSessionSnapshot,
 	DetectionMatcherExecutor,
+	DetectionStorageStatusSnapshot,
 	DetectionSessionSnapshotSource,
 	DetectionSessionStatus,
 } from '../contracts/detection-session';
@@ -13,11 +16,16 @@ import { browser } from 'wxt/browser';
 
 import {
 	DETECTION_ENRICHMENT_STATUSES,
+	DETECTION_ORIGIN_SUMMARY_SCHEMA_VERSION,
 	DETECTION_SESSION_SNAPSHOT_SCHEMA_VERSION,
 	DETECTION_SESSION_STATUSES,
+	DETECTION_STORAGE_STATUS_SCHEMA_VERSION,
 } from '../contracts/detection-session';
 import {
+	DETECTION_ORIGIN_SUMMARY_PREFIX,
+	DETECTION_STORAGE_STATUS_KEY,
 	getDetectionOriginSnapshotKey,
+	getDetectionOriginSummaryKey,
 	getDetectionSessionIndexKey,
 	getDetectionSessionSnapshotKey,
 } from './contracts';
@@ -88,9 +96,31 @@ export async function saveDetectionSessionSnapshot(
 		};
 	}
 
+	if (existing && isLowerCompletenessPreviewSnapshot(snapshot, existing)) {
+		const merged = mergeLowerCompletenessPreviewSnapshot(snapshot, existing);
+		await browser.storage.local.set({ [sessionStorageKey]: merged });
+		const promoted = await promoteOriginSnapshot(originStorageKey, merged);
+		if (promoted) {
+			await saveDetectionOriginSummary(createDetectionOriginSummary(merged));
+			await refreshDetectionStorageStatusSnapshot();
+		}
+		await upsertDetectionSessionIndex(merged);
+
+		return {
+			accepted: true,
+			sessionStorageKey,
+			originStorageKey,
+			snapshot: cloneDetectionSessionSnapshot(merged),
+		};
+	}
+
 	const normalized = cloneDetectionSessionSnapshot(snapshot);
 	await browser.storage.local.set({ [sessionStorageKey]: normalized });
-	await promoteOriginSnapshot(originStorageKey, normalized);
+	const promoted = await promoteOriginSnapshot(originStorageKey, normalized);
+	if (promoted) {
+		await saveDetectionOriginSummary(createDetectionOriginSummary(normalized));
+		await refreshDetectionStorageStatusSnapshot();
+	}
 	await upsertDetectionSessionIndex(normalized);
 
 	return {
@@ -113,6 +143,32 @@ export async function getLatestDetectionOriginSnapshot(
 	originHash: string,
 ): Promise<DetectionSessionSnapshot | null> {
 	return getStoredDetectionSnapshot(getDetectionOriginSnapshotKey(originHash));
+}
+
+/** Return the newest lightweight summary for an origin hash, when storage has one. */
+export async function getLatestDetectionOriginSummary(
+	originHash: string,
+): Promise<DetectionOriginSummary | null> {
+	const raw = await browser.storage.local.get(getDetectionOriginSummaryKey(originHash));
+	const value = raw[getDetectionOriginSummaryKey(originHash)];
+
+	if (!isDetectionOriginSummary(value)) {
+		return null;
+	}
+
+	return cloneDetectionOriginSummary(value);
+}
+
+/** Return the compact aggregate status record, when storage has one. */
+export async function getDetectionStorageStatusSnapshot(): Promise<DetectionStorageStatusSnapshot | null> {
+	const raw = await browser.storage.local.get(DETECTION_STORAGE_STATUS_KEY);
+	const value = raw[DETECTION_STORAGE_STATUS_KEY];
+
+	if (!isDetectionStorageStatusSnapshot(value)) {
+		return null;
+	}
+
+	return cloneDetectionStorageStatusSnapshot(value);
 }
 
 /** Return the known detection sessions for one browser tab, newest first. */
@@ -240,14 +296,15 @@ async function getStoredDetectionSnapshot(storageKey: string): Promise<Detection
 async function promoteOriginSnapshot(
 	originStorageKey: string,
 	snapshot: DetectionSessionSnapshot,
-): Promise<void> {
+): Promise<boolean> {
 	const existing = await getStoredDetectionSnapshot(originStorageKey);
 
 	if (existing && !isOriginSnapshotNewer(snapshot, existing)) {
-		return;
+		return false;
 	}
 
 	await browser.storage.local.set({ [originStorageKey]: cloneDetectionSessionSnapshot(snapshot) });
+	return true;
 }
 
 /** Compare origin candidates across sessions where revision numbers are not shared. */
@@ -277,10 +334,105 @@ function isOriginSnapshotNewer(
  * as a lower-ranked fallback for exact-session lifecycle reads.
  */
 function getOriginSnapshotRank(snapshot: DetectionSessionSnapshot): number {
+	if (snapshot.source === 'background' && snapshot.replaySummary) return 4;
 	if (snapshot.source === 'background') return 3;
 	if (snapshot.source === 'cache') return 2;
 	if (snapshot.detectionCount > 0) return 1;
 	return 0;
+}
+
+/**
+ * Preview background writes can arrive after a richer exact snapshot.
+ *
+ * Worker partitions and non-final matcher passes are useful while the visible
+ * count is growing, but they must not make the durable session record move
+ * backward. Replay-backed snapshots remain authoritative because they represent
+ * the completed matcher result for that revision.
+ */
+function isLowerCompletenessPreviewSnapshot(
+	candidate: DetectionSessionSnapshot,
+	existing: DetectionSessionSnapshot,
+): boolean {
+	return (
+		candidate.source === 'background' &&
+		candidate.replaySummary === undefined &&
+		candidate.analysis.url === existing.analysis.url &&
+		candidate.detectionCount < existing.detectionCount
+	);
+}
+
+/**
+ * Keep richer detector output while still publishing progress-only revisions.
+ *
+ * A lower-count partial can be useful because it proves worker progress, but it
+ * should not visibly shrink the result list. The merged snapshot advances the
+ * revision and lifecycle fields from the candidate while preserving the richer
+ * analysis payload already stored for the same exact session.
+ */
+function mergeLowerCompletenessPreviewSnapshot(
+	candidate: DetectionSessionSnapshot,
+	existing: DetectionSessionSnapshot,
+): DetectionSessionSnapshot {
+	return cloneDetectionSessionSnapshot({
+		...existing,
+		revision: Math.max(existing.revision + 1, candidate.revision),
+		status: candidate.status,
+		source: candidate.source,
+		updatedAt: candidate.updatedAt,
+		enrichment: cloneDetectionEnrichmentState(candidate.enrichment),
+		...(candidate.matcherExecutor ? { matcherExecutor: candidate.matcherExecutor } : {}),
+		...(candidate.matcherProgress ? { matcherProgress: cloneDetectionMatcherProgressSummary(candidate.matcherProgress) } : {}),
+	});
+}
+
+/** Derive the lightweight origin summary from the renderable exact snapshot. */
+function createDetectionOriginSummary(snapshot: DetectionSessionSnapshot): DetectionOriginSummary {
+	return {
+		schemaVersion: DETECTION_ORIGIN_SUMMARY_SCHEMA_VERSION,
+		originHash: snapshot.key.originHash,
+		hostname: snapshot.hostname,
+		url: snapshot.analysis.url,
+		urlHash: snapshot.urlHash,
+		sessionKey: { ...snapshot.key },
+		status: snapshot.status,
+		source: snapshot.source,
+		detectionCount: snapshot.detectionCount,
+		analyzedAt: snapshot.analysis.analyzedAt,
+		updatedAt: snapshot.updatedAt,
+		...(snapshot.matcherExecutor ? { matcherExecutor: snapshot.matcherExecutor } : {}),
+		...(snapshot.replaySummary ? { replaySummary: cloneDetectionReplaySummary(snapshot.replaySummary) } : {}),
+	};
+}
+
+/** Save one lightweight origin summary. */
+async function saveDetectionOriginSummary(summary: DetectionOriginSummary): Promise<void> {
+	await browser.storage.local.set({
+		[getDetectionOriginSummaryKey(summary.originHash)]: cloneDetectionOriginSummary(summary),
+	});
+}
+
+/** Recompute and persist the compact aggregate status from origin summaries. */
+export async function refreshDetectionStorageStatusSnapshot(): Promise<DetectionStorageStatusSnapshot> {
+	const all = await browser.storage.local.get(null);
+	const summaries = Object.entries(all)
+		.filter((entry): entry is [string, DetectionOriginSummary] =>
+			entry[0].startsWith(DETECTION_ORIGIN_SUMMARY_PREFIX) && isDetectionOriginSummary(entry[1])
+		)
+		.map(([, value]) => value);
+	const lastAnalyzedAt = summaries.reduce(
+		(latest, summary) => Math.max(latest, summary.analyzedAt, summary.updatedAt),
+		0,
+	);
+	const status: DetectionStorageStatusSnapshot = {
+		schemaVersion: DETECTION_STORAGE_STATUS_SCHEMA_VERSION,
+		totalAnalyses: summaries.length,
+		trackedOrigins: new Set(summaries.map((summary) => summary.originHash)).size,
+		...(lastAnalyzedAt ? { lastAnalyzedAt } : {}),
+		updatedAt: Date.now(),
+	};
+
+	await browser.storage.local.set({ [DETECTION_STORAGE_STATUS_KEY]: cloneDetectionStorageStatusSnapshot(status) });
+	return status;
 }
 
 /**
@@ -310,7 +462,50 @@ export function isDetectionSessionSnapshot(value: unknown): value is DetectionSe
 		isSnapshotSiteAnalysis(candidate.analysis) &&
 		isDetectionEnrichmentState(candidate.enrichment) &&
 		(candidate.matcherExecutor === undefined || isDetectionMatcherExecutor(candidate.matcherExecutor)) &&
+		(candidate.matcherProgress === undefined || isDetectionMatcherProgressSummary(candidate.matcherProgress)) &&
 		(candidate.replaySummary === undefined || isDetectionReplaySummary(candidate.replaySummary))
+	);
+}
+
+/** Return whether a storage value matches the lightweight origin summary envelope. */
+export function isDetectionOriginSummary(value: unknown): value is DetectionOriginSummary {
+	if (typeof value !== 'object' || value === null) {
+		return false;
+	}
+
+	const candidate = value as Partial<DetectionOriginSummary>;
+
+	return (
+		candidate.schemaVersion === DETECTION_ORIGIN_SUMMARY_SCHEMA_VERSION &&
+		typeof candidate.originHash === 'string' &&
+		typeof candidate.hostname === 'string' &&
+		typeof candidate.url === 'string' &&
+		typeof candidate.urlHash === 'string' &&
+		isDetectionSessionKey(candidate.sessionKey) &&
+		isDetectionSessionStatus(candidate.status) &&
+		isDetectionSessionSnapshotSource(candidate.source) &&
+		typeof candidate.detectionCount === 'number' &&
+		typeof candidate.analyzedAt === 'number' &&
+		typeof candidate.updatedAt === 'number' &&
+		(candidate.matcherExecutor === undefined || isDetectionMatcherExecutor(candidate.matcherExecutor)) &&
+		(candidate.replaySummary === undefined || isDetectionReplaySummary(candidate.replaySummary))
+	);
+}
+
+/** Return whether a storage value matches the compact aggregate status envelope. */
+export function isDetectionStorageStatusSnapshot(value: unknown): value is DetectionStorageStatusSnapshot {
+	if (typeof value !== 'object' || value === null) {
+		return false;
+	}
+
+	const candidate = value as Partial<DetectionStorageStatusSnapshot>;
+
+	return (
+		candidate.schemaVersion === DETECTION_STORAGE_STATUS_SCHEMA_VERSION &&
+		typeof candidate.totalAnalyses === 'number' &&
+		typeof candidate.trackedOrigins === 'number' &&
+		isOptionalNumber(candidate.lastAnalyzedAt) &&
+		typeof candidate.updatedAt === 'number'
 	);
 }
 
@@ -386,6 +581,27 @@ function isDetectionMatcherExecutor(value: unknown): value is DetectionMatcherEx
 		value === 'background-fallback' ||
 		value === 'dev-fallback' ||
 		value === 'unknown'
+	);
+}
+
+/** Guard matcher progress while accepting older snapshots without the field. */
+function isDetectionMatcherProgressSummary(value: unknown): value is DetectionMatcherProgressSummary {
+	if (typeof value !== 'object' || value === null) {
+		return false;
+	}
+
+	const candidate = value as Partial<DetectionMatcherProgressSummary>;
+
+	return (
+		typeof candidate.jobId === 'string' &&
+		typeof candidate.mode === 'string' &&
+		typeof candidate.completedPartitionCount === 'number' &&
+		typeof candidate.partitionCount === 'number' &&
+		(candidate.latestPartitionKind === undefined || typeof candidate.latestPartitionKind === 'string') &&
+		isOptionalNumber(candidate.latestPartitionObservationCount) &&
+		isOptionalNumber(candidate.latestPartitionMatchCount) &&
+		typeof candidate.resultCount === 'number' &&
+		typeof candidate.updatedAt === 'number'
 	);
 }
 
@@ -469,7 +685,40 @@ function cloneDetectionSessionSnapshot(snapshot: DetectionSessionSnapshot): Dete
 		analysis: cloneSiteAnalysis(snapshot.analysis),
 		enrichment: cloneDetectionEnrichmentState(snapshot.enrichment),
 		...(snapshot.matcherExecutor ? { matcherExecutor: snapshot.matcherExecutor } : {}),
+		...(snapshot.matcherProgress ? { matcherProgress: cloneDetectionMatcherProgressSummary(snapshot.matcherProgress) } : {}),
 		...(snapshot.replaySummary ? { replaySummary: cloneDetectionReplaySummary(snapshot.replaySummary) } : {}),
+	};
+}
+
+/** Clone a lightweight origin summary so callers cannot mutate storage mocks by reference. */
+function cloneDetectionOriginSummary(summary: DetectionOriginSummary): DetectionOriginSummary {
+	return {
+		schemaVersion: summary.schemaVersion,
+		originHash: summary.originHash,
+		hostname: summary.hostname,
+		url: summary.url,
+		urlHash: summary.urlHash,
+		sessionKey: { ...summary.sessionKey },
+		status: summary.status,
+		source: summary.source,
+		detectionCount: summary.detectionCount,
+		analyzedAt: summary.analyzedAt,
+		updatedAt: summary.updatedAt,
+		...(summary.matcherExecutor ? { matcherExecutor: summary.matcherExecutor } : {}),
+		...(summary.replaySummary ? { replaySummary: cloneDetectionReplaySummary(summary.replaySummary) } : {}),
+	};
+}
+
+/** Clone the compact aggregate status record. */
+function cloneDetectionStorageStatusSnapshot(
+	status: DetectionStorageStatusSnapshot,
+): DetectionStorageStatusSnapshot {
+	return {
+		schemaVersion: status.schemaVersion,
+		totalAnalyses: status.totalAnalyses,
+		trackedOrigins: status.trackedOrigins,
+		...(status.lastAnalyzedAt ? { lastAnalyzedAt: status.lastAnalyzedAt } : {}),
+		updatedAt: status.updatedAt,
 	};
 }
 
@@ -508,6 +757,27 @@ function cloneDetectionEnrichmentState(state: DetectionEnrichmentState): Detecti
 		...(state.updatedAt !== undefined ? { updatedAt: state.updatedAt } : {}),
 		...(state.completedAt !== undefined ? { completedAt: state.completedAt } : {}),
 		...(state.reason ? { reason: state.reason } : {}),
+	};
+}
+
+/** Clone matcher progress counters so storage mock reads cannot mutate the saved value. */
+function cloneDetectionMatcherProgressSummary(
+	progress: DetectionMatcherProgressSummary,
+): DetectionMatcherProgressSummary {
+	return {
+		jobId: progress.jobId,
+		mode: progress.mode,
+		completedPartitionCount: progress.completedPartitionCount,
+		partitionCount: progress.partitionCount,
+		...(progress.latestPartitionKind ? { latestPartitionKind: progress.latestPartitionKind } : {}),
+		...(progress.latestPartitionObservationCount !== undefined
+			? { latestPartitionObservationCount: progress.latestPartitionObservationCount }
+			: {}),
+		...(progress.latestPartitionMatchCount !== undefined
+			? { latestPartitionMatchCount: progress.latestPartitionMatchCount }
+			: {}),
+		resultCount: progress.resultCount,
+		updatedAt: progress.updatedAt,
 	};
 }
 

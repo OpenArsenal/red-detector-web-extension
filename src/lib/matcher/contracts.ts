@@ -34,6 +34,7 @@ export type MatcherJobTerminalReason =
 	| 'completed'
 	| 'manual-refresh'
 	| 'navigation'
+	| 'tab-closed'
 	| 'tab-closed-cache-complete'
 	| 'newer-job'
 	| 'offscreen-unavailable'
