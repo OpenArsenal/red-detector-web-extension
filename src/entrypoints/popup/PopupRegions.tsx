@@ -90,6 +90,11 @@ export const PopupShell = {
 		return <>{props.children}</>;
 	},
 
+	/** Replay region for the latest stored summary and bounded replay history. */
+	ReplayHistory(props: PopupRegionChildren) {
+		return <section class="replay-history" aria-label="Detection replay history">{props.children}</section>;
+	},
+
 	/** Result panel that owns the heading, mode chip, and live-result region. */
 	ResultPanel(props: PopupResultPanelProps) {
 		return (

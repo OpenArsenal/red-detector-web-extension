@@ -1,5 +1,5 @@
 import { defineProxy } from "comctx";
-import { createSignal, For, Show, onCleanup, onMount } from "solid-js";
+import { createMemo, createSignal, For, Show, onCleanup, onMount } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import { CategoryGroup } from "../../components/CategoryGroup";
@@ -11,7 +11,7 @@ import type {
   AnalysisStatus,
   SiteAnalysis,
 } from "../../lib/detection/types";
-import type { DetectionSessionSnapshot } from "../../lib/contracts/detection-session";
+import type { DetectionReplaySummary, DetectionSessionSnapshot } from "../../lib/contracts/detection-session";
 import type { DetectionReplayTrace } from "../../lib/pipeline";
 import type {
   ActiveTabIdentity,
@@ -151,12 +151,81 @@ function isSameActiveTabIdentity(left: ActiveTabIdentity | null, right: ActiveTa
   );
 }
 
+
+type PopupWorkflowState =
+  | { readonly kind: "idle" }
+  | { readonly kind: "loading-stored-snapshot"; readonly identity: ActiveTabIdentity }
+  | { readonly kind: "queued-initial-analysis"; readonly identity: ActiveTabIdentity | null }
+  | { readonly kind: "streaming-revisions"; readonly identity: ActiveTabIdentity | null }
+  | { readonly kind: "refreshing-observed-session"; readonly identity: ActiveTabIdentity | null }
+  | { readonly kind: "switching-tab"; readonly identity: ActiveTabIdentity }
+  | { readonly kind: "stopped"; readonly identity: ActiveTabIdentity | null }
+  | { readonly kind: "failed"; readonly identity: ActiveTabIdentity | null; readonly message: string };
+
+/** Popup actions are busy only while user-visible commands own the current tab target. */
+function isPopupWorkflowBusy(state: PopupWorkflowState): boolean {
+  return (
+    state.kind === "loading-stored-snapshot" ||
+    state.kind === "queued-initial-analysis" ||
+    state.kind === "refreshing-observed-session" ||
+    state.kind === "switching-tab"
+  );
+}
+
+/** True when a background response still belongs to the tab the popup is rendering. */
+function canApplyAnalysisResponseToVisibleIdentity(
+  response: AnalyzeActiveTabOutput,
+  requestedIdentity: ActiveTabIdentity | null,
+  visibleIdentity: ActiveTabIdentity | null,
+): boolean {
+  if (!requestedIdentity) {
+    return true;
+  }
+
+  return response.analysis.url === requestedIdentity.url && isSameActiveTabIdentity(visibleIdentity, requestedIdentity);
+}
+
+/** Convert a full trace into the compact summary that snapshots carry. */
+function createReplaySummaryFromTrace(trace: DetectionReplayTrace): DetectionReplaySummary {
+  const stages: DetectionReplayTrace["events"][number]["stage"][] = [];
+  for (const event of trace.events) {
+    if (!stages.includes(event.stage)) stages.push(event.stage);
+  }
+
+  return {
+    analyzedAt: trace.analyzedAt,
+    eventCount: trace.events.length,
+    explanationCount: trace.explanations.length,
+    resultCount: trace.resultCount,
+    stages,
+  };
+}
+
+/** Format replay timestamps for the compact popup history list. */
+function formatReplayTime(trace: DetectionReplayTrace) {
+  return new Date(trace.analyzedAt).toLocaleString();
+}
+
+/** Summarize a full replay trace without exposing raw page observations. */
+function formatReplaySummary(trace: DetectionReplayTrace) {
+  return `${trace.resultCount} detection${trace.resultCount === 1 ? "" : "s"} · ${trace.completedMode} pipeline`;
+}
+
+/** Summarize the latest stored replay receipt when the full history is not hydrated yet. */
+function formatReplaySummarySnapshot(summary: DetectionReplaySummary) {
+  return `${summary.resultCount} detection${summary.resultCount === 1 ? "" : "s"} · ${summary.eventCount} replay event${summary.eventCount === 1 ? "" : "s"}`;
+}
+
 export default function App() {
   const [status, setStatus] = createStore<AnalysisStatus>({
     totalAnalyses: 0,
     trackedOrigins: 0,
   });
-  const [busy, setBusy] = createSignal(false);
+  /**
+   * User-visible commands and tab switches share one workflow state so buttons,
+   * busy affordances, and stale-response guards read the same target ownership.
+   */
+  const [workflow, setWorkflow] = createSignal<PopupWorkflowState>({ kind: "idle" });
   const [liveUpdateMode, setLiveUpdateMode] = createSignal<PopupObservationMode>("unknown");
   const [notice, setNotice] = createSignal<PopupNotice | null>(null);
   const [errorMessage, setErrorMessage] = createSignal("");
@@ -167,37 +236,24 @@ export default function App() {
   const [pipelineMode, setPipelineMode] = createSignal("event");
   const [matcherStatus, setMatcherStatus] = createSignal<PopupMatcherStatus>("idle");
   const [replayHistory, setReplayHistory] = createSignal<readonly DetectionReplayTrace[]>([]);
+  const [latestReplaySummary, setLatestReplaySummary] = createSignal<DetectionReplaySummary | null>(null);
   const [sessionTarget, setSessionTarget] = createSignal<ObservationSessionTarget | null>(null);
   const [activeTabIdentity, setActiveTabIdentity] = createSignal<ActiveTabIdentity | null>(null);
-  let refreshInFlight = false;
-  let pendingManualRefresh = false;
+  const [loadedAnalysisIdentity, setLoadedAnalysisIdentity] = createSignal<ActiveTabIdentity | null>(null);
+  const [analysisRequestTarget, setAnalysisRequestTarget] = createSignal<ActiveTabIdentity | null>(null);
+  const [pendingManualRefresh, setPendingManualRefresh] = createSignal(false);
+  const [pendingActiveTabAnalysisSync, setPendingActiveTabAnalysisSync] = createSignal(false);
+  const [activeTabIdentitySyncInFlight, setActiveTabIdentitySyncInFlight] = createSignal(false);
+  const [appliedSnapshotRevision, setAppliedSnapshotRevision] = createSignal<DetectionSessionSnapshot | null>(null);
   let unsubscribeSnapshotRevisions: (() => void) | undefined;
   let activeTabPollTimer: ReturnType<typeof globalThis.setInterval> | undefined;
-  let pendingActiveTabAnalysisSync = false;
-  let appliedSnapshotRevision: DetectionSessionSnapshot | null = null;
 
-  function resultCount() {
-    return analysis()?.results.length ?? 0;
-  }
-
-  function groupedResults() {
-    return groupDetectionsByPrimaryCategory(analysis()?.results ?? []);
-  }
-
-  function hasLateDetections() {
-    return lateAddedIds().length > 0;
-  }
-
-  function liveUpdateChipLabel() {
-    return getPopupObservationLabel(liveUpdateMode());
-  }
-  function formatReplayTime(trace: DetectionReplayTrace) {
-    return new Date(trace.analyzedAt).toLocaleString();
-  }
-
-  function formatReplaySummary(trace: DetectionReplayTrace) {
-    return `${trace.resultCount} detection${trace.resultCount === 1 ? "" : "s"} · ${trace.completedMode} pipeline`;
-  }
+  const refreshInFlight = createMemo(() => analysisRequestTarget() !== null);
+  const busy = createMemo(() => isPopupWorkflowBusy(workflow()) || refreshInFlight());
+  const resultCount = createMemo(() => analysis()?.results.length ?? 0);
+  const groupedResults = createMemo(() => groupDetectionsByPrimaryCategory(analysis()?.results ?? []));
+  const hasLateDetections = createMemo(() => lateAddedIds().length > 0);
+  const liveUpdateChipLabel = createMemo(() => getPopupObservationLabel(liveUpdateMode()));
 
   async function hydrateReplayHistoryIfMissing(response: AnalyzeActiveTabOutput) {
     if (response.replayHistory) {
@@ -205,7 +261,7 @@ export default function App() {
     }
 
     try {
-      const historyResponse = await backgroundApi.getActiveReplayTraceHistory();
+      const historyResponse = await backgroundApi.getReplayTraceHistory({ url: response.analysis.url });
       if (historyResponse.ok) {
         setReplayHistory(historyResponse.value);
       }
@@ -218,16 +274,16 @@ export default function App() {
 
 
   function schedulePendingManualRefresh() {
-    if (!pendingManualRefresh || refreshInFlight) {
+    if (!pendingManualRefresh() || refreshInFlight()) {
       return;
     }
 
-    pendingManualRefresh = false;
+    setPendingManualRefresh(false);
     void refreshAndRestartObservation();
   }
 
   function queueManualRefresh(): void {
-    pendingManualRefresh = true;
+    setPendingManualRefresh(true);
     setNotice({
       variant: "warning",
       text: "Refresh will run after the current analysis finishes.",
@@ -253,16 +309,20 @@ export default function App() {
   }
 
   function applySnapshotRevision(snapshot: DetectionSessionSnapshot) {
-    if (!isNewerSnapshotRevision(appliedSnapshotRevision, snapshot)) {
+    if (!isNewerSnapshotRevision(appliedSnapshotRevision(), snapshot)) {
       logPopupEvent("snapshot-revision-ignored", { revision: snapshot.revision, updatedAt: snapshot.updatedAt });
       return;
     }
 
     if (!shouldApplyPopupSnapshotRevision({ currentAnalysis: analysis(), snapshot })) {
-      appliedSnapshotRevision = snapshot;
+      setAppliedSnapshotRevision(snapshot);
       updateMatcherStatusFromSnapshot(snapshot);
       const nextMode = getPopupObservationModeFromSnapshot(snapshot);
       setLiveUpdateMode(nextMode);
+      if (snapshot.replaySummary) {
+        setLatestReplaySummary(snapshot.replaySummary);
+      }
+      void refreshStatus();
       if (nextMode === "stopped") {
         setSessionTarget(null);
         setNotice({
@@ -280,7 +340,10 @@ export default function App() {
       return;
     }
 
-    appliedSnapshotRevision = snapshot;
+    setAppliedSnapshotRevision(snapshot);
+    if (snapshot.replaySummary) {
+      setLatestReplaySummary(snapshot.replaySummary);
+    }
     updateMatcherStatusFromSnapshot(snapshot);
     logPopupEvent("snapshot-revision-applied", {
       revision: snapshot.revision,
@@ -291,10 +354,12 @@ export default function App() {
       source: "origin-snapshot",
       analysis: snapshot.analysis,
       snapshot,
-    }), { source: "auto" });
+    }), { source: "auto", identity: activeTabIdentity() ?? undefined });
+    void refreshStatus();
   }
 
   async function renderStoredAnalysisForActiveTab(identity: ActiveTabIdentity) {
+    setWorkflow({ kind: "loading-stored-snapshot", identity });
     try {
       const stored = await readStoredPopupAnalysis(identity);
       if (!stored) {
@@ -308,20 +373,25 @@ export default function App() {
         resultCount: stored.analysis.results.length,
         revision: stored.snapshot?.revision ?? 0,
       });
-      appliedSnapshotRevision = stored.snapshot ?? null;
+      setAppliedSnapshotRevision(stored.snapshot ?? null);
       if (stored.snapshot) {
         updateMatcherStatusFromSnapshot(stored.snapshot);
+        setLatestReplaySummary(stored.snapshot.replaySummary ?? null);
       } else {
         setMatcherStatus("idle");
+        setLatestReplaySummary(null);
       }
       applyAnalysisResponse(createStoredPopupAnalysisOutput(stored), {
         source: "initial",
         resetLateMarkers: true,
+        identity,
       });
       return true;
     } catch (error) {
       logPopupEvent("stored-analysis-render-failed", { message: normalizeError(error) });
       return false;
+    } finally {
+      setWorkflow({ kind: "idle" });
     }
   }
 
@@ -341,6 +411,7 @@ export default function App() {
     options: {
       source: "initial" | "manual" | "auto";
       resetLateMarkers?: boolean;
+      identity?: ActiveTabIdentity;
     },
   ) {
     const previousAnalysis = analysis();
@@ -361,7 +432,11 @@ export default function App() {
     setPipelineMode(response.replayTrace?.completedMode ?? (preserveReplayState ? pipelineMode() : "event"));
     setMatcherStatus(getMatcherStatusForAnalysisResponse(response, options.source, matcherStatus()));
     setReplayHistory(response.replayHistory ?? (preserveReplayState ? replayHistory() : []));
+    setLatestReplaySummary(response.replayTrace ? createReplaySummaryFromTrace(response.replayTrace) : (preserveReplayState ? latestReplaySummary() : null));
     setSessionTarget(response.sessionTarget ?? sessionTarget());
+    if (options.identity) {
+      setLoadedAnalysisIdentity(options.identity);
+    }
 
     logPopupEvent("analysis-applied", {
       source: options.source,
@@ -424,17 +499,17 @@ export default function App() {
     resetLateMarkers?: boolean;
     source: "initial" | "manual" | "auto";
   }) {
-    if (refreshInFlight) {
+    if (refreshInFlight()) {
       if (options.source === "manual") {
         queueManualRefresh();
       }
       return;
     }
 
-    refreshInFlight = true;
+    setAnalysisRequestTarget(activeTabIdentity());
     const isUserVisibleRefresh = options.source !== "auto" && !(options.source === "initial" && analysis());
     if (isUserVisibleRefresh) {
-      setBusy(true);
+      setWorkflow({ kind: options.source === "manual" ? "refreshing-observed-session" : "queued-initial-analysis", identity: activeTabIdentity() });
     }
     if (options.resetLateMarkers) {
       setLateAddedIds([]);
@@ -468,7 +543,17 @@ export default function App() {
         return;
       }
 
-      applyAnalysisResponse(response.value, options);
+      const requestedIdentity = analysisRequestTarget();
+      if (!canApplyAnalysisResponseToVisibleIdentity(response.value, requestedIdentity, activeTabIdentity())) {
+        logPopupEvent("analysis-response-ignored-for-stale-tab", {
+          source: options.source,
+          responseUrl: response.value.analysis.url,
+          expectedUrl: requestedIdentity?.url,
+        });
+        return;
+      }
+
+      applyAnalysisResponse(response.value, { ...options, identity: requestedIdentity ?? undefined });
 
       await refreshStatus();
     } catch (error) {
@@ -482,19 +567,29 @@ export default function App() {
       setMatcherStatus("idle");
     } finally {
       if (isUserVisibleRefresh) {
-        setBusy(false);
+        setWorkflow({ kind: "idle" });
       }
-      refreshInFlight = false;
-      if (pendingActiveTabAnalysisSync) {
-        pendingActiveTabAnalysisSync = false;
-        void syncActiveTabIdentity("tab-change");
+      setAnalysisRequestTarget(null);
+      if (pendingActiveTabAnalysisSync()) {
+        setPendingActiveTabAnalysisSync(false);
+        const identity = activeTabIdentity();
+        if (identity) {
+          await loadLatestAnalysis({
+            input: { mode: "cache-first", observe: "while-popup-open" },
+            resetLateMarkers: !analysis(),
+            source: "initial",
+          });
+          await syncObservationState();
+        } else {
+          void syncActiveTabIdentity("tab-change");
+        }
       }
       schedulePendingManualRefresh();
     }
   }
 
   async function stopObservation() {
-    setBusy(true);
+    setWorkflow({ kind: "refreshing-observed-session", identity: activeTabIdentity() });
     setErrorMessage("");
     setNotice(null);
     try {
@@ -526,12 +621,12 @@ export default function App() {
     } catch (error) {
       setErrorMessage(normalizeError(error));
     } finally {
-      setBusy(false);
+      setWorkflow({ kind: "idle" });
     }
   }
 
   async function refreshAndRestartObservation() {
-    if (refreshInFlight) {
+    if (refreshInFlight()) {
       queueManualRefresh();
       return;
     }
@@ -549,15 +644,18 @@ export default function App() {
   function resetVisibleStateForActiveTab(identity: ActiveTabIdentity): void {
     unsubscribeSnapshotRevisions?.();
     unsubscribeSnapshotRevisions = subscribeToPopupSnapshotRevisions(identity, applySnapshotRevision);
-    appliedSnapshotRevision = null;
+    setAppliedSnapshotRevision(null);
     setActiveTabIdentity(identity);
     setAnalysis(null);
     setLateAddedIds([]);
     setExplanationsByTechnologyId({});
     setReplayHistory([]);
+    setLatestReplaySummary(null);
+    setLoadedAnalysisIdentity(null);
     setSessionTarget(null);
     setLiveUpdateMode("unknown");
     setMatcherStatus("idle");
+    setWorkflow({ kind: "switching-tab", identity });
   }
 
   async function activatePopupTabIdentity(identity: ActiveTabIdentity, reason: "initial" | "tab-change"): Promise<void> {
@@ -582,39 +680,48 @@ export default function App() {
   }
 
   async function syncActiveTabIdentity(reason: "initial" | "tab-change"): Promise<void> {
-    const identityResponse = await backgroundApi.getActiveTabIdentity();
-    if (!identityResponse.ok) {
-      logPopupEvent("active-tab-identity-unavailable", {
-        reason,
-        code: identityResponse.error.code,
-        message: identityResponse.error.message,
-      });
-      if (reason === "initial") {
-        setErrorMessage(formatPopupAppError(identityResponse.error));
+    if (activeTabIdentitySyncInFlight()) {
+      return;
+    }
+
+    setActiveTabIdentitySyncInFlight(true);
+    try {
+      const identityResponse = await backgroundApi.getActiveTabIdentity();
+      if (!identityResponse.ok) {
+        logPopupEvent("active-tab-identity-unavailable", {
+          reason,
+          code: identityResponse.error.code,
+          message: identityResponse.error.message,
+        });
+        if (reason === "initial") {
+          setErrorMessage(formatPopupAppError(identityResponse.error));
+        }
+        return;
       }
-      return;
-    }
 
-    if (isSameActiveTabIdentity(activeTabIdentity(), identityResponse.value)) {
-      return;
-    }
+      if (isSameActiveTabIdentity(activeTabIdentity(), identityResponse.value)) {
+        return;
+      }
 
-    if (reason === "tab-change" && refreshInFlight) {
-      pendingActiveTabAnalysisSync = true;
-      logPopupEvent("active-tab-identity-rendered-during-refresh", {
-        tabId: identityResponse.value.tabId,
-        hostname: identityResponse.value.hostname,
-      });
-      resetVisibleStateForActiveTab(identityResponse.value);
-      await renderStoredAnalysisForActiveTab(identityResponse.value);
-      setNotice({
-        variant: "warning",
-        text: "Active tab changed. Cached detections are shown while the previous analysis finishes.",
-      });
-      return;
-    }
+      if (reason === "tab-change" && refreshInFlight()) {
+        setPendingActiveTabAnalysisSync(true);
+        logPopupEvent("active-tab-identity-rendered-during-refresh", {
+          tabId: identityResponse.value.tabId,
+          hostname: identityResponse.value.hostname,
+        });
+        resetVisibleStateForActiveTab(identityResponse.value);
+        await renderStoredAnalysisForActiveTab(identityResponse.value);
+        setNotice({
+          variant: "warning",
+          text: "Active tab changed. Cached detections are shown while the previous analysis finishes.",
+        });
+        return;
+      }
 
-    await activatePopupTabIdentity(identityResponse.value, reason);
+      await activatePopupTabIdentity(identityResponse.value, reason);
+    } finally {
+      setActiveTabIdentitySyncInFlight(false);
+    }
   }
 
   onMount(() => {
@@ -693,6 +800,7 @@ export default function App() {
           <p>Host: {analysis()?.hostname ?? activeTabIdentity()?.hostname ?? "not analyzed"}</p>
           <p>Observation: {liveUpdateChipLabel().toLowerCase()}</p>
           <p>Matcher: {getMatcherStatusLabel(matcherStatus())}</p>
+          <p>Executor: {appliedSnapshotRevision()?.matcherExecutor ?? "unknown"}</p>
           <p>Pipeline: {pipelineMode()}</p>
         </PopupShell.Metrics>
       </PopupShell.Hero>
@@ -770,40 +878,49 @@ export default function App() {
                   />
                 )}
               </For>
-              <Show when={replayHistory().length > 0}>
-                <section class="replay-history" aria-label="Detection replay history">
+              <Show when={Boolean(latestReplaySummary()) || replayHistory().length > 0}>
+                <PopupShell.ReplayHistory>
                   <div class="replay-history-heading">
                     <h3>Replay History</h3>
                     <p class="result-meta">
                       {matcherStatus() === "recording" || matcherStatus() === "matching"
-                        ? "Current run is still recording. Stored runs appear here when final replay persistence completes."
+                        ? "Current run is still recording. Stored summaries appear here as soon as snapshot persistence completes."
                         : "Recent stored runs for this origin. Open a run to inspect the pipeline stages and saved explanation count."}
                     </p>
-                  </div>
-                  <ol class="replay-history-list">
-                    <For each={replayHistory().slice(0, 5)}>
-                      {(trace) => (
-                        <li>
-                          <details>
-                            <summary>
-                              <span>{formatReplayTime(trace)}</span>
-                              <span>{formatReplaySummary(trace)}</span>
-                            </summary>
-                            <ul class="evidence-list replay-event-list">
-                              <For each={trace.events}>
-                                {(event) => (
-                                  <li>
-                                    {event.sequence + 1}. {event.stage}: {event.count}
-                                  </li>
-                                )}
-                              </For>
-                            </ul>
-                          </details>
-                        </li>
+                    <Show when={latestReplaySummary()}>
+                      {(summary) => (
+                        <p class="result-meta">
+                          Latest stored summary: {formatReplaySummarySnapshot(summary())}
+                        </p>
                       )}
-                    </For>
-                  </ol>
-                </section>
+                    </Show>
+                  </div>
+                  <Show when={replayHistory().length > 0}>
+                    <ol class="replay-history-list">
+                      <For each={replayHistory().slice(0, 5)}>
+                        {(trace) => (
+                          <li>
+                            <details>
+                              <summary>
+                                <span>{formatReplayTime(trace)}</span>
+                                <span>{formatReplaySummary(trace)}</span>
+                              </summary>
+                              <ul class="evidence-list replay-event-list">
+                                <For each={trace.events}>
+                                  {(event) => (
+                                    <li>
+                                      {event.sequence + 1}. {event.stage}: {event.count}
+                                    </li>
+                                  )}
+                                </For>
+                              </ul>
+                            </details>
+                          </li>
+                        )}
+                      </For>
+                    </ol>
+                  </Show>
+                </PopupShell.ReplayHistory>
               </Show>
             </Show>
           )}
