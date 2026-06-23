@@ -234,7 +234,7 @@ async function getStoredDetectionSnapshot(storageKey: string): Promise<Detection
  * Content snapshots describe page-session lifecycle. They can preserve detector output
  * for the exact session, but they must not become the origin-level startup record
  * when they only carry an empty bootstrap analysis. Popup startup uses the origin
- * record as its cache-first render path, so detector output must outrank lifecycle
+ * record as its snapshot-first render path, so detector output must outrank lifecycle
  * updates even when the lifecycle update was written later.
  */
 async function promoteOriginSnapshot(

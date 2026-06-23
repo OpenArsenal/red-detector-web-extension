@@ -18,7 +18,7 @@ function rememberInspectableTab(tab: BrowserTab | undefined): BrowserTab | undef
  *
  * Chrome can report no `lastFocusedWindow` tab when extension UI or DevTools has
  * focus. The detector still needs the user's active website tab in that case, so
- * the lookup tries the focused window first, then falls back to active tabs from
+ * the lookup tries the focused window first, then falls back to visible tabs from
  * normal browser windows. Unsupported extension and browser pages are filtered at
  * each step so a focused popup never becomes the analysis target.
  */
@@ -91,7 +91,7 @@ async function getMostRecentInspectableActiveTab(): Promise<BrowserTab | undefin
 }
 
 
-/** Return the remembered website tab when popup or DevTools focus hides all active tab queries. */
+/** Return the remembered website tab when popup or DevTools focus hides all visible tab queries. */
 async function getLastInspectableTab(): Promise<BrowserTab | undefined> {
 	if (!lastInspectableTab?.id) {
 		return undefined;

@@ -1,13 +1,13 @@
 import type {
-	ActiveTabObservationMode,
-	AnalyzeActiveTabInput,
+	VisibleTabObservationMode,
+	AnalyzeVisibleTabInput,
 	BeginObservationSessionInput,
 } from '../contracts/analysis';
 import type { ObservationSessionState } from '../content/observed-page-signals';
 import { isSameDocumentUrl } from '../shared/url';
 
 /**
- * Standard observation policy for the active-tab extension flow.
+ * Standard observation policy for the visible-tab extension flow.
  *
  * The background sends these limits to the content script after a fresh analysis.
  * Matching can run for longer than the first collection pass on large sites, so
@@ -33,15 +33,15 @@ export type RefreshableObservationSessionStatus =
  *
  * `bounded` and `while-popup-open` both start the same content-script observation
  * session today. The helper keeps that product choice in one place so the modes
- * can diverge without changing every active-tab call site.
+ * can diverge without changing every visible-tab call site.
  */
-export function shouldStartObservation(mode: ActiveTabObservationMode): boolean {
+export function shouldStartObservation(mode: VisibleTabObservationMode): boolean {
 	return mode !== 'none';
 }
 
-/** Return whether an active-tab request should start page watching. */
+/** Return whether a visible-tab request should start page watching. */
 export function shouldStartObservationForAnalysis(
-	input: Pick<AnalyzeActiveTabInput, 'observe'>,
+	input: Pick<AnalyzeVisibleTabInput, 'observe'>,
 ): boolean {
 	return shouldStartObservation(input.observe);
 }
@@ -77,7 +77,7 @@ export type ObservationRefreshBlockReason = 'unavailable' | 'navigation';
  *
  * `unavailable` means no refreshable session exists. `navigation` means the
  * content script reports a session for an older document, so refreshing it would
- * mix old observation state with the active tab's current URL.
+ * mix old observation state with the visible tab's current URL.
  */
 export function getObservationRefreshBlockReason(
 	session: ObservationSessionState,

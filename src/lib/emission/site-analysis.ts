@@ -18,7 +18,7 @@ export const DEFAULT_FINAL_DETECTION_EMISSION_POLICY: FinalDetectionEmissionPoli
  *
  * Refined candidates become the same public shape that storage, messaging, and
  * popup rendering already understand. Richer emission metadata stays outside the
- * cached analysis object so replay can grow without changing `SiteAnalysis`.
+ * stored analysis object so replay can grow without changing `SiteAnalysis`.
  */
 export function emitSiteAnalysisFromRefinedCandidates(
 	input: EmitSiteAnalysisFromCandidatesInput,

@@ -1,28 +1,28 @@
 import { defineProxy } from "comctx";
 import { browser } from "wxt/browser";
 
-import { collectPageSignals } from "../lib/content/collect-page-signals";
+import { collectPageSignals } from "@/lib/content/collect-page-signals";
 import {
   createObservedPageSignals,
   type ObservedPageSignals,
   type ObservedPageSignalsQueuedBatchEvent,
-} from "../lib/content/observed-page-signals";
-import { writeContentPageSessionSnapshot } from "../lib/content/page-session-snapshots";
-import { validatePageSignals } from "../lib/detection/validate";
-import { configureRedDetectorLogging, getRedDetectorLogger } from "../lib/diagnostics/logging";
-import type { CollectPageSignalsInput, ContentApi } from "../lib/messaging";
+} from "@/lib/content/observed-page-signals";
+import { writeContentPageSessionSnapshot } from "@/lib/content/page-session-snapshots";
+import { validatePageSignals } from "@/lib/detection/validate";
+import { configureRedDetectorLogging, getRedDetectorLogger } from "@/lib/diagnostics/logging";
+import type { CollectPageSignalsInput, ContentApi } from "@/lib/messaging";
 import {
   CONTENT_RPC_NAMESPACE,
   createContentServerAdapter,
-} from "../lib/messaging";
-import { createObservationDirtyNotification } from "../lib/messaging/observation-notifications";
+} from "@/lib/messaging";
+import { createObservationDirtyNotification } from "@/lib/messaging/observation-notifications";
 import type {
   ContentPageSessionSnapshotTarget,
   ObservationStopReason,
-} from "../lib/contracts/analysis";
-import { timeAsyncSpan, timeSyncSpan, type TimingContext } from "../lib/diagnostics/timing";
-import { normalizePageSignals } from "../lib/observations";
-import { errorResponse, ok } from "../lib/shared/result";
+} from "@/lib/contracts/analysis";
+import { timeAsyncSpan, timeSyncSpan, type TimingContext } from "@/lib/diagnostics/timing";
+import { normalizePageSignals } from "@/lib/observations";
+import { errorResponse, ok } from "@/lib/shared/result";
 
 configureRedDetectorLogging("content");
 

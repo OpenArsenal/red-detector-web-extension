@@ -1,39 +1,16 @@
 import { browser } from 'wxt/browser';
 
 import type { DetectionSessionSnapshot } from '../contracts/detection-session';
-import type { AnalysisStatus, SiteAnalysis } from '../detection/types';
+import type { AnalysisStatus } from '../detection/types';
 import type { DetectionReplayTrace } from '../pipeline';
-import { tryGetOrigin } from '../shared/url';
 import {
-	ANALYSIS_CACHE_PREFIX,
 	DETECTION_ORIGIN_SNAPSHOT_PREFIX,
 	REPLAY_TRACE_CACHE_PREFIX,
 	REPLAY_TRACE_HISTORY_CACHE_PREFIX,
 	STORAGE_LIMITS,
-	getAnalysisCacheKey,
 	getReplayTraceCacheKey,
 	getReplayTraceHistoryCacheKey,
-	getReplayTraceCacheKeyForAnalysisCacheKey,
-	getReplayTraceHistoryCacheKeyForAnalysisCacheKey,
 } from './contracts';
-
-/**
- * Return whether an unknown storage value looks like persisted analysis output.
- *
- * This is a defensive shape check for browser storage, not a full schema parser.
- * It only accepts values with the envelope fields later code needs before it can
- * read cache timestamps or detection results.
- */
-function isSiteAnalysis(value: unknown): value is SiteAnalysis {
-	return (
-		typeof value === 'object' &&
-		value !== null &&
-		'url' in value &&
-		'hostname' in value &&
-		'analyzedAt' in value &&
-		'results' in value
-	);
-}
 
 /**
  * Return whether an unknown storage value looks like a replay trace.
@@ -76,31 +53,8 @@ function isDetectionReplayTraceHistory(value: unknown): value is DetectionReplay
 }
 
 /** Return the current age of a cache record in milliseconds. */
-function getCacheRecordAge(record: Pick<SiteAnalysis | DetectionReplayTrace, 'analyzedAt'>): number {
+function getCacheRecordAge(record: Pick<DetectionReplayTrace, 'analyzedAt'>): number {
 	return Date.now() - record.analyzedAt;
-}
-
-/** Return a fresh-enough normalized analysis, never raw page signals. */
-export async function getCachedAnalysis(url: string): Promise<SiteAnalysis | null> {
-	const key = getAnalysisCacheKey(url);
-	const raw = await browser.storage.local.get(key);
-	const value = raw[key];
-
-	if (!isSiteAnalysis(value)) {
-		return null;
-	}
-
-	const isExpired = getCacheRecordAge(value) > STORAGE_LIMITS.analysisTtlMs;
-	if (isExpired) {
-		await browser.storage.local.remove([
-			key,
-			getReplayTraceCacheKeyForAnalysisCacheKey(key),
-			getReplayTraceHistoryCacheKeyForAnalysisCacheKey(key),
-		]);
-		return null;
-	}
-
-	return { ...value, source: 'cache' };
 }
 
 /** Return a fresh-enough redacted replay trace for the requested origin. */
@@ -150,15 +104,7 @@ export async function getCachedReplayTraceHistory(url: string): Promise<Detectio
 	return freshTraces;
 }
 
-/** Persist only normalized detector output and trim stale/overflow cache entries. */
-export async function saveAnalysis(analysis: SiteAnalysis): Promise<SiteAnalysis> {
-	const normalized: SiteAnalysis = { ...analysis, source: 'fresh' };
-	await browser.storage.local.set({ [getAnalysisCacheKey(normalized.url)]: normalized });
-	await trimAnalysisCache();
-	return normalized;
-}
-
-/** Persist a redacted replay trace beside the analysis cache for the same origin. */
+/** Persist a redacted replay trace for the requested origin. */
 export async function saveReplayTrace(trace: DetectionReplayTrace): Promise<DetectionReplayTrace> {
 	const normalized = cloneReplayTrace(trace);
 	await browser.storage.local.set({ [getReplayTraceCacheKey(normalized.target.url)]: normalized });
@@ -169,54 +115,20 @@ export async function saveReplayTrace(trace: DetectionReplayTrace): Promise<Dete
 
 export async function getStatus(): Promise<AnalysisStatus> {
 	const all = await browser.storage.local.get(null);
-	const analyses = Object.entries(all)
-		.filter(([key, value]) => key.startsWith(ANALYSIS_CACHE_PREFIX) && isSiteAnalysis(value))
-		.map(([, value]) => value as SiteAnalysis);
 	const originSnapshots = Object.entries(all)
 		.filter(([key, value]) => key.startsWith(DETECTION_ORIGIN_SNAPSHOT_PREFIX) && isDetectionSessionSnapshot(value))
 		.map(([, value]) => value as DetectionSessionSnapshot);
-
-	const lastAnalyzedAt = analyses.reduce(
-		(latest, analysis) => Math.max(latest, analysis.analyzedAt),
-		0,
-	);
 	const lastSnapshotUpdatedAt = originSnapshots.reduce(
 		(latest, snapshot) => Math.max(latest, snapshot.analysis.analyzedAt, snapshot.updatedAt),
 		0,
 	);
-
-	const trackedOrigins = analyses
-		.map((analysis) => tryGetOrigin(analysis.url))
-		.filter((origin): origin is string => origin !== null);
 	const trackedSnapshotOrigins = originSnapshots.map((snapshot) => snapshot.key.originHash);
 
 	return {
-		totalAnalyses: Math.max(analyses.length, originSnapshots.length),
-		trackedOrigins: Math.max(new Set(trackedOrigins).size, new Set(trackedSnapshotOrigins).size),
-		lastAnalyzedAt: Math.max(lastAnalyzedAt, lastSnapshotUpdatedAt) || undefined,
+		totalAnalyses: originSnapshots.length,
+		trackedOrigins: new Set(trackedSnapshotOrigins).size,
+		lastAnalyzedAt: lastSnapshotUpdatedAt || undefined,
 	};
-}
-
-/** Remove stale and overflow analysis records plus their paired replay traces. */
-async function trimAnalysisCache(): Promise<void> {
-	const all = await browser.storage.local.get(null);
-	const analyses = Object.entries(all)
-		.filter(([key, value]) => key.startsWith(ANALYSIS_CACHE_PREFIX) && isSiteAnalysis(value))
-		.map(([key, value]) => ({ key, analysis: value as SiteAnalysis }))
-		.sort((a, b) => b.analysis.analyzedAt - a.analysis.analyzedAt);
-
-	const expiredKeys = analyses
-		.filter(({ analysis }) => getCacheRecordAge(analysis) > STORAGE_LIMITS.analysisTtlMs)
-		.map(({ key }) => key);
-	const overflowKeys = analyses.slice(STORAGE_LIMITS.maxAnalyses).map(({ key }) => key);
-	const analysisKeysToRemove = Array.from(new Set([...expiredKeys, ...overflowKeys]));
-	const replayKeysToRemove = analysisKeysToRemove.map(getReplayTraceCacheKeyForAnalysisCacheKey);
-	const replayHistoryKeysToRemove = analysisKeysToRemove.map(getReplayTraceHistoryCacheKeyForAnalysisCacheKey);
-	const keysToRemove = [...analysisKeysToRemove, ...replayKeysToRemove, ...replayHistoryKeysToRemove];
-
-	if (keysToRemove.length) {
-		await browser.storage.local.remove(keysToRemove);
-	}
 }
 
 /** Remove stale and overflow replay records without touching analysis records. */

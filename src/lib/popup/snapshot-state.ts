@@ -1,16 +1,15 @@
 import type { DetectionSessionSnapshot } from '../contracts/detection-session';
 
 import { browser } from 'wxt/browser';
-import type { ActiveTabIdentity, AnalysisEnrichmentState, AnalyzeActiveTabOutput } from '../messaging';
+import type { VisibleTabIdentity, AnalysisEnrichmentState, AnalyzeVisibleTabOutput } from '../messaging';
 
 import {
-  getCachedAnalysis,
   getCachedReplayTrace,
   getCachedReplayTraceHistory,
   getLatestDetectionOriginSnapshot,
   isDetectionSessionSnapshot,
 } from '../storage';
-import { STORAGE_LIMITS, getAnalysisCacheKey, getDetectionOriginSnapshotKey } from '../storage/contracts';
+import { STORAGE_LIMITS, getAnalysisResponseKey, getDetectionOriginSnapshotKey } from '../storage/contracts';
 
 /** Handler invoked when storage publishes a matching snapshot revision. */
 export type PopupSnapshotRevisionHandler = (snapshot: DetectionSessionSnapshot) => void;
@@ -19,27 +18,26 @@ export type PopupSnapshotRevisionHandler = (snapshot: DetectionSessionSnapshot) 
 export type PopupSnapshotUnsubscribe = () => void;
 
 /** Stored analysis source that can paint the popup before background analysis runs. */
-export type PopupStoredAnalysisSource = 'origin-snapshot' | 'analysis-cache';
+export type PopupStoredAnalysisSource = 'origin-snapshot';
 
 /**
  * Stored detector output that can be rendered during popup startup.
  *
- * Origin snapshots are the preferred stream because they carry revision and
- * enrichment state. The legacy analysis cache remains a fallback so users still
- * see the last safe result while the snapshot rollout moves through the other
- * extension contexts.
+ * Origin snapshots are the popup's startup stream because they carry revision,
+ * enrichment, executor, and replay summary state. Analysis-snapshot response records stay as a lower-level persistence detail and no longer
+ * drive first paint.
  */
 export type PopupStoredAnalysisResult = {
   /** Storage path that produced the analysis shown in the popup. */
   readonly source: PopupStoredAnalysisSource;
   /** Normalized analysis output safe for current popup rendering. */
-  readonly analysis: AnalyzeActiveTabOutput['analysis'];
+  readonly analysis: AnalyzeVisibleTabOutput['analysis'];
   /** Snapshot revision used when the storage-backed stream already has state. */
   readonly snapshot?: DetectionSessionSnapshot;
   /** Latest replay trace for the stored analysis, when replay storage has one. */
-  readonly replayTrace?: AnalyzeActiveTabOutput['replayTrace'];
+  readonly replayTrace?: AnalyzeVisibleTabOutput['replayTrace'];
   /** Recent replay runs for the stored analysis origin. */
-  readonly replayHistory?: AnalyzeActiveTabOutput['replayHistory'];
+  readonly replayHistory?: AnalyzeVisibleTabOutput['replayHistory'];
 };
 
 /**
@@ -50,25 +48,19 @@ export type PopupStoredAnalysisResult = {
  * records that can outlive the private browsing context.
  */
 export async function readStoredPopupAnalysis(
-  identity: ActiveTabIdentity,
+  identity: VisibleTabIdentity,
 ): Promise<PopupStoredAnalysisResult | null> {
   if (identity.incognito) {
     return null;
   }
 
   const snapshot = await getLatestDetectionOriginSnapshot(identity.originHash);
-  if (snapshot && isSnapshotForActiveTab(identity, snapshot) && isDetectorStartupSnapshot(snapshot)) {
-    const replay = await readStoredReplayState(snapshot.analysis.url);
-    return { source: 'origin-snapshot', analysis: snapshot.analysis, snapshot, ...replay };
-  }
-
-  const analysis = await getCachedAnalysis(identity.url);
-  if (!analysis) {
+  if (!snapshot || !isSnapshotForActiveTab(identity, snapshot) || !isDetectorStartupSnapshot(snapshot)) {
     return null;
   }
 
-  const replay = await readStoredReplayState(analysis.url);
-  return { source: 'analysis-cache', analysis, ...replay };
+  const replay = await readStoredReplayState(snapshot.analysis.url);
+  return { source: 'origin-snapshot', analysis: snapshot.analysis, snapshot, ...replay };
 }
 
 /**
@@ -104,16 +96,16 @@ function isDetectorStartupSnapshot(snapshot: DetectionSessionSnapshot): boolean 
 /**
  * Convert stored popup state into the existing analysis response shape.
  *
- * Reusing `AnalyzeActiveTabOutput` lets the popup keep one rendering path while
+ * Reusing `AnalyzeVisibleTabOutput` lets the popup keep one rendering path while
  * separating storage-first display from the later background command that starts
  * synchronization or observation work.
  */
-export function createStoredPopupAnalysisOutput(stored: PopupStoredAnalysisResult): AnalyzeActiveTabOutput {
+export function createStoredPopupAnalysisOutput(stored: PopupStoredAnalysisResult): AnalyzeVisibleTabOutput {
   return {
     analysis: stored.analysis,
-    cache: {
+    snapshot: {
       status: 'hit',
-      key: getAnalysisCacheKey(stored.analysis.url),
+      key: getAnalysisResponseKey(stored.analysis.url),
       expiresAt: stored.analysis.analyzedAt + STORAGE_LIMITS.analysisTtlMs,
     },
     ...(stored.replayTrace ? { replayTrace: stored.replayTrace } : {}),
@@ -122,8 +114,8 @@ export function createStoredPopupAnalysisOutput(stored: PopupStoredAnalysisResul
   };
 }
 
-/** Only exact active-tab snapshots can update the open popup's visible current-tab result. */
-export function isSnapshotForActiveTab(identity: ActiveTabIdentity, snapshot: DetectionSessionSnapshot): boolean {
+/** Only exact visible-tab snapshots can update the open popup's visible current-tab result. */
+export function isSnapshotForActiveTab(identity: VisibleTabIdentity, snapshot: DetectionSessionSnapshot): boolean {
 	return (
 		snapshot.key.tabId === identity.tabId &&
 		snapshot.key.originHash === identity.originHash &&
@@ -133,14 +125,14 @@ export function isSnapshotForActiveTab(identity: ActiveTabIdentity, snapshot: De
 
 
 /**
- * Subscribe the open popup to snapshot revisions for its active tab.
+ * Subscribe the open popup to snapshot revisions for its visible tab.
  *
  * Storage becomes the receive stream: background or content writes a newer
  * origin snapshot, the browser emits a storage change, and the popup applies the
- * revision only when it still belongs to the active tab identity.
+ * revision only when it still belongs to the visible tab identity.
  */
 export function subscribeToPopupSnapshotRevisions(
-  identity: ActiveTabIdentity,
+  identity: VisibleTabIdentity,
   onRevision: PopupSnapshotRevisionHandler,
 ): PopupSnapshotUnsubscribe {
   const storageKey = getDetectionOriginSnapshotKey(identity.originHash);

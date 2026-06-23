@@ -262,7 +262,7 @@ export function findIndexedObservationRules(
 /**
  * Decide whether an observation surface should be skipped before rule routing.
  *
- * Initial active-tab analysis intentionally defers high-fan-out URL-like
+ * Initial visible-tab analysis intentionally defers high-fan-out URL-like
  * surfaces. Skipping those observations before exact-key, literal, and fallback
  * buckets are consulted avoids doing thousands of candidate-rule lookups that
  * a deeper rule guard would reject anyway.

@@ -1,14 +1,14 @@
-import { matchIndexedObservationBatch } from '../../lib/detection/observation-matcher-index';
+import { matchIndexedObservationBatch } from '@/lib/detection/observation-matcher-index';
 import {
 	createPackagedTechnologyRegistryProvider,
 	type CompiledTechnologyRegistryArtifact,
-} from '../../lib/registry';
+} from '@/lib/registry';
 import type {
 	MatcherPartitionMatch,
 	MatcherWorkerResponseMessage,
 	MatcherWorkerRunMessage,
-} from '../../lib/matcher/contracts';
-import type { NormalizedObservationKind } from '../../lib/observations';
+} from '@/lib/matcher/contracts';
+import type { NormalizedObservationKind } from '@/lib/observations';
 
 /** Worker global with the message contract used by the offscreen host. */
 type MatcherWorkerGlobal = typeof globalThis & {

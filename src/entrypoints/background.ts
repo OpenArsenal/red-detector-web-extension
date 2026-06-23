@@ -1,21 +1,21 @@
 import { defineProxy } from 'comctx';
 import { browser } from 'wxt/browser';
 
-import { registerBackgroundLifecycleListeners } from '../lib/background/lifecycle';
-import { canInspectTab, getActiveTab } from '../lib/browser/active-tab';
-import { collectExtensionObservationBatch } from '../lib/collectors/extension-page-collector';
+import { registerBackgroundLifecycleListeners } from '@/lib/background/lifecycle';
+import { canInspectTab, getActiveTab } from '@/lib/browser/active-tab';
+import { collectExtensionObservationBatch } from '@/lib/collectors/extension-page-collector';
 import {
 	createIncrementalCollectionPasses,
 	type CollectionEvidencePass,
 	type CollectionTierPlan,
-} from '../lib/collectors/planning';
-import { bundledTechnologyRegistryProvider } from '../lib/detection/registry-provider';
-import { DETECTION_SESSION_SNAPSHOT_SCHEMA_VERSION } from '../lib/contracts/detection-session';
-import { configureRedDetectorLogging, getRedDetectorLogger } from '../lib/diagnostics/logging';
+} from '@/lib/collectors/planning';
+import { bundledTechnologyRegistryProvider } from '@/lib/detection/registry-provider';
+import { DETECTION_SESSION_SNAPSHOT_SCHEMA_VERSION } from '@/lib/contracts/detection-session';
+import { configureRedDetectorLogging, getRedDetectorLogger } from '@/lib/diagnostics/logging';
 import {
 	createDetectionReplayTrace,
-} from '../lib/pipeline';
-import type { DetectionPipelineStage, DetectionReplayTrace } from '../lib/pipeline';
+} from '@/lib/pipeline';
+import type { DetectionPipelineStage, DetectionReplayTrace } from '@/lib/pipeline';
 import {
 	createTimingTraceId,
 	endTimingSpan,
@@ -23,10 +23,10 @@ import {
 	timeAsyncSpan,
 	timeSyncSpan,
 	type TimingContext,
-} from '../lib/diagnostics/timing';
+} from '@/lib/diagnostics/timing';
 
-import type { ObservationSessionState } from '../lib/content/observed-page-signals';
-import type { ContentPageSessionSnapshotTarget } from '../lib/contracts/analysis';
+import type { ObservationSessionState } from '@/lib/content/observed-page-signals';
+import type { ContentPageSessionSnapshotTarget } from '@/lib/contracts/analysis';
 import type {
 	DetectionEnrichmentState,
 	DetectionReplaySummary,
@@ -34,41 +34,41 @@ import type {
 	DetectionSessionSnapshot,
 	DetectionSessionSnapshotSource,
 	DetectionSessionStatus,
-} from '../lib/contracts/detection-session';
-import type { SiteAnalysis } from '../lib/detection/types';
+} from '@/lib/contracts/detection-session';
+import type { SiteAnalysis } from '@/lib/detection/types';
 import type {
-	ActiveTabIdentity,
+	VisibleTabIdentity,
 	AnalysisEnrichmentState,
-	AnalyzeActiveTabInput,
-	AnalyzeActiveTabOutput,
+	AnalyzeVisibleTabInput,
+	AnalyzeVisibleTabOutput,
 	BackgroundApi,
 	ContentApi,
 	FlushObservationBatchOutput,
 	ObservationSessionTarget,
-} from '../lib/messaging';
-import type { NormalizedObservation, ObservationBatch } from '../lib/observations';
+} from '@/lib/messaging';
+import type { NormalizedObservation, ObservationBatch } from '@/lib/observations';
 import {
 	CONTENT_SCRIPT_TIMEOUT_MS,
 	RpcTimeoutError,
 	contentScriptFailure,
 	withTimeout,
-} from '../lib/messaging/rpc';
+} from '@/lib/messaging/rpc';
 import {
 	BACKGROUND_RPC_NAMESPACE,
 	CONTENT_RPC_NAMESPACE,
 	createBackgroundServerAdapter,
 	createContentClientAdapter,
-} from '../lib/messaging';
-import { isObservationDirtyNotification } from '../lib/messaging/observation-notifications';
+} from '@/lib/messaging';
+import { isObservationDirtyNotification } from '@/lib/messaging/observation-notifications';
 import {
 	runMatcherJobWithOffscreenFallback,
-} from '../lib/lifecycle/offscreen-matcher';
+} from '@/lib/lifecycle/offscreen-matcher';
 import {
 	EXTENSION_OBSERVATION_POLICY,
 	getObservationRefreshBlockReason,
 	shouldStartObservationForAnalysis,
-} from '../lib/lifecycle/observation';
-import { errorResponse, ok, type AppResult } from '../lib/shared/result';
+} from '@/lib/lifecycle/observation';
+import { errorResponse, ok, type AppResult } from '@/lib/shared/result';
 import {
 	MATCHER_OFFSCREEN_CHANNEL,
 	createMatcherPipelineResult,
@@ -76,27 +76,26 @@ import {
 	type MatcherJobRecord,
 	type MatcherPartitionProgressMessage,
 	type MatcherPartitionResult,
-} from '../lib/matcher';
-import { getOrigin, isSameDocumentUrl } from '../lib/shared/url';
+} from '@/lib/matcher';
+import { getOrigin, isSameDocumentUrl } from '@/lib/shared/url';
 import {
 	STORAGE_LIMITS,
 	createDetectionStorageHash,
-	getAnalysisCacheKey,
-} from '../lib/storage/contracts';
+	getAnalysisResponseKey,
+} from '@/lib/storage/contracts';
 import {
-	getCachedAnalysis,
 	getCachedReplayTrace,
+	getLatestDetectionOriginSnapshot,
 	getCachedReplayTraceHistory,
 	getLatestDetectionSessionSnapshot,
 	getStatus,
-	saveAnalysis,
 	saveDetectionSessionSnapshot,
 	saveMatcherJobRecord,
 	saveReplayTrace,
 	updateMatcherJobRecord,
-} from '../lib/storage';
+} from '@/lib/storage';
 
-/** Active tab shape after unsupported URLs and missing ids have been rejected. */
+/** Visible tab shape after unsupported URLs and missing ids have been rejected. */
 type InspectableTab = {
 	/** Browser tab id used for content-script RPC and MAIN-world injection. */
 	id: number;
@@ -153,7 +152,7 @@ const latestMatcherJobByTab = new Map<number, string>();
 const scheduledObservationRefreshBySession = new Map<string, ReturnType<typeof globalThis.setTimeout>>();
 
 /**
- * Fresh active-tab collection blocks observer flushes until the first matcher job is queued.
+ * Fresh visible-tab collection blocks observer flushes until the first matcher job is queued.
  *
  * Content observers can report dirty facts while the background is still collecting
  * the initial evidence passes. Those facts stay queued in the content script until
@@ -185,7 +184,7 @@ interface ActiveMatcherProgressContext {
 	/** Full compiled registry used by the coordinator after worker shards emit matches. */
 	readonly compiledRegistryArtifact: CompiledRegistry;
 	/** Cache status attached to partial popup outputs. */
-	readonly cacheStatus: AnalyzeActiveTabOutput['cache']['status'];
+	readonly snapshotStatus: AnalyzeVisibleTabOutput['snapshot']['status'];
 	/** Active observation session, when the popup asked for live updates. */
 	readonly session?: ObservationSessionState;
 	/** Matcher executor path known for partial snapshot revisions. */
@@ -357,7 +356,7 @@ function summarizeTab(tab: InspectableTab): Record<string, unknown> {
 	};
 }
 
-function createActiveTabIdentity(tab: InspectableTab): ActiveTabIdentity {
+function createVisibleTabIdentity(tab: InspectableTab): VisibleTabIdentity {
 	const url = new URL(tab.url);
 	const origin = getOrigin(tab.url);
 
@@ -370,6 +369,74 @@ function createActiveTabIdentity(tab: InspectableTab): ActiveTabIdentity {
 		urlHash: createDetectionStorageHash(tab.url),
 		incognito: tab.incognito,
 	};
+}
+
+function isSameVisibleTabIdentity(left: VisibleTabIdentity, right: VisibleTabIdentity): boolean {
+	return (
+		left.tabId === right.tabId &&
+		left.frameId === right.frameId &&
+		left.originHash === right.originHash &&
+		left.urlHash === right.urlHash &&
+		left.incognito === right.incognito
+	);
+}
+
+async function getInspectableVisibleTab(target: VisibleTabIdentity): Promise<AppResult<InspectableTab>> {
+	const activeTab = await getInspectableActiveTab();
+	if (!activeTab.ok) {
+		return activeTab;
+	}
+
+	const activeIdentity = createVisibleTabIdentity(activeTab.value);
+	if (!isSameVisibleTabIdentity(activeIdentity, target)) {
+		logBackgroundEvent('visible-tab-target-mismatch', {
+			requestedTabId: target.tabId,
+			activeTabId: activeIdentity.tabId,
+			requestedUrlHash: target.urlHash,
+			activeUrlHash: activeIdentity.urlHash,
+		});
+		return errorResponse(
+			'VALIDATION_ERROR',
+			'Analysis request no longer matches the visible tab target.',
+		);
+	}
+
+	return activeTab;
+}
+
+function isSnapshotForVisibleTab(target: VisibleTabIdentity, snapshot: DetectionSessionSnapshot): boolean {
+	return (
+		snapshot.key.tabId === target.tabId &&
+		snapshot.key.frameId === target.frameId &&
+		snapshot.key.originHash === target.originHash &&
+		snapshot.urlHash === target.urlHash
+	);
+}
+
+function isDetectorSnapshot(snapshot: DetectionSessionSnapshot): boolean {
+	return snapshot.source === 'background' || snapshot.source === 'cache' || snapshot.detectionCount > 0;
+}
+
+async function getLatestVisibleDetectionSnapshot(
+	target: VisibleTabIdentity,
+	timingContext: TimingContext,
+	spanName: string,
+): Promise<DetectionSessionSnapshot | null> {
+	if (target.incognito) {
+		return null;
+	}
+
+	const snapshot = await timeAsyncSpan(
+		spanName,
+		timingContext,
+		() => getLatestDetectionOriginSnapshot(target.originHash),
+		(value) => ({ snapshotHit: Boolean(value), revision: value?.revision }),
+	);
+	if (!snapshot || !isSnapshotForVisibleTab(target, snapshot) || !isDetectorSnapshot(snapshot)) {
+		return null;
+	}
+
+	return snapshot;
 }
 
 function summarizeSession(session: ObservationSessionState): Record<string, unknown> {
@@ -410,12 +477,12 @@ async function getInspectableActiveTab(): Promise<AppResult<InspectableTab>> {
 	const tab = await getActiveTab();
 
 	if (typeof tab?.id !== 'number' || !tab.url) {
-		logBackgroundEvent('active-tab-missing');
-		return errorResponse('NO_ACTIVE_TAB', 'No active tab found');
+		logBackgroundEvent('visible-tab-missing');
+		return errorResponse('NO_ACTIVE_TAB', 'No visible tab found');
 	}
 
 	if (!canInspectTab(tab)) {
-		logBackgroundEvent('active-tab-unsupported', {
+		logBackgroundEvent('visible-tab-unsupported', {
 			tabId: tab.id,
 			url: tab.url,
 		});
@@ -503,7 +570,7 @@ async function ensureContentScript(tabId: number): Promise<AppResult<void>> {
 }
 
 /**
- * Ask the extension collector for normalized observations from the active tab.
+ * Ask the extension collector for normalized observations from the visible tab.
  *
  * Fresh analysis no longer exposes the old page-snapshot detector path to the
  * background. The content script collects document facts, background evidence passes
@@ -559,18 +626,18 @@ async function collectObservationBatchFromTab(
 /** Create the background response returned to the popup after analysis. */
 function createAnalysisOutput(
 	analysis: SiteAnalysis,
-	cacheStatus: AnalyzeActiveTabOutput['cache']['status'],
+	snapshotStatus: AnalyzeVisibleTabOutput['snapshot']['status'],
 	session?: ObservationSessionState,
-	replayTrace?: AnalyzeActiveTabOutput['replayTrace'],
-	replayHistory?: AnalyzeActiveTabOutput['replayHistory'],
+	replayTrace?: AnalyzeVisibleTabOutput['replayTrace'],
+	replayHistory?: AnalyzeVisibleTabOutput['replayHistory'],
 	sessionTarget?: ObservationSessionTarget,
 	enrichment?: AnalysisEnrichmentState,
-): AnalyzeActiveTabOutput {
+): AnalyzeVisibleTabOutput {
 	return {
 		analysis,
-		cache: {
-			status: cacheStatus,
-			key: getAnalysisCacheKey(analysis.url),
+		snapshot: {
+			status: snapshotStatus,
+			key: getAnalysisResponseKey(analysis.url),
 			expiresAt: analysis.analyzedAt + STORAGE_LIMITS.analysisTtlMs,
 		},
 		session,
@@ -623,16 +690,16 @@ function createContentPageSessionSnapshotTarget(
 }
 
 /**
- * Reuse an already-running content observation session for cache-hit responses.
+ * Reuse an already-running content observation session for snapshot responses.
  *
- * Opening the popup should be a storage read when detector output is fresh. If a
- * content session already belongs to the same document, the response keeps that
- * handle so Stop observation can target it. A cache hit does not start a new
+ * Opening the popup should read the latest detector snapshot first. If a content
+ * session already belongs to the same document, the response keeps that handle
+ * so Stop observation can target it. A stored snapshot does not start a new
  * observer or matcher job on its own.
  */
-async function getExistingObservationSessionForCachedAnalysis(
+async function getExistingObservationSessionForStoredSnapshot(
 	tab: InspectableTab,
-	input: AnalyzeActiveTabInput,
+	input: AnalyzeVisibleTabInput,
 	timingContext: TimingContext,
 ): Promise<ObservationSessionState | undefined> {
 	if (!shouldStartObservationForAnalysis(input)) {
@@ -640,7 +707,7 @@ async function getExistingObservationSessionForCachedAnalysis(
 	}
 
 	if (!(await pingContentScript(tab.id))) {
-		logBackgroundEvent('analysis-cache-observation-not-reused', {
+		logBackgroundEvent('stored-snapshot-observation-not-reused', {
 			...summarizeTab(tab),
 			reason: 'content-runtime-not-ready',
 		});
@@ -648,13 +715,13 @@ async function getExistingObservationSessionForCachedAnalysis(
 	}
 
 	const response = await timeAsyncSpan(
-		'background.cache-hit.observation-session.reuse',
+		'background.stored-snapshot.observation-session.reuse',
 		timingContext,
 		() => getObservationSessionStateForTab(tab.id),
 		(value) => ({ ok: value.ok, status: value.ok ? value.value.status : undefined }),
 	);
 	if (!response.ok) {
-		logBackgroundEvent('analysis-cache-observation-unavailable', {
+		logBackgroundEvent('stored-snapshot-observation-unavailable', {
 			...summarizeTab(tab),
 			code: response.error.code,
 			message: response.error.message,
@@ -664,7 +731,7 @@ async function getExistingObservationSessionForCachedAnalysis(
 
 	const blockReason = getObservationRefreshBlockReason(response.value, tab.url);
 	if (blockReason) {
-		logBackgroundEvent('analysis-cache-observation-not-reused', {
+		logBackgroundEvent('stored-snapshot-observation-not-reused', {
 			...summarizeTab(tab),
 			reason: blockReason,
 			sessionStatus: response.value.status,
@@ -678,13 +745,12 @@ async function getExistingObservationSessionForCachedAnalysis(
 /**
  * Persist the analysis response as the popup's storage update stream.
  *
- * The legacy analysis cache remains useful for compatibility, but snapshot
- * revisions are the durable channel that lets an open popup update without
- * a polling loop and lets a reopened popup recover state after background shutdown.
+ * Snapshots are the durable channel that lets an open popup update without a
+ * polling loop and lets a reopened popup recover state after background shutdown.
  */
 async function saveDetectionSnapshotForPopup(
 	tab: InspectableTab,
-	output: AnalyzeActiveTabOutput,
+	output: AnalyzeVisibleTabOutput,
 	source: DetectionSessionSnapshotSource,
 	matcherExecutor: DetectionSessionSnapshot['matcherExecutor'] = 'unknown',
 ): Promise<void> {
@@ -721,7 +787,7 @@ async function saveDetectionSnapshotForPopup(
  * can lack a session, so the URL hash becomes a stable fallback until content
  * owns browser document ids in the later page-session runtime.
  */
-function createDetectionSessionKeyForOutput(tab: InspectableTab, output: AnalyzeActiveTabOutput): DetectionSessionKey {
+function createDetectionSessionKeyForOutput(tab: InspectableTab, output: AnalyzeVisibleTabOutput): DetectionSessionKey {
 	return {
 		tabId: tab.id,
 		frameId: 0,
@@ -731,14 +797,14 @@ function createDetectionSessionKeyForOutput(tab: InspectableTab, output: Analyze
 }
 
 /** Derive the popup-visible lifecycle state from the analysis response. */
-function getDetectionSnapshotStatus(output: AnalyzeActiveTabOutput): DetectionSessionStatus {
+function getDetectionSnapshotStatus(output: AnalyzeVisibleTabOutput): DetectionSessionStatus {
 	if (output.session?.status === 'observing' || output.session?.status === 'dirty') return 'observing';
 	if (output.session?.status === 'stopped') return 'stopped';
-	if (output.cache.status === 'hit') return 'cached';
+	if (output.snapshot.status === 'hit') return 'cached';
 	return 'complete';
 }
 
-/** Convert legacy enrichment metadata into the snapshot schema used by existing storage. */
+/** Normalize response enrichment metadata into the durable snapshot schema. */
 function toDetectionEnrichmentState(enrichment?: AnalysisEnrichmentState): DetectionEnrichmentState {
 	const updatedAt = Date.now();
 	if (!enrichment) return { status: 'not-needed', updatedAt, reason: 'continuous-evidence-revisions' };
@@ -779,7 +845,7 @@ function validateObservationSessionTarget(
 	if (!actual.expectedUrl || !isSameDocumentUrl(actual.expectedUrl, expected.expectedUrl)) {
 		return errorResponse(
 			'OBSERVATION_SESSION_UNAVAILABLE',
-			'The active tab navigated away from the observed document.',
+			'The visible tab navigated away from the observed document.',
 		);
 	}
 
@@ -830,7 +896,7 @@ async function analyzeObservationBatchRefresh(
 	tab: InspectableTab,
 	flush: FlushObservationBatchOutput,
 	timingTraceId = createTimingTraceId('refresh'),
-): Promise<AppResult<AnalyzeActiveTabOutput>> {
+): Promise<AppResult<AnalyzeVisibleTabOutput>> {
 	const timingContext: TimingContext = {
 		traceId: timingTraceId,
 		surface: 'background',
@@ -840,28 +906,28 @@ async function analyzeObservationBatchRefresh(
 	};
 	const totalSpan = startTimingSpan('background.observation-refresh.total', timingContext);
 	if (!flush.batch || flush.batch.observations.length === 0) {
-		const cached = await timeAsyncSpan(
-			'storage.get-cached-analysis',
+		const target = createVisibleTabIdentity(tab);
+		const snapshot = await getLatestVisibleDetectionSnapshot(
+			target,
 			timingContext,
-			() => getCachedAnalysis(tab.url),
-			(value) => ({ cacheHit: Boolean(value) }),
+			'storage.get-visible-snapshot-for-empty-refresh',
 		);
-		const replayTrace = await timeAsyncSpan(
-			'storage.get-cached-replay-trace',
-			timingContext,
-			() => getCachedReplayTrace(tab.url),
-			(value) => ({ replayTraceHit: Boolean(value) }),
-		);
-		if (cached) {
+		if (snapshot) {
+			const replayTrace = await timeAsyncSpan(
+				'storage.get-cached-replay-trace',
+				timingContext,
+				() => getCachedReplayTrace(snapshot.analysis.url),
+				(value) => ({ replayTraceHit: Boolean(value) }),
+			);
 			const replayHistory = await timeAsyncSpan(
 				'storage.get-replay-history',
 				timingContext,
-				() => getCachedReplayTraceHistory(tab.url),
+				() => getCachedReplayTraceHistory(snapshot.analysis.url),
 				(value) => ({ replayHistoryCount: value.length }),
 			);
-			endTimingSpan(totalSpan, { ok: true, cacheHit: true, lateObservationCount: 0 });
+			endTimingSpan(totalSpan, { ok: true, snapshotHit: true, lateObservationCount: 0 });
 			return ok(createAnalysisOutput(
-				cached,
+				snapshot.analysis,
 				'hit',
 				flush.session,
 				replayTrace ?? undefined,
@@ -870,7 +936,7 @@ async function analyzeObservationBatchRefresh(
 			));
 		}
 
-		const response = await analyzeFreshActiveTab(tab, { mode: 'refresh', observe: 'while-popup-open' }, 'bypassed');
+		const response = await analyzeFreshVisibleTab(tab, { target, mode: 'refresh', observe: 'while-popup-open' }, 'bypassed');
 		endTimingSpan(totalSpan, { ok: response.ok, cacheHit: false, fallback: 'fresh' });
 		return response;
 	}
@@ -901,7 +967,7 @@ async function analyzeObservationBatchRefresh(
 		tab,
 		batch: batchResponse.value,
 		compiledRegistryArtifact,
-		cacheStatus: 'bypassed',
+		snapshotStatus: 'bypassed',
 		session: flush.session,
 		details: {
 			refreshKind: baseBatch ? 'incremental' : 'recovered',
@@ -1012,11 +1078,11 @@ async function stopObservationSessionForTab(
 	}
 }
 
-async function analyzeFreshActiveTab(
+async function analyzeFreshVisibleTab(
 	tab: InspectableTab,
-	input: AnalyzeActiveTabInput,
-	cacheStatus: AnalyzeActiveTabOutput['cache']['status'],
-): Promise<AppResult<AnalyzeActiveTabOutput>> {
+	input: AnalyzeVisibleTabInput,
+	snapshotStatus: AnalyzeVisibleTabOutput['snapshot']['status'],
+): Promise<AppResult<AnalyzeVisibleTabOutput>> {
 	const timingTraceId = createTimingTraceId(input.mode === 'refresh' ? 'refresh' : 'analysis');
 	const totalSpan = startTimingSpan('background.analysis-fresh.total', {
 		traceId: timingTraceId,
@@ -1025,14 +1091,14 @@ async function analyzeFreshActiveTab(
 			...summarizeTab(tab),
 			mode: input.mode,
 			observe: input.observe,
-			cacheStatus,
+			snapshotStatus,
 		},
 	});
 	logBackgroundEvent('analysis-fresh-start', {
 		...summarizeTab(tab),
 		mode: input.mode,
 		observe: input.observe,
-		cacheStatus,
+		snapshotStatus,
 		pipeline: 'event',
 		timingTraceId,
 	});
@@ -1098,7 +1164,7 @@ async function analyzeFreshActiveTab(
 		tab,
 		batch: batchResponse.value,
 		compiledRegistryArtifact,
-		cacheStatus,
+		snapshotStatus,
 		session,
 		details: {
 			refreshKind: 'queued-continuous-initial',
@@ -1116,14 +1182,14 @@ async function analyzeFreshActiveTab(
 				baseBatch: batchResponse.value,
 				passes: remainingPasses,
 				compiledRegistryArtifact,
-				cacheStatus,
+				snapshotStatus,
 				session,
 				timingTraceId,
 			});
 		});
 	}
 
-	const response = await createQueuedAnalysisOutput(tab, cacheStatus, session, timingTraceId);
+	const response = await createQueuedAnalysisOutput(tab, snapshotStatus, session, timingTraceId);
 	endTimingSpan(totalSpan, {
 		ok: true,
 		returnedImmediately: true,
@@ -1143,8 +1209,8 @@ interface IncrementalEvidencePassRun {
 	readonly passes: readonly CollectionEvidencePass[];
 	/** Compiled registry artifact reused for matching every enriched batch. */
 	readonly compiledRegistryArtifact: CompiledRegistry;
-	/** Cache state attached to the visible analysis response. */
-	readonly cacheStatus: AnalyzeActiveTabOutput['cache']['status'];
+	/** Snapshot reuse state attached to the visible analysis response. */
+	readonly snapshotStatus: AnalyzeVisibleTabOutput['snapshot']['status'];
 	/** Observation session that remains active while enrichment gathers later evidence. */
 	readonly session?: ObservationSessionState;
 	/** Timing trace shared with the initial popup command. */
@@ -1198,7 +1264,7 @@ async function runIncrementalEvidencePasses(input: IncrementalEvidencePassRun): 
 			tab: input.tab,
 			batch: currentBatch,
 			compiledRegistryArtifact: input.compiledRegistryArtifact,
-			cacheStatus: input.cacheStatus,
+			snapshotStatus: input.snapshotStatus,
 			session: input.session,
 			details: {
 				refreshKind: 'enrichment-pass',
@@ -1268,7 +1334,7 @@ function getMatcherJobMode(value: unknown, _session?: ObservationSessionState): 
  * Store one replay history entry for each user-visible scan run.
  *
  * Background-owned dirty refreshes are detector revisions inside an existing
- * observation window. They should update cached analysis and snapshots, but they
+ * observation window. They should update snapshots, but they
  * should not appear as separate top-level replay runs because the user did not
  * start a new scan and the popup would show duplicate histories for one action.
  */
@@ -1294,19 +1360,19 @@ async function analyzeAndPersistObservationBatch(
 	tab: InspectableTab,
 	batch: ObservationBatch,
 	compiledRegistryArtifact: CompiledRegistry,
-	cacheStatus: AnalyzeActiveTabOutput['cache']['status'],
+	snapshotStatus: AnalyzeVisibleTabOutput['snapshot']['status'],
 	session?: ObservationSessionState,
 	details: Record<string, unknown> = {},
 	enrichment?: AnalysisEnrichmentState,
 	timingTraceId?: string,
-): Promise<AppResult<AnalyzeActiveTabOutput>> {
+): Promise<AppResult<AnalyzeVisibleTabOutput>> {
 	const matcherMode = getMatcherJobMode(details.matcherMode, session);
 	const timingContext: TimingContext = {
 		traceId: timingTraceId,
 		surface: 'pipeline',
 		details: {
 			...summarizeTab(tab),
-			cacheStatus,
+			snapshotStatus,
 			observationCount: batch.observations.length,
 			refreshKind: details.refreshKind,
 			matcherMode,
@@ -1319,7 +1385,7 @@ async function analyzeAndPersistObservationBatch(
 		tab,
 		batch,
 		compiledRegistryArtifact,
-		cacheStatus,
+		snapshotStatus,
 		matcherExecutor: 'unknown',
 		...(session ? { session } : {}),
 		partitions: [],
@@ -1404,12 +1470,10 @@ async function analyzeAndPersistObservationBatch(
 		() => createDetectionReplayTrace({ result: pipelineResult }),
 		(trace) => ({ eventCount: trace.events.length }),
 	);
-	const savedAnalysis = await timeAsyncSpan(
-		'storage.save-analysis',
+	const savedAnalysis = timeSyncSpan(
+		'analysis.normalize-fresh-output',
 		timingContext,
-		async () => tab.incognito
-			? Object.assign({}, pipelineResult.analysis, { source: 'fresh' as const })
-			: await saveAnalysis(pipelineResult.analysis),
+		() => Object.assign({}, pipelineResult.analysis, { source: 'fresh' as const }),
 		(analysis) => ({ resultCount: analysis.results.length, incognito: tab.incognito }),
 	);
 	const shouldStoreReplayTrace = shouldStoreReplayHistoryForMatcherJob(details);
@@ -1437,7 +1501,7 @@ async function analyzeAndPersistObservationBatch(
 	logAnalysisSummary(savedAnalysis);
 	logBackgroundEvent('analysis-event-complete', {
 		...summarizeTab(tab),
-		cacheStatus,
+		snapshotStatus,
 		resultCount: savedAnalysis.results.length,
 		observationCount: batch.observations.length,
 		eventCount: pipelineResult.events.length,
@@ -1448,7 +1512,7 @@ async function analyzeAndPersistObservationBatch(
 
 	const output = createAnalysisOutput(
 		savedAnalysis,
-		cacheStatus,
+		snapshotStatus,
 		session,
 		savedReplayTrace,
 		replayHistory,
@@ -1511,7 +1575,7 @@ function isSameObservationTarget(left: ObservationBatch, right: ObservationBatch
 async function refreshObservationSessionTarget(
 	target: ObservationSessionTarget,
 	knownSession?: ObservationSessionState,
-): Promise<AppResult<AnalyzeActiveTabOutput>> {
+): Promise<AppResult<AnalyzeVisibleTabOutput>> {
 	const tab = tabFromObservationSessionTarget(target);
 	const timingTraceId = createTimingTraceId('refresh-session');
 	const timingContext: TimingContext = {
@@ -1559,7 +1623,7 @@ async function refreshObservationSessionTarget(
 		return errorResponse(
 			'OBSERVATION_SESSION_UNAVAILABLE',
 			blockReason === 'navigation'
-				? 'The active tab navigated away from the observed document.'
+				? 'The visible tab navigated away from the observed document.'
 				: 'No active observation session exists for the analyzed tab.',
 		);
 	}
@@ -1621,76 +1685,6 @@ async function getObservationSessionStateForTarget(
 	return ok(response.value);
 }
 
-/**
- * Read the newest stored analysis for a known popup session target.
- *
- * Continuous evidence passes and late observation refreshes write completed
- * analyses to storage before the popup necessarily has a direct RPC response.
- * Reading storage by the session target keeps these revisions durable across
- * observer expiry and Manifest V3 service-worker restarts.
- */
-async function getLatestAnalysisForObservationSession(
-	input: ObservationSessionTarget & { readonly afterAnalyzedAt: number },
-): Promise<AppResult<AnalyzeActiveTabOutput>> {
-	const tab = tabFromObservationSessionTarget(input);
-	const timingTraceId = createTimingTraceId('latest-session-analysis');
-	const timingContext: TimingContext = {
-		traceId: timingTraceId,
-		surface: 'background',
-		details: {
-			...summarizeTab(tab),
-			sessionId: input.sessionId,
-			afterAnalyzedAt: input.afterAnalyzedAt,
-		},
-	};
-	const cached = await timeAsyncSpan(
-		'storage.get-cached-analysis',
-		timingContext,
-		() => getCachedAnalysis(tab.url),
-		(value) => ({
-			cacheHit: Boolean(value),
-			newerThanRendered: value ? value.analyzedAt > input.afterAnalyzedAt : false,
-		}),
-	);
-	if (!cached || cached.analyzedAt <= input.afterAnalyzedAt) {
-		return errorResponse(
-			'OBSERVATION_SESSION_UNAVAILABLE',
-			'No newer analysis has been stored for the observed document yet.',
-		);
-	}
-
-	const replayTrace = await timeAsyncSpan(
-		'storage.get-cached-replay-trace',
-		timingContext,
-		() => getCachedReplayTrace(tab.url),
-		(value) => ({ replayTraceHit: Boolean(value) }),
-	);
-	const replayHistory = await timeAsyncSpan(
-		'storage.get-replay-history',
-		timingContext,
-		() => getCachedReplayTraceHistory(tab.url),
-		(value) => ({ replayHistoryCount: value.length }),
-	);
-
-	logBackgroundEvent('analysis-session-cache-advanced', {
-		...summarizeTab(tab),
-		sessionId: input.sessionId,
-		previousAnalyzedAt: input.afterAnalyzedAt,
-		nextAnalyzedAt: cached.analyzedAt,
-		resultCount: cached.results.length,
-		timingTraceId,
-	});
-
-	return ok(createAnalysisOutput(
-		cached,
-		'hit',
-		undefined,
-		replayTrace ?? undefined,
-		replayHistory,
-		input,
-	));
-}
-
 /** Debug output is intentionally summary-only; never log raw page observations. */
 function logAnalysisSummary(analysis: SiteAnalysis): void {
 	backgroundLogger.info('[red-detector] analysis summary', {
@@ -1724,44 +1718,42 @@ function createPendingSiteAnalysis(tab: InspectableTab, analyzedAt = Date.now())
  */
 async function createQueuedAnalysisOutput(
 	tab: InspectableTab,
-	cacheStatus: AnalyzeActiveTabOutput['cache']['status'],
+	snapshotStatus: AnalyzeVisibleTabOutput['snapshot']['status'],
 	session?: ObservationSessionState,
 	timingTraceId?: string,
-): Promise<AnalyzeActiveTabOutput> {
+): Promise<AnalyzeVisibleTabOutput> {
 	const timingContext: TimingContext = {
 		traceId: timingTraceId,
 		surface: 'background',
 		details: summarizeTab(tab),
 	};
-	const cached = tab.incognito
-		? null
-		: await timeAsyncSpan(
-			'storage.get-cached-analysis-for-queued-response',
-			timingContext,
-			() => getCachedAnalysis(tab.url),
-			(value) => ({ cacheHit: Boolean(value) }),
-		);
-	const analysis = cached ?? createPendingSiteAnalysis(tab);
-	const replayTrace = cached && !tab.incognito
+	const target = createVisibleTabIdentity(tab);
+	const snapshot = await getLatestVisibleDetectionSnapshot(
+		target,
+		timingContext,
+		'storage.get-visible-snapshot-for-queued-response',
+	);
+	const analysis = snapshot?.analysis ?? createPendingSiteAnalysis(tab);
+	const replayTrace = snapshot && !tab.incognito
 		? await timeAsyncSpan(
 			'storage.get-cached-replay-trace-for-queued-response',
 			timingContext,
-			() => getCachedReplayTrace(tab.url),
+			() => getCachedReplayTrace(snapshot.analysis.url),
 			(value) => ({ replayTraceHit: Boolean(value) }),
 		)
 		: null;
-	const replayHistory = cached && !tab.incognito
+	const replayHistory = snapshot && !tab.incognito
 		? await timeAsyncSpan(
 			'storage.get-replay-history-for-queued-response',
 			timingContext,
-			() => getCachedReplayTraceHistory(tab.url),
+			() => getCachedReplayTraceHistory(snapshot.analysis.url),
 			(value) => ({ replayHistoryCount: value.length }),
 		)
 		: [];
 
 	return createAnalysisOutput(
 		analysis,
-		cached ? 'hit' : cacheStatus,
+		snapshot ? 'hit' : snapshotStatus,
 		session,
 		replayTrace ?? undefined,
 		replayHistory,
@@ -1774,7 +1766,7 @@ function enqueueAnalysisPersistence(input: {
 	readonly tab: InspectableTab;
 	readonly batch: ObservationBatch;
 	readonly compiledRegistryArtifact: CompiledRegistry;
-	readonly cacheStatus: AnalyzeActiveTabOutput['cache']['status'];
+	readonly snapshotStatus: AnalyzeVisibleTabOutput['snapshot']['status'];
 	readonly session?: ObservationSessionState;
 	readonly details?: Record<string, unknown>;
 	readonly enrichment?: AnalysisEnrichmentState;
@@ -1785,7 +1777,7 @@ function enqueueAnalysisPersistence(input: {
 		input.tab,
 		input.batch,
 		input.compiledRegistryArtifact,
-		input.cacheStatus,
+		input.snapshotStatus,
 		input.session,
 		input.details ?? {},
 		input.enrichment,
@@ -1821,24 +1813,24 @@ export function createBackgroundApi(): BackgroundApi {
 			return ok(await getStatus());
 		},
 
-		async getActiveTabIdentity() {
+		async getVisibleTabIdentity() {
 			const tabResponse = await getInspectableActiveTab();
 			if (!tabResponse.ok) {
 				return tabResponse;
 			}
 
-			return ok(createActiveTabIdentity(tabResponse.value));
+			return ok(createVisibleTabIdentity(tabResponse.value));
 		},
 
-		async analyzeActiveTab(input): Promise<AppResult<AnalyzeActiveTabOutput>> {
+		async analyzeVisibleTab(input): Promise<AppResult<AnalyzeVisibleTabOutput>> {
 			try {
-				const tabResponse = await getInspectableActiveTab();
+				const tabResponse = await getInspectableVisibleTab(input.target);
 				if (!tabResponse.ok) {
 					return tabResponse;
 				}
 
 				const tab = tabResponse.value;
-				const requestTimingTraceId = createTimingTraceId(input.mode === 'cache-first' ? 'popup-open' : 'popup-refresh');
+				const requestTimingTraceId = createTimingTraceId(input.mode === 'snapshot-first' ? 'popup-open' : 'popup-refresh');
 				const requestTimingContext: TimingContext = {
 					traceId: requestTimingTraceId,
 					surface: 'background',
@@ -1855,58 +1847,56 @@ export function createBackgroundApi(): BackgroundApi {
 					pipeline: 'event',
 					timingTraceId: requestTimingTraceId,
 				});
-				if (input.mode === 'cache-first' && !tab.incognito) {
-					const cached = await timeAsyncSpan(
-						'storage.get-cached-analysis',
+				if (input.mode === 'snapshot-first' && !tab.incognito) {
+					const snapshot = await getLatestVisibleDetectionSnapshot(
+						input.target,
 						requestTimingContext,
-						() => getCachedAnalysis(tab.url),
-						(value) => ({ cacheHit: Boolean(value) }),
+						'storage.get-visible-detection-snapshot',
 					);
-					if (cached) {
+					if (snapshot) {
 						const replayTrace = await timeAsyncSpan(
 							'storage.get-cached-replay-trace',
 							requestTimingContext,
-							() => getCachedReplayTrace(tab.url),
+							() => getCachedReplayTrace(snapshot.analysis.url),
 							(value) => ({ replayTraceHit: Boolean(value) }),
 						);
 						const replayHistory = await timeAsyncSpan(
 							'storage.get-replay-history',
 							requestTimingContext,
-							() => getCachedReplayTraceHistory(tab.url),
+							() => getCachedReplayTraceHistory(snapshot.analysis.url),
 							(value) => ({ replayHistoryCount: value.length }),
 						);
-						logBackgroundEvent('analysis-cache-hit', {
+						logBackgroundEvent('analysis-snapshot-hit', {
 							...summarizeTab(tab),
-							resultCount: cached.results.length,
-							analyzedAt: cached.analyzedAt,
-							sessionStatus: 'none',
+							revision: snapshot.revision,
+							resultCount: snapshot.analysis.results.length,
+							analyzedAt: snapshot.analysis.analyzedAt,
 							timingTraceId: requestTimingTraceId,
 						});
-						const session = await getExistingObservationSessionForCachedAnalysis(
+						const session = await getExistingObservationSessionForStoredSnapshot(
 							tab,
 							input,
 							requestTimingContext,
 						);
-
 						const output = createAnalysisOutput(
-							cached,
+							snapshot.analysis,
 							'hit',
 							session,
 							replayTrace ?? undefined,
 							replayHistory,
 							createObservationSessionTarget(tab, session),
 						);
-						await saveDetectionSnapshotForPopup(tab, output, 'cache');
+						await saveDetectionSnapshotForPopup(tab, output, 'cache', snapshot.matcherExecutor ?? 'unknown');
 						return ok(output);
 					}
 
-					logBackgroundEvent('analysis-cache-miss', {
+					logBackgroundEvent('analysis-snapshot-miss', {
 						...summarizeTab(tab),
 						timingTraceId: requestTimingTraceId,
 					});
 				}
 
-				return analyzeFreshActiveTab(
+				return analyzeFreshVisibleTab(
 					tab,
 					input,
 					input.mode === 'refresh' ? 'bypassed' : 'miss',
@@ -1922,17 +1912,6 @@ export function createBackgroundApi(): BackgroundApi {
 		async refreshObservationSession(target) {
 			try {
 				return await refreshObservationSessionTarget(target);
-			} catch (error) {
-				const stack = error instanceof Error ? error.stack : undefined;
-				const message =
-					error instanceof Error ? error.message : 'Unexpected runtime error';
-				return errorResponse('UNKNOWN', message, stack);
-			}
-		},
-
-		async getObservationSessionLatestAnalysis(input) {
-			try {
-				return await getLatestAnalysisForObservationSession(input);
 			} catch (error) {
 				const stack = error instanceof Error ? error.stack : undefined;
 				const message =
@@ -2045,7 +2024,7 @@ async function handleMatcherPartitionProgressUpdate(
 
 	const output = createAnalysisOutput(
 		partial.analysis,
-		context.cacheStatus,
+		context.snapshotStatus,
 		context.session,
 		undefined,
 		undefined,

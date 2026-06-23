@@ -54,7 +54,7 @@ interface ObservationBatchEventRecorder {
  *
  * Pipeline-level timing is optional so tests and shared engine callers can run
  * without configuring diagnostics. Extension entrypoints pass a timing context
- * when investigating active-tab latency, which makes matcher, candidate,
+ * when investigating visible-tab latency, which makes matcher, candidate,
  * refinement, and emission costs visible as separate spans.
  */
 export function runObservationBatchPipeline(

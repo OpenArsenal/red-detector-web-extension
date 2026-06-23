@@ -1,7 +1,7 @@
 import { For } from 'solid-js';
 
-import type { DetectionResult } from '../lib/detection/types';
-import type { PopupExplanationLookup } from '../lib/popup/view-model';
+import type { DetectionResult } from '@/lib/detection/types';
+import type { PopupExplanationLookup } from '@/lib/popup/view-model';
 import { TechnologyCard } from './TechnologyCard';
 
 export function CategoryGroup(props: {

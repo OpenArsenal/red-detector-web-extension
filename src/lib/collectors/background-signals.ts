@@ -15,7 +15,7 @@ export type CollectorLog = (event: string, details?: Record<string, unknown>) =>
 
 /** Input needed to add privileged extension observations to a content batch. */
 export type BackgroundObservationCollectorInput = {
-	/** Active tab id used when an injected script reads page-owned JavaScript globals. */
+	/** Visible tab id used when an injected script reads page-owned JavaScript globals. */
 	readonly tabId: number;
 	/** Normalized facts returned by the content script for the analyzed document. */
 	readonly batch: ObservationBatch;

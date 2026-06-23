@@ -141,7 +141,7 @@ const CAPABILITIES: readonly ExtensionCollectorCapability[] = [
 		kind: 'robots',
 		support: 'not-implemented',
 		source: 'not collected by the extension',
-		note: 'robots.txt fetching is a later collector decision, not part of the current active-tab collector.',
+		note: 'robots.txt fetching is a later collector decision, not part of the current visible-tab collector.',
 	},
 	{
 		kind: 'dns',

@@ -1,29 +1,30 @@
 import { defineProxy } from "comctx";
+import { browser } from "wxt/browser";
 import { createMemo, createSignal, For, Show, onCleanup, onMount } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import { CategoryGroup } from "../../components/CategoryGroup";
-import { EmptyState } from "../../components/EmptyState";
-import { ErrorState } from "../../components/ErrorState";
+import { CategoryGroup } from "@/components/CategoryGroup";
+import { EmptyState } from "@/components/EmptyState";
+import { ErrorState } from "@/components/ErrorState";
 import { PopupShell } from "./PopupRegions";
-import { getRedDetectorLogger } from "../../lib/diagnostics/logging";
+import { getRedDetectorLogger } from "@/lib/diagnostics/logging";
 import type {
   AnalysisStatus,
   SiteAnalysis,
-} from "../../lib/detection/types";
-import type { DetectionReplaySummary, DetectionSessionSnapshot } from "../../lib/contracts/detection-session";
-import type { DetectionReplayTrace } from "../../lib/pipeline";
+} from "@/lib/detection/types";
+import type { DetectionReplaySummary, DetectionSessionSnapshot } from "@/lib/contracts/detection-session";
+import type { DetectionReplayTrace } from "@/lib/pipeline";
 import type {
-  ActiveTabIdentity,
-  AnalyzeActiveTabInput,
-  AnalyzeActiveTabOutput,
+  VisibleTabIdentity,
+  AnalyzeVisibleTabInput,
+  AnalyzeVisibleTabOutput,
   BackgroundApi,
   ObservationSessionTarget,
-} from "../../lib/messaging";
+} from "@/lib/messaging";
 import {
   BACKGROUND_RPC_NAMESPACE,
   createBackgroundClientAdapter,
-} from "../../lib/messaging";
+} from "@/lib/messaging";
 import {
   buildPopupAnalysisUpdate,
   formatPopupAppError,
@@ -36,13 +37,13 @@ import {
   type PopupExplanationLookup,
   type PopupNotice,
   type PopupObservationMode,
-} from "../../lib/popup/view-model";
+} from "@/lib/popup/view-model";
 import {
   createStoredPopupAnalysisOutput,
   isNewerSnapshotRevision,
   readStoredPopupAnalysis,
   subscribeToPopupSnapshotRevisions,
-} from "../../lib/popup/snapshot-state";
+} from "@/lib/popup/snapshot-state";
 
 import "./App.css";
 
@@ -56,6 +57,9 @@ const [, injectBackgroundApi] = defineProxy(() => ({}) as BackgroundApi, {
 const backgroundApi = injectBackgroundApi(
   createBackgroundClientAdapter("popup", { href: globalThis.location?.href }),
 );
+
+/** Popup commands own the visible target separately from mode and observation policy. */
+type PopupAnalysisCommandInput = Omit<AnalyzeVisibleTabInput, "target">;
 
 function logPopupEvent(event: string, details?: Record<string, unknown>): void {
   popupLogger.debug("[red-detector][popup] {event}", {
@@ -126,11 +130,11 @@ function getMatcherActivityDescription(status: PopupMatcherStatus): string {
  * snapshot itself so final replay-backed snapshots can clear the busy state.
  */
 function getMatcherStatusForAnalysisResponse(
-  response: AnalyzeActiveTabOutput,
+  response: AnalyzeVisibleTabOutput,
   source: "initial" | "manual" | "auto",
   currentStatus: PopupMatcherStatus,
 ): PopupMatcherStatus {
-  if (response.replayTrace || response.cache.status === "hit") {
+  if (response.replayTrace || response.snapshot.status === "hit") {
     return "idle";
   }
 
@@ -141,7 +145,7 @@ function getMatcherStatusForAnalysisResponse(
   return response.analysis.results.length > 0 ? "matching" : "recording";
 }
 
-function isSameActiveTabIdentity(left: ActiveTabIdentity | null, right: ActiveTabIdentity): boolean {
+function isSameVisibleTabIdentity(left: VisibleTabIdentity | null, right: VisibleTabIdentity): boolean {
   return Boolean(
     left &&
       left.tabId === right.tabId &&
@@ -154,13 +158,13 @@ function isSameActiveTabIdentity(left: ActiveTabIdentity | null, right: ActiveTa
 
 type PopupWorkflowState =
   | { readonly kind: "idle" }
-  | { readonly kind: "loading-stored-snapshot"; readonly identity: ActiveTabIdentity }
-  | { readonly kind: "queued-initial-analysis"; readonly identity: ActiveTabIdentity | null }
-  | { readonly kind: "streaming-revisions"; readonly identity: ActiveTabIdentity | null }
-  | { readonly kind: "refreshing-observed-session"; readonly identity: ActiveTabIdentity | null }
-  | { readonly kind: "switching-tab"; readonly identity: ActiveTabIdentity }
-  | { readonly kind: "stopped"; readonly identity: ActiveTabIdentity | null }
-  | { readonly kind: "failed"; readonly identity: ActiveTabIdentity | null; readonly message: string };
+  | { readonly kind: "loading-stored-snapshot"; readonly identity: VisibleTabIdentity }
+  | { readonly kind: "queued-initial-analysis"; readonly identity: VisibleTabIdentity | null }
+  | { readonly kind: "streaming-revisions"; readonly identity: VisibleTabIdentity | null }
+  | { readonly kind: "refreshing-observed-session"; readonly identity: VisibleTabIdentity | null }
+  | { readonly kind: "switching-tab"; readonly identity: VisibleTabIdentity }
+  | { readonly kind: "stopped"; readonly identity: VisibleTabIdentity | null }
+  | { readonly kind: "failed"; readonly identity: VisibleTabIdentity | null; readonly message: string };
 
 /** Popup actions are busy only while user-visible commands own the current tab target. */
 function isPopupWorkflowBusy(state: PopupWorkflowState): boolean {
@@ -174,15 +178,15 @@ function isPopupWorkflowBusy(state: PopupWorkflowState): boolean {
 
 /** True when a background response still belongs to the tab the popup is rendering. */
 function canApplyAnalysisResponseToVisibleIdentity(
-  response: AnalyzeActiveTabOutput,
-  requestedIdentity: ActiveTabIdentity | null,
-  visibleIdentity: ActiveTabIdentity | null,
+  response: AnalyzeVisibleTabOutput,
+  requestedIdentity: VisibleTabIdentity | null,
+  visibleIdentity: VisibleTabIdentity | null,
 ): boolean {
   if (!requestedIdentity) {
     return true;
   }
 
-  return response.analysis.url === requestedIdentity.url && isSameActiveTabIdentity(visibleIdentity, requestedIdentity);
+  return response.analysis.url === requestedIdentity.url && isSameVisibleTabIdentity(visibleIdentity, requestedIdentity);
 }
 
 /** Convert a full trace into the compact summary that snapshots carry. */
@@ -238,24 +242,22 @@ export default function App() {
   const [replayHistory, setReplayHistory] = createSignal<readonly DetectionReplayTrace[]>([]);
   const [latestReplaySummary, setLatestReplaySummary] = createSignal<DetectionReplaySummary | null>(null);
   const [sessionTarget, setSessionTarget] = createSignal<ObservationSessionTarget | null>(null);
-  const [activeTabIdentity, setActiveTabIdentity] = createSignal<ActiveTabIdentity | null>(null);
-  const [loadedAnalysisIdentity, setLoadedAnalysisIdentity] = createSignal<ActiveTabIdentity | null>(null);
-  const [analysisRequestTarget, setAnalysisRequestTarget] = createSignal<ActiveTabIdentity | null>(null);
-  const [pendingManualRefresh, setPendingManualRefresh] = createSignal(false);
-  const [pendingActiveTabAnalysisSync, setPendingActiveTabAnalysisSync] = createSignal(false);
-  const [activeTabIdentitySyncInFlight, setActiveTabIdentitySyncInFlight] = createSignal(false);
-  const [appliedSnapshotRevision, setAppliedSnapshotRevision] = createSignal<DetectionSessionSnapshot | null>(null);
+  const [visibleTabIdentity, setVisibleTabIdentity] = createSignal<VisibleTabIdentity | null>(null);
+  const [analysisRequestTarget, setAnalysisRequestTarget] = createSignal<VisibleTabIdentity | null>(null);
+  const [queuedAnalysisIdentity, setQueuedAnalysisIdentity] = createSignal<VisibleTabIdentity | null>(null);
+  const [queuedManualRefreshIdentity, setQueuedManualRefreshIdentity] = createSignal<VisibleTabIdentity | null>(null);
+  const [visibleTabIdentitySyncInFlight, setVisibleTabIdentitySyncInFlight] = createSignal(false);
+  const [visibleSnapshotRevision, setVisibleSnapshotRevision] = createSignal<DetectionSessionSnapshot | null>(null);
   let unsubscribeSnapshotRevisions: (() => void) | undefined;
-  let activeTabPollTimer: ReturnType<typeof globalThis.setInterval> | undefined;
 
-  const refreshInFlight = createMemo(() => analysisRequestTarget() !== null);
-  const busy = createMemo(() => isPopupWorkflowBusy(workflow()) || refreshInFlight());
+  const analysisRequestInFlight = createMemo(() => analysisRequestTarget() !== null);
+  const busy = createMemo(() => isPopupWorkflowBusy(workflow()) || analysisRequestInFlight());
   const resultCount = createMemo(() => analysis()?.results.length ?? 0);
   const groupedResults = createMemo(() => groupDetectionsByPrimaryCategory(analysis()?.results ?? []));
   const hasLateDetections = createMemo(() => lateAddedIds().length > 0);
   const liveUpdateChipLabel = createMemo(() => getPopupObservationLabel(liveUpdateMode()));
 
-  async function hydrateReplayHistoryIfMissing(response: AnalyzeActiveTabOutput) {
+  async function hydrateReplayHistoryIfMissing(response: AnalyzeVisibleTabOutput) {
     if (response.replayHistory) {
       return;
     }
@@ -273,17 +275,35 @@ export default function App() {
   }
 
 
-  function schedulePendingManualRefresh() {
-    if (!pendingManualRefresh() || refreshInFlight()) {
+  async function drainQueuedAnalysisWork(): Promise<void> {
+    if (analysisRequestInFlight()) {
       return;
     }
 
-    setPendingManualRefresh(false);
-    void refreshAndRestartObservation();
+    const manualIdentity = queuedManualRefreshIdentity();
+    if (manualIdentity && isSameVisibleTabIdentity(visibleTabIdentity(), manualIdentity)) {
+      setQueuedManualRefreshIdentity(null);
+      await loadLatestAnalysisForIdentity(manualIdentity, {
+        input: { mode: "refresh", observe: "while-popup-open" },
+        resetLateMarkers: true,
+        source: "manual",
+      });
+      return;
+    }
+
+    const queuedIdentity = queuedAnalysisIdentity();
+    if (queuedIdentity && isSameVisibleTabIdentity(visibleTabIdentity(), queuedIdentity)) {
+      setQueuedAnalysisIdentity(null);
+      await loadLatestAnalysisForIdentity(queuedIdentity, {
+        input: { mode: "snapshot-first", observe: "while-popup-open" },
+        resetLateMarkers: !analysis(),
+        source: "initial",
+      });
+    }
   }
 
-  function queueManualRefresh(): void {
-    setPendingManualRefresh(true);
+  function queueManualRefresh(identity: VisibleTabIdentity): void {
+    setQueuedManualRefreshIdentity(identity);
     setNotice({
       variant: "warning",
       text: "Refresh will run after the current analysis finishes.",
@@ -307,13 +327,13 @@ export default function App() {
   }
 
   function applySnapshotRevision(snapshot: DetectionSessionSnapshot) {
-    if (!isNewerSnapshotRevision(appliedSnapshotRevision(), snapshot)) {
+    if (!isNewerSnapshotRevision(visibleSnapshotRevision(), snapshot)) {
       logPopupEvent("snapshot-revision-ignored", { revision: snapshot.revision, updatedAt: snapshot.updatedAt });
       return;
     }
 
     if (!shouldApplyPopupSnapshotRevision({ currentAnalysis: analysis(), snapshot })) {
-      setAppliedSnapshotRevision(snapshot);
+      setVisibleSnapshotRevision(snapshot);
       updateMatcherStatusFromSnapshot(snapshot);
       const nextMode = getPopupObservationModeFromSnapshot(snapshot);
       setLiveUpdateMode(nextMode);
@@ -338,7 +358,7 @@ export default function App() {
       return;
     }
 
-    setAppliedSnapshotRevision(snapshot);
+    setVisibleSnapshotRevision(snapshot);
     if (snapshot.replaySummary) {
       setLatestReplaySummary(snapshot.replaySummary);
     }
@@ -352,11 +372,11 @@ export default function App() {
       source: "origin-snapshot",
       analysis: snapshot.analysis,
       snapshot,
-    }), { source: "auto", identity: activeTabIdentity() ?? undefined });
+    }), { source: "auto", identity: visibleTabIdentity() ?? undefined });
     void refreshStatus();
   }
 
-  async function renderStoredAnalysisForActiveTab(identity: ActiveTabIdentity) {
+  async function renderStoredAnalysisForVisibleTab(identity: VisibleTabIdentity) {
     setWorkflow({ kind: "loading-stored-snapshot", identity });
     try {
       const stored = await readStoredPopupAnalysis(identity);
@@ -371,7 +391,7 @@ export default function App() {
         resultCount: stored.analysis.results.length,
         revision: stored.snapshot?.revision ?? 0,
       });
-      setAppliedSnapshotRevision(stored.snapshot ?? null);
+      setVisibleSnapshotRevision(stored.snapshot ?? null);
       if (stored.snapshot) {
         updateMatcherStatusFromSnapshot(stored.snapshot);
         setLatestReplaySummary(stored.snapshot.replaySummary ?? null);
@@ -405,11 +425,11 @@ export default function App() {
   }
 
   function applyAnalysisResponse(
-    response: AnalyzeActiveTabOutput,
+    response: AnalyzeVisibleTabOutput,
     options: {
       source: "initial" | "manual" | "auto";
       resetLateMarkers?: boolean;
-      identity?: ActiveTabIdentity;
+      identity?: VisibleTabIdentity;
     },
   ) {
     const previousAnalysis = analysis();
@@ -432,14 +452,10 @@ export default function App() {
     setReplayHistory(response.replayHistory ?? (preserveReplayState ? replayHistory() : []));
     setLatestReplaySummary(response.replayTrace ? createReplaySummaryFromTrace(response.replayTrace) : (preserveReplayState ? latestReplaySummary() : null));
     setSessionTarget(response.sessionTarget ?? sessionTarget());
-    if (options.identity) {
-      setLoadedAnalysisIdentity(options.identity);
-    }
-
     logPopupEvent("analysis-applied", {
       source: options.source,
       analysisSource: update.analysis.source,
-      cacheStatus: response.cache.status,
+      snapshotStatus: response.snapshot.status,
       resultCount: update.analysis.results.length,
       explanationCount: Object.keys(update.explanationsByTechnologyId).length,
       hostname: update.analysis.hostname,
@@ -498,21 +514,37 @@ export default function App() {
   }
 
   async function loadLatestAnalysis(options: {
-    input: AnalyzeActiveTabInput;
+    input: PopupAnalysisCommandInput;
     resetLateMarkers?: boolean;
     source: "initial" | "manual" | "auto";
   }) {
-    if (refreshInFlight()) {
+    const identity = visibleTabIdentity();
+    if (!identity) {
+      setErrorMessage("No inspectable visible tab is available for analysis.");
+      return;
+    }
+
+    await loadLatestAnalysisForIdentity(identity, options);
+  }
+
+  async function loadLatestAnalysisForIdentity(identity: VisibleTabIdentity, options: {
+    input: PopupAnalysisCommandInput;
+    resetLateMarkers?: boolean;
+    source: "initial" | "manual" | "auto";
+  }) {
+    if (analysisRequestInFlight()) {
       if (options.source === "manual") {
-        queueManualRefresh();
+        queueManualRefresh(identity);
+      } else {
+        setQueuedAnalysisIdentity(identity);
       }
       return;
     }
 
-    setAnalysisRequestTarget(activeTabIdentity());
+    setAnalysisRequestTarget(identity);
     const isUserVisibleRefresh = options.source !== "auto" && !(options.source === "initial" && analysis());
     if (isUserVisibleRefresh) {
-      setWorkflow({ kind: options.source === "manual" ? "refreshing-observed-session" : "queued-initial-analysis", identity: activeTabIdentity() });
+      setWorkflow({ kind: options.source === "manual" ? "refreshing-observed-session" : "queued-initial-analysis", identity });
     }
     if (options.resetLateMarkers) {
       setLateAddedIds([]);
@@ -528,10 +560,14 @@ export default function App() {
         source: options.source,
         mode: options.input.mode,
         observe: options.input.observe,
+        tabId: identity.tabId,
         pipeline: "event",
       });
 
-      const response = await backgroundApi.analyzeActiveTab(options.input);
+      const response = await backgroundApi.analyzeVisibleTab({
+        ...options.input,
+        target: identity,
+      });
 
       if (!response.ok) {
         logPopupEvent("analysis-failed", {
@@ -539,60 +575,46 @@ export default function App() {
           code: response.error.code,
           message: response.error.message,
         });
-        if (isUserVisibleRefresh) {
+        if (isUserVisibleRefresh && isSameVisibleTabIdentity(visibleTabIdentity(), identity)) {
           setErrorMessage(formatPopupAppError(response.error));
         }
         setMatcherStatus("idle");
         return;
       }
 
-      const requestedIdentity = analysisRequestTarget();
-      if (!canApplyAnalysisResponseToVisibleIdentity(response.value, requestedIdentity, activeTabIdentity())) {
+      if (!canApplyAnalysisResponseToVisibleIdentity(response.value, identity, visibleTabIdentity())) {
         logPopupEvent("analysis-response-ignored-for-stale-tab", {
           source: options.source,
           responseUrl: response.value.analysis.url,
-          expectedUrl: requestedIdentity?.url,
+          expectedUrl: identity.url,
         });
         return;
       }
 
-      applyAnalysisResponse(response.value, { ...options, identity: requestedIdentity ?? undefined });
-
+      applyAnalysisResponse(response.value, { ...options, identity });
       await refreshStatus();
     } catch (error) {
       logPopupEvent("analysis-request-threw", {
         source: options.source,
         message: normalizeError(error),
       });
-      if (isUserVisibleRefresh) {
+      if (isUserVisibleRefresh && isSameVisibleTabIdentity(visibleTabIdentity(), identity)) {
         setErrorMessage(normalizeError(error));
       }
       setMatcherStatus("idle");
     } finally {
-      if (isUserVisibleRefresh) {
+      if (isSameVisibleTabIdentity(analysisRequestTarget(), identity)) {
+        setAnalysisRequestTarget(null);
+      }
+      if (isUserVisibleRefresh && isSameVisibleTabIdentity(visibleTabIdentity(), identity)) {
         setWorkflow({ kind: "idle" });
       }
-      setAnalysisRequestTarget(null);
-      if (pendingActiveTabAnalysisSync()) {
-        setPendingActiveTabAnalysisSync(false);
-        const identity = activeTabIdentity();
-        if (identity) {
-          await loadLatestAnalysis({
-            input: { mode: "cache-first", observe: "while-popup-open" },
-            resetLateMarkers: !analysis(),
-            source: "initial",
-          });
-          await syncObservationState();
-        } else {
-          void syncActiveTabIdentity("tab-change");
-        }
-      }
-      schedulePendingManualRefresh();
+      await drainQueuedAnalysisWork();
     }
   }
 
   async function stopObservation() {
-    setWorkflow({ kind: "refreshing-observed-session", identity: activeTabIdentity() });
+    setWorkflow({ kind: "refreshing-observed-session", identity: visibleTabIdentity() });
     setErrorMessage("");
     setNotice(null);
     try {
@@ -636,8 +658,9 @@ export default function App() {
   }
 
   async function refreshAndRestartObservation() {
-    if (refreshInFlight()) {
-      queueManualRefresh();
+    if (analysisRequestInFlight()) {
+      const identity = visibleTabIdentity();
+      if (identity) queueManualRefresh(identity);
       return;
     }
 
@@ -651,36 +674,35 @@ export default function App() {
     });
   }
 
-  function resetVisibleStateForActiveTab(identity: ActiveTabIdentity): void {
+  function resetVisibleStateForVisibleTab(identity: VisibleTabIdentity): void {
     unsubscribeSnapshotRevisions?.();
     unsubscribeSnapshotRevisions = subscribeToPopupSnapshotRevisions(identity, applySnapshotRevision);
-    setAppliedSnapshotRevision(null);
-    setActiveTabIdentity(identity);
+    setVisibleSnapshotRevision(null);
+    setVisibleTabIdentity(identity);
     setAnalysis(null);
     setLateAddedIds([]);
     setExplanationsByTechnologyId({});
     setReplayHistory([]);
     setLatestReplaySummary(null);
-    setLoadedAnalysisIdentity(null);
     setSessionTarget(null);
     setLiveUpdateMode("unknown");
     setMatcherStatus("idle");
     setWorkflow({ kind: "switching-tab", identity });
   }
 
-  async function activatePopupTabIdentity(identity: ActiveTabIdentity, reason: "initial" | "tab-change"): Promise<void> {
-    if (isSameActiveTabIdentity(activeTabIdentity(), identity)) return;
+  async function activatePopupVisibleTab(identity: VisibleTabIdentity, reason: "initial" | "tab-change"): Promise<void> {
+    if (isSameVisibleTabIdentity(visibleTabIdentity(), identity)) return;
 
-    logPopupEvent("active-tab-identity-applied", {
+    logPopupEvent("visible-tab-identity-applied", {
       reason,
       tabId: identity.tabId,
       hostname: identity.hostname,
     });
-    resetVisibleStateForActiveTab(identity);
-    await renderStoredAnalysisForActiveTab(identity);
-    await loadLatestAnalysis({
+    resetVisibleStateForVisibleTab(identity);
+    await renderStoredAnalysisForVisibleTab(identity);
+    await loadLatestAnalysisForIdentity(identity, {
       input: {
-        mode: "cache-first",
+        mode: "snapshot-first",
         observe: "while-popup-open",
       },
       resetLateMarkers: !analysis(),
@@ -689,16 +711,16 @@ export default function App() {
     await syncObservationState();
   }
 
-  async function syncActiveTabIdentity(reason: "initial" | "tab-change"): Promise<void> {
-    if (activeTabIdentitySyncInFlight()) {
+  async function syncVisibleTabIdentity(reason: "initial" | "tab-change"): Promise<void> {
+    if (visibleTabIdentitySyncInFlight()) {
       return;
     }
 
-    setActiveTabIdentitySyncInFlight(true);
+    setVisibleTabIdentitySyncInFlight(true);
     try {
-      const identityResponse = await backgroundApi.getActiveTabIdentity();
+      const identityResponse = await backgroundApi.getVisibleTabIdentity();
       if (!identityResponse.ok) {
-        logPopupEvent("active-tab-identity-unavailable", {
+        logPopupEvent("visible-tab-identity-unavailable", {
           reason,
           code: identityResponse.error.code,
           message: identityResponse.error.message,
@@ -709,47 +731,61 @@ export default function App() {
         return;
       }
 
-      if (isSameActiveTabIdentity(activeTabIdentity(), identityResponse.value)) {
+      if (isSameVisibleTabIdentity(visibleTabIdentity(), identityResponse.value)) {
         return;
       }
 
-      if (reason === "tab-change" && refreshInFlight()) {
-        setPendingActiveTabAnalysisSync(true);
-        logPopupEvent("active-tab-identity-rendered-during-refresh", {
+      if (reason === "tab-change" && analysisRequestInFlight()) {
+        setQueuedAnalysisIdentity(identityResponse.value);
+        logPopupEvent("visible-tab-identity-rendered-during-refresh", {
           tabId: identityResponse.value.tabId,
           hostname: identityResponse.value.hostname,
         });
-        resetVisibleStateForActiveTab(identityResponse.value);
-        await renderStoredAnalysisForActiveTab(identityResponse.value);
+        resetVisibleStateForVisibleTab(identityResponse.value);
+        await renderStoredAnalysisForVisibleTab(identityResponse.value);
         setNotice({
           variant: "warning",
-          text: "Active tab changed. Cached detections are shown while the previous analysis finishes.",
+          text: "Visible tab changed. Stored detections are shown while the previous analysis finishes.",
         });
         return;
       }
 
-      await activatePopupTabIdentity(identityResponse.value, reason);
+      await activatePopupVisibleTab(identityResponse.value, reason);
     } finally {
-      setActiveTabIdentitySyncInFlight(false);
+      setVisibleTabIdentitySyncInFlight(false);
     }
   }
 
   onMount(() => {
+    const handleActivated = (): void => {
+      void syncVisibleTabIdentity("tab-change");
+    };
+    const handleUpdated = (tabId: number, changeInfo: { readonly status?: string; readonly url?: string }): void => {
+      const identity = visibleTabIdentity();
+      if (!identity || identity.tabId !== tabId) {
+        return;
+      }
+
+      if (typeof changeInfo.url === "string" || changeInfo.status === "loading") {
+        void syncVisibleTabIdentity("tab-change");
+      }
+    };
+
+    browser.tabs.onActivated.addListener(handleActivated);
+    browser.tabs.onUpdated.addListener(handleUpdated);
     void (async () => {
       logPopupEvent("mount");
       await refreshStatus();
-      await syncActiveTabIdentity("initial");
-      activeTabPollTimer = globalThis.setInterval(() => {
-        void syncActiveTabIdentity("tab-change");
-      }, 1_000);
+      await syncVisibleTabIdentity("initial");
     })();
+
+    onCleanup(() => {
+      browser.tabs.onActivated.removeListener(handleActivated);
+      browser.tabs.onUpdated.removeListener(handleUpdated);
+    });
   });
 
   onCleanup(() => {
-    if (activeTabPollTimer !== undefined) {
-      globalThis.clearInterval(activeTabPollTimer);
-      activeTabPollTimer = undefined;
-    }
     unsubscribeSnapshotRevisions?.();
     unsubscribeSnapshotRevisions = undefined;
     const target = sessionTarget();
@@ -765,7 +801,7 @@ export default function App() {
           <p class="eyebrow">Technology Detection</p>
           <h1>RED Detector</h1>
           <p class="lede">
-            Analyze the active tab locally, then keep the latest normalized
+            Analyze the visible tab locally, then keep the latest normalized
             detections up to date as the page lazy-loads.
           </p>
         </PopupShell.HeroCopy>
@@ -807,10 +843,10 @@ export default function App() {
 
         <PopupShell.Metrics>
           <p>Source: {analysis()?.source ?? "none"}</p>
-          <p>Host: {analysis()?.hostname ?? activeTabIdentity()?.hostname ?? "not analyzed"}</p>
+          <p>Host: {analysis()?.hostname ?? visibleTabIdentity()?.hostname ?? "not analyzed"}</p>
           <p>Observation: {liveUpdateChipLabel().toLowerCase()}</p>
           <p>Matcher: {getMatcherStatusLabel(matcherStatus())}</p>
-          <p>Executor: {appliedSnapshotRevision()?.matcherExecutor ?? "unknown"}</p>
+          <p>Executor: {visibleSnapshotRevision()?.matcherExecutor ?? "unknown"}</p>
           <p>Pipeline: {pipelineMode()}</p>
         </PopupShell.Metrics>
       </PopupShell.Hero>

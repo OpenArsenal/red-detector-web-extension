@@ -18,7 +18,7 @@ export interface TechnologyRegistryProvider {
 	 * Return the compiled artifact for the active registry.
 	 *
 	 * The provider owns caching so callers do not rebuild matcher indexes, graphs,
-	 * and collection plans during every active-tab analysis.
+	 * and collection plans during every visible-tab analysis.
 	 */
 	getCompiledRegistry(): Promise<CompiledTechnologyRegistryArtifact>;
 	/** Return the compiled bootstrap artifact kept for compatibility and benchmark baselines. */

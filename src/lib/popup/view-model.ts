@@ -1,6 +1,6 @@
-import { categories } from '../../data/categories';
+import { categories } from '@/data/categories';
 import type { ObservationSessionState } from '../content/observed-page-signals';
-import type { AnalyzeActiveTabOutput, ObservationSessionTarget } from '../contracts/analysis';
+import type { AnalyzeVisibleTabOutput, ObservationSessionTarget } from '../contracts/analysis';
 import type { DetectionSessionSnapshot } from '../contracts/detection-session';
 import type { CategoryId, ConfidenceScore, DetectionResult, SiteAnalysis } from '../detection/types';
 import type { DetectionExplanation, DetectionExplanationEvidenceSummary, DetectionReplayTrace } from '../pipeline';
@@ -107,8 +107,8 @@ export type PopupExplanationLookup = Readonly<Record<string, PopupDetectionExpla
 export type BuildPopupAnalysisUpdateInput = {
 	/** Analysis currently rendered by the popup before the new response arrives. */
 	previousAnalysis: SiteAnalysis | null;
-	/** Background response returned by `analyzeActiveTab` or observation refresh. */
-	response: AnalyzeActiveTabOutput;
+	/** Background response returned by `analyzeVisibleTab` or observation refresh. */
+	response: AnalyzeVisibleTabOutput;
 	/** UI request source that controls notice copy. */
 	source: PopupAnalysisRequestSource;
 	/** Current late-detection ids already marked in the popup. */
@@ -250,13 +250,13 @@ export function getPopupObservationModeFromSnapshot(
  * current copy that tells users refresh is needed to resume observation.
  */
 export function getPopupObservationModeFromAnalysis(
-	response: Pick<AnalyzeActiveTabOutput, 'cache' | 'session'>,
+	response: Pick<AnalyzeVisibleTabOutput, 'cache' | 'session'>,
 ): PopupObservationMode {
 	if (response.session) {
 		return getPopupObservationModeFromSession(response.session);
 	}
 
-	return response.cache.status === 'hit' ? 'idle' : 'stopped';
+	return response.snapshot.status === 'hit' ? 'idle' : 'stopped';
 }
 
 /** Returns whether active page watching should keep the popup in a live-update state. */
@@ -332,7 +332,7 @@ function isLowerCompletenessDetectorRevision(
  */
 export function shouldPreservePopupReplayState(input: {
 	readonly previousAnalysis: SiteAnalysis | null;
-	readonly response: Pick<AnalyzeActiveTabOutput, 'analysis' | 'enrichment' | 'replayHistory' | 'replayTrace'>;
+	readonly response: Pick<AnalyzeVisibleTabOutput, 'analysis' | 'enrichment' | 'replayHistory' | 'replayTrace'>;
 }): boolean {
 	if (!input.previousAnalysis || input.response.replayTrace || input.response.replayHistory !== undefined) {
 		return false;
@@ -356,7 +356,7 @@ export function shouldPreservePopupReplayState(input: {
  * Convert replay explanations into a popup lookup keyed by technology id.
  *
  * The popup only renders explanation summaries for detections present in the
- * current response. Missing traces, cache hits, or stale trace data therefore
+ * current response. Missing traces, snapshot hits, or stale trace data therefore
  * degrade to an empty lookup instead of creating misleading explanation copy.
  */
 export function buildPopupExplanationLookup(
@@ -473,7 +473,7 @@ export function buildPopupAnalysisUpdate(
 function getPopupAnalysisNotice(input: {
 	addedDetectionIds: readonly string[];
 	nextAnalysis: SiteAnalysis;
-	response: AnalyzeActiveTabOutput;
+	response: AnalyzeVisibleTabOutput;
 	source: PopupAnalysisRequestSource;
 }): PopupNotice | null {
 	if (input.addedDetectionIds.length) {

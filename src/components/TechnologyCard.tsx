@@ -1,7 +1,7 @@
 import { For, Show } from 'solid-js';
 
-import type { Evidence, DetectionResult } from '../lib/detection/types';
-import type { PopupDetectionExplanationSummary, PopupEvidencePreview } from '../lib/popup/view-model';
+import type { Evidence, DetectionResult } from '@/lib/detection/types';
+import type { PopupDetectionExplanationSummary, PopupEvidencePreview } from '@/lib/popup/view-model';
 
 export function TechnologyCard(props: {
 	/** Detection result rendered by this card. */

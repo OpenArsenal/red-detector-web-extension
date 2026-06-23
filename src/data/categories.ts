@@ -1,4 +1,4 @@
-import type { Category, CategoryId } from "../lib/detection/types";
+import type { Category, CategoryId } from "@/lib/detection/types";
 
 export const categories = {
 	"framework": { id: "framework", label: "Framework", priority: 10 },

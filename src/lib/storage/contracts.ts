@@ -15,21 +15,21 @@ export const DETECTION_SESSION_INDEX_PREFIX = 'rd:session-index:';
 /** Prefix used for durable matcher job lifecycle records. */
 export const MATCHER_JOB_CACHE_PREFIX = 'matcher-job:';
 
-/** Prefix used for every origin-level analysis cache record. */
-export const ANALYSIS_CACHE_PREFIX = 'analysis:';
+/** Prefix used for legacy origin-level analysis response keys. */
+export const ANALYSIS_RESPONSE_PREFIX = 'analysis:';
 
-/** Prefix used for every origin-level replay trace cache record. */
+/** Prefix used for every origin-level replay trace record. */
 export const REPLAY_TRACE_CACHE_PREFIX = 'replay:';
 
 /** Prefix used for bounded origin-level replay run history. */
 export const REPLAY_TRACE_HISTORY_CACHE_PREFIX = 'replay-history:';
 
 /**
- * Storage limits for normalized analysis and replay records.
+ * Storage limits for snapshot-compatible analysis and replay records.
  *
- * These limits only apply to saved detector output and redacted replay traces.
+ * These limits only apply to snapshot detector output and redacted replay traces.
  * Raw page HTML, cookies, text, and source contents are not stored by either
- * cache path.
+ * storage path.
  */
 export const STORAGE_LIMITS = {
 	analysisTtlMs: 1000 * 60 * 60 * 24,
@@ -40,20 +40,20 @@ export const STORAGE_LIMITS = {
 } as const;
 
 /**
- * Build the storage key for the normalized analysis cache.
+ * Build the analysis response key for a URL origin.
  *
- * The key uses the URL origin, so different paths on the same site share cached
- * analysis, while `http`, `https`, and explicit ports stay separate.
+ * Runtime detection state now lives in durable session snapshots. The response envelope still exposes an analysis key for diagnostics, while
+ * storage reads and writes use session and origin snapshot keys.
  */
-export function getAnalysisCacheKey(url: string): string {
-	return `${ANALYSIS_CACHE_PREFIX}${getOrigin(url)}`;
+export function getAnalysisResponseKey(url: string): string {
+	return `${ANALYSIS_RESPONSE_PREFIX}${getOrigin(url)}`;
 }
 
 /**
  * Build the storage key for a redacted replay trace.
  *
  * Replay traces use their own namespace so callers can fetch or delete replay
- * metadata without changing the `SiteAnalysis` cache record shape.
+ * metadata without changing the `SiteAnalysis` response shape.
  */
 export function getReplayTraceCacheKey(url: string): string {
 	return `${REPLAY_TRACE_CACHE_PREFIX}${getOrigin(url)}`;
@@ -67,21 +67,6 @@ export function getReplayTraceHistoryCacheKey(url: string): string {
 /** Build the storage key for one matcher job lifecycle record. */
 export function getMatcherJobCacheKey(jobId: string): string {
 	return `${MATCHER_JOB_CACHE_PREFIX}${jobId}`;
-}
-
-/**
- * Convert an analysis cache key into its paired replay trace key.
- *
- * The helper is used during cache trimming so an expired or overflowed analysis
- * record does not leave an orphaned replay trace behind.
- */
-export function getReplayTraceCacheKeyForAnalysisCacheKey(key: string): string {
-	return `${REPLAY_TRACE_CACHE_PREFIX}${key.slice(ANALYSIS_CACHE_PREFIX.length)}`;
-}
-
-/** Convert an analysis cache key into its paired replay history key. */
-export function getReplayTraceHistoryCacheKeyForAnalysisCacheKey(key: string): string {
-	return `${REPLAY_TRACE_HISTORY_CACHE_PREFIX}${key.slice(ANALYSIS_CACHE_PREFIX.length)}`;
 }
 
 /**
@@ -104,7 +89,7 @@ export function createDetectionStorageHash(value: string): string {
  *
  * `documentId` can contain browser-generated punctuation, so each identity part
  * is encoded before joining. The readable prefix still keeps DevTools storage
- * inspection useful when debugging cache-first popup rendering.
+ * inspection useful when debugging snapshot-first popup rendering.
  */
 export function getDetectionSessionSnapshotKey(key: DetectionSessionKey): string {
 	return [

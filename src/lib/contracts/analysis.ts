@@ -11,13 +11,13 @@ import type { AppResult } from '../shared/result';
 /**
  * Analysis modes accepted by the popup-to-background request.
  *
- * `cache-first` lets the background return a stored `SiteAnalysis` for the
+ * `snapshot-first` lets the background return a stored `SiteAnalysis` for the
  * active origin. `refresh` skips that lookup and collects the page again.
  */
-export const ANALYSIS_MODES = ['cache-first', 'refresh'] as const;
+export const ANALYSIS_MODES = ['snapshot-first', 'refresh'] as const;
 
-/** Request mode for active-tab analysis. */
-export type AnalyzeActiveTabMode = typeof ANALYSIS_MODES[number];
+/** Request mode for visible-tab analysis. */
+export type AnalyzeVisibleTabMode = typeof ANALYSIS_MODES[number];
 
 /**
  * Observation choices accepted by the background API.
@@ -30,7 +30,7 @@ export type AnalyzeActiveTabMode = typeof ANALYSIS_MODES[number];
 export const OBSERVATION_MODES = ['none', 'while-popup-open', 'bounded'] as const;
 
 /** Request value that controls whether live page watching starts. */
-export type ActiveTabObservationMode = typeof OBSERVATION_MODES[number];
+export type VisibleTabObservationMode = typeof OBSERVATION_MODES[number];
 
 
 /** Progressive enrichment states returned with an analysis response. */
@@ -39,7 +39,7 @@ export const ANALYSIS_ENRICHMENT_STATUSES = ['not-needed', 'pending', 'complete'
 /** Whether deeper evidence collection is pending, complete, failed, timed out, unnecessary, or skipped. */
 export type AnalysisEnrichmentStatus = typeof ANALYSIS_ENRICHMENT_STATUSES[number];
 
-/** User-visible enrichment state for progressive active-tab detection. */
+/** User-visible enrichment state for progressive visible-tab detection. */
 export type AnalysisEnrichmentState = {
 	/** Current enrichment lifecycle state for this analysis response. */
 	status: AnalysisEnrichmentStatus;
@@ -49,36 +49,38 @@ export type AnalysisEnrichmentState = {
 	reason?: string;
 };
 
-/** Cache states returned to the popup after active-tab analysis. */
-export const ANALYSIS_CACHE_STATUSES = ['hit', 'miss', 'bypassed'] as const;
+/** Snapshot reuse states returned to the popup after visible-tab analysis. */
+export const SNAPSHOT_REUSE_STATUSES = ['hit', 'miss', 'bypassed'] as const;
 
-/** Cache state returned with an active-tab analysis response. */
-export type AnalysisCacheStatus = typeof ANALYSIS_CACHE_STATUSES[number];
+/** Snapshot reuse state returned with a visible-tab analysis response. */
+export type SnapshotReuseStatus = typeof SNAPSHOT_REUSE_STATUSES[number];
 
 /**
- * Request sent by the popup when it asks the background to analyze the active tab.
+ * Request sent by the popup when it asks the background to synchronize a visible tab target.
  */
-export type AnalyzeActiveTabInput = {
-	/** Whether the background may reuse stored analysis for the active origin. */
-	mode: AnalyzeActiveTabMode;
+export type AnalyzeVisibleTabInput = {
+	/** Visible tab target captured before the popup requested analysis. */
+	readonly target: VisibleTabIdentity;
+	/** Whether the background may reuse a stored snapshot for the target origin. */
+	readonly mode: AnalyzeVisibleTabMode;
 	/** Whether the content script should watch the page after a fresh analysis. */
-	observe: ActiveTabObservationMode;
+	readonly observe: VisibleTabObservationMode;
 };
 
 /**
- * Minimal active-tab identity needed before popup analysis starts.
+ * Minimal visible-tab identity needed before popup analysis starts.
  *
  * The popup uses this record to choose a storage snapshot first, then asks the
  * background to synchronize the page. Keeping identity separate from analysis
  * avoids loading the detector registry just to decide which cached result can be
  * painted during popup startup.
  */
-export type ActiveTabIdentity = {
+export type VisibleTabIdentity = {
 	/** Browser tab id that owns the active top-frame page. */
 	readonly tabId: number;
 	/** Frame id used by current detection sessions; top frame is always `0`. */
 	readonly frameId: number;
-	/** Full active URL used only for the legacy analysis-cache fallback. */
+	/** Full visible URL used for explicit target validation and replay lookup. */
 	readonly url: string;
 	/** Hostname shown in the popup before a stored analysis is rendered. */
 	readonly hostname: string;
@@ -111,19 +113,6 @@ export type ObservationSessionTarget = {
 /** Request that targets a specific existing observation session. */
 export type ObservationSessionTargetInput = ObservationSessionTarget;
 
-/**
- * Request for reading the newest persisted analysis for a known session target.
- *
- * Background enrichment can finish after the content observer expires or after the
- * Manifest V3 service worker restarts. The popup sends its rendered timestamp so
- * the background can answer only when storage contains a newer snapshot for the
- * same document target.
- */
-export type ObservationSessionAnalysisSnapshotInput = ObservationSessionTarget & {
-	/** Millisecond timestamp of the newest analysis already rendered by the popup. */
-	afterAnalyzedAt: number;
-};
-
 /** Request for replay history tied to the analysis currently visible in the popup. */
 export type ReplayTraceHistoryInput = {
 	/** Analysis URL that owns the replay history record. */
@@ -131,22 +120,22 @@ export type ReplayTraceHistoryInput = {
 };
 
 /**
- * Response returned to the popup after active-tab analysis.
+ * Response returned to the popup after visible-tab analysis.
  *
- * `analysis` remains the stable rendering and cache shape. `replayTrace` and
+ * `analysis` remains the stable rendering shape. `replayTrace` and
  * `replayHistory` carry redacted pipeline details that let the popup explain
  * detections without widening `SiteAnalysis` itself.
  */
-export type AnalyzeActiveTabOutput = {
-	/** Normalized detector output safe for popup rendering and cache storage. */
+export type AnalyzeVisibleTabOutput = {
+	/** Normalized detector output safe for popup rendering and snapshot storage. */
 	analysis: SiteAnalysis;
-	/** Cache metadata that explains whether stored output was reused. */
-	cache: {
-		/** Whether the analysis came from cache, missed cache, or bypassed cache. */
-		status: AnalysisCacheStatus;
-		/** Storage key used for the origin-level cache record. */
+	/** Snapshot reuse metadata that explains whether stored output was reused. */
+	snapshot: {
+		/** Whether the analysis reused a snapshot, missed a snapshot, or bypassed snapshot reuse. */
+		status: SnapshotReuseStatus;
+		/** Diagnostic key associated with the response origin. */
 		key: string;
-		/** Millisecond timestamp when the cache record should be treated as stale. */
+		/** Millisecond timestamp when the response should be treated as stale. */
 		expiresAt?: number;
 	};
 	/** Live observation state when the fresh analysis started page watching. */
@@ -154,9 +143,9 @@ export type AnalyzeActiveTabOutput = {
 	/** Stable session handle the popup should use for refresh, stop, and cleanup. */
 	sessionTarget?: ObservationSessionTarget;
 	/**
-	 * Redacted pipeline trace for fresh or cached analysis runs.
+	 * Redacted pipeline trace for fresh or stored analysis runs.
 	 *
-	 * Older cache entries can omit this field when they predate replay trace
+	 * Older stored replay records can omit this field when they predate replay trace
 	 * retention. Callers should treat it as optional explanation data rather than
 	 * part of the stable `SiteAnalysis` envelope.
 	 */
@@ -274,14 +263,12 @@ export type CollectPageSignalsInput = {
 export interface BackgroundApi {
 	/** Return aggregate cache status for the extension. */
 	getAnalysisStatus(): Promise<AppResult<AnalysisStatus>>;
-	/** Return active-tab identity without collecting or analyzing page data. */
-	getActiveTabIdentity(): Promise<AppResult<ActiveTabIdentity>>;
-	/** Analyze the active tab and optionally start a content-script observation session. */
-	analyzeActiveTab(input: AnalyzeActiveTabInput): Promise<AppResult<AnalyzeActiveTabOutput>>;
+	/** Return visible-tab identity without collecting or analyzing page data. */
+	getVisibleTabIdentity(): Promise<AppResult<VisibleTabIdentity>>;
+	/** Synchronize the popup-visible tab target and optionally start a content-script observation session. */
+	analyzeVisibleTab(input: AnalyzeVisibleTabInput): Promise<AppResult<AnalyzeVisibleTabOutput>>;
 	/** Re-analyze a known observation session when its queued page facts are dirty. */
-	refreshObservationSession(input: ObservationSessionTargetInput): Promise<AppResult<AnalyzeActiveTabOutput>>;
-	/** Return the newest persisted analysis for a known session when storage has advanced. */
-	getObservationSessionLatestAnalysis(input: ObservationSessionAnalysisSnapshotInput): Promise<AppResult<AnalyzeActiveTabOutput>>;
+	refreshObservationSession(input: ObservationSessionTargetInput): Promise<AppResult<AnalyzeVisibleTabOutput>>;
 	/** Stop a known content-script observation session. */
 	stopObservationSession(input: ObservationSessionTargetInput): Promise<AppResult<ObservationSessionState>>;
 	/** Read a known content-script observation session state. */

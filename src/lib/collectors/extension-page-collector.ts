@@ -17,9 +17,9 @@ import { timeAsyncSpan, type TimingContext } from '../diagnostics/timing';
 import { errorResponse, ok, type AppResult } from '../shared/result';
 import { isSameDocumentUrl } from '../shared/url';
 
-/** Input needed to collect one active tab through extension APIs. */
+/** Input needed to collect one visible tab through extension APIs. */
 export type ExtensionPageCollectorInput = {
-	/** Active tab id used for injected-script collection. */
+	/** Visible tab id used for injected-script collection. */
 	tabId: number;
 	/** URL the background saw before contacting the content script. */
 	expectedUrl: string;
@@ -29,7 +29,7 @@ export type ExtensionPageCollectorInput = {
 	tier?: CollectionTier;
 	/** Exact evidence pass plan selected by the background scheduler. */
 	collectionTierPlan?: CollectionTierPlan;
-	/** RPC client for the content script running in the active tab. */
+	/** RPC client for the content script running in the visible tab. */
 	contentApi: ContentApi;
 	/** Optional summary logger supplied by the background entrypoint. */
 	log?: CollectorLog;
@@ -38,7 +38,7 @@ export type ExtensionPageCollectorInput = {
 };
 
 /**
- * Collect the active tab as normalized observations for the event pipeline.
+ * Collect the visible tab as normalized observations for the event pipeline.
  *
  * The scheduler sends small evidence pass plans instead of one bootstrap pass
  * followed by one large enrichment pass. Each returned batch can be merged into
@@ -150,6 +150,6 @@ function validateObservationBatchTarget(
 
 	return errorResponse(
 		'VALIDATION_ERROR',
-		`Collected observations do not match the active tab URL. Expected ${expectedUrl}, got ${output.batch.target.url}.`,
+		`Collected observations do not match the visible tab URL. Expected ${expectedUrl}, got ${output.batch.target.url}.`,
 	);
 }

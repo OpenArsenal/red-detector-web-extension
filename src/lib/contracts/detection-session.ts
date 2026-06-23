@@ -90,7 +90,7 @@ export interface DetectionEnrichmentState {
  * Public-safe replay summary embedded in a detection snapshot.
  *
  * Full replay traces stay in their existing replay storage namespace. The
- * snapshot keeps only the counts and stage names needed for a cache-first popup
+ * snapshot keeps only the counts and stage names needed for a snapshot-first popup
  * render to say that explanation data exists and roughly how far the pipeline ran.
  */
 export interface DetectionReplaySummary {
@@ -151,7 +151,7 @@ export interface DetectionSessionSnapshot {
 	readonly detectionCount: number;
 	/** Normalized detector output safe for popup rendering and cache storage. */
 	readonly analysis: SiteAnalysis;
-	/** Stored deeper-evidence state for cache-first popup recovery. */
+	/** Stored deeper-evidence state for snapshot-first popup recovery. */
 	readonly enrichment: DetectionEnrichmentState;
 	/** Matcher executor path that produced this revision, when known. */
 	readonly matcherExecutor?: DetectionMatcherExecutor;

@@ -2,13 +2,13 @@ import type { CollectPageSignalsInput, HtmlProbe } from '../contracts/analysis';
 import { SOURCE_LIMITS } from '../detection/source-limits';
 import type { DetectionRule, TechnologyDefinition } from '../detection/types';
 
-/** Collection tiers used by the extension active-tab runtime. */
+/** Collection tiers used by the extension visible-tab runtime. */
 export const COLLECTION_TIERS = ['initial', 'enrichment'] as const;
 
-/** Detection collection tier for one active-tab pass. */
+/** Detection collection tier for one visible-tab pass. */
 export type CollectionTier = typeof COLLECTION_TIERS[number];
 
-/** Evidence pass ids used by the continuous active-tab collection scheduler. */
+/** Evidence pass ids used by the continuous visible-tab collection scheduler. */
 export type CollectionEvidencePassId = 'initial' | 'html' | 'headers' | 'text' | 'source-content';
 
 /**
@@ -82,7 +82,7 @@ export type CollectionTierPlan = {
 	needsStorage: boolean;
 };
 
-/** One executable evidence pass in the continuous active-tab runtime. */
+/** One executable evidence pass in the continuous visible-tab runtime. */
 export type CollectionEvidencePass = {
 	/** Stable pass id used for logs, snapshots, and tests. */
 	readonly id: CollectionEvidencePassId;
