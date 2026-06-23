@@ -292,8 +292,6 @@ export interface BackgroundApi {
 	getObservationSessionState(input: ObservationSessionTargetInput): Promise<AppResult<ObservationSessionState>>;
 	/** Read the active tab's current content-script observation state. */
 	getActiveObservationSessionState(): Promise<AppResult<ObservationSessionState>>;
-	/** Return bounded replay history for the active tab's origin. */
-	getActiveReplayTraceHistory(): Promise<AppResult<readonly DetectionReplayTrace[]>>;
 	/** Return bounded replay history for the analysis URL already visible in the popup. */
 	getReplayTraceHistory(input: ReplayTraceHistoryInput): Promise<AppResult<readonly DetectionReplayTrace[]>>;
 }

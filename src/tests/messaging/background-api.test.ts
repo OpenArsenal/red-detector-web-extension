@@ -678,14 +678,14 @@ describe.sequential('background analyzeActiveTab messaging hardening', () => {
 		expect(harness.mocks.getCompiledBootstrapRegistry).not.toHaveBeenCalled();
 	});
 
-	it('returns replay history for the active origin', async () => {
+	it('returns replay history for the requested visible analysis URL', async () => {
 		const trace = makeDetectionReplayTrace({ resultCount: 2 });
 		const harness = await loadBackgroundApiHarness({
 			tab: HTTP_TAB,
 			cachedReplayHistory: [trace],
 		});
 
-		await expect(harness.api.getActiveReplayTraceHistory()).resolves.toMatchObject({
+		await expect(harness.api.getReplayTraceHistory({ url: HTTP_TAB.url })).resolves.toMatchObject({
 			ok: true,
 			value: [
 				expect.objectContaining({ resultCount: 2 }),

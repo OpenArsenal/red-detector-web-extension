@@ -1988,14 +1988,6 @@ export function createBackgroundApi(): BackgroundApi {
 			return getObservationSessionStateForTab(tabResponse.value.id);
 		},
 
-		async getActiveReplayTraceHistory() {
-			const tabResponse = await getInspectableActiveTab();
-			if (!tabResponse.ok) {
-				return tabResponse;
-			}
-
-			return ok(await getCachedReplayTraceHistory(tabResponse.value.url));
-		},
 
 		async getReplayTraceHistory(input) {
 			return ok(await getCachedReplayTraceHistory(input.url));
