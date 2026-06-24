@@ -64,6 +64,11 @@ export function normalizeObservedPageSignalsSnapshot(
 	for (const [key, values] of sortedEntries(snapshot.meta)) {
 		for (const value of values) addTextObservation(addObservation, 'meta', value, undefined, key);
 	}
+	for (const [selector, matched] of sortedEntries(snapshot.dom.selectors)) {
+		if (matched) {
+			addObservation({ kind: 'dom', key: selector, value: true });
+		}
+	}
 
 	return {
 		target: options.target,

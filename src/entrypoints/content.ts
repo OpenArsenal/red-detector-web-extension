@@ -226,11 +226,12 @@ async function collectSignals(
       includeScriptContent: Boolean(input.includeScriptContent),
       includeStylesheetContent: Boolean(input.includeStylesheetContent),
       selectorProbeCount: input.selectorProbeList.length,
+      domCandidateSelectorCount: input.domSelectorPlan?.candidateSelector ? 1 : 0,
       htmlProbeCount: input.htmlProbeList?.length ?? 0,
       timingTraceId: input.timingTraceId,
     });
 
-    const snapshot = timeSyncSpan(
+    const snapshot = await timeAsyncSpan(
       'content.observed-signals.snapshot',
       timingContext,
       () => observedSignals.snapshot(),
@@ -240,7 +241,7 @@ async function collectSignals(
         resourceCount: value.resources?.length ?? 0,
       }),
     );
-    const signals = timeSyncSpan(
+    const signals = await timeAsyncSpan(
       'content.collect-signals.collect-page-signals',
       timingContext,
       () => collectPageSignals(input, snapshot),
@@ -388,6 +389,7 @@ export function createContentRuntime(observedSignals: ObservedPageSignals): Cont
         throttleMs: input.policy.throttleMs,
         maxPendingNodes: input.policy.maxPendingNodes,
         maxMutations: input.policy.maxMutations,
+        domSelectorCount: input.domSelectorPlan?.selectors.length ?? 0,
       });
 
       activeSnapshotTarget = input.snapshotTarget;
@@ -397,6 +399,7 @@ export function createContentRuntime(observedSignals: ObservedPageSignals): Cont
         durationMs: input.policy.durationMs,
         maxPendingNodes: input.policy.maxPendingNodes,
         maxMutations: input.policy.maxMutations,
+        domSelectorPlan: input.domSelectorPlan,
       });
       publishContentSnapshot("observing", {
         observedAt: session.startedAt,
@@ -429,7 +432,7 @@ export function createContentRuntime(observedSignals: ObservedPageSignals): Cont
     },
 
     async flushObservationBatch() {
-      const flush = observedSignals.flushObservationBatch();
+      const flush = await observedSignals.flushObservationBatch();
       logContentEvent("observation-flush", {
         ...summarizeCurrentDocument(),
         ...summarizeSnapshotTarget(activeSnapshotTarget),

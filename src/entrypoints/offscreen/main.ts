@@ -1,6 +1,12 @@
 import { browser } from 'wxt/browser';
 
 import {
+	DOM_SELECTOR_OFFSCREEN_CHANNEL,
+	type DomSelectorOffscreenRequestMessage,
+	type DomSelectorOffscreenResponse,
+	type MatchDomSelectorsOffscreenRequest,
+} from '@/lib/dom-selector/offscreen-contracts';
+import {
 	MATCHER_OFFSCREEN_CHANNEL,
 	type MatcherOffscreenRequestMessage,
 	type MatcherOffscreenResponse,
@@ -136,7 +142,10 @@ class MatcherWorkerSlot {
 }
 
 if (canRegisterMatcherOffscreenHost()) {
-	browser.runtime.onMessage.addListener((message: unknown): Promise<MatcherOffscreenResponse> | undefined => {
+	browser.runtime.onMessage.addListener((message: unknown): Promise<MatcherOffscreenResponse | DomSelectorOffscreenResponse> | undefined => {
+		if (isDomSelectorOffscreenRequest(message)) {
+			return Promise.resolve(matchDomSelectorsOffscreen(message.request));
+		}
 		if (!isMatcherOffscreenRequest(message)) {
 			return undefined;
 		}
@@ -287,6 +296,94 @@ function emitPartitionProgress(
 		partitionCount,
 	};
 	void browser.runtime.sendMessage(message).catch(() => undefined);
+}
+
+function matchDomSelectorsOffscreen(
+	request: MatchDomSelectorsOffscreenRequest,
+): DomSelectorOffscreenResponse {
+	try {
+		const document = new DOMParser().parseFromString(request.html, 'text/html');
+		const selectors = collectDomSelectorMatchesInDocument(document, request);
+		return { ok: true, selectors };
+	} catch (error) {
+		return {
+			ok: false,
+			message: error instanceof Error ? error.message : 'Offscreen DOM selector matching failed.',
+		};
+	}
+}
+
+function collectDomSelectorMatchesInDocument(
+	document: Document,
+	request: MatchDomSelectorsOffscreenRequest,
+): Record<string, boolean> {
+	const matches: Record<string, boolean> = Object.create(null) as Record<string, boolean>;
+	if (!request.plan.candidateSelector) {
+		return matches;
+	}
+
+	for (const element of safeQuerySelectorAll(document, request.plan.candidateSelector)) {
+		for (const selector of routeElementSelectors(request.plan, element)) {
+			if (matches[selector]) continue;
+			if (safeElementMatches(element, selector)) {
+				matches[selector] = true;
+			}
+		}
+	}
+
+	for (const selector of request.selectorProbeList) {
+		if (matches[selector] === undefined) matches[selector] = false;
+	}
+
+	return matches;
+}
+
+function safeQuerySelectorAll(root: ParentNode, selector: string): readonly Element[] {
+	try {
+		return Array.from(root.querySelectorAll(selector));
+	} catch {
+		return [];
+	}
+}
+
+function routeElementSelectors(
+	plan: MatchDomSelectorsOffscreenRequest['plan'],
+	element: Element,
+): readonly string[] {
+	const selectors = new Set<string>();
+	addRoutedSelectors(selectors, plan.selectorsByTag[element.localName.toLowerCase()]);
+	for (const attribute of element.getAttributeNames()) {
+		addRoutedSelectors(selectors, plan.selectorsByAttribute[attribute.toLowerCase()]);
+	}
+	if (element.id) {
+		addRoutedSelectors(selectors, plan.selectorsById[element.id]);
+	}
+	for (const className of element.classList) {
+		addRoutedSelectors(selectors, plan.selectorsByClass[className]);
+	}
+	return [...selectors];
+}
+
+function addRoutedSelectors(target: Set<string>, selectors: readonly string[] | undefined): void {
+	if (!selectors) return;
+	for (const selector of selectors) target.add(selector);
+}
+
+function safeElementMatches(element: Element, selector: string): boolean {
+	try {
+		return element.matches(selector);
+	} catch {
+		return false;
+	}
+}
+
+function isDomSelectorOffscreenRequest(message: unknown): message is DomSelectorOffscreenRequestMessage {
+	return (
+		typeof message === 'object' &&
+		message !== null &&
+		(message as { channel?: unknown }).channel === DOM_SELECTOR_OFFSCREEN_CHANNEL &&
+		(message as { type?: unknown }).type === 'dom-selector.match'
+	);
 }
 
 function comparePartitionResults(left: MatcherPartitionResult, right: MatcherPartitionResult): number {

@@ -81,7 +81,7 @@ function shouldUseDevelopmentMatcherFallback(): boolean {
 async function tryRunMatcherJobInOffscreen(
 	request: RunMatcherJobRequest,
 ): Promise<MatcherJobRunResult | null> {
-	if (!await ensureMatcherOffscreenDocument()) {
+	if (!await ensureRedDetectorOffscreenDocument()) {
 		return null;
 	}
 
@@ -116,7 +116,7 @@ function isOffscreenMatcherCancellationMessage(message: string): boolean {
 	return message.toLowerCase().includes('canceled');
 }
 
-async function ensureMatcherOffscreenDocument(): Promise<boolean> {
+export async function ensureRedDetectorOffscreenDocument(): Promise<boolean> {
 	const offscreen = browser.offscreen;
 	if (!offscreen) {
 		return false;
@@ -129,8 +129,8 @@ async function ensureMatcherOffscreenDocument(): Promise<boolean> {
 	if (!creatingOffscreenDocument) {
 		creatingOffscreenDocument = offscreen.createDocument({
 			url: MATCHER_OFFSCREEN_DOCUMENT_PATH,
-			reasons: [offscreen.Reason.WORKERS],
-			justification: 'Run CPU-bound technology matching in extension workers without blocking the background service worker.',
+			reasons: [offscreen.Reason.WORKERS, offscreen.Reason.DOM_PARSER],
+			justification: 'Run CPU-bound technology matching and DOM selector parsing outside the visible page and background service worker.',
 		}).finally(() => {
 			creatingOffscreenDocument = undefined;
 		});

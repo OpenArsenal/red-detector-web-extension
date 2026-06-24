@@ -13,6 +13,7 @@ import {
 	contentScriptFailure,
 	withTimeout,
 } from '../messaging/rpc';
+import { ensureRedDetectorOffscreenDocument } from '../lifecycle/offscreen-matcher';
 import { timeAsyncSpan, type TimingContext } from '../diagnostics/timing';
 import { errorResponse, ok, type AppResult } from '../shared/result';
 import { isSameDocumentUrl } from '../shared/url';
@@ -78,6 +79,7 @@ export async function collectExtensionObservationBatch(
 	});
 
 	try {
+		await ensureRedDetectorOffscreenDocument();
 		const response = await timeAsyncSpan(
 			'collector.content-rpc.collect-observation-batch',
 			timingContext,

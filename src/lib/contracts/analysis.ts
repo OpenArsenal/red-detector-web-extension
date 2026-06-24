@@ -5,6 +5,7 @@ import type {
 import type { DetectionSessionKey } from './detection-session';
 import type { AnalysisStatus, SiteAnalysis } from '../detection/types';
 import type { DetectionReplayTrace } from '../pipeline';
+import type { DomSelectorPlan } from '../collectors/planning';
 import type { ObservationBatch, ObservationBatchControllerStats } from '../observations';
 import type { AppResult } from '../shared/result';
 
@@ -201,6 +202,8 @@ export type BeginObservationSessionInput = {
 		/** Maximum observed mutations before the session stops itself. */
 		maxMutations: number;
 	};
+	/** Parsed DOM selector metadata used to filter live DOM observation. */
+	domSelectorPlan?: DomSelectorPlan;
 };
 
 /** Content-script response for collecting the active document as observations. */
@@ -253,6 +256,8 @@ export type CollectPageSignalsInput = {
 	includeStorageKeys?: boolean;
 	/** DOM selectors the content script should check for detector rules. */
 	selectorProbeList: string[];
+	/** Parsed DOM selector metadata used to preselect candidate elements. */
+	domSelectorPlan?: DomSelectorPlan;
 	/** HTML regex probes serialized for the content script. */
 	htmlProbeList?: HtmlProbe[];
 	/** Optional debug id used only to correlate summary timing logs. */

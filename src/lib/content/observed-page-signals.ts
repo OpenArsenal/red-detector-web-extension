@@ -6,10 +6,12 @@ import {
 	collectScriptSources,
 	collectStylesheetContents,
 	collectStylesheetSources,
+	collectDomSelectorMatches,
 } from './collect-page-signals';
 import { SOURCE_LIMITS } from '../detection/source-limits';
 import { getRedDetectorLogger } from '../diagnostics/logging';
 import type { PageSignals } from '../detection/types';
+import type { DomSelectorPlan } from '../collectors/planning';
 import { isObservationSessionForUrl } from '../lifecycle/observation';
 import {
 	createObservationBatchController,
@@ -29,6 +31,7 @@ export type ObservedPageSignalsSnapshot = Pick<
 	| 'scriptContents'
 	| 'stylesheetContents'
 	| 'meta'
+	| 'dom'
 >;
 
 export type ObservationSessionStatus = 'idle' | 'observing' | 'dirty' | 'stopped';
@@ -66,11 +69,12 @@ export type BeginObservationSessionInput = {
 	durationMs: number;
 	maxPendingNodes: number;
 	maxMutations: number;
+	domSelectorPlan?: DomSelectorPlan;
 };
 
 export type ObservedPageSignals = {
-	snapshot(): ObservedPageSignalsSnapshot;
-	flushObservationBatch(): FlushObservedObservationBatchOutput;
+	snapshot(): Promise<ObservedPageSignalsSnapshot>;
+	flushObservationBatch(): Promise<FlushObservedObservationBatchOutput>;
 	beginObservationSession(input: BeginObservationSessionInput): ObservationSessionState;
 	stopObservationSession(reason?: ObservationStopReason): ObservationSessionState;
 	status(): ObservationSessionState;
@@ -104,6 +108,7 @@ type ActiveObservationSession = {
 	expiresAt: number;
 	maxPendingNodes: number;
 	maxMutations: number;
+	domSelectorPlan?: DomSelectorPlan;
 };
 
 function logObserverEvent(event: string, details?: Record<string, unknown>): void {
@@ -121,6 +126,7 @@ export function createObservedPageSignals(
 	const scriptContents = new Set<string>();
 	const stylesheetContents = new Set<string>();
 	const metaEntries = new Map<string, Set<string>>();
+	const domSelectorEntries = new Map<string, boolean>();
 	const linkEntries = new Map<string, PageSignals['links'][number]>();
 	const resourceEntries = new Map<string, PageSignals['resources'][number]>();
 	const requestEntries = new Map<string, PageSignals['requests'][number]>();
@@ -245,6 +251,12 @@ export function createObservedPageSignals(
 		}
 	}
 
+	function rememberDomSelectors(selectors: Record<string, boolean>): void {
+		for (const [selector, matched] of Object.entries(selectors)) {
+			if (matched) domSelectorEntries.set(selector, true);
+		}
+	}
+
 	function rememberSnapshot(snapshot: ObservedPageSignalsSnapshot): void {
 		const observedAt = Date.now();
 		for (const source of snapshot.scripts) {
@@ -282,6 +294,7 @@ export function createObservedPageSignals(
 		}
 
 		rememberMeta(snapshot.meta);
+		rememberDomSelectors(snapshot.dom.selectors);
 		enqueueObservationSnapshot(snapshot, observedAt);
 	}
 
@@ -317,15 +330,17 @@ export function createObservedPageSignals(
 			scriptContents: [],
 			stylesheetContents: [],
 			meta: {},
+			dom: { selectors: {} },
 		};
 	}
 
-	function scanNode(node: Node): void {
+	async function scanNode(node: Node): Promise<void> {
 		if (node instanceof HTMLScriptElement) {
 			rememberSnapshot({
 				...emptySnapshot(),
 				scripts: collectScriptSources([node]),
 				scriptContents: collectScriptContents([node]),
+				dom: { selectors: await collectDomSelectors(node) },
 			});
 			return;
 		}
@@ -334,6 +349,7 @@ export function createObservedPageSignals(
 			rememberSnapshot({
 				...emptySnapshot(),
 				stylesheetContents: collectStylesheetContents([node]),
+				dom: { selectors: await collectDomSelectors(node) },
 			});
 			return;
 		}
@@ -343,6 +359,7 @@ export function createObservedPageSignals(
 				...emptySnapshot(),
 				stylesheets: collectStylesheetSources([node]),
 				links: collectLinkTags([node]),
+				dom: { selectors: await collectDomSelectors(node) },
 			});
 			return;
 		}
@@ -351,6 +368,7 @@ export function createObservedPageSignals(
 			rememberSnapshot({
 				...emptySnapshot(),
 				meta: collectMetaTags([node]),
+				dom: { selectors: await collectDomSelectors(node) },
 			});
 			return;
 		}
@@ -366,11 +384,12 @@ export function createObservedPageSignals(
 				scriptContents: collectScriptContents(node),
 				stylesheetContents: collectStylesheetContents(node),
 				meta: collectMetaTags(node),
+				dom: { selectors: await collectDomSelectors(node) },
 			});
 		}
 	}
 
-	function scanCurrentDocument(): void {
+	async function scanCurrentDocument(): Promise<void> {
 		const resources = collectResourceTimings();
 		rememberSnapshot({
 			scripts: collectScriptSources(document),
@@ -381,19 +400,24 @@ export function createObservedPageSignals(
 			scriptContents: collectScriptContents(document),
 			stylesheetContents: collectStylesheetContents(document),
 			meta: collectMetaTags(document),
+			dom: { selectors: await collectDomSelectors(document) },
 		});
 		lastScannedAt = Date.now();
 	}
 
-	function flushPendingMutations(): void {
+	function collectDomSelectors(root: ParentNode): Promise<Record<string, boolean>> {
+		return collectDomSelectorMatches(activeSession?.domSelectorPlan, activeSession?.domSelectorPlan?.selectors ?? [], root);
+	}
+
+	async function flushPendingMutations(): Promise<void> {
 		clearThrottleTimer();
 		const acceptedBeforeScan = observationBatchController.stats().acceptedCount;
 
 		if (pendingFullDocumentScan) {
-			scanCurrentDocument();
+			await scanCurrentDocument();
 		} else {
 			for (const node of pendingNodes) {
-				scanNode(node);
+				await scanNode(node);
 			}
 		}
 
@@ -434,12 +458,12 @@ export function createObservedPageSignals(
 		}
 
 		throttleTimer = setTimeout(() => {
-			flushPendingMutations();
+			void flushPendingMutations();
 		}, options.throttleMs);
 	}
 
 	function queueMutationNode(node: Node): void {
-		if (pendingFullDocumentScan || !nodeMayContainSignal(node)) {
+		if (pendingFullDocumentScan || !nodeMayContainSignal(node, activeSession?.domSelectorPlan)) {
 			return;
 		}
 
@@ -495,7 +519,10 @@ export function createObservedPageSignals(
 				continue;
 			}
 
-			if (mutation.type === 'attributes' && isSignalElement(mutation.target)) {
+			if (
+				mutation.type === 'attributes' &&
+				nodeMayContainSignal(mutation.target, activeSession.domSelectorPlan)
+			) {
 				queueMutationNode(mutation.target);
 				hasRelevantMutation = true;
 			}
@@ -546,17 +573,18 @@ export function createObservedPageSignals(
 			expiresAt: startedAt + input.durationMs,
 			maxPendingNodes: input.maxPendingNodes,
 			maxMutations: input.maxMutations,
+			domSelectorPlan: input.domSelectorPlan,
 		};
 		lastObservedAt = undefined;
 		lastScannedAt = undefined;
 		stopReason = undefined;
 		sessionStatus = 'observing';
 
-		observer.observe(document, {
+		observer.observe(document.documentElement ?? document, {
 			subtree: true,
 			childList: true,
 			attributes: true,
-			attributeFilter: ['src', 'href', 'rel', 'name', 'property', 'http-equiv', 'content'],
+			attributeFilter: createAttributeFilter(input.domSelectorPlan),
 		});
 		startResourceObserver();
 		rememberResourceTimings();
@@ -565,10 +593,10 @@ export function createObservedPageSignals(
 	}
 
 	return {
-		snapshot() {
+		async snapshot() {
 			stopIfDocumentChanged();
-			flushPendingMutations();
-			scanCurrentDocument();
+			await flushPendingMutations();
+			await scanCurrentDocument();
 
 			if (activeSession && sessionStatus !== 'stopped') {
 				sessionStatus = 'observing';
@@ -583,12 +611,13 @@ export function createObservedPageSignals(
 				scriptContents: [...scriptContents].slice(0, SOURCE_LIMITS.scriptContentItems),
 				stylesheetContents: [...stylesheetContents].slice(0, SOURCE_LIMITS.stylesheetContentItems),
 				meta: snapshotMeta(),
+				dom: { selectors: Object.fromEntries(domSelectorEntries) },
 			};
 		},
 
-		flushObservationBatch() {
+		async flushObservationBatch() {
 			stopIfDocumentChanged();
-			if (activeSession && sessionStatus !== 'stopped') flushPendingMutations();
+			if (activeSession && sessionStatus !== 'stopped') await flushPendingMutations();
 
 			const session = observationState();
 			const target = currentObservationTarget();
@@ -620,13 +649,62 @@ export function createObservedPageSignals(
 	};
 }
 
-function nodeMayContainSignal(node: Node): boolean {
+function createAttributeFilter(plan: DomSelectorPlan | undefined): string[] {
+	if (plan?.attributeFilter.length) {
+		return [...plan.attributeFilter];
+	}
+
+	return ['src', 'href', 'rel', 'name', 'property', 'http-equiv', 'content'];
+}
+
+function nodeMayContainSignal(node: Node, plan?: DomSelectorPlan): boolean {
 	if (isSignalElement(node)) {
+		return true;
+	}
+
+	if (plan && nodeMayContainDomSelectorSignal(node, plan)) {
 		return true;
 	}
 
 	if (node instanceof Element || node instanceof DocumentFragment || node instanceof Document) {
 		return node.querySelector('script,link,meta,style') !== null;
+	}
+
+	return false;
+}
+
+function nodeMayContainDomSelectorSignal(node: Node, plan: DomSelectorPlan): boolean {
+	if (!plan.candidateSelector) {
+		return false;
+	}
+
+	if (node instanceof Element && elementHasDomSelectorSignal(node, plan)) {
+		return true;
+	}
+
+	if (node instanceof Element || node instanceof DocumentFragment || node instanceof Document) {
+		try {
+			return node.querySelector(plan.candidateSelector) !== null;
+		} catch {
+			return false;
+		}
+	}
+
+	return false;
+}
+
+function elementHasDomSelectorSignal(element: Element, plan: DomSelectorPlan): boolean {
+	const tagName = element.localName.toLowerCase();
+	if (plan.selectorsByTag[tagName]?.length) return true;
+
+	for (const attribute of element.getAttributeNames()) {
+		if (plan.selectorsByAttribute[attribute.toLowerCase()]?.length) return true;
+	}
+
+	if (element.id && plan.selectorsById[element.id]?.length) return true;
+
+	for (const className of element.classList) {
+		if (plan.selectorsByClass[className]?.length) return true;
 	}
 
 	return false;

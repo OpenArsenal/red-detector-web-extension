@@ -62,6 +62,7 @@ import {
 import { isObservationDirtyNotification } from '@/lib/messaging/observation-notifications';
 import {
 	cancelOffscreenMatcherJob,
+	ensureRedDetectorOffscreenDocument,
 	runMatcherJobWithOffscreenFallback,
 } from '@/lib/lifecycle/offscreen-matcher';
 import {
@@ -582,6 +583,7 @@ async function pingContentScript(tabId: number): Promise<boolean> {
 	const contentApi = createContentApiClient(tabId, 0);
 
 	try {
+		await ensureRedDetectorOffscreenDocument();
 		const response = await withTimeout(
 			contentApi.getObservationSessionState(),
 			CONTENT_SCRIPT_PING_TIMEOUT_MS,
@@ -1053,6 +1055,7 @@ async function recoverObservationBatchForRefresh(
 async function beginObservationSessionForTab(
 	tabId: number,
 	expectedUrl: string,
+	compiledRegistryArtifact: CompiledRegistry,
 	incognito = false,
 ): Promise<AppResult<ObservationSessionState>> {
 	const sessionId = crypto.randomUUID();
@@ -1078,6 +1081,7 @@ async function beginObservationSessionForTab(
 				expectedUrl,
 				snapshotTarget: createContentPageSessionSnapshotTarget(tab, sessionId),
 				policy: EXTENSION_OBSERVATION_POLICY,
+				domSelectorPlan: compiledRegistryArtifact.collectionPlan.initial.domSelectorPlan,
 			}),
 			CONTENT_SCRIPT_TIMEOUT_MS,
 			'Content script did not respond before the messaging timeout.',
@@ -1177,7 +1181,7 @@ async function analyzeFreshVisibleTab(
 		const sessionResponse = await timeAsyncSpan(
 			'background.observation-session.begin',
 			timingContext,
-			() => beginObservationSessionForTab(tab.id, tab.url, tab.incognito),
+			() => beginObservationSessionForTab(tab.id, tab.url, compiledRegistryArtifact, tab.incognito),
 			(response) => ({ ok: response.ok, status: response.ok ? response.value.status : undefined }),
 		);
 		if (sessionResponse.ok) {

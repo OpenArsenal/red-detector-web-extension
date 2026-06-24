@@ -1,6 +1,8 @@
+import { browser } from 'wxt/browser';
+
 import { limitStringsByTotalChars, normalizeMetaMap, truncate, uniqueStrings } from '../detection/normalizers';
 import { SOURCE_LIMITS } from '../detection/source-limits';
-import { timeSyncSpan, type TimingContext } from '../diagnostics/timing';
+import { timeAsyncSpan, timeSyncSpan, type TimingContext } from '../diagnostics/timing';
 import type {
 	CookieSignals,
 	HtmlMatchSignal,
@@ -10,10 +12,17 @@ import type {
 	StorageSignals,
 } from '../detection/types';
 import type { HtmlProbe } from '../messaging';
+import type { DomSelectorPlan } from '../collectors/planning';
+import {
+	DOM_SELECTOR_OFFSCREEN_CHANNEL,
+	type DomSelectorOffscreenResponse,
+	type MatchDomSelectorsOffscreenMessage,
+} from '../dom-selector/offscreen-contracts';
 
 export type CollectPageSignalsInput = {
 	tier?: 'initial' | 'enrichment';
 	selectorProbeList: string[];
+	domSelectorPlan?: DomSelectorPlan;
 	htmlProbeList?: HtmlProbe[];
 	includeHtml?: boolean;
 	includeText?: boolean;
@@ -55,10 +64,10 @@ type StylesheetContentInput = ParentNode | Iterable<HTMLStyleElement>;
 type LinkTagInput = ParentNode | Iterable<HTMLLinkElement>;
 type MetaTagInput = ParentNode | Iterable<HTMLMetaElement>;
 
-export function collectPageSignals(
+export async function collectPageSignals(
 	input: CollectPageSignalsInput,
 	runtime: RuntimePageSignals = {},
-): PageSignals {
+): Promise<PageSignals> {
 	const timingContext: TimingContext = {
 		traceId: input.timingTraceId,
 		surface: 'content',
@@ -131,12 +140,10 @@ export function collectPageSignals(
 		() => runtime.meta ?? collectMetaTags(),
 		(values) => ({ metaKeyCount: Object.keys(values).length }),
 	);
-	const domSelectors = timeSyncSpan(
+	const domSelectors = await timeAsyncSpan(
 		'content.collect-page-signals.selector-probes',
 		timingContext,
-		() => Object.fromEntries(
-			selectorProbeList.map((selector) => [selector, safeQuerySelector(selector)]),
-		),
+		() => collectDomSelectorMatches(input.domSelectorPlan, selectorProbeList, document),
 		(values) => ({
 			selectorProbeCount: selectorProbeList.length,
 			selectorMatchCount: Object.values(values).filter(Boolean).length,
@@ -508,12 +515,48 @@ function resourceToRequestSignal(resource: ResourceSignal) {
 	};
 }
 
-function safeQuerySelector(selector: string): boolean {
-	try {
-		return document.querySelector(selector) !== null;
-	} catch {
-		return false;
+export async function collectDomSelectorMatches(
+	plan: DomSelectorPlan | undefined,
+	selectorProbeList: readonly string[],
+	root: ParentNode,
+): Promise<Record<string, boolean>> {
+	if (!plan?.candidateSelector) {
+		return Promise.resolve({});
 	}
+
+	try {
+		const message: MatchDomSelectorsOffscreenMessage = {
+			channel: DOM_SELECTOR_OFFSCREEN_CHANNEL,
+			type: 'dom-selector.match',
+			request: {
+				html: serializeDomRoot(root),
+				plan,
+				selectorProbeList,
+			},
+		};
+		const response = await browser.runtime.sendMessage(message) as DomSelectorOffscreenResponse;
+		if (response.ok) {
+			return response.selectors;
+		}
+		return {};
+	} catch {
+		return {};
+	}
+}
+
+function serializeDomRoot(root: ParentNode): string {
+	if (root instanceof Document) {
+		return root.documentElement?.outerHTML ?? '';
+	}
+	if (root instanceof Element) {
+		return root.outerHTML;
+	}
+	if (root instanceof DocumentFragment) {
+		const container = document.createElement('template');
+		container.content.append(root.cloneNode(true));
+		return container.innerHTML;
+	}
+	return '';
 }
 
 function safeDecode(value: string): string {
