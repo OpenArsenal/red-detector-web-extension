@@ -201,7 +201,7 @@ export const amdTechnologyDefinition = {
 		{
 			id: "amd:scriptContent:modern:27",
 			kind: "scriptContent",
-			pattern: new RegExp("\\w+\\.exports\\."),
+			pattern: new RegExp("define\\s*\\([^\\n;]{0,800}?['\"]exports['\"][^\\n;]{0,800}?function\\s*\\("),
 			confidence: 5,
 			description: "Bundled script content matches a modern tooling marker.",
 		},

@@ -19,7 +19,7 @@ export const honeybadgerTechnologyDefinition = {
 		{
 			id: "honeybadger:scriptContent:modern:1",
 			kind: "scriptContent",
-			pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.unshift\\(\\s*['\"']\\[Honeybadger]['\"']\\s*\\)"),
+			pattern: new RegExp("unshift\\(\\s*['\"]\\[Honeybadger\\]['\"]\\s*\\)"),
 			confidence: 75,
 			description: "Bundled script content matches a modern tooling marker.",
 		},

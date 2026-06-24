@@ -50,7 +50,7 @@ export const heapTechnologyDefinition = {
 		{
 			id: "heap:scriptContent:modern:2",
 			kind: "scriptContent",
-			pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.makeHeapIgnoreSelector"),
+			pattern: new RegExp("\\bmakeHeapIgnoreSelector\\b"),
 			confidence: 75,
 			description: "Bundled script content matches a modern tooling marker.",
 		},

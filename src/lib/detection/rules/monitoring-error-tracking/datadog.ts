@@ -62,7 +62,7 @@ export const datadogTechnologyDefinition = {
 		{
 			id: "datadog:scriptContent:modern:4",
 			kind: "scriptContent",
-			pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.warn\\(['\"']PCI compliance for Logs is only available for Datadog organizations in the US1 site\\. Default intake will be used\\.['\"']\\)"),
+			pattern: new RegExp("warn\\(\\s*['\"]PCI compliance for Logs is only available for Datadog organizations in the US1 site\\. Default intake will be used\\.['\"]\\s*\\)"),
 			confidence: 75,
 			description: "Bundled script content matches a modern tooling marker.",
 		},

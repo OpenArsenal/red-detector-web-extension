@@ -55,7 +55,7 @@ export const preactTechnologyDefinition = {
 		{
 			id: "preact:scriptContent:modern:4",
 			kind: "scriptContent",
-			pattern: new RegExp("[a-zA-Z0-9_$]+\\.replace\\(\\/xlink\\(H\\|:h\\)\\/,\\s*[\"']h[\"']\\)\\.replace\\(\\/sName\\$\\/,\\s*[\"']s[\"']\\)"),
+			pattern: new RegExp("\\.replace\\(\\/xlink\\(H\\|:h\\)\\/,\\s*[\"']h[\"']\\)\\.replace\\(\\/sName\\$\\/,\\s*[\"']s[\"']\\)"),
 			confidence: 65,
 			description: "Bundled script content matches a modern tooling marker.",
 		},

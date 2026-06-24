@@ -40,7 +40,7 @@ export const stylusTechnologyDefinition = {
 		{
 			id: "stylus:stylesheetContent:modern:4",
 			kind: "stylesheetContent",
-			pattern: new RegExp("[\\w-]+\\s*\\?=\\s*[^;{]+"),
+			pattern: new RegExp("^\\s*[\\w-]+\\s*\\?=\\s*[^\\n;{}]{1,160}$", "m"),
 			confidence: 45,
 			description: "Stylesheet content matches a modern styling marker.",
 		},

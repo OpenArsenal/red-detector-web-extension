@@ -45,7 +45,7 @@ export const raygunTechnologyDefinition = {
 		{
 			id: "raygun:scriptContent:modern:1",
 			kind: "scriptContent",
-			pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\s*=\\s*['\"']raygun4js-userid['\"']"),
+			pattern: new RegExp("['\"]raygun4js-userid['\"]"),
 			confidence: 75,
 			description: "Bundled script content matches a modern tooling marker.",
 		},

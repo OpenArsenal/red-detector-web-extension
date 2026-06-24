@@ -153,7 +153,7 @@ export const radixUiTechnologyDefinition = {
 		{
 			id: "radix-ui:scriptContent:modern:20",
 			kind: "scriptContent",
-			pattern: new RegExp("[a-zA-Z0-9_$]+\\.setAttribute\\(\"data-radix-focus-guard\",\\s*\".*?\"\\)"),
+			pattern: new RegExp("setAttribute\\([\"']data-radix-focus-guard[\"'],\\s*[\"'][^\"']*[\"']\\)"),
 			confidence: 75,
 			description: "Bundled script content matches a modern tooling marker.",
 		},

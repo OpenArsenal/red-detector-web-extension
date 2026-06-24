@@ -19,7 +19,7 @@ export const tanstackStartTechnologyDefinition = {
 		{
 			id: "tanstack-start:scriptContent:modern:1",
 			kind: "scriptContent",
-			pattern: new RegExp("[a-zA-Z_$][\\w$]*\\.__beforeLoadContext\\s*=\\s*[a-zA-Z_$][\\w$]*\\.ssr!?\\.serializer\\.parse\\(\\s*[a-zA-Z_$][\\w$]*\\.__beforeLoadContext\\s*,?\\s*\\)", "s"),
+			pattern: new RegExp("__beforeLoadContext\\s*=\\s*[a-zA-Z_$][\\w$]*\\.ssr!?\\.serializer\\.parse\\(\\s*[a-zA-Z_$][\\w$]*\\.__beforeLoadContext\\s*,?\\s*\\)"),
 			confidence: 65,
 			description: "Bundled script content matches a modern tooling marker.",
 		},
@@ -33,7 +33,7 @@ export const tanstackStartTechnologyDefinition = {
 		{
 			id: "tanstack-start:scriptContent:modern:3",
 			kind: "scriptContent",
-			pattern: new RegExp("[a-zA-Z_$][\\w$]*\\.clientSsr\\s*=\\s*\\{\\s*getStreamedValue\\s*:\\s*(?:function\\s*\\([^)]*\\)|[a-zA-Z_$][\\w$]*\\s*=>)\\s*\\{\\s*.*?window\\.__TSR_SSR__.*?streamedValues.*?serializer\\.parse\\(.*?\\).*?\\}\\s*\\}", "s"),
+			pattern: new RegExp("clientSsr\\s*=\\s*\\{\\s*getStreamedValue\\s*:[\\s\\S]{0,2048}?window\\.__TSR_SSR__[\\s\\S]{0,2048}?streamedValues[\\s\\S]{0,512}?serializer\\.parse\\("),
 			confidence: 75,
 			description: "Bundled script content matches a modern tooling marker.",
 		},

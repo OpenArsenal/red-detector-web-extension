@@ -45,7 +45,7 @@ export const atatusTechnologyDefinition = {
 		{
 			id: "atatus:scriptContent:modern:2",
 			kind: "scriptContent",
-			pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.log\\(['\"']Atatus: Caught unhandled promise rejection:['\"'], [a-zA-Z_$][a-zA-Z0-9_$]*\\)"),
+			pattern: new RegExp("log\\(\\s*['\"]Atatus: Caught unhandled promise rejection:['\"]"),
 			confidence: 75,
 			description: "Bundled script content matches a modern tooling marker.",
 		},
@@ -66,7 +66,7 @@ export const atatusTechnologyDefinition = {
 		{
 			id: "atatus:scriptContent:modern:5",
 			kind: "scriptContent",
-			pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.endsWith\\([a-zA-Z_$][a-zA-Z0-9_$]*\\.url, ['\"']\\/atatus\\.js['\"']\\)"),
+			pattern: new RegExp("endsWith\\([^)]{0,120}?['\"]\\/atatus\\.js['\"]\\s*\\)"),
 			confidence: 75,
 			description: "Bundled script content matches a modern tooling marker.",
 		},
@@ -87,7 +87,7 @@ export const atatusTechnologyDefinition = {
 		{
 			id: "atatus:scriptContent:modern:8",
 			kind: "scriptContent",
-			pattern: new RegExp("[a-zA-Z_$][a-zA-Z0-9_$]*\\.postMessage\\(['\"']RUM_EPISODES:done['\"'], [a-zA-Z_$][a-zA-Z0-9_$]*\\.targetOrigin\\)"),
+			pattern: new RegExp("postMessage\\(\\s*['\"]RUM_EPISODES:done['\"]"),
 			confidence: 75,
 			description: "Bundled script content matches a modern tooling marker.",
 		},
