@@ -77,7 +77,11 @@ mise run build
 mise run zip
 mise run test
 mise run bench
+mise run bench:rules
+mise run bench:rules:gate
 ```
+
+`bench:rules` profiles curated pass/fail samples plus generated miss cases across the registry. `bench:rules:gate` also enables generated structural pass cases, high-risk hydration miss scans, and failing budget checks through the rule-profile environment flags. Use `RED_DETECTOR_RULE_BENCH_PASS_BUDGET_MS`, `RED_DETECTOR_RULE_BENCH_MISS_BUDGET_MS`, and `RED_DETECTOR_RULE_BENCH_REPORT_LIMIT` when a local machine needs different diagnostic thresholds.
 
 You can also run package scripts directly with aube:
 
@@ -87,6 +91,8 @@ aubr build
 aubr zip
 aubr test
 aubr bench
+aubr bench:rules
+aubr bench:rules:gate
 ```
 
 Aube will install dependencies before running scripts when the manifest or lockfile has changed.
