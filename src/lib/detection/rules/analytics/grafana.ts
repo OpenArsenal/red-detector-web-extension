@@ -19,13 +19,13 @@ export const grafanaTechnologyDefinition = {
 		{
 			id: "grafana:scriptContent:1",
 			kind: "scriptContent",
-			pattern: new RegExp("latestVersion\":\"[\\d\\.\\w\\-]+\"\\,\"version\":\"([\\d\\.]+)"),
+			pattern: new RegExp("grafanaBootData\\s*=\\s*\\{[\\s\\S]{0,12000}?\"buildInfo\"\\s*:\\s*\\{[^}]{0,1024}?\"latestVersion\"\\s*:\\s*\"[\\d\\w\\.-]+\"\\s*,\\s*\"version\"\\s*:\\s*\"([\\d.]+)\""),
 			confidence: 75,
 			version: {
 				source: "match",
 				template: "$1\\",
 			},
-			description: "Script content contains a bounded technology signature.",
+			description: "Inline Grafana boot data exposes a bounded buildInfo version marker.",
 		},
 		{
 			id: "grafana:jsGlobal:2",
@@ -36,24 +36,20 @@ export const grafanaTechnologyDefinition = {
 		{
 			id: "grafana:scriptContent:3",
 			kind: "scriptContent",
-			pattern: new RegExp("latestVersion\":\"[\\d\\.\\w\\-]+\"\\,\"version\":\"([\\d\\.]+)"),
+			pattern: new RegExp("grafanaBootData\\s*="),
 			confidence: 75,
-			version: {
-				source: "match",
-				template: "$1\\",
-			},
-			description: "Script content contains a bounded technology signature.",
+			description: "Inline script assigns Grafana boot data.",
 		},
 		{
 			id: "grafana:scriptContent:4",
 			kind: "scriptContent",
-			pattern: new RegExp("latestversion\":\"[\\d\\.\\w\\-]+\"\\,\"version\":\"([\\d\\.]+)"),
+			pattern: new RegExp("grafanaBootData\\s*=\\s*\\{[\\s\\S]{0,12000}?\"buildInfo\"\\s*:\\s*\\{[^}]{0,1024}?\"latestversion\"\\s*:\\s*\"[\\d\\w\\.-]+\"\\s*,\\s*\"version\"\\s*:\\s*\"([\\d.]+)\""),
 			confidence: 75,
 			version: {
 				source: "match",
 				template: "$1\\",
 			},
-			description: "Script content contains a bounded technology signature.",
+			description: "Inline Grafana boot data exposes a bounded lowercase buildInfo version marker.",
 		},
 	],
 	metadata: {
