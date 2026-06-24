@@ -23,7 +23,7 @@ export const RULE_PERFORMANCE_FIXTURES: readonly RulePerformanceFixture[] = [
 		kind: 'scriptContent',
 		passValue: 'window.grafanaBootData={"latestVersion":"10.0.0","version":"9.5.1"};',
 		failValue: makeReactRouterHydrationPayload(),
-		note: 'leading wildcard Grafana version detector, mixed-case key',
+		note: 'Grafana version detector without a leading wildcard, mixed-case key',
 	},
 	{
 		technologyId: 'grafana',
@@ -39,7 +39,7 @@ export const RULE_PERFORMANCE_FIXTURES: readonly RulePerformanceFixture[] = [
 		kind: 'scriptContent',
 		passValue: 'window.grafanaBootData={"latestversion":"10.0.0","version":"9.5.1"};',
 		failValue: makeReactRouterHydrationPayload(),
-		note: 'leading wildcard Grafana version detector, lower-case key',
+		note: 'Grafana version detector without a leading wildcard, lower-case key',
 	},
 	{
 		technologyId: 'altcha',
@@ -55,6 +55,6 @@ export const RULE_PERFORMANCE_FIXTURES: readonly RulePerformanceFixture[] = [
 		kind: 'scriptContent',
 		passValue: 'import "https://cdn.example/altcha.js";',
 		failValue: makeReactRouterHydrationPayload(),
-		note: 'leading wildcard Altcha detector',
+		note: 'Altcha detector without a leading wildcard',
 	},
 ] as const;

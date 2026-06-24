@@ -19,7 +19,7 @@ export const grafanaTechnologyDefinition = {
 		{
 			id: "grafana:scriptContent:1",
 			kind: "scriptContent",
-			pattern: new RegExp(".+latestVersion\":\"[\\d\\.\\w\\-]+\"\\,\"version\":\"([\\d\\.]+)"),
+			pattern: new RegExp("latestVersion\":\"[\\d\\.\\w\\-]+\"\\,\"version\":\"([\\d\\.]+)"),
 			confidence: 75,
 			version: {
 				source: "match",
@@ -47,7 +47,7 @@ export const grafanaTechnologyDefinition = {
 		{
 			id: "grafana:scriptContent:4",
 			kind: "scriptContent",
-			pattern: new RegExp(".+latestversion\":\"[\\d\\.\\w\\-]+\"\\,\"version\":\"([\\d\\.]+)"),
+			pattern: new RegExp("latestversion\":\"[\\d\\.\\w\\-]+\"\\,\"version\":\"([\\d\\.]+)"),
 			confidence: 75,
 			version: {
 				source: "match",

@@ -25,7 +25,7 @@ export const altchaTechnologyDefinition = {
 		{
 			id: "altcha:scriptContent:2",
 			kind: "scriptContent",
-			pattern: new RegExp(".*altcha\\.(org|js)"),
+			pattern: new RegExp("altcha\\.(org|js)"),
 			description: "Script content contains a bounded technology signature.",
 		},
 	],
