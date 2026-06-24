@@ -101,6 +101,26 @@ export interface IndexedObservationPatternMatchBatch extends ObservationPatternM
 export interface MatchIndexedObservationBatchInput extends MatchObservationBatchInput {
 	/** Existing index to reuse across batches from the same registry. */
 	readonly index?: ObservationMatcherIndex;
+	/** Optional hot-path hook used by worker diagnostics to identify slow rules. */
+	readonly onRuleEvaluation?: (event: ObservationRuleEvaluationEvent) => void;
+}
+
+/** Per-rule matcher timing emitted only when callers opt into worker diagnostics. */
+export interface ObservationRuleEvaluationEvent {
+	/** Technology that owns the evaluated rule. */
+	readonly technology: TechnologyDefinition;
+	/** Rule evaluated against the observation. */
+	readonly rule: DetectionRule;
+	/** Rule index inside the owning technology definition. */
+	readonly ruleIndex: number;
+	/** Global registry order for the evaluated rule. */
+	readonly sequence: number;
+	/** Observation evaluated against the rule. */
+	readonly observation: NormalizedObservation;
+	/** Whether the rule emitted a match. */
+	readonly matched: boolean;
+	/** Milliseconds spent inside the semantic rule matcher. */
+	readonly durationMs: number;
 }
 
 /** Internal mutable form used while building observation-kind buckets. */
@@ -217,12 +237,22 @@ export function matchIndexedObservationBatch(
 		incrementCount(diagnostics.candidateRulesByKind, observation.kind, route.rules.length);
 
 		for (const indexedRule of route.rules) {
+			const startedAt = input.onRuleEvaluation ? performance.now() : 0;
 			const match = matchObservationRule({
 				technology: indexedRule.technology,
 				rule: indexedRule.rule,
 				ruleIndex: indexedRule.ruleIndex,
 				observation,
 				options: input.options,
+			});
+			input.onRuleEvaluation?.({
+				technology: indexedRule.technology,
+				rule: indexedRule.rule,
+				ruleIndex: indexedRule.ruleIndex,
+				sequence: indexedRule.sequence,
+				observation,
+				matched: Boolean(match),
+				durationMs: performance.now() - startedAt,
 			});
 			if (match) {
 				matches.push(match);

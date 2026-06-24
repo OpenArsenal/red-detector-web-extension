@@ -1,4 +1,8 @@
-import { matchIndexedObservationBatch } from '@/lib/detection/observation-matcher-index';
+import {
+	matchIndexedObservationBatch,
+	type ObservationRuleEvaluationEvent,
+} from '@/lib/detection/observation-matcher-index';
+import { configureRedDetectorLogging, getRedDetectorLogger } from '@/lib/diagnostics/logging';
 import {
 	createPackagedTechnologyRegistryProvider,
 	type CompiledTechnologyRegistryArtifact,
@@ -8,7 +12,19 @@ import type {
 	MatcherWorkerResponseMessage,
 	MatcherWorkerRunMessage,
 } from '@/lib/matcher/contracts';
-import type { NormalizedObservationKind } from '@/lib/observations';
+import type { NormalizedObservationKind, ObservationValue } from '@/lib/observations';
+
+/** Log individual rule checks that are slow enough to explain visible matcher stalls. */
+const SLOW_RULE_EVALUATION_MS = 25;
+
+/** Log partition summaries even when no single rule crosses the slow-rule threshold. */
+const SLOW_PARTITION_MS = 250;
+
+/** Number of worst rule evaluations retained for one partition summary. */
+const MAX_SLOW_EVALUATION_SUMMARY_ITEMS = 5;
+
+configureRedDetectorLogging('offscreen-worker');
+const matcherWorkerLogger = getRedDetectorLogger('offscreen-worker', 'matcher');
 
 /** Worker global with the message contract used by the offscreen host. */
 type MatcherWorkerGlobal = typeof globalThis & {
@@ -63,22 +79,59 @@ if (typeof workerScope.addEventListener === 'function') {
 
 async function runPartition(message: MatcherWorkerRunMessage): Promise<MatcherWorkerResponseMessage> {
 	const { task } = message;
+	const partitionStartedAt = performance.now();
 	const observationIndexes = new Map(task.batch.observations.map((observation, index) => [
 		observation,
 		task.observationIndexes[index] ?? index,
 	]));
+	const slowestRuleEvaluations: SlowRuleEvaluationSummary[] = [];
 	const shardArtifact = await getShardArtifact(task.kind);
 	const matched = matchIndexedObservationBatch({
 		registry: shardArtifact.technologies,
 		batch: task.batch,
 		index: shardArtifact.matcherIndex,
 		options: task.options,
+		onRuleEvaluation(event) {
+			const isSlowRule = event.durationMs >= SLOW_RULE_EVALUATION_MS;
+			if (!isSlowRule && !shouldRememberSlowestRuleEvaluation(slowestRuleEvaluations, event.durationMs)) {
+				return;
+			}
+
+			const summary = createRuleEvaluationSummary({
+				task,
+				event,
+				observationIndex: observationIndexes.get(event.observation),
+			});
+			rememberSlowestRuleEvaluation(slowestRuleEvaluations, summary);
+
+			if (isSlowRule) {
+				matcherWorkerLogger.warn('Slow matcher rule evaluation in worker.', { ...summary });
+			}
+		},
 	});
 	const matches: MatcherPartitionMatch[] = matched.matches.map((match, matchIndex) => ({
 		observationIndex: observationIndexes.get(match.observation) ?? matchIndex,
 		matchIndex,
 		match,
 	}));
+	const partitionDurationMs = performance.now() - partitionStartedAt;
+
+	if (partitionDurationMs >= SLOW_PARTITION_MS) {
+		matcherWorkerLogger.warn('Slow matcher partition in worker.', {
+			tabId: task.job.tabId,
+			jobId: task.job.jobId,
+			sessionId: task.job.sessionId,
+			expectedUrl: task.job.expectedUrl,
+			partitionId: task.partitionId,
+			kind: task.kind,
+			priority: task.priority,
+			durationMs: roundDuration(partitionDurationMs),
+			observationCount: task.batch.observations.length,
+			candidateRuleCount: matched.diagnostics.candidateRuleCount,
+			matchCount: matched.matches.length,
+			slowestRuleEvaluations,
+		});
+	}
 
 	return {
 		type: 'matcher-worker.partition-complete',
@@ -104,4 +157,132 @@ function getShardArtifact(kind: NormalizedObservationKind): Promise<CompiledTech
 	const artifact = registryProvider.getCompiledObservationKindRegistry(kind);
 	shardArtifactByKind.set(kind, artifact);
 	return artifact;
+}
+
+interface SlowRuleEvaluationSummary {
+	readonly tabId: number;
+	readonly jobId: string;
+	readonly sessionId?: string;
+	readonly expectedUrl: string;
+	readonly partitionId: string;
+	readonly kind: NormalizedObservationKind;
+	readonly observationIndex?: number;
+	readonly observationKey?: string;
+	readonly observationValue: ObservationValue;
+	readonly observationValuePreview: string;
+	readonly observationAttributes?: Record<string, ObservationValue>;
+	readonly technologyId: string;
+	readonly technologyName: string;
+	readonly ruleIndex: number;
+	readonly ruleSequence: number;
+	readonly rule: Record<string, unknown>;
+	readonly matched: boolean;
+	readonly durationMs: number;
+}
+
+function createRuleEvaluationSummary(input: {
+	readonly task: MatcherWorkerRunMessage['task'];
+	readonly event: ObservationRuleEvaluationEvent;
+	readonly observationIndex: number | undefined;
+}): SlowRuleEvaluationSummary {
+	const observation = input.event.observation;
+	const base = {
+		tabId: input.task.job.tabId,
+		jobId: input.task.job.jobId,
+		sessionId: input.task.job.sessionId,
+		expectedUrl: input.task.job.expectedUrl,
+		partitionId: input.task.partitionId,
+		kind: input.task.kind,
+		observationIndex: input.observationIndex,
+		observationKey: observation.key,
+		observationValue: observation.value,
+		observationValuePreview: previewObservationValue(observation.value),
+		observationAttributes: observation.attributes,
+		technologyId: input.event.technology.id,
+		technologyName: input.event.technology.name,
+		ruleIndex: input.event.ruleIndex,
+		ruleSequence: input.event.sequence,
+		rule: describeRule(input.event.rule),
+		matched: input.event.matched,
+		durationMs: roundDuration(input.event.durationMs),
+	};
+
+	return withoutUndefined(base);
+}
+
+function rememberSlowestRuleEvaluation(
+	slowestRuleEvaluations: SlowRuleEvaluationSummary[],
+	summary: SlowRuleEvaluationSummary,
+): void {
+	slowestRuleEvaluations.push(summary);
+	slowestRuleEvaluations.sort((left, right) => right.durationMs - left.durationMs);
+	if (slowestRuleEvaluations.length > MAX_SLOW_EVALUATION_SUMMARY_ITEMS) {
+		slowestRuleEvaluations.length = MAX_SLOW_EVALUATION_SUMMARY_ITEMS;
+	}
+}
+
+function shouldRememberSlowestRuleEvaluation(
+	slowestRuleEvaluations: readonly SlowRuleEvaluationSummary[],
+	durationMs: number,
+): boolean {
+	if (slowestRuleEvaluations.length < MAX_SLOW_EVALUATION_SUMMARY_ITEMS) {
+		return true;
+	}
+
+	const currentSmallestSlowEvaluation = slowestRuleEvaluations[slowestRuleEvaluations.length - 1];
+	return currentSmallestSlowEvaluation !== undefined && durationMs > currentSmallestSlowEvaluation.durationMs;
+}
+
+function describeRule(rule: ObservationRuleEvaluationEvent['rule']): Record<string, unknown> {
+	const details: Record<string, unknown> = {
+		id: rule.id,
+		kind: rule.kind,
+		confidence: rule.confidence,
+		sourceRuleIndex: rule.sourceRuleIndex,
+	};
+
+	if ('selector' in rule) details.selector = rule.selector;
+	if ('attribute' in rule) details.attribute = rule.attribute;
+	if ('key' in rule) details.key = rule.key;
+	if ('property' in rule) details.property = rule.property;
+	if ('pattern' in rule) details.pattern = describePattern(rule.pattern);
+	if ('keyPattern' in rule) details.keyPattern = describePattern(rule.keyPattern);
+	if ('valuePattern' in rule) details.valuePattern = describePattern(rule.valuePattern);
+	if ('hrefPattern' in rule) details.hrefPattern = describePattern(rule.hrefPattern);
+	if ('typePattern' in rule) details.typePattern = describePattern(rule.typePattern);
+	if ('mediaPattern' in rule) details.mediaPattern = describePattern(rule.mediaPattern);
+	if ('hreflangPattern' in rule) details.hreflangPattern = describePattern(rule.hreflangPattern);
+	if ('recordType' in rule) details.recordType = rule.recordType;
+	if ('area' in rule) details.area = rule.area;
+	if ('rel' in rule) details.rel = rule.rel;
+	if ('as' in rule) details.as = rule.as;
+
+	return withoutUndefined(details);
+}
+
+function describePattern(pattern: RegExp | undefined): Record<string, string> | undefined {
+	if (!pattern) return undefined;
+	return {
+		source: truncateForLog(pattern.source),
+		flags: pattern.flags,
+	};
+}
+
+function previewObservationValue(value: ObservationValue): string {
+	return truncateForLog(String(value));
+}
+
+function truncateForLog(value: string): string {
+	if (value.length <= 240) return value;
+	return `${value.slice(0, 240)}...`;
+}
+
+function roundDuration(durationMs: number): number {
+	return Math.round(durationMs * 10) / 10;
+}
+
+function withoutUndefined<T extends Record<string, unknown>>(value: T): T {
+	return Object.fromEntries(
+		Object.entries(value).filter((entry) => entry[1] !== undefined),
+	) as T;
 }

@@ -10,7 +10,7 @@ import {
 export const RED_DETECTOR_LOG_CATEGORY = ['red-detector'] as const;
 
 /** Runtime surface that owns LogTape configuration for one execution context. */
-export type RedDetectorLogSurface = 'background' | 'content' | 'popup' | 'benchmark';
+export type RedDetectorLogSurface = 'background' | 'content' | 'popup' | 'benchmark' | 'offscreen-worker';
 
 /** Category suffixes used below the shared `red-detector` root category. */
 export type RedDetectorLogCategory = readonly string[];
