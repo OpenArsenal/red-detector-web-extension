@@ -10,7 +10,10 @@
     "test": "vitest",
     "compile": "tsc --noEmit",
     "bench": "vitest bench src/benchmarks/*.bench.ts",
-    "postinstall": "wxt prepare"
+    "postinstall": "wxt prepare",
+    "bench:rules": "vitest bench src/benchmarks/rule-detection-profile.bench.ts",
+    "bench:rules:wide": "RED_DETECTOR_RULE_BENCH_REGISTRY_SCAN=1 vitest bench src/benchmarks/rule-detection-profile.bench.ts",
+    "bench:rules:gate": "RED_DETECTOR_RULE_BENCH_REGISTRY_SCAN=1 RED_DETECTOR_RULE_BENCH_GENERATED_PASS_SCAN=1 RED_DETECTOR_RULE_BENCH_FAIL_ON_BUDGET=1 vitest bench src/benchmarks/rule-detection-profile.bench.ts"
   },
   "dependencies": {
     "@dagrejs/graphlib": "^4.0.1",
