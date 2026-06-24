@@ -116,8 +116,18 @@ export interface RulePerformanceFixture {
 	readonly passValue: string;
 	/** Value expected to make the rule miss. */
 	readonly failValue: string;
+	/** Extra miss samples that protect near-match false positives for risky rules. */
+	readonly additionalFailValues?: readonly RulePerformanceFailValue[];
 	/** Human-readable note that explains the performance risk being profiled. */
 	readonly note: string;
+}
+
+/** Named miss sample used when one hydration blob is not enough to protect rule accuracy. */
+export interface RulePerformanceFailValue {
+	/** Short label appended to the benchmark scenario and failure diagnostics. */
+	readonly label: string;
+	/** Value expected to miss the targeted rule. */
+	readonly value: string;
 }
 
 /** Build coverage counters for the registry-wide rule profile. */
@@ -189,6 +199,10 @@ export function createCuratedRuleProfileCases(input: {
 	return input.fixtures.flatMap((fixture) => {
 		const target = findRuleProfileTarget(input.registry, fixture.technologyId, fixture.ruleId);
 		const label = `${fixture.ruleId} ${fixture.note}`;
+		const failValues = [
+			{ label: 'hydration', value: fixture.failValue },
+			...(fixture.additionalFailValues ?? []),
+		];
 
 		return [
 			{
@@ -198,13 +212,13 @@ export function createCuratedRuleProfileCases(input: {
 				origin: 'curated',
 				observation: makeRuleProfileObservation(fixture.kind, fixture.passValue),
 			},
-			{
+			...failValues.map((failValue): RuleProfileCase => ({
 				target,
-				scenario: `failing large hydration sample: ${label}`,
+				scenario: `failing ${failValue.label} sample: ${label}`,
 				expected: 'miss',
 				origin: 'curated',
-				observation: makeRuleProfileObservation(fixture.kind, fixture.failValue),
-			},
+				observation: makeRuleProfileObservation(fixture.kind, failValue.value),
+			})),
 		] satisfies readonly RuleProfileCase[];
 	});
 }
