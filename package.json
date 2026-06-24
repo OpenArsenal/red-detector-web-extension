@@ -17,6 +17,7 @@
     "@logtape/logtape": "^2.1.5",
     "@std/encoding": "jsr:^1.0.10",
     "comctx": "1.7.5",
+    "postcss-selector-parser": "^7.1.1",
     "solid-js": "1.9.13",
     "zod": "^4.0.0"
   },
