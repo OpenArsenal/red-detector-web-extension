@@ -105,7 +105,7 @@ async function runPartition(message: MatcherWorkerRunMessage): Promise<MatcherWo
 			rememberSlowestRuleEvaluation(slowestRuleEvaluations, summary);
 
 			if (isSlowRule) {
-				matcherWorkerLogger.warn('Slow matcher rule evaluation in worker.', { ...summary });
+				matcherWorkerLogger.warn(formatSlowRuleEvaluationMessage(summary), { ...summary });
 			}
 		},
 	});
@@ -117,7 +117,20 @@ async function runPartition(message: MatcherWorkerRunMessage): Promise<MatcherWo
 	const partitionDurationMs = performance.now() - partitionStartedAt;
 
 	if (partitionDurationMs >= SLOW_PARTITION_MS) {
-		matcherWorkerLogger.warn('Slow matcher partition in worker.', {
+		matcherWorkerLogger.warn(
+			[
+				'Slow matcher partition in worker:',
+				`tabId=${task.job.tabId}`,
+				`jobId=${task.job.jobId}`,
+				`partitionId=${task.partitionId}`,
+				`kind=${task.kind}`,
+				`durationMs=${roundDuration(partitionDurationMs)}`,
+				`observationCount=${task.batch.observations.length}`,
+				`candidateRuleCount=${matched.diagnostics.candidateRuleCount}`,
+				`matchCount=${matched.matches.length}`,
+				`slowest=${formatSlowRuleList(slowestRuleEvaluations)}`,
+			].join(' '),
+			{
 			tabId: task.job.tabId,
 			jobId: task.job.jobId,
 			sessionId: task.job.sessionId,
@@ -130,7 +143,8 @@ async function runPartition(message: MatcherWorkerRunMessage): Promise<MatcherWo
 			candidateRuleCount: matched.diagnostics.candidateRuleCount,
 			matchCount: matched.matches.length,
 			slowestRuleEvaluations,
-		});
+			},
+		);
 	}
 
 	return {
@@ -231,6 +245,65 @@ function shouldRememberSlowestRuleEvaluation(
 
 	const currentSmallestSlowEvaluation = slowestRuleEvaluations[slowestRuleEvaluations.length - 1];
 	return currentSmallestSlowEvaluation !== undefined && durationMs > currentSmallestSlowEvaluation.durationMs;
+}
+
+function formatSlowRuleEvaluationMessage(summary: SlowRuleEvaluationSummary): string {
+	return [
+		'Slow matcher rule evaluation in worker:',
+		`tabId=${summary.tabId}`,
+		`jobId=${summary.jobId}`,
+		`partitionId=${summary.partitionId}`,
+		`kind=${summary.kind}`,
+		`technologyId=${summary.technologyId}`,
+		`technologyName=${quoteLogValue(summary.technologyName)}`,
+		`ruleIndex=${summary.ruleIndex}`,
+		`ruleSequence=${summary.ruleSequence}`,
+		`ruleKind=${String(summary.rule.kind ?? 'unknown')}`,
+		`ruleId=${String(summary.rule.id ?? 'none')}`,
+		`durationMs=${summary.durationMs}`,
+		`matched=${summary.matched}`,
+		`observationIndex=${String(summary.observationIndex ?? 'unknown')}`,
+		`observationKey=${quoteLogValue(summary.observationKey ?? '')}`,
+		`observationValue=${quoteLogValue(summary.observationValuePreview)}`,
+		`rulePattern=${quoteLogValue(getRulePatternPreview(summary.rule))}`,
+	].join(' ');
+}
+
+function formatSlowRuleList(summaries: readonly SlowRuleEvaluationSummary[]): string {
+	if (summaries.length === 0) {
+		return 'none';
+	}
+
+	return summaries.map((summary) => [
+		summary.durationMs,
+		summary.technologyId,
+		`ruleIndex:${summary.ruleIndex}`,
+		String(summary.rule.kind ?? 'unknown'),
+	].join(':')).join(',');
+}
+
+function getRulePatternPreview(rule: Record<string, unknown>): string {
+	for (const key of ['pattern', 'valuePattern', 'keyPattern', 'hrefPattern', 'typePattern', 'mediaPattern', 'hreflangPattern']) {
+		const pattern = rule[key];
+		if (
+			pattern &&
+			typeof pattern === 'object' &&
+			'source' in pattern &&
+			typeof pattern.source === 'string'
+		) {
+			const flags = 'flags' in pattern && typeof pattern.flags === 'string' ? pattern.flags : '';
+			return `/${pattern.source}/${flags}`;
+		}
+	}
+
+	if (typeof rule.selector === 'string') return rule.selector;
+	if (typeof rule.key === 'string') return rule.key;
+	if (typeof rule.property === 'string') return rule.property;
+	return '';
+}
+
+function quoteLogValue(value: string): string {
+	return JSON.stringify(value);
 }
 
 function describeRule(rule: ObservationRuleEvaluationEvent['rule']): Record<string, unknown> {
