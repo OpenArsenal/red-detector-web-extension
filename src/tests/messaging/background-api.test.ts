@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import type { CollectionPlan } from '@/lib/collectors/planning';
+import { buildCollectionPlan, type CollectionPlan } from '@/lib/collectors/planning';
 import type { PageSignalPollingState } from '@/lib/content/observed-page-signals';
 import type { DetectionSessionSnapshot } from '@/lib/contracts/detection-session';
 import type { PageSignals, SiteAnalysis } from '@/lib/detection/types';
@@ -161,39 +161,13 @@ function makeDeferred<T = void>(): {
 }
 
 function makeTextEnrichmentCollectionPlan(): CollectionPlan {
-	const initial = {
-		tier: 'initial' as const,
-		selectorProbeList: [],
-		htmlProbeList: [],
-		jsGlobalPropertyList: [],
-		needsHeaders: false,
-		needsScriptContent: false,
-		needsStylesheetContent: false,
-		needsText: false,
-		needsStorage: false,
-	};
-	const enrichment = {
-		tier: 'enrichment' as const,
-		selectorProbeList: [],
-		htmlProbeList: [],
-		jsGlobalPropertyList: [],
-		needsHeaders: false,
-		needsScriptContent: false,
-		needsStylesheetContent: false,
-		needsText: true,
-		needsStorage: false,
-	};
-
-	return {
-		...initial,
-		initial,
-		enrichment,
-		costSummary: {
-			cheap: 0,
-			expensive: 1,
-			unsupported: 0,
-		},
-	};
+	return buildCollectionPlan([{
+		id: 'text-tech',
+		name: 'Text Tech',
+		website: 'https://text.example',
+		categories: ['unknown'],
+		rules: [{ kind: 'text', pattern: /text-tech/ }],
+	}]);
 }
 
 function makeMultiSurfaceEnrichmentCollectionPlan(): CollectionPlan {

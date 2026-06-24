@@ -33,6 +33,13 @@ describe('collection planning', () => {
 			'script[src]',
 			'meta[name="generator"]',
 		]);
+		expect(plan.domSelectorPlan).toMatchObject({
+			selectors: ['script[src]', 'meta[name="generator"]'],
+			tags: ['script', 'meta'],
+			attributes: ['src', 'name'],
+			candidateSelector: 'script,meta,[src],[name]',
+		});
+		expect(plan.domSelectorPlan.selectorsByAttribute.src).toEqual(['script[src]']);
 	});
 
 	it('serializes HTML probes with technology ids and rule indexes', () => {
@@ -132,6 +139,7 @@ describe('collection planning', () => {
 			includeStylesheetContent: false,
 			includeStorageKeys: false,
 			selectorProbeList: ['script[src]'],
+			domSelectorPlan: plan.initial.domSelectorPlan,
 			htmlProbeList: [],
 		});
 	});

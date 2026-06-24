@@ -132,7 +132,7 @@ describe.sequential('content API observation baseline', () => {
 			snapshot: vi.fn(),
 			beginObservationSession: vi.fn(() => observing),
 			stopObservationSession: vi.fn(() => makeState({ status: 'stopped', stopReason: 'manual' })),
-			flushObservationBatch: vi.fn(() => makeFlushOutput(observing)),
+			flushObservationBatch: vi.fn(async () => makeFlushOutput(observing)),
 			status: vi.fn(() => makeState()),
 			disconnect: vi.fn(),
 		} satisfies ObservedPageSignals;
@@ -156,6 +156,7 @@ describe.sequential('content API observation baseline', () => {
 			durationMs: 60_000,
 			maxPendingNodes: 100,
 			maxMutations: 5_000,
+			domSelectorPlan: undefined,
 		});
 		expect(writeContentPageSessionSnapshot).toHaveBeenCalledWith({
 			target: SNAPSHOT_TARGET,
@@ -175,7 +176,7 @@ describe.sequential('content API observation baseline', () => {
 			snapshot: vi.fn(),
 			beginObservationSession: vi.fn(() => session),
 			stopObservationSession: vi.fn(() => makeState({ status: 'stopped' })),
-			flushObservationBatch: vi.fn(() => makeFlushOutput(session)),
+			flushObservationBatch: vi.fn(async () => makeFlushOutput(session)),
 			status: vi.fn(() => session),
 			disconnect: vi.fn(),
 		} satisfies ObservedPageSignals;
@@ -191,7 +192,7 @@ describe.sequential('content API observation baseline', () => {
 			snapshot: vi.fn(),
 			beginObservationSession: vi.fn(() => makeState({ status: 'observing' })),
 			stopObservationSession: vi.fn(() => makeState({ status: 'stopped', stopReason: 'expired' })),
-			flushObservationBatch: vi.fn(() => makeFlushOutput()),
+			flushObservationBatch: vi.fn(async () => makeFlushOutput()),
 			status: vi.fn(() => makeState()),
 			disconnect: vi.fn(),
 		} satisfies ObservedPageSignals;
@@ -220,7 +221,7 @@ describe.sequential('content API observation baseline', () => {
 			snapshot: vi.fn(),
 			beginObservationSession: vi.fn(() => makeState({ status: 'observing' })),
 			stopObservationSession: vi.fn(() => makeState({ status: 'stopped', stopReason: 'manual' })),
-			flushObservationBatch: vi.fn(() => makeFlushOutput()),
+			flushObservationBatch: vi.fn(async () => makeFlushOutput()),
 			status: vi.fn(() => makeState()),
 			disconnect: vi.fn(),
 		} satisfies ObservedPageSignals;
@@ -280,7 +281,7 @@ describe.sequential('content API observation baseline', () => {
 			snapshot: vi.fn(),
 			beginObservationSession: vi.fn(() => session),
 			stopObservationSession: vi.fn(() => makeState({ status: 'stopped' })),
-			flushObservationBatch: vi.fn(() => makeFlushOutput(session)),
+			flushObservationBatch: vi.fn(async () => makeFlushOutput(session)),
 			status: vi.fn(() => session),
 			disconnect: vi.fn(),
 		} satisfies ObservedPageSignals;
@@ -292,7 +293,7 @@ describe.sequential('content API observation baseline', () => {
 	it('collects the initial document through the observation batch API', async () => {
 		const { createContentApi } = await loadContentApiFactory();
 		const observedSignals = {
-			snapshot: vi.fn(() => ({
+			snapshot: vi.fn(async () => ({
 				scripts: [],
 				stylesheets: [],
 				links: [],
@@ -301,10 +302,11 @@ describe.sequential('content API observation baseline', () => {
 				scriptContents: [],
 				stylesheetContents: [],
 				meta: {},
+				dom: { selectors: {} },
 			})),
 			beginObservationSession: vi.fn(() => makeState()),
 			stopObservationSession: vi.fn(() => makeState({ status: 'stopped' })),
-			flushObservationBatch: vi.fn(() => makeFlushOutput()),
+			flushObservationBatch: vi.fn(async () => makeFlushOutput()),
 			status: vi.fn(() => makeState()),
 			disconnect: vi.fn(),
 		} satisfies ObservedPageSignals;
@@ -345,11 +347,11 @@ describe.sequential('content API observation baseline', () => {
 			snapshot: vi.fn(),
 			beginObservationSession: vi.fn(() => session),
 			stopObservationSession: vi.fn(() => makeState({ status: 'stopped' })),
-			flushObservationBatch: vi.fn(() => makeFlushOutput(session)),
+			flushObservationBatch: vi.fn(async () => makeFlushOutput(session)),
 			status: vi.fn(() => session),
 			disconnect: vi.fn(),
 		} satisfies ObservedPageSignals;
-		observedSignals.flushObservationBatch.mockReturnValueOnce({
+		observedSignals.flushObservationBatch.mockResolvedValueOnce({
 			...makeFlushOutput(session),
 			batch: lateBatch,
 		});
@@ -394,7 +396,7 @@ describe.sequential('content API observation baseline', () => {
 			snapshot: vi.fn(),
 			beginObservationSession: vi.fn(() => session),
 			stopObservationSession: vi.fn(() => makeState({ status: 'stopped' })),
-			flushObservationBatch: vi.fn(() => makeFlushOutput(session)),
+			flushObservationBatch: vi.fn(async () => makeFlushOutput(session)),
 			status: vi.fn(() => session),
 			disconnect: vi.fn(),
 		} satisfies ObservedPageSignals;

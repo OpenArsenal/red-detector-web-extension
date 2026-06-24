@@ -158,7 +158,7 @@ describe('observed page signals', () => {
 		});
 	});
 
-	it('returns a current document snapshot in the same shape used by collectPageSignals', () => {
+	it('returns a current document snapshot in the same shape used by collectPageSignals', async () => {
 		vi.stubGlobal('document', makeDocument());
 		vi.stubGlobal('location', { href: 'https://example.com/products' });
 		vi.stubGlobal('MutationObserver', FakeMutationObserver);
@@ -178,7 +178,7 @@ describe('observed page signals', () => {
 			maxMutations: 100,
 		});
 
-		expect(observedSignals.snapshot()).toMatchObject({
+		await expect(observedSignals.snapshot()).resolves.toMatchObject({
 			scripts: ['https://example.com/assets/app.js'],
 			stylesheets: ['https://example.com/assets/app.css'],
 			resources: [
@@ -199,7 +199,7 @@ describe('observed page signals', () => {
 		});
 	});
 
-	it('flushes normalized observations from the current observer snapshot', () => {
+	it('flushes normalized observations from the current observer snapshot', async () => {
 		vi.stubGlobal('document', makeDocument());
 		vi.stubGlobal('location', { href: 'https://example.com/products' });
 		vi.stubGlobal('MutationObserver', FakeMutationObserver);
@@ -218,9 +218,9 @@ describe('observed page signals', () => {
 			maxPendingNodes: 10,
 			maxMutations: 100,
 		});
-		observedSignals.snapshot();
+		await observedSignals.snapshot();
 
-		const flushed = observedSignals.flushObservationBatch();
+		const flushed = await observedSignals.flushObservationBatch();
 
 		expect(flushed.session).toMatchObject({ status: 'observing' });
 		expect(flushed.batch?.target).toEqual({ url: 'https://example.com/products', hostname: 'example.com' });
